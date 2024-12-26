@@ -6,15 +6,19 @@
       :model="resumeFormState"
       name="resumeFormState"
       autocomplete="off"
+      :label-col="{span: 5}"
+      :wrapper-col="{span: 14}"
+      :scrollToFirstError="true"
+      @finish="onSubmit"
     >
     <PersonInfo name="PersonInfo" :personInfoData="resumeFormState.personInfoData"/>
     <WorkExperience :workExperienceList="resumeFormState.workExperienceList"/>
-    <EducationInfo  :educationInfoData="resumeFormState.educationInfoData"/>
+    <EducationInfo  :educationInfoList="resumeFormState.educationInfoList"/>
     <LanguagesInfo :resumeLanguageList="resumeFormState.resumeLanguageList"/>
     <SelfEvaluation :selfEvaluationData="resumeFormState.selfEvaluationData"/>
     <a-card class="resume_card" style="position: sticky;bottom: 0;padding: 10px; ">
     <a-form-item class="resume_item">
-      <a-button type="primary" class="resume_btn" :loading="iconLoading" size="large"  @click="onSubmit">提交</a-button>
+      <a-button type="primary" class="resume_btn" :loading="iconLoading" size="large" html-type="submit">提交</a-button>
     </a-form-item>
   </a-card>
     </a-form>
@@ -35,20 +39,44 @@
   const resumeStore= useResumeStoreWithOut();
   let iconLoading = ref(false);
 
-  const {resumeFormState} = storeToRefs(resumeStore);
+  const {resumeFormState,updatePhotoFlag} = storeToRefs(resumeStore);
   const plagiarusnStore = usePlagiarusnStoreWithOut();
   const formRef = ref();
-  const onSubmit = async () => {
-    if (!resumeFormState.value.personInfoData.userName) {
-      message.warning("请输入姓名");
+  const scorllView = () => {
+       const ele = window.document.querySelector('.ant-form-item-has-error');
+        if (ele) {
+          ele.scrollIntoView({ behavior: 'smooth' });
+        }
+  }
+  const onSubmit = async (values) => {
+    console.log('valuestoRaw', toRaw(resumeFormState));
+    console.log('valuestoRaw form', values);
+    scorllView();
+    if (updatePhotoFlag.value === 1) {
+      message.warning("请截取合适的人才相片");
       return;
     }
+    // if (!resumeFormState.value.personInfoData.userName) {
+    //   message.warning("请输入姓名");
+    //   return;
+    // }
     if (!resumeFormState.value.personInfoData.gender) {
       message.warning("请输入性别");
       return;
     }
+    
     if (!resumeFormState.value.personInfoData.phone) {
       message.warning("请输入手机");
+      return;
+    }
+    let reg = /^(1[3-9])\d{9}$|^([0][0][8][5][2|3])\d{8}$/;
+    if (!reg.test(resumeFormState.value.personInfoData.phone)) {
+      message.warning("请输入正确的手机号");
+      return;
+    }
+    let regx = /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,6}$/;
+    if (resumeFormState.value.personInfoData.email && !regx.test(resumeFormState.value.personInfoData.email)) {
+      message.warning("请输入正确的邮箱");
       return;
     }
     if (!resumeFormState.value.personInfoData.currentCity) {
@@ -68,7 +96,7 @@
       message.warning("请完善工作经历");
       return;
     }
-    const edu = resumeFormState.value.educationInfoData;
+    const edu = resumeFormState.value.educationInfoList;
     let eduFlag = false;
     if (edu.length > 0) {
       edu.forEach(item => {
@@ -83,7 +111,7 @@
     }
 
     iconLoading.value = true;
-    console.log('valuestoRaw', toRaw(resumeFormState));
+    
     await formRef.value.validate().then(() => {
       resumeStore.fetchResumeInfo().then(() => {
         plagiarusnStore.resumeInfoShow(false);
@@ -93,6 +121,7 @@
       });
      
     }).catch(error => {
+      scorllView();
       console.log('error', error);
     });
   }

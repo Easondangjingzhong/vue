@@ -136,6 +136,7 @@
           talentSource: talentSource.value,
           resumeFile: data.file,
         },
+        updatePhotoFlag: 0,
       });
     //const formData = { fname: '', file: '', talentSource: undefined };
     const formData = new FormData();
@@ -171,6 +172,8 @@
     if (!personInfoData) {
       return;
     }
+     // @ts-ignore
+    const loginVueUser: {loginName: "", loginId: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
     const { userName, phone, email, gender, birthday } = personInfoData;
     let companyNames = '';
     let schoolNames = '';
@@ -182,8 +185,8 @@
     plagiarusnForm.gender = gender;
     plagiarusnForm.birthYear = birthday ? birthday.split('.')[0] : '';
     plagiarusnForm.currentCity = '';
-    plagiarusnForm.recruitId = '444';
-    plagiarusnForm.realNameEn = 'Eason Dang';
+    plagiarusnForm.recruitId = loginVueUser.loginId;
+    plagiarusnForm.realNameEn = loginVueUser.loginName;
     if (workExperienceList && workExperienceList.length > 0) {
       companyNames = workExperienceList
         .map((item) => {

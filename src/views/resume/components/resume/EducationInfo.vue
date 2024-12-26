@@ -4,8 +4,9 @@
       <h3>教育经历</h3>
       <a-divider style="height: 1px; background-color: #ccc" dashed />
       <EducationDetails
-        v-for="(item, index) in educationInfoData"
+        v-for="(item, index) in educationInfoList"
         :educationInfoData="item"
+        :educationInfoList="educationInfoList"
         :indexNum="+index"
         :key="index"
       />
@@ -22,8 +23,8 @@
     resumeStore.addNewEducationInfoData();
   };
   defineProps({
-    educationInfoData: {
-      type: Object,
+    educationInfoList: {
+      type: Array,
       required: true,
     },
   });

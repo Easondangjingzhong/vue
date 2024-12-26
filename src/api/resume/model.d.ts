@@ -82,7 +82,7 @@ export interface selfEvaluationData {
 export interface ResumeFormState {
   personInfoData: PersonInfo;
   workExperienceList: WorkExperience[];
-  educationInfoData: educationInfoData[];
+  educationInfoList: educationInfoData[];
   resumeLanguageList: languagesInfoData;
   selfEvaluationData: selfEvaluationData;
   talentSource: string | undefined;

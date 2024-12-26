@@ -1,11 +1,11 @@
 <template>
   <a-divider v-if="indexNum !== 0" style="height: 1px; background-color: #ccc;margin: 0 0 16px;" dashed />
-  <a-form :label-col="{span: 5}"
-      :wrapper-col="{span: 14}" :model="workExperienceData">
+  <!-- <a-form :label-col="{span: 5}"
+      :wrapper-col="{span: 14}" :model="workExperienceData"> -->
   <a-row>
     <a-col :span="8">
       <a-form-item
-        name="companyName"
+        :name="['workExperienceList',indexNum,'companyName']"
         label="公司名称"
         :label-col="{span: 4}"
         class="resume_company"
@@ -43,7 +43,7 @@
   <a-row>
     <a-col :span="spanTitle">
       <a-form-item
-        name="startYear"
+        :name="['workExperienceList',indexNum,'startYear']"
         label="开始年月"
         :rules="[{ required: true, message: '请选择开始年月' }]"
       >
@@ -57,7 +57,7 @@
     </a-col>
     <a-col :span="spanTitle" v-if="!endYearFlag" style="position: relative;">
       <a-form-item
-        name="endYear"
+        :name="['workExperienceList',indexNum,'endYear']"
         label="结束年月"
         :rules="[{ required: true, message: '请选择结束年月'}]"
       >
@@ -125,7 +125,7 @@
       </a-form-item>
     </a-col>
   </a-row>
-</a-form>
+<!-- </a-form> -->
 </template>
 <script lang="ts" setup>
   import { defineProps } from 'vue';
@@ -139,6 +139,10 @@
     resumeStore.delNewWorkExperienceDetails(param);
   };
   const peops = defineProps({
+    workExperienceList: {
+      type: Array,
+      required: true,
+    },
     workExperienceData: {
       type: Object,
       required: true,

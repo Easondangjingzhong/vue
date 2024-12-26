@@ -26,6 +26,6 @@
 </script>
 <style scoped>
   .resume_self{
-    width: 995px;
+    width: 1670px;
   }
 </style>

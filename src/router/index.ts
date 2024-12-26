@@ -10,6 +10,13 @@ export const router = createRouter({
   strict: true,
   scrollBehavior: () => ({ left: 0, top: 0 }),
 });
+router.beforeEach((to, from, next) => {
+  if (to.meta && to.meta.title) {
+    // @ts-ignore
+    document.title = to.meta.title
+  }
+  next()
+})
 function getQueryVariable(variable)
 {
     var query = window.location.search.substring(1);

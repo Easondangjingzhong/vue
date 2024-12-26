@@ -10,6 +10,8 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import { router } from './router';
 import { store } from './store';
+import VueCropper from 'vue-cropper'
+import 'vue-cropper/dist/index.css'
 //import screenAdapter from 'screen-adapter-plugin'
 
 
@@ -22,6 +24,7 @@ const app = createApp(App);
 app.use(store);
 
 app.use(router);
+app.use(VueCropper);
 //app.use(screenAdapter, {rootValue: 192})
 // Register global directive 配置全局权限
 //setupGlobDirectives(app);

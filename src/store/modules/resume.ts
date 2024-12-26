@@ -21,6 +21,7 @@ interface ResumeState {
   endYearFlag: boolean;//是否有最近工作 true 有 false 无
   resumeId: string;//简历ID
   closeBtn: boolean;//上传完成提示 true 展开 false 关闭
+  updatePhotoFlag: Number;//简历照片状态 0 是无照片  1 是有照片  2 是有照片已修改 
 }
 
 const diffBirthday = (birthday, age) => {
@@ -49,6 +50,7 @@ export const useResumeStore = defineStore({
     endYearFlag: false,
     resumeId: "",
     closeBtn: false,
+    updatePhotoFlag: 0,
   }),
   actions: {
     setInfo(resumeFormState: ResumeFormState) {
@@ -96,7 +98,7 @@ export const useResumeStore = defineStore({
       const {
         personInfoData,
         workExperienceList,
-        educationInfoData,
+        educationInfoList,
         resumeLanguageList,
         selfEvaluationData,
         talentSource,
@@ -114,21 +116,27 @@ export const useResumeStore = defineStore({
             work.endMonth = '-1';
           } else {
             work.endYear = (p.endYear ? (p.endYear.indexOf(".") != -1 ?  p.endYear.split('.')[0] : p.endYear.split('-')[0]): '');
-            work.endMonth = (p.endYear ? (p.endYear.indexOf(".") != -1 ?  p.endYear.split('.')[1] : p.endYear.split('-')[1]): '');
+            work.endMonth = (p.endYear ? (p.endYear.indexOf(".") != -1 ?  p.endYear.split('.')[1] : p.endYear.split('-')[1]): '01');
           }
           workData.push(work);
         }
       }
       let eduData: educationInfoData[] = [];
-      if (educationInfoData.length > 0) {
+      if (educationInfoList.length > 0) {
         let edu = {} as educationInfoData;
-        for (let i = 0; i < educationInfoData.length; i++) {
-          let p = educationInfoData[i];
+        for (let i = 0; i < educationInfoList.length; i++) {
+          let p = educationInfoList[i];
           edu = { ...p };
           edu.startYear = (p.startYear ? (p.startYear.indexOf(".") != -1 ?  p.startYear.split('.')[0] : p.startYear.split('-')[0]): '');
-          edu.startMonth = (p.startYear ? (p.startYear.indexOf(".") != -1 ?  p.startYear.split('.')[1] : p.startYear.split('-')[1]): '');
-          edu.endYear = (p.endYear ? (p.endYear.indexOf(".") != -1 ?  p.endYear.split('.')[0] : p.endYear.split('-')[0]): '');
-          edu.endMonth = (p.endYear ? (p.endYear.indexOf(".") != -1 ?  p.endYear.split('.')[1] : p.endYear.split('-')[1]): '');
+          edu.startMonth = (p.startYear ? (p.startYear.indexOf(".") != -1 ?  p.startYear.split('.')[1] : p.startYear.split('-')[1]): '06');
+          if (p.endYear == '-1' || p.endYear == '至今') {
+            edu.endYear =  '-1';
+            edu.endMonth =  '-1';
+          } else {
+            edu.endYear = (p.endYear ? (p.endYear.indexOf(".") != -1 ?  p.endYear.split('.')[0] : p.endYear.split('-')[0]): '');
+            edu.endMonth = (p.endYear ? (p.endYear.indexOf(".") != -1 ?  p.endYear.split('.')[1] : p.endYear.split('-')[1]): '09');
+          }
+         
           eduData.push(edu);
         }
       }
@@ -163,15 +171,26 @@ export const useResumeStore = defineStore({
         eduExpeList: eduData,
       };
       const res = await fetchApi.addResumeInfo(resume);
-      if (res) {
+      if (res && res != "上传失败") {
         console.log(res);
         this.resumeId = res;
         this.fetchResumeFile(res,this.resumeFormState.resumeFile);
         this.fetchResumePhote(res,this.resumeFormState.resumePhoto);
         this.closeBtn = true;
+        this.updatePhotoFlag = 0;
         return res;
       }
       return res;
+    },
+    /**
+     * 修改上传截图后的头像
+     * @param resumePhoto 头像参数base64
+     */
+    updateResumePhoto(resumePhoto) {
+      const blob = dataURLtoBlob(resumePhoto);
+      const files = new window.File([blob], 'avatar.png', {type: 'application/png'})
+      this.resumeFormState.resumePhoto = files;
+      this.updatePhotoFlag = 2;
     },
     /**
      * @description: 上传原始简历进行解析
@@ -180,16 +199,16 @@ export const useResumeStore = defineStore({
       const res = await fetchApi.info(params);
       if (res) {
         const { result } = JSON.parse(res.info);
-        console.log(result);
         let obj = {} as ResumeFormState;
         let personInfoData = {} as PersonInfo;
         let workExperienceList: WorkExperience[] = [];
-        let educationInfoData: educationInfoData[] = [];
+        let educationInfoList: educationInfoData[] = [];
         let resumeLanguageList = {} as resumeLanguageList;
         let selfEvaluationData = {} as selfEvaluationData;
         if (result) {
           personInfoData.photoPath = result.avatar_data;
           if (result.avatar_data) {
+            this.updatePhotoFlag = 1;
             const blob = dataURLtoBlob(result.avatar_data);
             const files = new window.File([blob], 'avatar.png', {type: 'application/png'})
             //const file = blobToFile(blob, 'avatar.png');
@@ -274,7 +293,7 @@ export const useResumeStore = defineStore({
               educationInfoObj.degree = item.edu_degree;
               educationInfoObj.startYear = (item.start_date && item.start_date.length == 4 ? item.start_date + "-09" : item.start_date);
               educationInfoObj.endYear = (item.end_date && item.end_date.length == 4 ? item.end_date + "-06" : item.end_date);
-              educationInfoData.push(educationInfoObj);
+              educationInfoList.push(educationInfoObj);
             });
           }
           if (result.cont_language) {
@@ -322,7 +341,7 @@ export const useResumeStore = defineStore({
         }
         obj.personInfoData = personInfoData;
         obj.workExperienceList = workExperienceList;
-        obj.educationInfoData = educationInfoData;
+        obj.educationInfoList = educationInfoList;
         obj.resumeLanguageList = resumeLanguageList;
         obj.selfEvaluationData = selfEvaluationData;
         obj.talentSource = this.resumeFormState.talentSource;
@@ -357,6 +376,13 @@ export const useResumeStore = defineStore({
         resumeId: '',
       };
       this.resumeFormState.workExperienceList.push(workData);
+    },
+    /**
+     * 修改个人信息中国籍
+     * @param nationality 国籍
+     */
+    updateNationality(nationality) {
+      this.resumeFormState.personInfoData.nationality = nationality;
     },
     /**
      * 修改工作经历指定索引元素
@@ -412,18 +438,18 @@ export const useResumeStore = defineStore({
         startMonth: '',
         endMonth: '',
       };
-      this.resumeFormState.educationInfoData.push(eduData);
+      this.resumeFormState.educationInfoList.push(eduData);
     },
     /**
      * 删除教育经历指定索引元素
      * @param params 指定索引
      */
     delNewEducationInfoData(params: number) {
-      if (this.resumeFormState.educationInfoData.length === 1) {
+      if (this.resumeFormState.educationInfoList.length === 1) {
         return;
       }
       // @ts-ignore
-      this.resumeFormState.educationInfoData = this.resumeFormState.educationInfoData.filter(
+      this.resumeFormState.educationInfoList = this.resumeFormState.educationInfoList.filter(
         (item, index) => index != params,
       );
     },

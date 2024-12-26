@@ -1,11 +1,11 @@
 <template>
    <a-divider v-if="indexNum !== 0" style="height: 1px; background-color: #ccc;margin: 0 0 16px;" dashed />
-   <a-form :label-col="{span: 5}"
-      :wrapper-col="{span: 14}" :model="educationInfoData">
+   <!-- <a-form :label-col="{span: 5}"
+      :wrapper-col="{span: 14}" :model="educationInfoData"> -->
    <a-row>
         <a-col :span="9">
           <a-form-item
-            name="schoolName"
+            :name="['educationInfoList',indexNum,'schoolName']"
             label="学校名称"
             :label-col="{ span: 3}"
             :wrapper-col="{ span: 18 }"
@@ -82,7 +82,7 @@
           <a-form-item
             :label-col="{ span: 7 }"
             :wrapper-col="{ span: 16 }"
-            name="degree"
+            :name="['educationInfoList',indexNum,'degree']"
             label="学历"
             :rules="[{ required: true, message: '请输入学历' }]"
           >
@@ -124,17 +124,29 @@
           </a-form-item>
         </a-col>
       </a-row>
-    </a-form>   
+    <!-- </a-form>    -->
 </template>
 <script lang="ts" setup>
   import { defineProps } from 'vue';
+  import { storeToRefs } from 'pinia'
   import type { SelectProps } from 'ant-design-vue';
   import { useResumeStoreWithOut } from '/@/store/modules/resume';
+  import {useCityStoreWithOut} from '/@/store/modules/city';
+  import {
+    degreeArr
+  } from '/@/store/data/resume';
+  const cityStore = useCityStoreWithOut();
+  const {cheieseCity} = storeToRefs(cityStore);
   const resumeStore = useResumeStoreWithOut();
+  const {resumeFormState} = storeToRefs(resumeStore);
   const delNewEducationInfoData = (param: number) => {
     resumeStore.delNewEducationInfoData(param);
   };
   const props = defineProps({
+    educationInfoList: {
+      type: Array,
+      required: true,
+    },
     educationInfoData: {
       type: Object,
       required: true,
@@ -145,7 +157,7 @@
     }
   });
   const spanTitle = 4;
-  const degreeArr = ["","初中","中专","高中","职高","大专","本科","硕士","博士","博士后","MBA","大专+MBA","本科+MBA","硕士+MBA","博士+MBA","大学肄业"];
+ 
   const degreeOptions: SelectProps['options'] = degreeArr.map((item) => ({ label: item, value: item }));
   let degreeFlag = ref(true);
   let schoolTypeFlag = ref(true);
@@ -160,6 +172,18 @@
     } else {
       props.educationInfoData.schoolType = [];
       schoolTypeFlag.value = false;
+    }
+    if (!resumeFormState.value.personInfoData.nationality && props.indexNum == 0 && props.educationInfoData.schoolName) {
+      cheieseCity.value.filter((item) => {
+       //@ts-ignore
+      if (props.educationInfoData.schoolName.includes(item.cityName)) {
+        resumeStore.updateNationality("中国");
+      }
+       //@ts-ignore
+       if (props.educationInfoData.schoolName.includes(item.provinceName)) {
+        resumeStore.updateNationality("中国");
+      }
+      });
     }
   })
   const changeDegree = (value: string) => {

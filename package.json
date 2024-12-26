@@ -42,7 +42,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@ant-design/icons-vue": "^6.0.1",
+    "@ant-design/icons-vue": "^7.0.1",
     "@vueuse/core": "^6.8.0",
     "ant-design-vue": "^4.2.6",
     "axios": "^0.24.0",
@@ -52,8 +52,8 @@
     "pinia": "^2.0.3",
     "postcss-plugin-px2rem": "^0.8.1",
     "sanitize.css": "^13.0.0",
-    "screen-adapter-plugin": "^1.0.0",
     "vue": "^3.2.16",
+    "vue-cropper": "^1.1.4",
     "vue-request": "^1.2.3",
     "vue-router": "^4.0.12"
   },

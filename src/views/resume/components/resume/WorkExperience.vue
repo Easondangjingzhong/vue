@@ -3,7 +3,7 @@
     <a-card class="resume_card">
       <h3>工作经历</h3>
       <a-divider style="height: 1px; background-color: #ccc" dashed/>
-      <WorkExperienceDetails v-for="(item,index) in workExperienceList" :workExperienceData="item" :indexNum="+index" :key="index"/>
+      <WorkExperienceDetails v-for="(item,index) in workExperienceList" :workExperienceList="workExperienceList" :workExperienceData="item" :indexNum="+index" :key="index"/>
       <a-button type="primary" style="margin-bottom: 15px;background-color: #f0ad4e;border-color: #eea236;" @click="addNewWorkExperienceDetails">添加工作经历</a-button>  
     </a-card>
   </div>
@@ -18,7 +18,7 @@
   };
   defineProps({
     workExperienceList: {
-      type: Object,
+      type: Array,
       required: true,
     }
   })
