@@ -38,7 +38,10 @@ export interface SearchResumeList {
   maxHeight: string; //最大身高
   minAge: string; //最小年龄
   maxAge: string; //最大年龄 
-  change: number; //对象内容发生改变
+  leftTeamId: string;//导航栏团队Id
+  leftRecruitId: string;//导航栏个人Id
+  sortId: string;//导航栏个人分类Id
+  leftType: string;//1全部简历 2 公共简历 3 港澳地区 4 团队、个人 5我的简历 6 人才分类 7 一键搜索 默认1全部简历
 }
 
 export interface Item {
@@ -49,6 +52,7 @@ export interface Item {
   level?: number; //菜单的等级 1级样式加粗
   type?: string; //是否有线
   children?: Item[]; //是否有子菜单
+  selectable?: boolean; //是否可以选中
 }
 
 export interface BrandList {

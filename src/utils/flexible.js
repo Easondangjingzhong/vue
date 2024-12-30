@@ -80,7 +80,7 @@
       // 这个位置划重点 1920是设计稿的大小 如果你的设计稿是750 那么就需要将1920替换成750
       width = (docEl.clientWidth / 1920) * 1920;
     }
-    var rem = width / 10 * 1.05;
+    var rem = width / 10 * 1.17;
     docEl.style.fontSize = rem + "px";
     flexible.rem = win.rem = rem;
   }

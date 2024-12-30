@@ -169,7 +169,7 @@
               @change="onChangeLanguageAbility"
               :rules="[{ required: false, message: '请输入语言能力' }]"
             >
-              <a-checkbox-group v-model:value="languageAbility4">
+              <a-checkbox-group v-model:value="languageAbility6">
                 <a-checkbox value="1">听说流利</a-checkbox>
                 <a-checkbox value="2">读写流利</a-checkbox>
                 <a-checkbox value="TOPIK I">TOPIK I</a-checkbox>
@@ -229,7 +229,6 @@
   import { defineProps } from 'vue';
   import { DownOutlined, UpOutlined } from '@ant-design/icons-vue';
   import { useResumeStoreWithOut } from '/@/store/modules/resume';
-  import { number } from 'echarts';
   const props = defineProps({
     resumeLanguageList: {
       type: Object,
@@ -277,9 +276,6 @@
   let scoreTOEFL = ref(null);
   const resumeStore = useResumeStoreWithOut();
   const onChangeLanguageAbility = (e) => {
-    console.log(e.target.value);
-    console.log(e.target.type);
-
     let languageAbility00 = languageAbility0.value.map((item) => item);
     let languageAbility11 = languageAbility1.value.map((item) => item);
     let languageAbility22 = languageAbility2.value.map((item) => item);

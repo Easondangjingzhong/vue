@@ -1,114 +1,242 @@
 <template>
   <div>
-    <!-- <ul class="resume-menu">
-      <li @click="handleSelect(item.key)" v-for="item in resumeMenu" :key="item.key" :class="[item.divider ? 'resume-menu-item-divider' : 'resume-menu-item']">
-        <div v-if="!item.divider" :class="[item.key === state.selectedKeys ? 'active' : '',
-        item.level === 1 ? 'level' : '',
-         'resume-menu-title']">
-          <span class="resume-menu-title-content">{{ item.title }}</span>
-          <span v-if="item.label" class="resume-menu-title-content-num">{{ item.label }}</span>
-        </div>
-        <ul class="resume-menu" v-if="!item.divider && item.children && item.children?.length > 0">
-          <li
-            v-for="subItem in item.children"
-            :key="subItem.key"
-            :class="[subItem.key === state.selectedKeys ? 'active' : '', 'resume-menu-item']"
-            @click="handleSelect(subItem.key)"
-          >
-            <span class="resume-menu-item-content">{{ subItem.title }}</span>
-            <span class="resume-menu-item-content">{{ subItem.label }}</span>
-          </li>
-        </ul>
-      </li>
-    </ul> -->
     <a-menu
       v-model:selectedKeys="state.selectedKeys"
       v-model:openKeys="state.openKeys"
       :inlineIndent="12"
       mode="inline"
       :items="items"
-      @click="handleSelect"
+      @select="handleSelect"
     ></a-menu>
     <a-modal
       v-model:open="openSortResume"
       title="人才分类"
       :confirm-loading="confirmLoading"
       @ok="handleSortResume"
-    >
+      @cancel="clearSortResume"
+      :footer="null"
+      :width="1200"
+    > <a-form ref="formSortResumeRef" :model="sortFormState" @finish="handleSortResume">
+    <a-divider style="background-color: #ccc;margin-top: 0;" />
+      <SearchContent :formState="sortFormState" :expand="4"/>
+      <a-divider style="background-color: #ccc;margin-top: 0;" />
       <a-row :gutter="24">
-        <a-col :span="24">
-          <a-form-item label="分类名称">
+        <a-col :span="12">
+          <a-form-item label="分类名称" style="width: 100%;"  :label-col="{offset: 0.2}" :wrapper-col="{span: 22}">
             <a-input v-model:value="sortName" />
           </a-form-item>
         </a-col>
+        <a-col :span="12">
+          <a-button style="margin: 0 0 0 1px" type="primary" html-type="submit">保存</a-button>
+          <a-button style="margin: 0 8px" @click="clearSortResume">清空</a-button>
+        </a-col>
       </a-row>
+    </a-form>
     </a-modal>
-    
+    <a-modal
+      v-model:open="resumeLoginNameFlag"
+      title="切换我的人才"
+      :confirm-loading="confirmLoading"
+      @ok="handleResumeLoginNameChange"
+      @cancel="handleResumeLoginNameClose"
+      :footer="null"
+      :width="400"
+    >  <a-row :gutter="24" style="height: 30px;">
+        <a-col :span="16">
+          <a-form-item label="团队">
+            <a-select
+            :allowClear="true"
+            v-modal:value="teamPersonChange"
+            :options="optionsLoginNameTeam"
+            @change="handleTeamPersonChange"
+          ></a-select>
+          </a-form-item>
+        </a-col>
+        <a-col :span="4">
+          <a-button style="margin: 0 0 0 9px" type="primary" @click="handleResumeLoginNameChange">确定</a-button>
+        </a-col>
+      </a-row>
+      <a-radio-group v-model:value="teamSelectPerson" style="width: 100%">
+    <a-row>
+      <a-col :span="8" v-for="item in teamSelectPersonArr">
+        <a-radio name="teamSelectPerson" :value="item.recruitId">{{ item.realNameEn }}</a-radio>
+      </a-col>
+    </a-row>
+  </a-radio-group>
+    </a-modal>
   </div>
 </template>
 <script lang="ts" setup>
   import { reactive, h } from 'vue';
   import { storeToRefs } from 'pinia';
   import { message } from 'ant-design-vue';
+  import type { FormInstance,SelectProps } from 'ant-design-vue';
   import { useResumeListStoreWithOut } from '/@/store/modules/resumeList';
+  import { FormOutlined,AlignRightOutlined } from '@ant-design/icons-vue';
+  import SearchContent from './resumeContent/SearchContent.vue';
+  import { SearchResumeList } from '/@/api/resumeList/model';
   const resumeList = useResumeListStoreWithOut();
   resumeList.fetchInfo();
-  const { resumeMenu } = storeToRefs(resumeList);
+  const { resumeMenu,teamPersonChangeArr } = storeToRefs(resumeList);
   const state = reactive({
-    selectedKeys: ['2'],
-    openKeys: ['1'],
+    selectedKeys: ['1'],
+    openKeys: ['01','51','6','7'],
   });
   let items = ref([{}]);
-  watch(resumeMenu, () => {
-    items.value = resumeMenu.value.map(
-      (item) => ({
-        key: item.key,
-        label: h('div', { class: 'resume-menu-title-one'},`${item.title} ${item.label}`),
-        title: `${item.title} ${item.label}`,
-        children: item.children?.map((subItem) => ({
-          key: subItem.key,
-          label: h('div', { class: 'resume-menu-title' }, [
-            h('span', { class: 'resume-menu-title-content' }, subItem.title),
-            h('span', { class: 'resume-menu-title-content-num' }, subItem.label),
-          ]),
-          title: `${subItem.title} ${subItem.label}`,
-          type: subItem.type,
-          children: subItem.children?.map((tempItem) => ({
-            key: tempItem.key,
-            label: h('div', { class: 'resume-menu-title' }, [
-              h('span', { class: 'resume-menu-title-content' }, tempItem.title),
-              h('span', { class: 'resume-menu-title-content-num' }, tempItem.label),
-            ]),
-            title: `${tempItem.title} ${tempItem.label}`,
-            type: tempItem.type,
-            children: tempItem.children?.map((tempSubItem) => ({
-              key: tempSubItem.key,
-              label: h('div', { class: 'resume-menu-title' }, [
-                h('span', { class: 'resume-menu-title-content' }, tempSubItem.title),
-                h('span', { class: 'resume-menu-title-content-num' }, tempSubItem.label),
+  const optionsLoginNameTeam = ref<SelectProps['options']>([]);
+  const handleResumeLoginNameClick = (e) => {
+    e.stopPropagation();
+    resumeLoginNameFlag.value = true;
+    //@ts-ignore
+    optionsLoginNameTeam.value = teamPersonChangeArr.value.map(item => ({value: item.teamId,label: item.teamName}));
+  }
+  const handleResumeSvgClick = (e) => {
+    e.stopPropagation();
+    openSortResume.value = true;
+  }
+  watch(
+    resumeMenu,
+    () => {
+      let resumeMenuTemp = [];
+      resumeMenu.value.map((item) => {
+        //@ts-ignore
+        if (item.key == '6') {
+          //@ts-ignore
+          resumeMenuTemp.push({
+            key: item.key,
+            label: h('div', { class: 'resume-menu-title-one' }, [
+                h('span', { class: 'resume-menu-title-content' }, item.title),
+               h('span', { class: 'resume-menu-title-content-svg',onClick: handleResumeSvgClick, }, h(FormOutlined)),
               ]),
-              title: `${tempSubItem.title} ${tempSubItem.label}`,
-              type: tempSubItem.type,
+            title: `${item.title} ${item.label}`,
+            children: item.children?.map((subItem) => ({
+              key: subItem.key,
+              label: h('div', { class: 'resume-menu-title' }, [
+                h('span', { class: 'resume-menu-title-content' }, subItem.title),
+                h('span', { class: 'resume-menu-title-content-num' }, subItem.label),
+              ]),
+              title: `${subItem.title} ${subItem.label}`,
+              type: subItem.type,
+              children: subItem.children?.map((tempItem) => ({
+                key: tempItem.key,
+                label: h('div', { class: 'resume-menu-title' }, [
+                  h('span', { class: 'resume-menu-title-content' }, tempItem.title),
+                  h('span', { class: 'resume-menu-title-content-num' }, tempItem.label),
+                ]),
+                title: `${tempItem.title} ${tempItem.label}`,
+                type: tempItem.type,
+                children: tempItem.children?.map((tempSubItem) => ({
+                  key: tempSubItem.key,
+                  label: h('div', { class: 'resume-menu-title' }, [
+                    h('span', { class: 'resume-menu-title-content' }, tempSubItem.title),
+                    h('span', { class: 'resume-menu-title-content-num' }, tempSubItem.label),
+                  ]),
+                  title: `${tempSubItem.title} ${tempSubItem.label}`,
+                  type: tempSubItem.type,
+                })),
+              })),
             })),
-          })),
-        })),
-        type: item.type,
-      }),
-      { deep: true, immediate: true },
-    );
-  });
+            type: item.type,
+          });
+        } //@ts-ignore
+        else if (item.key == '51') {
+          //@ts-ignore
+          resumeMenuTemp.push({
+            key: item.key,
+            label: h('div', { class: 'resume-menu-title-one',title: `我的人才 ${item.label}`}, [
+                h('span', { class: 'resume-menu-title-content' }, item.title),
+               h('span', { class: 'resume-menu-title-content-login-name',onClick: handleResumeLoginNameClick}, h(AlignRightOutlined)),
+              ]),
+            title: `${item.title} ${item.label}`,
+            children: item.children?.map((subItem) => ({
+              key: subItem.key,
+              label: h('div', { class: 'resume-menu-title' }, [
+                h('span', { class: 'resume-menu-title-content' }, subItem.title),
+                h('span', { class: 'resume-menu-title-content-num' }, subItem.label),
+              ]),
+              title: `${subItem.title} ${subItem.label}`,
+              type: subItem.type,
+              children: subItem.children?.map((tempItem) => ({
+                key: tempItem.key,
+                label: h('div', { class: 'resume-menu-title' }, [
+                  h('span', { class: 'resume-menu-title-content' }, tempItem.title),
+                  h('span', { class: 'resume-menu-title-content-num' }, tempItem.label),
+                ]),
+                title: `${tempItem.title} ${tempItem.label}`,
+                type: tempItem.type,
+                children: tempItem.children?.map((tempSubItem) => ({
+                  key: tempSubItem.key,
+                  label: h('div', { class: 'resume-menu-title' }, [
+                    h('span', { class: 'resume-menu-title-content' }, tempSubItem.title),
+                    h('span', { class: 'resume-menu-title-content-num' }, tempSubItem.label),
+                  ]),
+                  title: `${tempSubItem.title} ${tempSubItem.label}`,
+                  type: tempSubItem.type,
+                })),
+              })),
+            })),
+            type: item.type,
+          });
+        } else {
+          //@ts-ignore
+          resumeMenuTemp.push({
+            key: item.key,
+            label: h('div', { class: 'resume-menu-title-one' }, `${item.title} ${item.label}`),
+            title: `${item.title} ${item.label}`,
+            children: item.children?.map((subItem) => ({
+              key: subItem.key,
+              label: h('div', { class: 'resume-menu-title' }, [
+                h('span', { class: 'resume-menu-title-content' }, subItem.title),
+                h('span', { class: 'resume-menu-title-content-num' }, subItem.label),
+              ]),
+              title: `${subItem.title} ${subItem.label}`,
+              type: subItem.type,
+              children: subItem.children?.map((tempItem) => ({
+                key: tempItem.key,
+                label: h('div', { class: 'resume-menu-title' }, [
+                  h('span', { class: 'resume-menu-title-content' }, tempItem.title),
+                  h('span', { class: 'resume-menu-title-content-num' }, tempItem.label),
+                ]),
+                title: `${tempItem.title} ${tempItem.label}`,
+                type: tempItem.type,
+                children: tempItem.children?.map((tempSubItem) => ({
+                  key: tempSubItem.key,
+                  label: h('div', { class: 'resume-menu-title' }, [
+                    h('span', { class: 'resume-menu-title-content' }, tempSubItem.title),
+                    h('span', { class: 'resume-menu-title-content-num' }, tempSubItem.label),
+                  ]),
+                  title: `${tempSubItem.title} ${tempSubItem.label}`,
+                  type: tempSubItem.type,
+                })),
+              })),
+            })),
+            type: item.type,
+          });
+        }
+      });
+      items.value = resumeMenuTemp;
+    },
+    { deep: true, immediate: true },
+  );
   const openSortResume = ref<boolean>(false);
   const confirmLoading = ref<boolean>(false);
   const sortName = ref<string>('');
-  const handleSortResume = (e) => {
-    e.preventDefault();
+  const sortFormState = ref({} as SearchResumeList);
+  const formSortResumeRef = ref<FormInstance>();
+  const clearSortResume = () => {
+    confirmLoading.value = false;
+    sortName.value = '';
+    sortFormState.value = {} as SearchResumeList;
+  }
+  const handleSortResume = () => {
     if (!sortName.value) {
       message.error('请填写分类名称');
       return;
     }
+    const sortResumeForm = {...sortFormState.value,sortName:sortName.value};
     confirmLoading.value = true;
     resumeList
-      .addSortResumeName(sortName.value)
+      .addSortResumeName(sortResumeForm)
       .then(() => {
         message.success('操作成功');
         // resumeList.fetchSortData();
@@ -123,21 +251,37 @@
         sortName.value = '';
       });
   };
-   // 展开/收起状态
-  
+  // 展开/收起状态
   const handleSelect = (key: object) => {
     //@ts-ignore
     state.selectedKeys = key.keyPath;
-    //根据key展示不同的内容
     //@ts-ignore
-    if (key.key == '6') {
-      openSortResume.value = true;
-      //@ts-ignore
-    }else {
-      //@ts-ignore
-      resumeList.fetchTeamData(key.key);
-    }
+    resumeList.fetchTeamData(key.key);
   };
+  
+  const resumeLoginNameFlag = ref(false);
+  const teamPersonChange = ref();
+  const teamSelectPersonArr = ref([]);
+  const teamSelectPerson = ref('');
+  const handleTeamPersonChange = (values) => {
+    teamSelectPersonArr.value = teamPersonChangeArr.value.filter(item => item.teamId == values)[0].recruitList;
+  }
+  const handleResumeLoginNameClose = () => {
+    teamPersonChange.value = '';
+    resumeLoginNameFlag.value = false;
+    optionsLoginNameTeam.value = [];
+  }
+  const handleResumeLoginNameChange = () => {
+    if (!teamSelectPerson.value) {
+      message.error('请选择切换人');
+      return;
+    }
+    const realNameEn = teamSelectPersonArr.value.filter(item => teamSelectPerson.value == item.recruitId)[0].realNameEn;
+    resumeList.resumeLoginNameChange(teamSelectPerson.value+"-"+realNameEn,"S").then(() => {
+      message.success('操作成功');
+      handleResumeLoginNameClose();
+    });
+  }
 </script>
 <style lang="css">
   .resume-menu {
@@ -179,6 +323,9 @@
     background-color: rgba(0, 0, 0, 0.06);
   }
   .resume-menu-title-one {
+    display: flex;
+    justify-content: space-between;
+    transition: border-color 0.3s, background 0.3s, padding 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
     font-weight: 600;
   }
   .resume-menu-item:hover .resume-menu-title-content-num,
@@ -239,4 +386,17 @@
     margin-block: 1px;
     padding: 0;
   }
+  .resume-menu-title-content-login-name {
+    width: 17px;
+  }
+  .resume-menu-title-content-svg {
+    width: 17px;
+  }
+  .resume-menu-title-content-login-name svg,
+  .resume-menu-title-content-svg svg{
+    width: 15px;
+    height: 15px;
+    margin-top: 10px;
+  }
+  
 </style>
