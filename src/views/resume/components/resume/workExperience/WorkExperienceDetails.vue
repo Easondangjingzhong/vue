@@ -128,7 +128,6 @@
 <!-- </a-form> -->
 </template>
 <script lang="ts" setup>
-  import { defineProps } from 'vue';
   import { useResumeStoreWithOut } from '/@/store/modules/resume';
   import type { SelectProps } from 'ant-design-vue';
   import { storeToRefs } from 'pinia'

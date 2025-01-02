@@ -15,7 +15,6 @@
   </div>
 </template>
 <script lang="ts" setup>
-  import { defineProps } from 'vue';
   import EducationDetails from './educationInfo/EducationDetails.vue';
   import { useResumeStoreWithOut } from '/@/store/modules/resume';
   const resumeStore = useResumeStoreWithOut();

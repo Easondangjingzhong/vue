@@ -20,7 +20,7 @@
 <style lang="less" scoped>
   .resume_container {
     max-width: 1920px;
-    height: 100vh;
+    height: 95vh;
     background-color: #f5f5f5;
     overflow-x: hidden;
     padding: 10px;

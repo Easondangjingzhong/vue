@@ -26,7 +26,7 @@ export const brandArrDetail = [
   { retail: '美容美体', categoryArr: ['服务'], title: '美容' },
   { retail: '金融服务', categoryArr: ['服务'], title: '金融' },
   { retail: '生活服务', categoryArr: ['服务'], title: '生活' },
-  { retail: '其他', categoryArr: ['其他'] },
+  { retail: '其他服务', categoryArr: ['服务'], title: '其他' },
 ];
 export const brandCategoryArr = [
   {
@@ -61,8 +61,8 @@ export const brandCategoryArr = [
   { category: '服务', leibie: ['航空', '邮轮', '高铁', '旅行服务'], title: '出行' },
   { category: '服务', leibie: ['美容美发', '医美'], title: '美容' },
   { category: '服务', leibie: ['银行证券', '保险'], title: '金融' },
-  { category: '服务', leibie: ['改衣', '摄影', '健身', '物业', '教培', '亲子游乐'], title: '生活' },
-  { category: '其它', leibie: ['其它'] },
+  { category: '服务', leibie: ['改衣', '摄影', '健身', '物业', '教培', '亲子游乐','洗衣护理','艺术空间'], title: '生活' },
+  { category: '其他', leibie: ['其他'], title: '其他' },
 ];
 export const positionsUpArrTitle = [
   {
@@ -99,6 +99,7 @@ export const positionsUpArrTitle = [
       { jobCategory: '市场运营', management: ['基础级别', '管理级别'] },
       { jobCategory: '咨询翻译', management: ['基础级别', '管理级别'] },
       { jobCategory: '高级管理', management: ['管理级别'] },
+      { jobCategory: '其他职位', management: ['基础级别', '管理级别'] },
     ],
   },
   {
@@ -138,6 +139,13 @@ export const positionsUpArrTitle = [
   },
   {
     industry: '生活服务',
+    content: [
+      { jobCategory: '客户服务', management: ['基础级别', '管理级别'] },
+      { jobCategory: '客户营销', management: ['基础级别', '管理级别'] },
+    ],
+  },
+  {
+    industry: '其他服务',
     content: [
       { jobCategory: '客户服务', management: ['基础级别', '管理级别'] },
       { jobCategory: '客户营销', management: ['基础级别', '管理级别'] },
@@ -191,7 +199,7 @@ export const pinjibieArr = [
   { label: '普通', value: '普通' },
 ];
 export const pinjiArr = [
-  { label: '国际', value: '国际' },
+  { label: '国外', value: '国外' },
   { label: '国内', value: '国内' },
 ];
 export const genderArr = [
@@ -233,13 +241,13 @@ export const languageArr = [
     ability: [
       { value: '1', content: '听说流利' },
       { value: '2', content: '读写流利' },
-      { value: 'CET-4', content: 'CET-4' },
-      { value: 'CET-6', content: 'CET-6' },
-      { value: 'TEM-4', content: 'TEM-4' },
-      { value: 'TEM-8', content: 'TEM-8' },
-      { value: 'IELTS', content: 'IELTS' },
-      { value: 'TOEFL', content: 'TOEFL' },
-      { value: '3', content: '英语不佳' },
+      // { value: 'CET-4', content: 'CET-4' },
+      // { value: 'CET-6', content: 'CET-6' },
+      // { value: 'TEM-4', content: 'TEM-4' },
+      // { value: 'TEM-8', content: 'TEM-8' },
+      // { value: 'IELTS', content: 'IELTS' },
+      // { value: 'TOEFL', content: 'TOEFL' },
+      // { value: '3', content: '英语不佳' },
     ],
   },
   {
@@ -247,16 +255,16 @@ export const languageArr = [
     ability: [
       { value: '1', content: '听说流利' },
       { value: '2', content: '读写流利' },
-      { value: 'TFU-4', content: 'TFU-4' },
-      { value: 'TFS-4', content: 'TFS-4' },
-      { value: 'TFS-8', content: 'TFS-8' },
-      { value: 'DALF-C1', content: 'DALF-C1' },
-      { value: 'DALF-C2', content: 'DALF-C2' },
-      { value: 'DELF-A1', content: 'DELF-A1' },
-      { value: 'DELF-A2', content: 'DELF-A2' },
-      { value: 'DELF-A3', content: 'DELF-A3' },
-      { value: 'DELF-A4', content: 'DELF-A4' },
-      { value: '3', content: '法语不佳' },
+      // { value: 'TFU-4', content: 'TFU-4' },
+      // { value: 'TFS-4', content: 'TFS-4' },
+      // { value: 'TFS-8', content: 'TFS-8' },
+      // { value: 'DALF-C1', content: 'DALF-C1' },
+      // { value: 'DALF-C2', content: 'DALF-C2' },
+      // { value: 'DELF-A1', content: 'DELF-A1' },
+      // { value: 'DELF-A2', content: 'DELF-A2' },
+      // { value: 'DELF-A3', content: 'DELF-A3' },
+      // { value: 'DELF-A4', content: 'DELF-A4' },
+      // { value: '3', content: '法语不佳' },
     ],
   },
   {
@@ -264,12 +272,12 @@ export const languageArr = [
     ability: [
       { value: '1', content: '听说流利' },
       { value: '2', content: '读写流利' },
-      { value: 'JLPT-N1', content: 'JLPT-N1' },
-      { value: 'JLPT-N2', content: 'JLPT-N2' },
-      { value: 'JLPT-N3', content: 'JLPT-N3' },
-      { value: 'JLPT-N4', content: 'JLPT-N4' },
-      { value: 'JLPT-N5', content: 'JLPT-N5' },
-      { value: '3', content: '日语不佳' },
+      // { value: 'JLPT-N1', content: 'JLPT-N1' },
+      // { value: 'JLPT-N2', content: 'JLPT-N2' },
+      // { value: 'JLPT-N3', content: 'JLPT-N3' },
+      // { value: 'JLPT-N4', content: 'JLPT-N4' },
+      // { value: 'JLPT-N5', content: 'JLPT-N5' },
+      // { value: '3', content: '日语不佳' },
     ],
   },
   {
@@ -277,13 +285,13 @@ export const languageArr = [
     ability: [
       { value: '1', content: '听说流利' },
       { value: '2', content: '读写流利' },
-      { value: 'CEFR-A1', content: 'CEFR-A1' },
-      { value: 'CEFR-A2', content: 'CEFR-A2' },
-      { value: 'CEFR-B1', content: 'CEFR-B1' },
-      { value: 'CEFR-B2', content: 'CEFR-B2' },
-      { value: 'CEFR-C1', content: 'CEFR-C1' },
-      { value: 'CEFR-C2', content: 'CEFR-C2' },
-      { value: '3', content: '德语不佳' },
+      // { value: 'CEFR-A1', content: 'CEFR-A1' },
+      // { value: 'CEFR-A2', content: 'CEFR-A2' },
+      // { value: 'CEFR-B1', content: 'CEFR-B1' },
+      // { value: 'CEFR-B2', content: 'CEFR-B2' },
+      // { value: 'CEFR-C1', content: 'CEFR-C1' },
+      // { value: 'CEFR-C2', content: 'CEFR-C2' },
+      // { value: '3', content: '德语不佳' },
     ],
   },
   {
@@ -291,9 +299,9 @@ export const languageArr = [
     ability: [
       { value: '1', content: '听说流利' },
       { value: '2', content: '读写流利' },
-      { value: 'TOPIK I', content: 'TOPIK I' },
-      { value: 'TOPIK II', content: 'TOPIK II' },
-      { value: '3', content: '韩语不佳' },
+      // { value: 'TOPIK I', content: 'TOPIK I' },
+      // { value: 'TOPIK II', content: 'TOPIK II' },
+      // { value: '3', content: '韩语不佳' },
     ],
   },
   {
@@ -301,7 +309,7 @@ export const languageArr = [
     ability: [
       { value: '1', content: '听说流利' },
       { value: '2', content: '读写流利' },
-      { value: '3', content: '粤语不佳' },
+      // { value: '3', content: '粤语不佳' },
     ],
   },
   {
@@ -309,14 +317,15 @@ export const languageArr = [
     ability: [
       { value: '1', content: '听说流利' },
       { value: '2', content: '读写流利' },
-      { value: 'HSK一级', content: 'HSK一级' },
-      { value: 'HSF二级', content: 'HSF二级' },
-      { value: 'HSK三级', content: 'HSK三级' },
-      { value: 'HSK四级', content: 'HSK四级' },
-      { value: 'HSK五级', content: 'HSK五级' },
-      { value: 'HSK六级', content: 'HSK六级' },
-      { value: '3', content: '中文不佳' },
+      // { value: 'HSK一级', content: 'HSK一级' },
+      // { value: 'HSF二级', content: 'HSF二级' },
+      // { value: 'HSK三级', content: 'HSK三级' },
+      // { value: 'HSK四级', content: 'HSK四级' },
+      // { value: 'HSK五级', content: 'HSK五级' },
+      // { value: 'HSK六级', content: 'HSK六级' },
+      // { value: '3', content: '中文不佳' },
     ],
   },
 ];
 export const resumeTypeArr = ['中文', '英文'];
+export const workFloorArr = ['1层', '2层', '3层', '4层', '5层', '6层', '7层', '8层', 'B1', 'B2', 'OFFICE'];

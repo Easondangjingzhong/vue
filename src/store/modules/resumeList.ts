@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { store } from '/@/store';
 import fetchApi from '/@/api/resumeList';
+import { formatToDateMinute } from '/@/utils/dateUtil';
 import { SearchResumeList, Item } from '/@/api/resumeList/model';
 interface PaginationItem {
   current: Number;
@@ -8,18 +9,19 @@ interface PaginationItem {
   total: Number;
 }
 interface ResumeListState {
-  resumeMenu: Item[];
-  brandList: [];
-  resumeList: [];
-  positionsList: [];
-  markIdList: [];
-  companyList: [];
-  pagination: {};
-  formState: {};
-  systemType: string;
-  loginNameChangeRecruitId: string;
-  loginNameChangeRecruitName: string;
-  teamPersonChangeArr: [];
+  resumeMenu: Item[];//左侧菜单数据
+  brandList: [];//品牌数据
+  resumeList: [];//查询结果数据
+  positionsList: [];//职位数据
+  markIdList: [];//商场数据
+  companyList: []; //公司数据
+  pagination: {}; //分页
+  formState: {};//搜索条件
+  systemType: string;//返回的权限 A T V S
+  loginNameChangeRecruitId: string; //切换后我的人才id
+  loginNameChangeRecruitName: string;//切换后我的人才姓名
+  teamPersonChangeArr: []; //查询团队数据
+  serchResumeListNum: number; //一键搜索个数
 }
 
 export const useResumeListStore = defineStore({
@@ -36,6 +38,7 @@ export const useResumeListStore = defineStore({
     systemType: '',
     loginNameChangeRecruitId: '',
     loginNameChangeRecruitName: '',
+    serchResumeListNum: 0,
     teamPersonChangeArr: [],
     pagination: {
       current: 1,
@@ -134,6 +137,7 @@ export const useResumeListStore = defineStore({
       if (info.serchResumeName) {
         let serchResumeListChildren = [];
         if (info.serchResumeList && info.serchResumeList.length > 0) {
+          this.serchResumeListNum = info.serchResumeList.length;
           serchResumeListChildren = info.serchResumeList.map((item) => ({
             key: `serchResume-${item.id}`,
             label: '',
@@ -302,6 +306,14 @@ export const useResumeListStore = defineStore({
           if (res.info.brandId) {
             brandId = res.info.brandId.split(",");
           }
+          let markId = [];
+          if (res.info.markId) {
+            markId = res.info.markId.split(",");
+          }
+          let companyName = [];
+          if (res.info.companyName) {
+            companyName = res.info.companyName.split(",");
+          }
           result = {...res.info,
             hangye,
             hangye2: hangye,
@@ -313,6 +325,8 @@ export const useResumeListStore = defineStore({
             leibie,
             pinjibie,
             brandId,
+            markId,
+            companyName,
           };
           this.formState = result;
           
@@ -322,15 +336,15 @@ export const useResumeListStore = defineStore({
       }
       if (param == '1' || param == '2' || param == '3') {
         this.pagination = { ...this.pagination, current: 1 };
-        this.formState = { ...this.resumeList, leftType: param };
+        this.formState = { ...this.formState, leftType: param };
         //@ts-ignore
         this.queryResumeList(this.formState);
       }
       if (param == '5') {
         this.pagination = { ...this.pagination, current: 1 };
-        this.formState = { ...this.resumeList, leftType: param };
+        this.formState = { ...this.formState, leftType: param };
         //@ts-ignore
-        this.queryResumeList({ ...this.formState, recruitId: this.loginNameChangeRecruitId });
+        this.queryResumeList({ ...this.formState, recruitId: this.loginNameChangeRecruitId,leftRecruitId: this.loginNameChangeRecruitId });
       }
       if (param == '51') {
         let formData = new FormData();
@@ -447,12 +461,12 @@ export const useResumeListStore = defineStore({
      * 根据品牌类型参数查询
      * @param param 品牌的类型参数
      */
-    async queryBranList(param: SearchResumeList) {
+    async queryBranList(param?: SearchResumeList) {
       let formData = new FormData();
-      formData.append('retail', param.hangye || '');
-      formData.append('category', param.pinlei || '');
-      formData.append('leibie', param.leibie || '');
-      formData.append('pinji', param.pinji || '');
+      formData.append('retail', param?.hangye || '');
+      formData.append('category', param?.pinlei || '');
+      formData.append('leibie', param?.leibie || '');
+      formData.append('pinji', param?.pinji || '');
       const res = await fetchApi.queryBranList(formData);
       if (res.info) {
         this.brandList = res.info.brandList;
@@ -462,11 +476,11 @@ export const useResumeListStore = defineStore({
      * 根据职位数据类型参数查询
      * @param param 职位的类型参数
      */
-    async queryPositionsList(param: SearchResumeList) {
+    async queryPositionsList(param?: SearchResumeList) {
       let formData = new FormData();
-      formData.append('industry', param.hangye2 || '');
-      formData.append('jobCategory2', param.positionType || '');
-      formData.append('management2', param.positionLevel || '');
+      formData.append('industry', param?.hangye2 || '');
+      formData.append('jobCategory2', param?.positionType || '');
+      formData.append('management2', param?.positionLevel || '');
       const res = await fetchApi.queryPositionsList(formData);
       if (res.info) {
         this.positionsList = res.info.postList;
@@ -476,13 +490,13 @@ export const useResumeListStore = defineStore({
      * 根据城市商场数据类型参数查询
      * @param param 城市商场
      */
-    async queryMarkList(param: SearchResumeList) {
+    async queryMarkList(param?: SearchResumeList) {
       let formData = new FormData();
       formData.append(
         'city',
-        param.city ? (param.city.includes('-') ? param.city.split('-')[1] : param.city) : '',
+        param?.city ? (param.city.includes('-') ? param.city.split('-')[1] : param.city) : '',
       );
-      formData.append('marketName', param.marketName || '');
+      formData.append('marketName', param?.marketName || '');
       formData.append('curPage', '1');
       const res = await fetchApi.queryMarkList(formData);
       if (res.info) {
@@ -493,9 +507,9 @@ export const useResumeListStore = defineStore({
      * 根据公司数据类型参数查询
      * @param param 行业
      */
-    async queryCompanyList(param: SearchResumeList) {
+    async queryCompanyList(param?: SearchResumeList) {
       let formData = new FormData();
-      formData.append('industry', param.hangye || '');
+      formData.append('industry', '');
       formData.append('companyName', '');
       const res = await fetchApi.queryCompanyList(formData);
       if (res.info) {
@@ -528,10 +542,11 @@ export const useResumeListStore = defineStore({
           tempItem.phone = item.phone;
           tempItem.gender = item.gender == 'F' ? '女' : '男';
           tempItem.age = item.age;
+          tempItem.currentCity = item.currentCity;
           tempItem.positionName = item.positionName;
           tempItem.customerServiceName = (item.customerServiceName || "公共库");
           tempItem.registTimeStr = item.registTimeStr;
-          tempItem.lastUpdateTimeStr = item.lastUpdateTimeStr;
+          tempItem.lastUpdateTimeStr = formatToDateMinute(item.lastUpdateTimeStr);
           tempItem.projectFlag = item.projectFlag;
           tempItem.options = item.options;
           tempList.push(tempItem);
@@ -604,6 +619,7 @@ export const useResumeListStore = defineStore({
       formData.append('leftTeamId', param.leftTeamId || '');
       formData.append('leftRecruitId', param.leftRecruitId || '');
       formData.append('leftType', param.leftType || '1');
+      formData.append('isWorkExp', param.isWorkExp || '');
       formData.append('sortId', param.sortId || '');
       return formData;
     },

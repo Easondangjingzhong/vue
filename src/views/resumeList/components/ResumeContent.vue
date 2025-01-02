@@ -17,6 +17,7 @@
               :max-tag-text-length="3"
               :max-tag-count="5"
               mode="multiple"
+              optionFilterProp="label"
               v-model:value="formState.brandId"
               show-search
               :options="optionsBrand"
@@ -26,13 +27,13 @@
         <a-col :span="5.4" style="margin-left: 10px">
           <a-button style="margin: 0 0 0 8px" type="primary" html-type="submit">搜索</a-button>
           <a-button style="margin: 0 8px" @click="clearFromState">清空</a-button>
-          <a-button style="margin: 0 8px 0 0" @click="handleAddSearchResume">设置</a-button>
+          <a-button title="设置一键搜索" style="margin: 0 8px 0 0" @click="handleAddSearchResume">设置</a-button>
           <a @click="handleExpand">
-            <template v-if="expand > 0 && expand < 4">
+            <template v-if="expand < 4">
               <DoubleRightOutlined :rotate="90" />
               更多
             </template>
-            <template v-else="expand == 0 || expand == 4">
+            <template v-else="expand == 4">
               <DoubleLeftOutlined :rotate="90" />
               最简
             </template>
@@ -130,7 +131,7 @@
   import { useResumeListStoreWithOut } from '/@/store/modules/resumeList';
   import type { SelectProps } from 'ant-design-vue';
   const resumeListStore = useResumeListStoreWithOut();
-  const { resumeList, brandList, pagination, formState } = storeToRefs(resumeListStore);
+  const { resumeList, brandList, pagination, formState,serchResumeListNum } = storeToRefs(resumeListStore);
   // 展开/收起状态
   const expand = ref(1);
   const expandArr = [1, 2, 3, 4, 0];
@@ -179,6 +180,11 @@
       key: 'age',
     },
     {
+      title: '城市',
+      dataIndex: 'currentCity',
+      key: 'currentCity',
+    },
+    {
       title: '当前职位',
       dataIndex: 'positionName',
       key: 'positionName',
@@ -223,8 +229,6 @@
   let optionsBrand = ref<SelectProps['options']>([]);
   watch(brandList, () => {
     let tempOptionBrand = [];
-    //@ts-ignore
-    tempOptionBrand.push({ label: '', value: '' });
     brandList.value.forEach((item) => {
       //@ts-ignore
       let tempObj = {
@@ -256,6 +260,10 @@
   const searchName = ref<string>('');
   let openFormState = ref({} as SearchResumeList);
   const handleAddSearchResume = () => {
+    if (serchResumeListNum.value >= 5 ) {
+      message.error('最多只能添加5个一键搜索');
+      return;
+    }
     //@ts-ignore
     openFormState.value = formState.value;
     openSearchResume.value = true;

@@ -226,7 +226,6 @@
   </div>
 </template>
 <script lang="ts" setup>
-  import { defineProps } from 'vue';
   import { DownOutlined, UpOutlined } from '@ant-design/icons-vue';
   import { useResumeStoreWithOut } from '/@/store/modules/resume';
   const props = defineProps({

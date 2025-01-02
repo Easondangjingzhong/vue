@@ -41,6 +41,7 @@ export interface SearchResumeList {
   leftTeamId: string;//导航栏团队Id
   leftRecruitId: string;//导航栏个人Id
   sortId: string;//导航栏个人分类Id
+  isWorkExp: string;//1 查询工作经历 其他的参数都不查
   leftType: string;//1全部简历 2 公共简历 3 港澳地区 4 团队、个人 5我的简历 6 人才分类 7 一键搜索 默认1全部简历
 }
 

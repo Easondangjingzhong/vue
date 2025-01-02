@@ -2,6 +2,7 @@
 import BlankLayout from '/@/layouts/BlankLayout.vue';
 import Resume from '/@/views/resume/index.vue';
 import ResumeList from '/@/views/resumeList/index.vue';
+import ResumeDetail from '/@/views/resumeDetail/index.vue';
 import type { RouteRecordRaw } from 'vue-router';
 
 export const accessRoutes: RouteRecordRaw[] = [
@@ -30,6 +31,12 @@ const constantRoutes: RouteRecordRaw[] = [
     name: 'resumeList',
     component: ResumeList,
     meta: { title: '简历库' },
+  },
+  {
+    path: '/resume/detail',
+    name: 'ResumeDetail',
+    component: ResumeDetail,
+    meta: { title: '简历管理' },
   },
   // ...accessRoutes,
 ];

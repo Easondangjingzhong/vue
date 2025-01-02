@@ -15,7 +15,7 @@
         </a-form-item>
       </a-col>
       <a-col :span="spanCol">
-        <a-form-item name="positionType" label="职类">
+        <a-form-item name="positionType" title="职位类别" label="职类">
           <a-select
             v-model:value="formState.positionType"
             :options="optionsPositionType"
@@ -28,7 +28,7 @@
         </a-form-item>
       </a-col>
       <a-col :span="spanCol">
-        <a-form-item name="positionLevel" label="职级">
+        <a-form-item name="positionLevel" title="职位级别" label="职级">
           <a-select
             v-model:value="formState.positionLevel"
             :options="optionsPositionLevel"
@@ -47,6 +47,7 @@
             :max-tag-text-length="maxTagTextLength"
             :max-tag-count="maxTagCount"
             mode="multiple"
+            optionFilterProp="label"
             :allowClear="true"
             :options="optionsPositions"
           ></a-select>
@@ -71,7 +72,7 @@
         </a-form-item>
       </a-col>
       <a-col :span="spanCol">
-        <a-form-item name="pinlei" label="品类">
+        <a-form-item name="pinlei" title="品牌品类" label="品类">
           <a-select
             v-model:value="formState.pinlei"
             :options="optionsPinlei"
@@ -84,7 +85,7 @@
         </a-form-item>
       </a-col>
       <a-col :span="spanCol">
-        <a-form-item name="leibie" label="类别">
+        <a-form-item name="leibie" title="品牌类别" label="类别">
           <a-select
             v-model:value="formState.leibie"
             :max-tag-text-length="maxTagTextLength"
@@ -98,7 +99,7 @@
       </a-col>
 
       <a-col :span="spanCol">
-        <a-form-item name="pinjibie" label="品级">
+        <a-form-item name="pinjibie" title="品牌级别" label="品级">
           <a-select
             v-model:value="formState.pinjibie"
             :max-tag-text-length="maxTagTextLength"
@@ -144,6 +145,10 @@
           <a-select
             v-model:value="formState.markId"
             show-search
+            :max-tag-text-length="maxTagTextLength"
+            :max-tag-count="maxTagCount"
+            mode="multiple"
+            optionFilterProp="label"
             :allowClear="true"
             :options="optionsMarkId"
           ></a-select>
@@ -153,17 +158,17 @@
     <a-row :gutter="24" v-if="expand > 2">
       <a-col :span="spanCol">
         <a-space :size="4">
-          <a-form-item style="width: 113%;" name="minHeight" :label-col="{span: 8}" label="身高">
+          <a-form-item style="width: 113%" name="minHeight" :label-col="{ span: 8 }" label="身高">
             <a-input-number v-model:value="formState.minHeight" />
           </a-form-item>
-          <a-form-item name="maxHeight" :wrapper-col="{offset: 3}">
+          <a-form-item name="maxHeight" :wrapper-col="{ offset: 3 }">
             <a-input-number v-model:value="formState.maxHeight" />
           </a-form-item>
         </a-space>
       </a-col>
       <a-col :span="spanCol">
         <a-space>
-          <a-form-item style="width: 106%;" label="年龄">
+          <a-form-item style="width: 106%" label="年龄">
             <a-input-number class="minAge" v-model:value="formState.minAge" />
           </a-form-item>
           <a-form-item name="maxAge">
@@ -181,7 +186,7 @@
         </a-form-item>
       </a-col>
       <a-col :span="spanCol">
-        <a-form-item name="resumeType" label="简语">
+        <a-form-item name="resumeType" title="简历语言" label="简语">
           <a-select
             v-model:value="formState.resumeType"
             :allowClear="true"
@@ -196,6 +201,9 @@
           <a-select
             v-model:value="formState.companyName"
             show-search
+            :max-tag-text-length="maxTagTextLength"
+            :max-tag-count="maxTagCount"
+            mode="multiple"
             :allowClear="true"
             :options="optionsCompanyId"
           ></a-select>
@@ -206,6 +214,7 @@
           <a-select
             v-model:value="formState.guoji"
             :allowClear="true"
+            show-search
             :options="optionsCountry"
           ></a-select>
         </a-form-item>
@@ -215,12 +224,14 @@
           <a-select
             v-model:value="formState.huji"
             :allowClear="true"
-            :options="optionsCity"
+            show-search
+            optionFilterProp="label"
+            :options="optionsCityHuji"
           ></a-select>
         </a-form-item>
       </a-col>
       <a-col :span="spanCol">
-        <a-form-item name="pinji" label="品籍">
+        <a-form-item name="pinji" title="品牌国籍" label="品籍">
           <a-select
             v-model:value="formState.pinji"
             @change="handleBrand"
@@ -273,7 +284,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-  import { ref,defineExpose } from 'vue';
+  import { ref } from 'vue';
   import { storeToRefs } from 'pinia';
   //import { debounce } from 'lodash-es';
   import type { SelectProps, TreeSelectProps } from 'ant-design-vue';
@@ -305,16 +316,16 @@
     expand: {
       type: Number,
       default: false,
-    }
+    },
   });
-  
+
   const cityStore = useCityStoreWithOut();
   cityStore.fetchCountryInfo();
   cityStore.fetchInfo();
   const { country, province } = storeToRefs(cityStore);
   //@ts-ignore
-  //let optionsCity = ref<SelectProps['options']>([]);
-  let optionsCity = ref<TreeSelectProps['treeData']>([]);
+  const optionsCity = ref<TreeSelectProps['treeData']>([]);
+  const optionsCityHuji = ref<SelectProps['options']>([]);
   watch(province, () => {
     optionsCity.value = province.value.reduce((prev, curr) => {
       // 存在相同的省份，直接在其下添加城市
@@ -377,6 +388,29 @@
       }
       return prev;
     }, []);
+    //@ts-ignore
+    optionsCityHuji.value = province.value.reduce((prev, curr) => {
+       //@ts-ignore
+      if ((curr.provinceName == curr.cityName || !curr.cityName) && !(curr.cityName == '吉林' || curr.cityName == '海南')) {
+        //@ts-ignore
+        prev.push({
+          //@ts-ignore
+          label: curr.provinceName,
+          //@ts-ignore
+          value: curr.provinceName,
+        });
+      } else {
+        //@ts-ignore
+        prev.push({
+          //@ts-ignore
+          label: `${curr.provinceName}-${curr.cityName}`,
+          //@ts-ignore
+          value: curr.cityName,
+        });
+      }
+
+      return prev;
+    }, []);
   });
   //国籍数据展示
   let optionsCountry = ref<SelectProps['options']>([]);
@@ -395,13 +429,16 @@
     value: item,
   }));
   //语言能力数据展示
-  const optionsLanguage: SelectProps['options'] = languageArr.reduce((prev,curr) => {
-    curr.ability.forEach(item => {
+  const optionsLanguage: SelectProps['options'] = languageArr.reduce((prev, curr) => {
+    curr.ability.forEach((item) => {
       //@ts-ignore
-      prev.push({ label: `${curr.language}-${item.content}`, value: `${curr.language}-${item.value}` });
-    })
+      prev.push({
+        label: `${curr.language}-${item.content}`,
+        value: `${curr.language}-${item.value}`,
+      });
+    });
     return prev;
-  },[])
+  }, []);
   //学历数据展示
   const optionsDegree: SelectProps['options'] = degreeSearchArr.map((item) => ({
     label: item,
@@ -440,17 +477,7 @@
   //品类数据改变类别下拉框改变
   const handlePinlei = () => {
     props.formState.leibie = [];
-    // optionsLeibie.value = [{ value: '' }];
     if (props.formState.pinlei) {
-      // optionsLeibie.value = brandCategoryArr
-      //   .filter(
-      //     (item) =>
-      //       item.category.includes(props.formState.pinlei) &&
-      //       brandArrDetail.filter((item) => item.retail.includes(props.formState.hangye))[0]
-      //         .title == item.title,
-      //   )[0]
-      //   .leibie.map((item) => ({ value: item }));
-      // optionsLeibie.value?.unshift({ value: '' });
       optionsLeibie.value = brandCategoryArr
         .filter((item) => props.formState.pinlei.includes(item.category))
         .reduce((prev, curr) => {
@@ -515,8 +542,13 @@
       optionsPositionLevel.value = positionsUpArrTitle
         .filter((item) => props.formState.hangye2.includes(item.industry))
         .reduce((prev, curr) => {
-          return [...prev,...curr.content.filter(item => props.formState.positionType.includes(item.jobCategory))];
-        },[])
+          return [
+            ...prev,
+            ...curr.content.filter((item) =>
+              props.formState.positionType.includes(item.jobCategory),
+            ),
+          ];
+        }, [])
         .reduce((prev, curr) => {
           //@ts-ignore
           let temp = prev.map((item) => item?.value);
@@ -590,9 +622,9 @@
     }
   };
   handleHangye();
- 
+
   const handleMarkId = () => {
-    props.formState.markId = '';
+    props.formState.markId = [];
     //@ts-ignore
     resumeListStore.queryMarkList(props.formState);
   };
@@ -646,20 +678,20 @@
     handleBrand();
     handleCompanyName();
     handleMarkId();
-  }
+  };
   defineExpose({
-    clearSelectOptions
-  })
+    clearSelectOptions,
+  });
 </script>
 <style lang="less" scoped>
   .ant-input-number {
     width: 100%;
   }
   .custom-select .ant-select-selector {
-  height: 32px; /* 固定高度 */
-  max-height: 32px; /* 防止内容溢出时高度增加 */
-  overflow: hidden; /* 隐藏溢出内容，如果需要可以设置为auto来显示滚动条 */
-  text-overflow: ellipsis; /* 文本溢出时显示省略号 */
-  white-space: nowrap; /* 禁止文本换行 */
-}
+    height: 32px; /* 固定高度 */
+    max-height: 32px; /* 防止内容溢出时高度增加 */
+    overflow: hidden; /* 隐藏溢出内容，如果需要可以设置为auto来显示滚动条 */
+    text-overflow: ellipsis; /* 文本溢出时显示省略号 */
+    white-space: nowrap; /* 禁止文本换行 */
+  }
 </style>

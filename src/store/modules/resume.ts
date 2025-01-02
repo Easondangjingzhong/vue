@@ -163,6 +163,7 @@ export const useResumeStore = defineStore({
         resumeLanguageList: resumeLanguageList.languageAbility,
         selfEvaluation: selfEvaluationData.selfEvaluation,
         age: personInfoData.age,
+        nationality: personInfoData.nationality,
          // @ts-ignore
         talentSource: talentSource,
         // @ts-ignore

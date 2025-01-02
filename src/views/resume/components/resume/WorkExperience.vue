@@ -9,7 +9,6 @@
   </div>
 </template>
 <script lang="ts" setup>
-  import { defineProps } from 'vue';
   import WorkExperienceDetails  from "./workExperience/WorkExperienceDetails.vue" ;
   import { useResumeStoreWithOut } from '/@/store/modules/resume';
   const resumeStore = useResumeStoreWithOut();
