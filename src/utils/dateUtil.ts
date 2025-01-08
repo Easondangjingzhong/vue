@@ -26,5 +26,7 @@ export function formatToDate(date: dayjs.ConfigType = undefined, format = DATE_F
   return dayjs(date).format(format);
 }
 
-
+export function currentDate(format = DATE_FORMAT): string {
+  return dayjs().format(format);
+}
 export const dateUtil = dayjs;
