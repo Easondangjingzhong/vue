@@ -215,7 +215,7 @@
   import { CloseOutlined } from '@ant-design/icons-vue';
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   const resumeDetailStore = useResumeDetailStore();
-  const { recommendFlag } = storeToRefs(resumeDetailStore);
+  const { recommendFlag,mappingId } = storeToRefs(resumeDetailStore);
   const props = defineProps({
     recommendPerson: {
       type: Object,
@@ -307,6 +307,7 @@
   watch(
     () => props.recommendPerson,
     () => {
+      console.log(props.recommendPerson);
       dataSource.value = [
         {
           userName: props.userName,
@@ -468,6 +469,8 @@
       isloading.value = false;
     });
   };
+ 
+  
   const handleAddRecommend = () =>{
     if (isVideo.value && videoFile.value.length == 0) {
       message.warning("请上传视频面试截图");
@@ -479,18 +482,18 @@
       return;
     }
     let formData = {
-      id: '',
-      brand: '',
-      bId: '',
-      mId: '',
-      city: '',
-      workPlace: '',
-      jobTitle: '',
-      positionsId: '',
-      counselor: '',
-      recommendId: '',
-      companyName: '',
-      recruitId: '',
+      id: props.recommendPerson.id,
+      brand: props.recommendPerson.brand,
+      bId: props.recommendPerson.bId,
+      mId: props.recommendPerson.mId,
+      city: props.recommendPerson.city,
+      workPlace: props.recommendPerson.workPlace,
+      jobTitle: props.recommendPerson.jobTitle,
+      positionsId: props.recommendPerson.positionsId,
+      counselor: props.recommendPerson.counselor,
+      recommendId: mappingId.value,
+      companyName: props.recommendPerson.companyName,
+      recruitId: props.recommendPerson.recruitId,
       file: (videoFile.value && videoFile.value[0]) || '',
     };
     isloading.value = true;

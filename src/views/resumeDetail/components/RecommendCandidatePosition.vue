@@ -158,7 +158,13 @@
             >
               推荐
             </a-button>
-            <a-button type="primary" @click="handleRecommendChecked(record)" class="resume_btn" size="small" v-if="record.action == 3">
+            <a-button
+              type="primary"
+              @click="handleRecommendChecked(record)"
+              class="resume_btn"
+              size="small"
+              v-if="record.action == 3"
+            >
               推荐
             </a-button>
           </template>
@@ -218,9 +224,7 @@
             >
             <span v-else-if="record.recommendStatus == '顾问通过'">企顾通过</span>
             <span v-else-if="record.recommendStatus == '推荐顾问'">推荐人才</span>
-            <span
-              v-else-if="record.recommendStatus == '已拒绝'"
-            >
+            <span v-else-if="record.recommendStatus == '已拒绝'">
               <a-popover title="申诉拒绝">
                 <template #content>
                   <p>申诉原因: {{ record.appealRemark }}</p>
@@ -229,17 +233,14 @@
                 申诉拒绝
               </a-popover>
             </span>
-            <span
-              v-else-if="record.recommendStatus == '未审核'"
-              >
+            <span v-else-if="record.recommendStatus == '未审核'">
               <a-popover title="申诉待审">
                 <template #content>
                   <p>申诉原因: {{ record.appealRemark }}</p>
                 </template>
                 申诉待审
               </a-popover>
-              </span
-            >
+            </span>
             <span v-else>{{ record.recommendStatus }}</span>
           </template>
           <template v-if="column.key === 'action'">
@@ -257,7 +258,10 @@
       </a-table>
     </div>
   </a-drawer>
-  <RecommendCandidatePositionChecked :recommendPerson="recommendPerson" :userName="resumeDetail.resume.userName"/>
+  <RecommendCandidatePositionChecked
+    :recommendPerson="recommendPerson"
+    :userName="resumeDetail.resume.userName"
+  />
 </template>
 <script setup lang="ts">
   import { storeToRefs } from 'pinia';
@@ -282,29 +286,37 @@
     enterpriseConsultant,
     recommendMapping,
   } = storeToRefs(resumeDetailStore);
-  interface RecommendPerson  {
-            index: string,
-            city: string,
-            brand: string,
-            jobTitle: string,
-            workPlace: string,
-            turnoverTime: string,
-            counselor: string,
-            jobStatus: string,
-            recruitingNum: string,
-            offerNum: string,
-            openResumesNum: string,
-            surplus: string,
-            isTask: string,
-            action: string,
+  interface RecommendPerson {
+    index: string;
+    city: string;
+    brand: string;
+    jobTitle: string;
+    workPlace: string;
+    turnoverTime: string;
+    counselor: string;
+    jobStatus: string;
+    recruitingNum: string;
+    offerNum: string;
+    openResumesNum: string;
+    surplus: string;
+    isTask: string;
+    action: string;
+    companyName: string;
+    bId: string;
+    id: string;
+    mId: string;
+    recruitId: string;
+    positionsId: string;
   }
   const recommendPerson = ref({} as RecommendPerson);
   const handleRecommendChecked = (item) => {
-    recommendPerson.value = {...item};
+    console.log(item);
+
+    recommendPerson.value = { ...item };
     resumeDetailStore.$patch({
       recommendFlag: true,
-    })
-  }
+    });
+  };
   const optionsCompanyRecruitId = ref<SelectProps['options']>(
     enterpriseConsultant.value?.map((item) => ({ value: item.id, label: item.realNameEn })),
   );
@@ -668,6 +680,12 @@
               temp.action = '3'; //推荐
             }
           }
+          temp.companyName = curr.companyName;
+      temp.bId = curr.bId;
+      temp.id = curr.id;
+      temp.mId = curr.mId;
+      temp.recruitId = curr.recruitId;
+      temp.positionsId = curr.positionsId;
           prev.push(temp);
           return prev;
         }, []);
@@ -769,7 +787,23 @@
       width: 30,
     },
   ]);
-  const dataSourceRecommend = ref([]);
+  const dataSourceRecommend = ref([
+    {
+      index: '',
+      city: '',
+      brand: '',
+      position: '',
+      market: '',
+      turnoverTime: '',
+      counselor: '',
+      recommendTime: '',
+      recommendStatus: '',
+      inTask: '',
+      action: '',
+      appealRemark: '',
+      refuseReamrk: '',
+    },
+  ]);
   watch(recommendMapping, () => {
     dataSourceRecommend.value = recommendMapping.value?.reduce((prev, curr, index) => {
       let temp = {
@@ -785,7 +819,7 @@
         inTask: '',
         action: '',
         appealRemark: '',
-        refuseReamrk: '',
+        refuseReamrk: ''
       };
       temp.index = (index + 1).toString();
       temp.city = curr.city;
@@ -804,7 +838,6 @@
       return prev;
     }, []);
   });
- 
 </script>
 <style lang="less" scoped>
   .resume_h4 {

@@ -1,32 +1,56 @@
 <template>
-   <div class="resume_header">
+  <div class="resume_header">
     <a-row :gutter="24">
       <a-col :span="24" class="resume_detail_title">
-        <h4 class="resume_h4">
-          职位意向
-        </h4>
-        <!-- <PlusOutlined @click="handlePositons" /> -->
+        <h4 class="resume_h4"> 职位意向 </h4>
+        <PlusOutlined v-if="!expend" @click="handlePositons" />
+        <CloseOutlined v-if="expend" @click="handlePositons" />
       </a-col>
-      <a-divider :dashed="true" style="background-color: #ccc;margin-top: 0;margin-bottom: 5px;" />
+      <a-divider :dashed="true" style="background-color: #ccc; margin-top: 0; margin-bottom: 5px" />
     </a-row>
-    <!-- <div v-if="expend">
-      <a-form ref="formRef" :model="formState" @finish="onFinish">
-        <a-row :gutter="24">
-          <a-col :span="24" name="content">
-            <a-textarea :rows="7" v-model:value="formState.content" placeholder="请输入联络记录"></a-textarea>
-          </a-col>
-        </a-row>
-        <a-row :gutter="24">
-          <a-col :span="24" offset="24">
-            <a-button type="primary" @click="handleSubmit">提交</a-button>
-            <a-button @click="handleReset">重置</a-button>
-          </a-col>
-        </a-row>
-      </a-form>
-    </div> -->
+    <div v-if="expend">
+      <a-table
+        class="row_table"
+        :pagination="false"
+        size="small"
+        :loading="loading"
+        :dataSource="dataPositonsAdd"
+        rowKey="key"
+        :row-selection="rowSelection"
+        :columns="columnsPositonsAdd"
+        :locale="{ emptyText: '暂无' }"
+      >
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.key === 'action'">
+          <a-select
+          class="row_table_select"
+          :disabled="record.checked == '1'"
+          v-model:value="record.intention"
+          :options="record.selectOptions"
+          :allowClear="true"
+          optionFilterProp="label"
+          label-in-value
+          ></a-select>
+        </template>
+      </template>
+    </a-table>
+    <a-row :gutter="24" class="resume_row_pagination">
+        <a-pagination
+          size="small"
+          :current="dataPagination.current"
+          :pageSize="dataPagination.pageSize"
+          :total="dataPagination.total"
+          :showSizeChanger="false"
+          :hideOnSinglePage="dataPagination.hideOnSinglePage"
+          @change="handlePagination"
+          :show-total="(total) => `共 ${total} 条`"
+        />
+        <a-button type="primary" size="small">保存</a-button>
+      </a-row>
+    </div>
     <a-table
-    class="row_table"
-    :pagination="pagination"
+      class="row_table"
+      :pagination="pagination"
       size="small"
       :dataSource="resumeList"
       rowKey="key"
@@ -36,13 +60,24 @@
   </div>
 </template>
 <script setup lang="ts">
+  import { PlusOutlined, CloseOutlined } from '@ant-design/icons-vue';
+  import type { TableProps } from 'ant-design-vue';
+  import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
+  const resumeDetailStore = useResumeDetailStore();
   const pagination = ref({
-  pageSize: 10,
-  current: 1,
-  total: 0,
-  hideOnSinglePage: true,
-  size:'small',
-})
+    pageSize: 10,
+    current: 1,
+    total: 0,
+    hideOnSinglePage: true,
+    size: 'small',
+  });
+  const dataPagination = ref({
+    pageSize: 10,
+    current: 1,
+    total: 0,
+    hideOnSinglePage: true,
+    size: 'small',
+  });
   const columns = [
     {
       title: '编号',
@@ -81,16 +116,166 @@
     },
   ];
   const resumeList = ref([]);
+  const expend = ref(false);
+  const handlePositons = () => {
+    expend.value = !expend.value;
+    if (expend.value) {
+      handlePagination();
+    }
+  };
+  //添加职位意向开始
+  const columnsPositonsAdd = [
+    {
+      title: '编号',
+      dataIndex: 'index',
+      key: 'index',
+      ellipsis: true,
+      width: 20,
+    },
+    {
+      title: '城市',
+      dataIndex: 'city',
+      key: 'city',
+      ellipsis: true,
+      width: 20,
+    },
+    {
+      title: '商场',
+      dataIndex: 'workPlace',
+      key: 'workPlace',
+      ellipsis: true,
+      width: 40,
+    },
+    {
+      title: '品牌',
+      dataIndex: 'brand',
+      key: 'brand',
+      ellipsis: true,
+      width: 40,
+    },
+    {
+      title: '职位',
+      dataIndex: 'jobTitle',
+      key: 'jobTitle',
+      ellipsis: true,
+      width: 40,
+    },
+    {
+      title: '意向',
+      dataIndex: 'action',
+      key: 'action',
+      ellipsis: true,
+      width: 50,
+    },
+  ];
+  const dataPositonsAdd = ref([]);
+  const loading = ref(false);
+  const searchPositons = reactive({
+    brand: '',
+    positionsId: '',
+    market: '',
+  });
+  interface SelectOptions {
+    label:string,
+    value: string
+  }
+  interface RecommendPerson {
+    key: string;
+    index: string;
+    city: string;
+    brand: string;
+    jobTitle: string;
+    workPlace: string;
+    turnoverTime: string;
+    counselor: string;
+    jobStatus: string;
+    recruitingNum: string;
+    offerNum: string;
+    openResumesNum: string;
+    surplus: string;
+    isTask: string;
+    action: string;
+    companyName: string;
+    bId: string;
+    id: string;
+    mId: string;
+    recruitId: string;
+    positionsId: string;
+    intention: SelectOptions;
+    checked: string; //默认1 不可用 2 可用
+    selectOptions: SelectOptions[];
+  }
+  
+  const optionsIntention = [ '明确考虑','需要打听','拒绝考虑'];
+  const handlePagination = (page = 1, pageSize = 8) => {
+    const values = {
+      page: page,
+      brand: searchPositons.brand,
+      positionsId: searchPositons.positionsId,
+      market: searchPositons.market,
+    };
+    loading.value = true;
+    selectedRowsTemp.value = [];
+    resumeDetailStore.queryRecommendCandidatePosition(values).then((res) => {
+      loading.value = false;
+      if (res.code == 1) {
+        const candidatePosition = res.info.list;
+        dataPositonsAdd.value = candidatePosition?.reduce((prev, curr, index) => {
+          let temp = {} as RecommendPerson;
+          temp.index = (res.info.currentPage - 1) * pageSize + (index + 1);
+          temp.city = curr.city || '-';
+          temp.brand = curr.brand || '-';
+          temp.jobTitle = curr.jobTitle || '-';
+          temp.workPlace = curr.workPlace || '-';
+          temp.counselor = curr.counselor || '-';
+          temp.companyName = curr.companyName;
+          temp.bId = curr.bId;
+          temp.id = curr.id;
+          temp.key = curr.id;
+          temp.mId = curr.mId;
+          temp.recruitId = curr.recruitId;
+          temp.positionsId = curr.positionsId;
+          temp.intention = {value:'',label: ''};
+          temp.checked = "1";
+          temp.selectOptions = optionsIntention.map(item => ({value: `${curr.id}-${item}`,label: item}));
+          prev.push(temp);
+          return prev;
+        }, []);
+        dataPagination.value = {
+          pageSize: pageSize,
+          current: res.info.currentPage,
+          total: res.info.count,
+          hideOnSinglePage: true,
+          size: 'small',
+        };
+      } else {
+        dataPositonsAdd.value = [];
+      }
+    });
+  };
+const selectedRowsTemp = ref<RecommendPerson[]>([]);
+const rowSelection: TableProps['rowSelection'] = {
+  onChange: (selectedRowKeys: string[], selectedRows: RecommendPerson[]) => {
+    selectedRowsTemp.value = selectedRows;
+    dataPositonsAdd.value = dataPositonsAdd.value.reduce((prev,curr) => {
+      curr.checked = selectedRowKeys.includes(curr.id)? '2' : '1';
+      prev.push(curr);
+      return prev;
+    },[]);
+    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRowsTemp);
+  },
+};
+  //添加职位意向结束
 </script>
 <style lang="less" scoped>
- .resume_header {
-  margin: 10px 20px;
- }
- .resume_detail_title {
+  .resume_header {
+    margin: 10px 20px;
+  }
+  .resume_detail_title {
     display: flex;
     justify-content: space-between;
   }
- .resume_h4 {
+  .resume_h4 {
     margin: 5px 0;
     font-size: 16px;
   }
@@ -100,7 +285,17 @@
     font-weight: 400;
   }
   :deep(.row_table) th,
-   :deep(.row_table) td{
+  :deep(.row_table) td {
     padding: 3px !important;
+  }
+  :deep(.row_table_select) {
+    width: 100%;
+  }
+  .resume_row_pagination {
+    justify-content: space-between;
+    line-height: 1.5;
+    height: 50px;
+    align-items: center;
+    margin: 0 !important;
   }
 </style>

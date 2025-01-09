@@ -299,19 +299,19 @@ export const useResumeDetailStore = defineStore({
       formData.append('page', data.page);
       formData.append('recruitId', '444');
       formData.append('recommendId', data.recommendId || '');
-      formData.append('city', data.city);
-      formData.append('brand', data.brand);
-      formData.append('positionsId', data.positionsId);
-      formData.append('jobTitle', data.positionsId);
+      formData.append('city', data.city || '');
+      formData.append('brand', data.brand || '');
+      formData.append('positionsId', data.positionsId || '');
+      formData.append('jobTitle', data.positionsId || '');
       formData.append('counselor', '');
-      formData.append('market', data.market);
+      formData.append('market', data.market || '');
       formData.append('phone', data.phone || '');
-      formData.append('companyRecruitId', data.companyRecruitId);
-      formData.append('isTask', data.isTask);
-      formData.append('year', data.year);
-      formData.append('month', data.month);
-      formData.append('weekNum', data.weekNum);
-      formData.append('jobType', data.jobType);
+      formData.append('companyRecruitId', data.companyRecruitId || '');
+      formData.append('isTask', data.isTask || '');
+      formData.append('year', data.year || '');
+      formData.append('month', data.month || '');
+      formData.append('weekNum', data.weekNum || '');
+      formData.append('jobType', data.jobType || '');
       const res = await fetchApi.queryRecommendCandidatePosition(formData);
       return res;
     },
@@ -431,7 +431,6 @@ export const useResumeDetailStore = defineStore({
       formData.append('counselor', data.counselor);
       formData.append('recommendId', data.recommendId);
       formData.append('companyName', data.companyName);
-      formData.append('appealRemark', data.appealRemark);
       formData.append('recruitId', data.recruitId);
       formData.append('file', data.file);
       formData.append('SystemRecruitId', '444');

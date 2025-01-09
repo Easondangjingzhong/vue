@@ -3,7 +3,8 @@
     <a-row :gutter="24">
       <a-col :span="24" class="resume_detail_title">
         <h4 class="resume_h4"> 客户查重 </h4>
-        <PlusOutlined @click="handleCheckResult" />
+        <PlusOutlined v-if="!expend" @click="handleCheckResult" />
+        <CloseOutlined v-if="expend" @click="handleCheckResult" />
       </a-col>
       <a-divider :dashed="true" style="background-color: #ccc; margin-top: 0; margin-bottom: 5px" />
     </a-row>
@@ -64,7 +65,7 @@
   import { storeToRefs } from 'pinia';
   import { message } from 'ant-design-vue';
   import { formatToDate } from '/@/utils/dateUtil';
-  import { PlusOutlined } from '@ant-design/icons-vue';
+  import { PlusOutlined,CloseOutlined } from '@ant-design/icons-vue';
   import type { SelectProps } from 'ant-design-vue';
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   const resumeDetailStore = useResumeDetailStore();
