@@ -74,6 +74,7 @@
     resumeDetailStore.$patch({
       candidatePositionFlag: true,
     })
+    resumeDetailStore.queryMappingIdByResumeId();
   };
 </script>
 <style lang="less" scoped>

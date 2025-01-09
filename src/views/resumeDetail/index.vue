@@ -70,6 +70,7 @@ import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   resumeListStore.queryCompanyList();
   resumeDetailStore.queryWeekNumByWorkDate();
   resumeDetailStore.queryWeekByYearAndMonth();
+  resumeDetailStore.queryEnterpriseConsultant();
   resumeDetailStore.queryResumeDetail().then(() => {
     expendShow.value = true;
   });

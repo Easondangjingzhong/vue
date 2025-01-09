@@ -14,6 +14,10 @@ interface ResumeDetailState {
   candidatePositionFlag: boolean; //推荐人才是否展开显示
   currentWeekNum: string; //当前考核周度
   currentWeek: []; //当前所有考核周
+  enterpriseConsultant: []; //所有企业顾问
+  mappingId: string; //mapping系统中的id
+  recommendMapping: []; //推荐时查询推荐记录
+  recommendFlag: boolean; //是否进行推荐
 }
 export const useResumeDetailStore = defineStore({
   id: 'app-Resume',
@@ -29,6 +33,10 @@ export const useResumeDetailStore = defineStore({
     resumeReport: [],
     currentWeekNum: '',
     currentWeek: [],
+    enterpriseConsultant: [],
+    mappingId: '',
+    recommendMapping: [],
+    recommendFlag: false,
   }),
   actions: {
     /**
@@ -137,10 +145,10 @@ export const useResumeDetailStore = defineStore({
      * 根据城市商场数据类型参数查询
      * @param param 城市商场
      */
-    async queryMarkList(city,marketName?: string) {
+    async queryMarkList(city, marketName?: string) {
       let formData = new FormData();
       formData.append('city', city);
-      formData.append('marketName', marketName || "");
+      formData.append('marketName', marketName || '');
       formData.append('curPage', '1');
       const res = await fetchApi.queryMarkList(formData);
       return res;
@@ -169,7 +177,7 @@ export const useResumeDetailStore = defineStore({
      * @param phone 手机号
      * @param PageNumber 页码
      * @param recruitId 查询人
-     * @returns 
+     * @returns
      */
     async queryResumeRecord(PageNumber) {
       let formData = new FormData();
@@ -183,12 +191,12 @@ export const useResumeDetailStore = defineStore({
       }
       return res;
     },
-     /**
+    /**
      * 新增简历查重记录
      * @param data 查询数据
-     * @returns 
+     * @returns
      */
-     async addResumeCheckResult(data) {
+    async addResumeCheckResult(data) {
       let formData = new FormData();
       const resumeId = this.resumeDetail.resumeId;
       formData.append('companyName', data.companyName);
@@ -201,12 +209,12 @@ export const useResumeDetailStore = defineStore({
       }
       return res;
     },
-     /**
+    /**
      * 查询简历查重记录
      * @param PageNumber 当前页
-     * @returns 
+     * @returns
      */
-     async queryResumeCheckResult(PageNumber) {
+    async queryResumeCheckResult(PageNumber) {
       let formData = new FormData();
       const resumeId = this.resumeDetail.resumeId;
       formData.append('resumeId', resumeId.toString());
@@ -217,14 +225,15 @@ export const useResumeDetailStore = defineStore({
       }
       return res;
     },
-     /**
+    /**
      * 新增联系记录
      * @param data 查询数据
-     * @returns 
+     * @returns
      */
-     async addResumeContactContent(data) {
+    async addResumeContactContent(data) {
       const resumeId = this.resumeDetail.resumeId;
-      const res = await fetchApi.addResumeContactContent({...data,
+      const res = await fetchApi.addResumeContactContent({
+        ...data,
         resumeId: resumeId.toString(),
         recruitId: '444',
       });
@@ -232,28 +241,28 @@ export const useResumeDetailStore = defineStore({
         this.queryResumeContactContent(1);
       }
       return res;
-    }, 
+    },
     /**
-    * 查询简历查重记录
-    * @param PageNumber 当前页
-    * @returns 
-    */
+     * 查询简历查重记录
+     * @param PageNumber 当前页
+     * @returns
+     */
     async queryResumeContactContent(PageNumber) {
-     let formData = new FormData();
-     const resumeId = this.resumeDetail.resumeId;
-     formData.append('resumeId', resumeId.toString());
-     formData.append('PageNumber', PageNumber);
-     formData.append('recruitId', '444');
-     const res = await fetchApi.queryResumeContactContent(formData);
-     if (res.code == 1) {
-       this.resumeContactContent = res.info;
-     }
-     return res;
-   },
+      let formData = new FormData();
+      const resumeId = this.resumeDetail.resumeId;
+      formData.append('resumeId', resumeId.toString());
+      formData.append('PageNumber', PageNumber);
+      formData.append('recruitId', '444');
+      const res = await fetchApi.queryResumeContactContent(formData);
+      if (res.code == 1) {
+        this.resumeContactContent = res.info;
+      }
+      return res;
+    },
     /**
-    * 查询简历简历报告
-    * @returns 
-    */
+     * 查询简历简历报告
+     * @returns
+     */
     async queryResumeReport() {
       let formData = new FormData();
       const resumeId = this.resumeDetail.resumeId;
@@ -265,11 +274,11 @@ export const useResumeDetailStore = defineStore({
       }
       return res;
     },
-     /**
-    * 查询简历简历报告
-    * @returns 
-    */
-     async updateResumeReportContent(reportContent) {
+    /**
+     * 查询简历简历报告
+     * @returns
+     */
+    async updateResumeReportContent(reportContent) {
       let formData = new FormData();
       const resumeId = this.resumeDetail.resumeId;
       formData.append('resumeId', resumeId.toString());
@@ -281,22 +290,22 @@ export const useResumeDetailStore = defineStore({
       }
       return res;
     },
-     /**
-    * 查询推荐职位查询
-    * @returns 
-    */
-     async queryRecommendCandidatePosition(data) {
+    /**
+     * 查询推荐职位查询
+     * @returns
+     */
+    async queryRecommendCandidatePosition(data) {
       let formData = new FormData();
       formData.append('page', data.page);
       formData.append('recruitId', '444');
-      formData.append('recommendId', data.recommendId);
+      formData.append('recommendId', data.recommendId || '');
       formData.append('city', data.city);
       formData.append('brand', data.brand);
       formData.append('positionsId', data.positionsId);
-      formData.append('jobTitle', data.jobTitle);
-      formData.append('counselor', data.counselor);
+      formData.append('jobTitle', data.positionsId);
+      formData.append('counselor', '');
       formData.append('market', data.market);
-      formData.append('phone', data.phone);
+      formData.append('phone', data.phone || '');
       formData.append('companyRecruitId', data.companyRecruitId);
       formData.append('isTask', data.isTask);
       formData.append('year', data.year);
@@ -306,39 +315,129 @@ export const useResumeDetailStore = defineStore({
       const res = await fetchApi.queryRecommendCandidatePosition(formData);
       return res;
     },
-      /**
-    * 根据当前日期查询所属周度
-    * @returns 
-    */
-      async queryWeekNumByWorkDate() {
-        let formData = new FormData();
-        formData.append('workDate', currentDate());
-        const res = await fetchApi.queryWeekNumByWorkDate(formData);
-        if (res.code == 1) {
-          this.currentWeekNum = res.info[0].weekNum;
-        }
-        return res;
-      },
-       /**
-    * 根据年月查询考核周
-    * @returns 
-    */
-       async queryWeekByYearAndMonth(year='',month='') {
-        let formData = new FormData();
-        if (!year) {
-          const nowyear = currentDate().split("-");
-          formData.append('year', nowyear[0]);
-          formData.append('month', nowyear[1]);
-        } else {
-          formData.append('year', year);
-          formData.append('month', month);
-        }
-        const res = await fetchApi.queryWeekByYearAndMonth(formData);
-        if (res.code == 1) {
-          this.currentWeek = res.info;
-        }
-        return res;
-      },
+    /**
+     * 根据当前日期查询所属周度
+     * @returns
+     */
+    async queryWeekNumByWorkDate() {
+      let formData = new FormData();
+      formData.append('workDate', currentDate());
+      const res = await fetchApi.queryWeekNumByWorkDate(formData);
+      if (res.code == 1) {
+        this.currentWeekNum = res.info[0].weekNum;
+      }
+      return res;
+    },
+    /**
+     * 根据年月查询考核周
+     * @returns
+     */
+    async queryWeekByYearAndMonth(year = '', month = '') {
+      let formData = new FormData();
+      if (!year) {
+        const nowyear = currentDate().split('-');
+        formData.append('year', nowyear[0]);
+        formData.append('month', nowyear[1]);
+      } else {
+        formData.append('year', year);
+        formData.append('month', month);
+      }
+      const res = await fetchApi.queryWeekByYearAndMonth(formData);
+      if (res.code == 1) {
+        this.currentWeek = res.info;
+      }
+      return res;
+    },
+    /**
+     * 查询企业顾问
+     * @returns
+     */
+    async queryEnterpriseConsultant(teamId = '') {
+      let formData = new FormData();
+      formData.append('teamId', teamId);
+      const res = await fetchApi.queryEnterpriseConsultant(formData);
+      if (res.code == 1) {
+        this.enterpriseConsultant = res.info;
+      }
+      return res;
+    },
+    /**
+     * 点击推荐查询mapping的id 没有生成
+     * @returns
+     */
+    async queryMappingIdByResumeId() {
+      let formData = new FormData();
+      const resumeId = this.resumeDetail.resumeId.toString();
+      formData.append('resumeId', resumeId);
+      formData.append('recruitId', "444");
+      const res = await fetchApi.queryMappingIdByResumeId(formData);
+      if (res.code == 1) {
+        this.mappingId = res.info;
+        this.queryRecommendByMappingId();
+      }
+      return res;
+    },
+     /**
+     * 点击推荐查询mapping的id 没有生成
+     * @returns
+     */
+     async queryRecommendByMappingId() {
+      let formData = new FormData();
+      formData.append('cId', this.mappingId);
+      const res = await fetchApi.queryRecommendByMappingId(formData);
+      if (res.code == 1) {
+        this.recommendMapping = res.info;
+      }
+      return res;
+    },
+    /**
+     * 新增候选人推荐申诉
+     * @returns
+     */
+    async addCandidateRecommendAppeal(data) {
+      let formData = new FormData();
+      formData.append('id', data.id);
+      formData.append('brand', data.brand);
+      formData.append('bId', data.bId);
+      formData.append('mId', data.mId);
+      formData.append('city', data.city);
+      formData.append('workPlace', data.workPlace);
+      formData.append('jobTitle', data.jobTitle);
+      formData.append('positionsId', data.positionsId);
+      formData.append('counselor', data.counselor);
+      formData.append('recommendId', data.recommendId);
+      formData.append('companyName', data.companyName);
+      formData.append('conflictId', data.conflictId);
+      formData.append('appealRemark', data.appealRemark);
+      formData.append('recruitId', data.recruitId);
+      formData.append('SystemRecruitId', '444');
+      const res = await fetchApi.addCandidateRecommendAppeal(formData);
+      return res;
+    },
+     /**
+     * 新增候选人推荐
+     * @returns
+     */
+     async addCandidateRecommend(data) {
+      let formData = new FormData();
+      formData.append('id', data.id);
+      formData.append('brand', data.brand);
+      formData.append('bId', data.bId);
+      formData.append('mId', data.mId);
+      formData.append('city', data.city);
+      formData.append('workPlace', data.workPlace);
+      formData.append('jobTitle', data.jobTitle);
+      formData.append('positionsId', data.positionsId);
+      formData.append('counselor', data.counselor);
+      formData.append('recommendId', data.recommendId);
+      formData.append('companyName', data.companyName);
+      formData.append('appealRemark', data.appealRemark);
+      formData.append('recruitId', data.recruitId);
+      formData.append('file', data.file);
+      formData.append('SystemRecruitId', '444');
+      const res = await fetchApi.addCandidateRecommend(formData);
+      return res;
+    },
   },
 });
 export function useResumeStoreWithOut() {

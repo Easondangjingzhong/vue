@@ -23,7 +23,22 @@ enum URL {
   recommend_update_candidate_position = '/candidatePosition/rusume-vue-query-candidatePosition.action',
   weekNum_query_WorkDate = '/employee-group/resume-vue-get-kpi-week-by-workDate.action',
   week_query_year_month = '/employee-group/resume-vue-get-kpi-week-byym.action',
+  query_enterprise_consultant = '/candidate/resume-vue-query-enterprise-consultant-all.action',
+  query_mapping_resumeId = '/candidateRecommend/resume-vue-query-cId-byResumeId.action',
+  query_recommend_mappingId = '/candidateRecommend/resume-vue-query-recommend-bycId.action',
+  add_recommend_appeal = '/candidateRecommend/resume-vue-add-candidateRecommendAppeal.action',
+  add_recommend_candidate = '/candidateRecommend/resume-vue-add-candidateRecommend.action',
 }
+const addCandidateRecommend = (formData: any) =>
+  post<any>({ url: URL.add_recommend_candidate, data: formData });
+const addCandidateRecommendAppeal = (formData: any) =>
+  post<any>({ url: URL.add_recommend_appeal, data: formData });
+const queryRecommendByMappingId = (formData: any) =>
+  post<any>({ url: URL.query_recommend_mappingId, data: formData });
+const queryMappingIdByResumeId = (formData: any) =>
+  post<any>({ url: URL.query_mapping_resumeId, data: formData });
+const queryEnterpriseConsultant = (formData: any) =>
+  post<any>({ url: URL.query_enterprise_consultant, data: formData });
 const queryWeekByYearAndMonth = (formData: any) =>
   post<any>({ url: URL.week_query_year_month, data: formData });
 const queryWeekNumByWorkDate = (formData: any) =>
@@ -70,6 +85,11 @@ const queryMarkBrandFloor = async (data: any) => post<any>({ url: URL.resume_mar
  */
 const queryMarkList = async (data: any) => post<any>({ url: URL.resume_markList, data });
 export default {
+  addCandidateRecommend,
+  addCandidateRecommendAppeal,
+  queryRecommendByMappingId,
+  queryMappingIdByResumeId,
+  queryEnterpriseConsultant,
   queryWeekByYearAndMonth,
   queryWeekNumByWorkDate,
   queryRecommendCandidatePosition,
