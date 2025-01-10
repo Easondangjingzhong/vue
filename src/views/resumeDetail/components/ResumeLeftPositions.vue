@@ -67,13 +67,6 @@ import { storeToRefs } from 'pinia';
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   const resumeDetailStore = useResumeDetailStore();
   const { resumeIntention } = storeToRefs(resumeDetailStore);
-  const pagination = ref({
-    pageSize: 10,
-    current: 1,
-    total: 0,
-    hideOnSinglePage: true,
-    size: 'small',
-  });
   const dataPagination = ref({
     pageSize: 10,
     current: 1,
@@ -86,36 +79,43 @@ import { storeToRefs } from 'pinia';
       title: '编号',
       dataIndex: 'index',
       key: 'index',
+      ellipsis: true,
     },
     {
       title: '城市',
       dataIndex: 'city',
       key: 'city',
+      ellipsis: true,
     },
     {
       title: '商场',
       dataIndex: 'market',
       key: 'market',
+      ellipsis: true,
     },
     {
       title: '品牌',
       dataIndex: 'brand',
       key: 'brand',
+      ellipsis: true,
     },
     {
       title: '职位',
       dataIndex: 'positions',
       key: 'positions',
+      ellipsis: true,
     },
     {
       title: '意向',
-      dataIndex: 'currentStatus',
-      key: 'currentStatus',
+      dataIndex: 'intention',
+      key: 'intention',
+      ellipsis: true,
     },
     {
       title: '日期',
       dataIndex: 'date',
       key: 'date',
+      ellipsis: true,
     },
   ];
   const resumeList = ref([
@@ -125,20 +125,34 @@ import { storeToRefs } from 'pinia';
   market: '',
   brand: '',
   positions: '',
-  currentStatus: '',
+  intention: '',
   date: '',
   }
   ]);
+  const pagination = ref({
+    pageSize: 10,
+    current: 1,
+    total: 0,
+    hideOnSinglePage: true,
+    size: 'small',
+  });
   watch(resumeIntention, () => {
-    resumeList.value = resumeIntention.value.map((item,index) => ({
-      index: index + 1,
+    resumeList.value = resumeIntention.value.list.map((item,index) => ({
+      index: ((resumeIntention.value.pageNumber - 1) * resumeIntention.value.pageSize + (index + 1)),
       city: item.city,
       market: item.marketName,
       brand: item.brand,
-      positions: item.positions,
+      positions: item.positions || "",
       intention: item.intention,
-      date: item.date,
+      date: item.contactDateStr,
     }))
+    pagination.value = {
+      pageSize: resumeIntention.value.pageSize,
+      current: resumeIntention.value.pageNumber,
+      total: resumeIntention.value.totalCount,
+      hideOnSinglePage: true,
+      size: 'small',
+    };
   })
   //添加职位意向开始
   const expend = ref(false);

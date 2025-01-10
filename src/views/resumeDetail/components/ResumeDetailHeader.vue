@@ -3,7 +3,9 @@
     <a-row :gutter="24">
       <a-col :span="24" class="resume_info">
         <h2 class="resume_h3">{{ resumeData.userName }}</h2>
-        <a-tag color="#ffd522" class="resume_tag_checked">未核</a-tag>
+        <a-tag color="#ffd522" class="resume_tag_checked">待核</a-tag>
+        <a-tag color="#ccc" class="resume_tag_checked">首增</a-tag>
+        <a-tag color="#1dcc24" class="resume_tag_checked">保护</a-tag>
       </a-col>
     </a-row>
     <a-row :gutter="24" class="resume_row_center">
