@@ -28,7 +28,22 @@ enum URL {
   query_recommend_mappingId = '/candidateRecommend/resume-vue-query-recommend-bycId.action',
   add_recommend_appeal = '/candidateRecommend/resume-vue-add-candidateRecommendAppeal.action',
   add_recommend_candidate = '/candidateRecommend/resume-vue-add-candidateRecommend.action',
+  query_candidate_position_request = '/candidate/resume-vue-query-candidate-position-request.action',
+  check_candidate_recommend_repeat = '/candidateRecommend/resume-vue-check-candidateRecommend_chong.action',
+  delete_recommend = '/candidateRecommend/resume-vue-back-recommend.action',
+  add_candidate_position_intention = '/seeker-contact-record/rusume-vue-save-resume-contact-record.action',
+  query_candidate_position_intention = '/seeker-contact-record/rusume-vue-query-resume-contact-record.action',
 }
+const queryCandidatePositionIntention = (formData: any) =>
+  post<any>({ url: URL.query_candidate_position_intention, data: formData });
+const addCandidatePositionIntention = (formData: any) =>
+  post<any>({ url: URL.add_candidate_position_intention, data: formData });
+const deleteRecommend = (formData: any) =>
+  post<any>({ url: URL.delete_recommend, data: formData });
+const checkCandidateRecommendRepeat = (formData: any) =>
+  post<any>({ url: URL.check_candidate_recommend_repeat, data: formData });
+const queryCandidatePositionRequest = (formData: any) =>
+  post<any>({ url: URL.query_candidate_position_request, data: formData });
 const addCandidateRecommend = (formData: any) =>
   post<any>({ url: URL.add_recommend_candidate, data: formData });
 const addCandidateRecommendAppeal = (formData: any) =>
@@ -85,6 +100,11 @@ const queryMarkBrandFloor = async (data: any) => post<any>({ url: URL.resume_mar
  */
 const queryMarkList = async (data: any) => post<any>({ url: URL.resume_markList, data });
 export default {
+  queryCandidatePositionIntention,
+  addCandidatePositionIntention,
+  deleteRecommend,
+  checkCandidateRecommendRepeat,
+  queryCandidatePositionRequest,
   addCandidateRecommend,
   addCandidateRecommendAppeal,
   queryRecommendByMappingId,

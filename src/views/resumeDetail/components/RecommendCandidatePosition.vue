@@ -167,6 +167,25 @@
             >
               推荐
             </a-button>
+            <a-button
+              type="primary"
+              disabled
+              class="resume_btn_yu"
+              size="small"
+              :title="record.refuseRemark"
+              v-if="record.action == 4 && record.checkResult == '已拒绝'"
+            >
+              已拒绝
+            </a-button>
+            <a-button
+              type="primary"
+              disabled
+              class="resume_btn_yu"
+              size="small"
+              v-if="record.action == 4 && record.checkResult != '已拒绝'"
+            >
+            申诉中
+            </a-button>
           </template>
         </template>
       </a-table>
@@ -244,15 +263,17 @@
             <span v-else>{{ record.recommendStatus }}</span>
           </template>
           <template v-if="column.key === 'action'">
-            <a-button
+            <a-popconfirm title="撤回推荐" @confirm="confirm(record.pId)" v-if="record.action == 1">
+             <a-button
               title="撤回推荐"
               type="primary"
               class="resume_btn"
               size="small"
-              v-if="record.action == 1"
             >
               撤回
             </a-button>
+          </a-popconfirm>
+            <span v-if="record.action == 2">-</span>
           </template>
         </template>
       </a-table>
@@ -265,6 +286,7 @@
 </template>
 <script setup lang="ts">
   import { storeToRefs } from 'pinia';
+  import { message } from 'ant-design-vue';
   import RecommendCandidatePositionChecked from './RecommendCandidatePositionChecked.vue';
   import type { SelectProps } from 'ant-design-vue';
   import { formatToDateTime, dateUtil, currentDate, formatToDateMinute } from '/@/utils/dateUtil';
@@ -307,11 +329,11 @@
     mId: string;
     recruitId: string;
     positionsId: string;
+    checkResult: string;
+    refuseRemark: string;
   }
   const recommendPerson = ref({} as RecommendPerson);
   const handleRecommendChecked = (item) => {
-    console.log(item);
-
     recommendPerson.value = { ...item };
     resumeDetailStore.$patch({
       recommendFlag: true,
@@ -644,9 +666,22 @@
       if (res.code == 1) {
         const candidatePosition = res.info.list;
         const positionList = res.info.positionList;
+        const apealList = res.info.apealList;
         const positionArr = positionList?.reduce((prev, curr) => {
           curr?.forEach((item) => {
             prev.push(item.pId);
+          });
+          return prev;
+        }, []);
+        const appealTemp = [''];
+        const apealArr = apealList?.reduce((prev, curr) => {
+          curr?.forEach((item) => {
+            appealTemp.push(item.pId);
+            prev.push({
+              apId: item.pId,
+              checkResult: item.checkResult,
+              refuseRemark: item.refuseRemark || "",
+            });
           });
           return prev;
         }, []);
@@ -671,8 +706,12 @@
           temp.openResumesNum = curr.openResumesNum || '0';
           temp.surplus = curr.surplus || '0';
           temp.isTask = curr.isTask == 1 ? '是' : '-';
-          if (positionArr.includes(curr.pId)) {
+          if (positionArr.includes(curr.id)) {
             temp.action = '1'; //已推
+          }else if (appealTemp.includes(curr.id)) {
+            temp.action = '4'; //已推
+            temp.checkResult = apealArr.filter(item => item.apId)[0]?.checkResult;
+            temp.refuseRemark = apealArr.filter(item => item.apId)[0]?.refuseRemark;
           } else {
             if (curr.recruitingNum - curr.offerNum <= 0) {
               temp.action = '2'; //余职为0
@@ -681,11 +720,11 @@
             }
           }
           temp.companyName = curr.companyName;
-      temp.bId = curr.bId;
-      temp.id = curr.id;
-      temp.mId = curr.mId;
-      temp.recruitId = curr.recruitId;
-      temp.positionsId = curr.positionsId;
+          temp.bId = curr.bId;
+          temp.id = curr.id;
+          temp.mId = curr.mId;
+          temp.recruitId = curr.recruitId;
+          temp.positionsId = curr.positionsId;
           prev.push(temp);
           return prev;
         }, []);
@@ -790,6 +829,8 @@
   const dataSourceRecommend = ref([
     {
       index: '',
+      id: '',
+      pId: '',
       city: '',
       brand: '',
       position: '',
@@ -808,6 +849,8 @@
     dataSourceRecommend.value = recommendMapping.value?.reduce((prev, curr, index) => {
       let temp = {
         index: '',
+        id: '',
+        pId: '',
         city: '',
         brand: '',
         position: '',
@@ -819,7 +862,7 @@
         inTask: '',
         action: '',
         appealRemark: '',
-        refuseReamrk: ''
+        refuseReamrk: '',
       };
       temp.index = (index + 1).toString();
       temp.city = curr.city;
@@ -834,10 +877,21 @@
       temp.action = curr.recommendStatus == '推荐顾问' ? '1' : '2';
       temp.appealRemark = curr.appealRemark;
       temp.refuseReamrk = curr.refuseReamrk;
+      temp.id = curr.id;
+      temp.pId = curr.pId;
       prev.push(temp);
       return prev;
     }, []);
   });
+  const confirm = (id) => {
+    resumeDetailStore.deleteRecommend(id).then((res) => {
+      if (res.success) {
+        message.success('撤回成功');
+      } else {
+        message.error('撤回失败');
+      }
+    });
+  }
 </script>
 <style lang="less" scoped>
   .resume_h4 {

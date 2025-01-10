@@ -13,6 +13,7 @@
     <template #extra>
       <CloseOutlined @click="handleColsePosition" />
     </template>
+    <a-spin :spinning="spinning">
     <div>
       <a-row :gutter="24" class="resume_row">
         <a-col :span="24">
@@ -46,41 +47,40 @@
           ></a-table>
         </a-col>
       </a-row>
-      <a-row :gutter="24" class="resume_row" style="margin-top: 10px">
+      <a-row :gutter="24" class="resume_row" style="margin-top: 10px" v-if="template">
         <a-col :span="24" class="resume_col">
           <h4 class="resume_h4"> 简历模板: </h4>
-          <span style="padding-left: 5px">wotui</span>
+          <span style="padding-left: 5px">{{ template }}</span>
         </a-col>
       </a-row>
-      <a-row :gutter="24" class="resume_row" style="margin-top: 10px">
-        <a-col :span="24" class="resume_col">
+      <a-row :gutter="24" class="resume_row" style="margin-top: 10px" v-if="isVideoTemp">
+        <a-col :span="24" class="resume_col" v-if="isVideoTemp == '1'">
           <h4 class="resume_h4"> 视频截图: </h4>
-          <span style="padding-left: 5px;display: flex;">
+          <span style="padding-left: 5px; display: flex">
             您推荐的职位要求顾问进行视频面试，且上传视频面试截图，请上传对应图片
-            <a-upload
-            v-model:file-list="videoFile"
-            :before-upload="handleChangeFileUpload"
-          >
-          <a-button
-              size="small"
-              style="
-                background-color: #f0ad4e;
-                border-color: #eea236;
-                color: #fff;
-                margin-left: 12px;
-              "
-              >上传</a-button
-            >
-          </a-upload>
+            <a-upload v-model:file-list="videoFile" :before-upload="handleChangeFileUpload">
+              <a-button
+                size="small"
+                style="
+                  background-color: #f0ad4e;
+                  border-color: #eea236;
+                  color: #fff;
+                  margin-left: 12px;
+                "
+                >上传</a-button
+              >
+            </a-upload>
           </span>
         </a-col>
+        <a-col :span="24" class="resume_col" v-if="(isVideoTemp = '1')">
+          <h4 class="resume_h4"> 视频截图: </h4>
+          <span style="padding-left: 5px; display: flex">否</span>
+        </a-col>
       </a-row>
-      <a-row :gutter="24" class="resume_row" style="margin-top: 10px">
+      <a-row :gutter="24" class="resume_row" style="margin-top: 10px" v-if="description">
         <a-col :span="24" class="resume_col">
           <h4 class="resume_h4"> 推荐要求: </h4>
-          <span style="padding-left: 5px"
-            >您推荐的职位要求顾问进行视频面试，且上传视频面试截图，请上传对应图片</span
-          >
+          <span style="padding-left: 5px;display: block;"> {{ description }} </span>
         </a-col>
       </a-row>
       <a-divider :dashed="true" style="background-color: #0505050f; margin-top: 5px" />
@@ -207,15 +207,17 @@
         </a-col>
       </a-row>
     </div>
+  </a-spin>
   </a-drawer>
 </template>
 <script setup lang="ts">
   import { storeToRefs } from 'pinia';
   import { message } from 'ant-design-vue';
   import { CloseOutlined } from '@ant-design/icons-vue';
+  import { formatToDateMinute } from '/@/utils/dateUtil';
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   const resumeDetailStore = useResumeDetailStore();
-  const { recommendFlag,mappingId } = storeToRefs(resumeDetailStore);
+  const { recommendFlag, mappingId } = storeToRefs(resumeDetailStore);
   const props = defineProps({
     recommendPerson: {
       type: Object,
@@ -229,11 +231,12 @@
   const drawerWidth = ref(800);
   const isloading = ref(false);
   const isVideo = ref(false);
+  const spinning = ref(true);
   const videoFile = ref([]);
   const handleChangeFileUpload = () => {
     return false;
-  }
-  const repeatFlag = ref(1); //查重结果 0 查重中 1查重通过 2查重重复
+  };
+  const repeatFlag = ref(0); //查重结果 0 查重中 1查重通过 2查重重复
   const columns = ref([
     {
       title: '姓名',
@@ -304,38 +307,16 @@
       offerNum: '',
     },
   ]);
-  watch(
-    () => props.recommendPerson,
-    () => {
-      console.log(props.recommendPerson);
-      dataSource.value = [
-        {
-          userName: props.userName,
-          city: props.recommendPerson.city,
-          brand: props.recommendPerson.brand,
-          jobTitle: props.recommendPerson.jobTitle,
-          workPlace: props.recommendPerson.workPlace,
-          counselor: props.recommendPerson.counselor,
-          turnoverTime: props.recommendPerson.turnoverTime,
-          offerNum: props.recommendPerson.offerNum,
-        },
-      ];
-    },
-  );
-  const handleColsePosition = () => {
-    resumeDetailStore.$patch({
-      recommendFlag: false,
-    });
-    isVideo.value = false;
-    videoFile.value = [];
-  };
+  const template = ref('');
+  const description = ref('');
+  const isVideoTemp = ref('');
   const columnsRecommend = ref([
     {
       title: '城市',
       dataIndex: 'city',
       key: 'city',
       ellipsis: true,
-      width: 50,
+      width: 30,
     },
     {
       title: '品牌',
@@ -363,7 +344,7 @@
       dataIndex: 'recommendTime',
       key: 'recommendTime',
       ellipsis: true,
-      width: 50,
+      width: 60,
     },
     {
       title: '企顾',
@@ -407,12 +388,98 @@
       action: '1',
     },
   ]);
+  const conflictId = ref('');
+  watch(
+    () => props.recommendPerson,
+    () => {
+      dataSource.value = [
+        {
+          userName: props.userName,
+          city: props.recommendPerson.city,
+          brand: props.recommendPerson.brand,
+          jobTitle: props.recommendPerson.jobTitle,
+          workPlace: props.recommendPerson.workPlace,
+          counselor: props.recommendPerson.counselor,
+          turnoverTime: props.recommendPerson.turnoverTime,
+          offerNum: props.recommendPerson.offerNum,
+        },
+      ];
+      resumeDetailStore.queryCandidatePositionRequest(props.recommendPerson.id).then((res) => {
+        if (res.code == 1) {
+          if (res.info) {
+            template.value = res.info.template == '0' ? '优态' : '我推';
+            isVideoTemp.value = res.info.isVideo;
+            description.value = res.info.description;
+          }
+          resumeDetailStore.checkCandidateRecommendRepeat({...props.recommendPerson,recommendId: mappingId.value}).then((data) => {
+            spinning.value =false;
+            if (data.code == 1) {
+              repeatFlag.value = 1;
+            } else if (data.code == 2) {
+              repeatFlag.value = 2;
+              conflictId.value = data.info.conflictId;
+              dataSourceRecommend.value = [{
+                city: data.info.city,
+                brand: data.info.brand,
+                position: data.info.position,
+                recommendCounselor: data.info.recommendCounselor,
+                recommendTime: formatToDateMinute(data.info.recommendTime),
+                counselor: data.info.counselor,
+                recommendStatus: data.info.recommendStatus,
+                endTime: (data.info.endTime ? formatToDateMinute(data.info.endTime) : ""),
+                action: '1',
+              }];
+              console.log(dataSourceRecommend.value);
+              
+            } else if (data.code == 3) {
+              message.error('您30天内有该候选人推荐过该候选人给同一HR，并且超时关闭，本次不能推荐');
+              handleColsePosition();
+            } else if (data.code == 15) {
+              message.error('新发布的职位,15分钟内不能推荐');
+              handleColsePosition();
+            } else if (data.code == 4) {
+              message.error('重启流程保护中，无法推荐');
+              handleColsePosition();
+            } else {
+              message.error(data.info);
+              handleColsePosition();
+            } 
+          });
+        }
+      });
+    },
+  );
+  const handleColsePosition = () => {
+    resumeDetailStore.$patch({
+      recommendFlag: false,
+    });
+    isloading.value = false;
+    spinning.value = true;
+    repeatFlag.value = 0;
+    template.value = '';
+    description.value = '';
+    isVideoTemp.value = '';
+    conflictId.value = '';
+    isVideo.value = false;
+    videoFile.value = [];
+    recommendConfirmReason.value = '';
+    recommendConfirmReasonOther.value = '';
+    recommendConfirmReasonFlag.value = false;
+  };
+ 
   const recommendConfirmReasonObjDetails = ref({
     '1': '1.若同一个HR负责单个品牌或多个品牌，或同一品牌多个HR负责，职位在不同的城市，a顾问推荐候选人至a城市a品牌a职位，则其他顾问可以推荐此候选人至其它城市任意品牌的任意职位；',
     '2': '2.若A公司若存在多个品牌，并且由不同的HR负责，则其他顾问可推荐此候选人至A公司其他HR负责的品牌任何职位；（若同品牌分为奥莱线和精品线，由不同的HR负责，也适用此条规则）；',
     '3': '3.若a顾问推荐某候选人至A公司a职位，出现流程终止且流程终止时间大于10个自然日，则其他顾问可以推荐此候选人至A公司除a职位外的任何职位；',
     '6': '4.若A公司a职位有2位或以上的企业顾问共同对接（企顾1和企顾2），企顾1推荐流程终止后（企顾1推荐流程未终止前，a顾问无法推荐此候选人至企顾2），a顾问可以将此候选人推荐至企顾2，若a顾问超过1个工作日未将此候选人推荐至企顾2，则其他顾问可以推荐此候选人至企顾2；',
     '5': '5.其他；(填写理由时，请注意确认是否可以申诉，申诉失败将提醒原推荐顾问跟进)；',
+  });
+  const recommendConfirmReasonObjDetailsTemp = ref({
+    '1': '若同一个HR负责单个品牌或多个品牌，或同一品牌多个HR负责，职位在不同的城市，a顾问推荐候选人至a城市a品牌a职位，则其他顾问可以推荐此候选人至其它城市任意品牌的任意职位；',
+    '2': '若A公司若存在多个品牌，并且由不同的HR负责，则其他顾问可推荐此候选人至A公司其他HR负责的品牌任何职位；（若同品牌分为奥莱线和精品线，由不同的HR负责，也适用此条规则）；',
+    '3': '若a顾问推荐某候选人至A公司a职位，出现流程终止且流程终止时间大于10个自然日，则其他顾问可以推荐此候选人至A公司除a职位外的任何职位；',
+    '6': '若A公司a职位有2位或以上的企业顾问共同对接（企顾1和企顾2），企顾1推荐流程终止后（企顾1推荐流程未终止前，a顾问无法推荐此候选人至企顾2），a顾问可以将此候选人推荐至企顾2，若a顾问超过1个工作日未将此候选人推荐至企顾2，则其他顾问可以推荐此候选人至企顾2；',
+    '5': '其他；(填写理由时，请注意确认是否可以申诉，申诉失败将提醒原推荐顾问跟进)；',
   });
   const recommendConfirmReason = ref('');
   const recommendConfirmReasonOther = ref('');
@@ -438,21 +505,21 @@
     const appealRemark =
       recommendConfirmReason.value == '5'
         ? recommendConfirmReasonOther.value
-        : recommendConfirmReasonObjDetails.value[recommendConfirmReason.value];
+        : recommendConfirmReasonObjDetailsTemp.value[recommendConfirmReason.value];
     let formData = {
-      id: '',
-      brand: '',
-      bId: '',
-      mId: '',
-      city: '',
-      workPlace: '',
-      jobTitle: '',
-      positionsId: '',
-      counselor: '',
+      id: props.recommendPerson.id,
+      brand: props.recommendPerson.brand,
+      bId: props.recommendPerson.bId,
+      mId: props.recommendPerson.mId,
+      city: props.recommendPerson.city,
+      workPlace: props.recommendPerson.workPlace,
+      jobTitle: props.recommendPerson.jobTitle,
+      positionsId: props.recommendPerson.positionsId,
+      counselor: props.recommendPerson.counselor,
       recommendId: '',
-      companyName: '',
-      conflictId: '',
-      recruitId: '',
+      companyName: props.recommendPerson.companyName,
+      conflictId: conflictId.value,
+      recruitId: props.recommendPerson.recruitId,
       appealRemark: appealRemark,
     };
     isloading.value = true;
@@ -469,11 +536,10 @@
       isloading.value = false;
     });
   };
- 
-  
-  const handleAddRecommend = () =>{
+
+  const handleAddRecommend = () => {
     if (isVideo.value && videoFile.value.length == 0) {
-      message.warning("请上传视频面试截图");
+      message.warning('请上传视频面试截图');
       return;
     }
     if (isVideo.value && !/\.(jpg|png|jpeg)$/.test(videoFile.value[0].name.toLowerCase())) {
@@ -501,20 +567,22 @@
       if (res.code == 1) {
         message.success('推荐成功');
       } else if (res.code == 2) {
-        message.error('该人选在60天内，被推荐过公司制度规定范围内的同一类型的HR或品牌，本次不能推荐');
+        message.error(
+          '该人选在60天内，被推荐过公司制度规定范围内的同一类型的HR或品牌，本次不能推荐',
+        );
       } else if (res.code == 3) {
         message.error('您30天内有该候选人推荐过该候选人给同一HR，并且超时关闭，本次不能推荐');
       } else if (res.code == 15) {
         message.error('新发布的职位,15分钟内不能推荐');
       } else if (res.code == 4) {
         message.error('重启流程保护中，无法推荐');
-      } else{
+      } else {
         message.error(res.info);
-       }
+      }
       handleColsePosition();
       isloading.value = false;
-    })
-  }
+    });
+  };
 </script>
 <style lang="less" scoped>
   .resume_btn {
@@ -530,6 +598,7 @@
   .resume_h4 {
     margin: 0;
     font-size: 14px;
+    white-space: nowrap;
   }
   .resume_row {
     line-height: 1.5;

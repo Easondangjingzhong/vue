@@ -45,7 +45,7 @@
           @change="handlePagination"
           :show-total="(total) => `共 ${total} 条`"
         />
-        <a-button type="primary" size="small">保存</a-button>
+        <a-button type="primary" :loading="loadingBtn" @click="handleSaveIntention" size="small">保存</a-button>
       </a-row>
     </div>
     <a-table
@@ -60,10 +60,13 @@
   </div>
 </template>
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
   import { PlusOutlined, CloseOutlined } from '@ant-design/icons-vue';
   import type { TableProps } from 'ant-design-vue';
+  import { message } from 'ant-design-vue';
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   const resumeDetailStore = useResumeDetailStore();
+  const { resumeIntention } = storeToRefs(resumeDetailStore);
   const pagination = ref({
     pageSize: 10,
     current: 1,
@@ -115,15 +118,36 @@
       key: 'date',
     },
   ];
-  const resumeList = ref([]);
+  const resumeList = ref([
+  {
+    index: '',
+  city: '',
+  market: '',
+  brand: '',
+  positions: '',
+  currentStatus: '',
+  date: '',
+  }
+  ]);
+  watch(resumeIntention, () => {
+    resumeList.value = resumeIntention.value.map((item,index) => ({
+      index: index + 1,
+      city: item.city,
+      market: item.marketName,
+      brand: item.brand,
+      positions: item.positions,
+      intention: item.intention,
+      date: item.date,
+    }))
+  })
+  //添加职位意向开始
   const expend = ref(false);
   const handlePositons = () => {
     expend.value = !expend.value;
     if (expend.value) {
       handlePagination();
     }
-  };
-  //添加职位意向开始
+  }
   const columnsPositonsAdd = [
     {
       title: '编号',
@@ -170,6 +194,7 @@
   ];
   const dataPositonsAdd = ref([]);
   const loading = ref(false);
+  const loadingBtn = ref(false);
   const searchPositons = reactive({
     brand: '',
     positionsId: '',
@@ -252,7 +277,7 @@
         dataPositonsAdd.value = [];
       }
     });
-  };
+  }
 const selectedRowsTemp = ref<RecommendPerson[]>([]);
 const rowSelection: TableProps['rowSelection'] = {
   onChange: (selectedRowKeys: string[], selectedRows: RecommendPerson[]) => {
@@ -262,9 +287,38 @@ const rowSelection: TableProps['rowSelection'] = {
       prev.push(curr);
       return prev;
     },[]);
-    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRowsTemp);
   },
-};
+}
+const handleSaveIntention = () => {
+  if(selectedRowsTemp.value.length === 0){
+    message.warning('请先选择需要添加的职位意向');
+    return;
+  }
+  let temp = 0;
+  selectedRowsTemp.value.forEach(item => {
+    if(!item.intention.label){
+      temp++;
+    }
+  });
+  if (temp > 0) {
+    message.warning('请先选择意向');
+    return;
+  }
+  loadingBtn.value = true;
+  const Intention = selectedRowsTemp.value.reduce((prev,curr) => {
+    prev.push({...curr,intention: curr.intention.label})
+    return prev;
+  }, []);
+  resumeDetailStore.addCandidatePositionIntention(Intention).then((res) => {
+    if(res.code === 1){
+      message.success('添加成功');
+      handlePositons();
+    }else{
+      message.error('添加失败');
+    }
+    loadingBtn.value = false;
+  });
+}
   //添加职位意向结束
 </script>
 <style lang="less" scoped>

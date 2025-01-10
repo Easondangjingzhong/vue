@@ -64,16 +64,29 @@
   import RecommendCandidatePosition from './RecommendCandidatePosition.vue';
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   const resumeDetailStore = useResumeDetailStore();
-  defineProps({
+  const props = defineProps({
     resumeData: {
       type: Object,
       required: true,
     },
   });
+  const industryLabel = ref(['']);//行业
+  const positionsLabel = ref(['']);//职类
+  const rankLabel = ref(['']);//职级
+  const brandLabel = ref(['']);//品类-类别
+  const gradeLabel = ref(['']);//品级
+  const language = ref(['']);//语言
+  const pastLabel = ref(props.resumeData.pastLabel);
+  const currentLabel = ref(props.resumeData.currentLabel);
+  const resumeLabel = ref(props.resumeData.resumeLabel);
+  const pastArr = pastLabel.value?.split(",")[0]?.split("_");
+  const currentArr = currentLabel.value?.split("_");
+  const resumeArr = resumeLabel.value?.split("_");
+
+  industryLabel.value = [];
+
+
   const handleRecommendCandidatePosition = () => {
-    resumeDetailStore.$patch({
-      candidatePositionFlag: true,
-    })
     resumeDetailStore.queryMappingIdByResumeId();
   };
 </script>
