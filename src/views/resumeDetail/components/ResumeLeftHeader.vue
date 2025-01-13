@@ -40,8 +40,8 @@
         </a-row>
         <a-row :gutter="24">
           <a-col :span="24" style="text-align: right;">
-            <a-button type="primary" :loading="iconLoading" style="margin: 0 8px;" html-type="submit">保存</a-button>
-            <a-button @click="handleCancelReportContent">取消</a-button>
+            <a-button type="primary" size="small" :loading="iconLoading" style="margin: 0 8px;" html-type="submit">保存</a-button>
+            <a-button size="small" @click="handleCancelReportContent">取消</a-button>
           </a-col>
         </a-row>
       </a-form>

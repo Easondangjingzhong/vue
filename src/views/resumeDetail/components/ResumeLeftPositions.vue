@@ -9,6 +9,30 @@
       <a-divider :dashed="true" style="background-color: #ccc; margin-top: 0; margin-bottom: 5px" />
     </a-row>
     <div v-if="expend">
+      <a-row :gutter="24">
+        <a-col :span="8">
+          <a-select
+                class="row_table_select"
+                v-model:value="searchPositons.city"
+                :options="optionsCity"
+                optionFilterProp="label"
+                :allowClear="true"
+                @change="handleSearchCityAndBrandName"
+                showSearch
+              ></a-select>
+        </a-col>
+        <a-col :span="12">
+          <a-select
+          class="row_table_select"
+                v-model:value="searchPositons.brand"
+                :options="optionsBrand"
+                optionFilterProp="label"
+                :allowClear="true"
+                @change="handleSearchCityAndBrandName"
+                showSearch
+              ></a-select>
+        </a-col>
+      </a-row>
       <a-table
         class="row_table"
         :pagination="false"
@@ -55,6 +79,7 @@
       :dataSource="resumeList"
       rowKey="key"
       :columns="columns"
+      @change="handleResumeList"
       :locale="{ emptyText: '暂无职位意向' }"
     ></a-table>
   </div>
@@ -63,10 +88,17 @@
 import { storeToRefs } from 'pinia';
   import { PlusOutlined, CloseOutlined } from '@ant-design/icons-vue';
   import type { TableProps } from 'ant-design-vue';
+  import type { SelectProps } from 'ant-design-vue';
   import { message } from 'ant-design-vue';
+  import { useCityStoreWithOut } from '/@/store/modules/city';
+  import { useResumeListStoreWithOut } from '/@/store/modules/resumeList';
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   const resumeDetailStore = useResumeDetailStore();
   const { resumeIntention } = storeToRefs(resumeDetailStore);
+  const resumeListStore = useResumeListStoreWithOut();
+  const cityStore = useCityStoreWithOut();
+  const { province } = storeToRefs(cityStore);
+  const { brandList } = storeToRefs(resumeListStore);
   const dataPagination = ref({
     pageSize: 10,
     current: 1,
@@ -80,42 +112,49 @@ import { storeToRefs } from 'pinia';
       dataIndex: 'index',
       key: 'index',
       ellipsis: true,
+      with: 20,
     },
     {
       title: '城市',
       dataIndex: 'city',
       key: 'city',
       ellipsis: true,
+      with: 20,
     },
     {
       title: '商场',
       dataIndex: 'market',
       key: 'market',
       ellipsis: true,
+      with: 30,
     },
     {
       title: '品牌',
       dataIndex: 'brand',
       key: 'brand',
       ellipsis: true,
+      with: 30,
     },
     {
       title: '职位',
       dataIndex: 'positions',
       key: 'positions',
       ellipsis: true,
+      with: 40,
     },
     {
       title: '意向',
       dataIndex: 'intention',
       key: 'intention',
       ellipsis: true,
+      with: 40,
     },
     {
       title: '日期',
       dataIndex: 'date',
       key: 'date',
       ellipsis: true,
+      with: 60, 
     },
   ];
   const resumeList = ref([
@@ -142,7 +181,7 @@ import { storeToRefs } from 'pinia';
       city: item.city,
       market: item.marketName,
       brand: item.brand,
-      positions: item.positions || "",
+      positions: item.positionName || "",
       intention: item.intention,
       date: item.contactDateStr,
     }))
@@ -154,6 +193,61 @@ import { storeToRefs } from 'pinia';
       size: 'small',
     };
   })
+ 
+  const optionsCity = ref<SelectProps['options']>([]);
+  optionsCity.value = province.value.reduce((prev, curr) => {
+    //@ts-ignore
+    if (
+      (curr.provinceName == curr.cityName || !curr.cityName) &&
+      !(curr.cityName == '吉林' || curr.cityName == '海南')
+    ) {
+      //@ts-ignore
+      prev.push({
+        //@ts-ignore
+        label: curr.provinceName,
+        //@ts-ignore
+        value: curr.provinceName,
+      });
+    } else {
+      //@ts-ignore
+      prev.push({
+        //@ts-ignore
+        label: curr.cityName,
+        //@ts-ignore
+        value: curr.cityName,
+      });
+    }
+    return prev;
+  }, []);
+  //品牌数据展示
+  const optionsBrand = ref<SelectProps['options']>([]);
+  let tempOptionBrand = [];
+  brandList.value.forEach((item) => {
+    //@ts-ignore
+    let tempObj = {
+      //@ts-ignore
+      label: positionsListShow(item.cnName, item.usName),
+      //@ts-ignore
+      value: item.brandId,
+    };
+    //@ts-ignore
+    tempOptionBrand.push(tempObj);
+  });
+  optionsBrand.value = tempOptionBrand;
+  function positionsListShow(cnName, usName) {
+    if (cnName && usName) {
+      return `${cnName}/${usName}`;
+    } else if (cnName && !usName) {
+      return cnName;
+    } else if (!cnName && usName) {
+      return usName;
+    } else {
+      return '';
+    }
+  }
+  const handleResumeList = (current) => {
+    resumeDetailStore.queryCandidatePositionIntention(current.current);
+  }
   //添加职位意向开始
   const expend = ref(false);
   const handlePositons = () => {
@@ -213,6 +307,7 @@ import { storeToRefs } from 'pinia';
     brand: '',
     positionsId: '',
     market: '',
+    city: '',
   });
   interface SelectOptions {
     label:string,
@@ -244,7 +339,9 @@ import { storeToRefs } from 'pinia';
     checked: string; //默认1 不可用 2 可用
     selectOptions: SelectOptions[];
   }
-  
+  const handleSearchCityAndBrandName = () => {
+    handlePagination();
+  }
   const optionsIntention = [ '明确考虑','需要打听','拒绝考虑'];
   const handlePagination = (page = 1, pageSize = 8) => {
     const values = {
@@ -252,6 +349,7 @@ import { storeToRefs } from 'pinia';
       brand: searchPositons.brand,
       positionsId: searchPositons.positionsId,
       market: searchPositons.market,
+      city: searchPositons.city,
     };
     loading.value = true;
     selectedRowsTemp.value = [];

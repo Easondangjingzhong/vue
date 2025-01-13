@@ -27,15 +27,15 @@
       <a-divider :dashed="true" style="background-color: #ccc; margin-top: 0" />
     </a-row>
     <a-row :gutter="24" class="resume_row resume_company_row">
-      <a-col :span="5" v-if="resumeData.endYear == -1">
+      <a-col :span="4" v-if="resumeData.endYear == -1">
         {{ resumeData.startYear }}.{{ resumeData.startMonth }} - 至今
       </a-col>
-      <a-col :span="5" v-else-if="resumeData.endYear != -1">
+      <a-col :span="4" v-else-if="resumeData.endYear != -1">
         {{ resumeData.startYear }}.{{ resumeData.startMonth }} - {{ resumeData.endYear }}.{{
           resumeData.endMonth
         }}
       </a-col>
-      <a-col :span="18">
+      <a-col :span="19" class="resume_col">
         {{ resumeData.companyName }}-{{ resumeData.cityName }}-{{ resumeData.marketName }}-{{
           resumeData.brandName
         }}-{{ resumeData.workFloor }}
@@ -45,30 +45,30 @@
       </a-col>
     </a-row>
     <a-row :gutter="24" class="resume_row">
-      <a-col :span="10">
+      <a-col :span="8" class="resume_col">
         职位名称: <span class="resume_span">{{ resumeData.positionName }}</span></a-col
       >
-      <a-col :span="5">
+      <a-col :span="5" class="resume_col">
         汇报对象: <span class="resume_span">{{ resumeData.reporter }}</span></a-col
       >
-      <a-col :span="5">
+      <a-col :span="5" class="resume_col">
         所在部门: <span class="resume_span">{{ resumeData.department }}</span></a-col
       >
-      <a-col :span="4">
+      <a-col :span="4" class="resume_col">
         综合月薪: <span class="resume_span">{{ resumeData.monthSalary }}</span></a-col
       >
     </a-row>
     <a-row :gutter="24" class="resume_row">
-      <a-col :span="10"> 行业: <span class="resume_span"></span></a-col>
-      <a-col :span="5"> 品类: <span class="resume_span"></span></a-col>
+      <a-col :span="8" class="resume_col"> 行业: <span class="resume_span"></span></a-col>
+      <a-col :span="5" class="resume_col"> 品类: <span class="resume_span"></span></a-col>
     </a-row>
     <a-row :gutter="24" class="resume_row">
-      <a-col :span="12">
+      <a-col :span="12" class="resume_col">
         薪资构架: <span class="resume_span">{{ resumeData.salaryStructure }}</span></a-col
       >
     </a-row>
     <a-row :gutter="24" class="resume_row">
-      <a-col :span="12">
+      <a-col :span="12" class="resume_col">
         团队构架: <span class="resume_span">{{ resumeData.personnelStructure }}</span></a-col
       >
     </a-row>
@@ -800,5 +800,10 @@
   }
   .resume_span {
     padding-left: 15px;
+  }
+  .resume_col {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 </style>

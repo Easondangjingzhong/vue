@@ -42,7 +42,7 @@
       :footer="null"
       :width="400"
     >  <a-row :gutter="24" style="height: 30px;">
-        <a-col :span="16">
+        <a-col :span="12">
           <a-form-item label="团队">
             <a-select
             :allowClear="true"
@@ -52,17 +52,18 @@
           ></a-select>
           </a-form-item>
         </a-col>
-        <a-col :span="4">
-          <a-button style="margin: 0 0 0 9px" type="primary" @click="handleResumeLoginNameChange">确定</a-button>
+        <a-col :span="10">
+          <a-button style="margin: 0 6px 0 9px" type="primary" @click="handleResumeLoginNameChange">确定</a-button>
+          <a-button style="margin: 0 0 0 9px" @click="handleResumeLoginNameChange(1)">本人</a-button>
         </a-col>
       </a-row>
-      <a-radio-group v-model:value="teamSelectPerson" style="width: 100%">
-    <a-row>
-      <a-col :span="8" v-for="item in teamSelectPersonArr">
-        <a-radio name="teamSelectPerson" :value="item.recruitId">{{ item.realNameEn }}</a-radio>
+      <a-checkbox-group v-model:value="teamSelectPerson"  @change="handleTeamSelectPerson" style="width: 100%">
+        <a-row>
+      <a-col :span="12" v-for="item in teamSelectPersonArr">
+        <a-checkbox name="teamSelectPerson" :value="item.recruitId.toString()">{{ item.realNameEn }}</a-checkbox>
       </a-col>
     </a-row>
-  </a-radio-group>
+  </a-checkbox-group>
     </a-modal>
   </div>
 </template>
@@ -77,7 +78,7 @@
   import { SearchResumeList } from '/@/api/resumeList/model';
   const resumeList = useResumeListStoreWithOut();
   resumeList.fetchInfo();
-  const { resumeMenu,teamPersonChangeArr } = storeToRefs(resumeList);
+  const { resumeMenu,teamPersonChangeArr,sortResumeUpdateData,sortResumeUpdate } = storeToRefs(resumeList);
   const state = reactive({
     selectedKeys: ['1'],
     openKeys: ['01','51','6','7'],
@@ -87,9 +88,12 @@
   const handleResumeLoginNameClick = (e) => {
     e.stopPropagation();
     resumeLoginNameFlag.value = true;
-    //@ts-ignore
-    optionsLoginNameTeam.value = teamPersonChangeArr.value.map(item => ({value: item.teamId,label: item.teamName}));
   }
+  watch(teamPersonChangeArr,() => {
+ //@ts-ignore
+ optionsLoginNameTeam.value = teamPersonChangeArr.value.map(item => ({value: item.teamId,label: item.teamName}));
+  
+  });
   const handleResumeSvgClick = (e) => {
     e.stopPropagation();
     openSortResume.value = true;
@@ -113,7 +117,52 @@
               key: subItem.key,
               label: h('div', { class: 'resume-menu-title' }, [
                 h('span', { class: 'resume-menu-title-content' }, subItem.title),
-                h('span', { class: 'resume-menu-title-content-num' }, subItem.label),
+                h('span', { class: 'resume-menu-title-content-svg',onClick: (e) => {
+                  e.stopPropagation();
+                  resumeList.querySortById(subItem.key);
+                }, }, h(FormOutlined)),
+              ]),
+              title: `${subItem.title} ${subItem.label}`,
+              type: subItem.type,
+              children: subItem.children?.map((tempItem) => ({
+                key: tempItem.key,
+                label: h('div', { class: 'resume-menu-title' }, [
+                  h('span', { class: 'resume-menu-title-content' }, tempItem.title),
+                  h('span', { class: 'resume-menu-title-content-num' }, tempItem.label),
+                ]),
+                title: `${tempItem.title} ${tempItem.label}`,
+                type: tempItem.type,
+                children: tempItem.children?.map((tempSubItem) => ({
+                  key: tempSubItem.key,
+                  label: h('div', { class: 'resume-menu-title' }, [
+                    h('span', { class: 'resume-menu-title-content' }, tempSubItem.title),
+                    h('span', { class: 'resume-menu-title-content-num' }, tempSubItem.label),
+                  ]),
+                  title: `${tempSubItem.title} ${tempSubItem.label}`,
+                  type: tempSubItem.type,
+                })),
+              })),
+            })),
+            type: item.type,
+          });
+        } //@ts-ignore
+         else if (item.key == '7') {
+          //@ts-ignore
+          resumeMenuTemp.push({
+            key: item.key,
+            label: h('div', { class: 'resume-menu-title-one' }, [
+                h('span', { class: 'resume-menu-title-content' }, item.title),
+               h('span', { class: 'resume-menu-title-content-svg',onClick: handleResumeSvgClick, }, h(FormOutlined)),
+              ]),
+            title: `${item.title} ${item.label}`,
+            children: item.children?.map((subItem) => ({
+              key: subItem.key,
+              label: h('div', { class: 'resume-menu-title' }, [
+                h('span', { class: 'resume-menu-title-content' }, subItem.title),
+                h('span', { class: 'resume-menu-title-content-svg',onClick: (e) => {
+                  e.stopPropagation();
+                  resumeList.querySearchById(subItem.key);
+                }, }, h(FormOutlined)),
               ]),
               title: `${subItem.title} ${subItem.label}`,
               type: subItem.type,
@@ -227,6 +276,10 @@
     confirmLoading.value = false;
     sortName.value = '';
     sortFormState.value = {} as SearchResumeList;
+    resumeList.$patch({
+      sortResumeUpdate:false,
+      sortResumeUpdateData: {},
+    })
   }
   const handleSortResume = () => {
     if (!sortName.value) {
@@ -251,6 +304,18 @@
         sortName.value = '';
       });
   };
+  //修改人才分类开始
+  watch(sortResumeUpdate,() =>{
+    if (sortResumeUpdate.value) {
+      openSortResume.value = sortResumeUpdate.value;
+      setTimeout(() =>{
+         //@ts-ignore
+         sortFormState.value = sortResumeUpdateData.value;
+         sortName.value = sortResumeUpdateData.value.sortName;
+      },1000)
+    }
+  })
+  //修改人才分类结束
   // 展开/收起状态
   const handleSelect = (key: object) => {
     //@ts-ignore
@@ -262,22 +327,33 @@
   const resumeLoginNameFlag = ref(false);
   const teamPersonChange = ref();
   const teamSelectPersonArr = ref([]);
-  const teamSelectPerson = ref('');
+  const teamSelectPerson = ref(['']);
   const handleTeamPersonChange = (values) => {
     teamSelectPersonArr.value = teamPersonChangeArr.value.filter(item => item.teamId == values)[0].recruitList;
+  }
+  const handleTeamSelectPerson = (values) => {
+    if (values.length > 0) {
+      teamSelectPerson.value = [values.pop()];
+    } else {
+      teamSelectPerson.value = values;
+    }  
   }
   const handleResumeLoginNameClose = () => {
     teamPersonChange.value = '';
     resumeLoginNameFlag.value = false;
     optionsLoginNameTeam.value = [];
   }
-  const handleResumeLoginNameChange = () => {
-    if (!teamSelectPerson.value) {
+  const handleResumeLoginNameChange = (person = 0) => {
+    if (person != 1 && !teamSelectPerson.value[0]) {
       message.error('请选择切换人');
       return;
     }
-    const realNameEn = teamSelectPersonArr.value.filter(item => teamSelectPerson.value == item.recruitId)[0].realNameEn;
-    resumeList.resumeLoginNameChange(teamSelectPerson.value+"-"+realNameEn,"S").then(() => {
+    const realNameEn = teamSelectPersonArr.value?.filter(item => teamSelectPerson.value[0] == item.recruitId)[0]?.realNameEn || "";
+    let viewType = "S";
+    if (person == 1) {
+      viewType = "T";
+    }
+    resumeList.resumeLoginNameChange(teamSelectPerson.value[0]+"-"+realNameEn,viewType).then(() => {
       message.success('操作成功');
       handleResumeLoginNameClose();
     });

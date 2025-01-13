@@ -328,5 +328,5 @@ export const languageArr = [
     ],
   },
 ];
-export const resumeTypeArr = ['中文', '英文'];
+export const resumeTypeArr = [{ value: 'C', label: '中文' }, { value: 'E', label: '英文' }];
 export const workFloorArr = ['1层', '2层', '3层', '4层', '5层', '6层', '7层', '8层', 'B1', 'B2', 'OFFICE'];

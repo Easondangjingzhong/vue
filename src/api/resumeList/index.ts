@@ -7,7 +7,10 @@ enum URL {
   resume_branList = '/companyBrand/rusume-vue-query-brand-all.action',
   resume_list = '/candidate/rusume-vue-query-resume.action',
   resume_sort_name = '/candidate/rusume-vue-insert-sort-name.action',
+  query_sort_by_id = '/candidate/rusume-vue-query-sort-byId.action',
+  update_sort_by_id = '/candidate/rusume-vue-query-sort-byId.action',
   resume_serch_name = '/candidate/rusume-vue-insert-serch.action',
+  update_resume_serch_name = '/candidate/rusume-vue-update-sort-name.action',
   resume_positionsList = '/candidate/rusume-vue-query-position-all.action',
   resume_markList = '/candidate/rusume-vue-query-market-addcity.action',
   resume_companyList = '/companyBrand/rusume-vue-query-companyBrand-Ajax.action',
@@ -16,6 +19,18 @@ enum URL {
   resume_teamPersonChangeSystemA = '/candidate/rusume-vue-query-left-teamperson-admin-qie.action',
   resume_teamPersonChangeSystemTs = '/candidate/rusume-vue-query-left-teamperson-qie.action',
 }
+/**
+ * 人才分类查询
+ * @returns 
+ */
+const updateResumeSort = async (data:any) =>
+  post<any>({ url: URL.update_sort_by_id, data });
+/**
+ * 人才分类查询
+ * @returns 
+ */
+const querySortById = async (data:any) =>
+  post<any>({ url: URL.query_sort_by_id, data });
 /**
  * 切换我的人才查询人才管理员 查询团队和人
  * @returns 
@@ -71,6 +86,13 @@ const queryResumeList = async (data:any) =>
 const addSortResumeName = async (data:any) =>
   post<any>({ url: URL.resume_sort_name, data });
 /**
+ * 修改一键搜索功能
+ * @param data 搜索条件参数
+ * @returns 
+ */
+const fetchUpdateSearchResume = async (data:any) =>
+  post<any>({ url: URL.update_resume_serch_name, data });
+/**
  * 添加一键搜索功能
  * @param data 搜索条件参数
  * @returns 
@@ -112,4 +134,4 @@ const queryResumeSerchData = async (data:any) =>
  */
 const queryPersonTalentData = async (data:any) =>
   post<any>({ url: URL.resume_personTalentData, data });
-export default { queryTeamPersonChangeSystemA,queryTeamPersonChangeSystemTs,queryPersonTalentData,queryResumeSerchData,queryCompanyList,resumeMenu,queryTeamData,queryPersonData,queryBranList,queryResumeList,addSortResumeName,fetchAddSearchResume,queryPositionsList,queryMarkList };
+export default { updateResumeSort,querySortById,fetchUpdateSearchResume,queryTeamPersonChangeSystemA,queryTeamPersonChangeSystemTs,queryPersonTalentData,queryResumeSerchData,queryCompanyList,resumeMenu,queryTeamData,queryPersonData,queryBranList,queryResumeList,addSortResumeName,fetchAddSearchResume,queryPositionsList,queryMarkList };

@@ -425,8 +425,8 @@
   });
   //语言能力数据展示
   const optionsResumeType: SelectProps['options'] = resumeTypeArr.map((item) => ({
-    label: item,
-    value: item,
+    label: item.label,
+    value: item.value,
   }));
   //语言能力数据展示
   const optionsLanguage: SelectProps['options'] = languageArr.reduce((prev, curr) => {
@@ -576,7 +576,7 @@
         //@ts-ignore
         label: positionsListShow(item.cnPosition, item.usPosition),
         //@ts-ignore
-        value: item.positionId,
+        value: item.positionId.toString(),
       };
       //@ts-ignore
       tempOptionPositions.push(tempObj);

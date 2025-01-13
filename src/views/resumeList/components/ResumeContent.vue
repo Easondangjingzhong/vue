@@ -131,7 +131,7 @@
   import { useResumeListStoreWithOut } from '/@/store/modules/resumeList';
   import type { SelectProps } from 'ant-design-vue';
   const resumeListStore = useResumeListStoreWithOut();
-  const { resumeList, brandList, pagination, formState,serchResumeListNum } = storeToRefs(resumeListStore);
+  const { resumeList, brandList, pagination, formState,serchResumeListNum,serchResumeUpdate,serchResumeUpdateData } = storeToRefs(resumeListStore);
   // 展开/收起状态
   const expand = ref(1);
   const expandArr = [1, 2, 3, 4, 0];
@@ -145,7 +145,7 @@
   const clearFromState = () => {
     //@ts-ignore
     searchContentChild?.value?.clearSelectOptions();
-    formState.value = {} as SearchResumeList;
+    formState.value = {...{} as  SearchResumeList,sortId: formState.value.sortId,leftType: formState.value.leftType};
   };
   const onFinish = (e) => {
     if (e !== 1) {
@@ -272,6 +272,10 @@
     confirmLoading.value = false;
     searchName.value = '';
     openFormState.value = {} as SearchResumeList;
+    resumeListStore.$patch({
+      serchResumeUpdate:false,
+      serchResumeUpdateData: {},
+    })
   };
   const handleSearchResume = () => {
     if (!searchName.value) {
@@ -295,6 +299,17 @@
         clearSearchResume();
       });
   };
+   //修改一键搜搜开始
+   watch(serchResumeUpdateData,() => {
+    if (serchResumeUpdate) {
+      openSearchResume.value = serchResumeUpdate.value;
+      setTimeout(() =>{
+         //@ts-ignore
+    openFormState.value = serchResumeUpdateData.value;
+    searchName.value = serchResumeUpdateData.value.serchName;
+      },1000)
+    }
+  });
 </script>
 <style lang="less">
   .resume-content,

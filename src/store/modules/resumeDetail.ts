@@ -511,6 +511,9 @@ export const useResumeDetailStore = defineStore({
         brandId: item.bId,
         city: item.city,
         marketId: item.mId,
+        pId: item.id,
+        positionId: item.positionsId,
+        positionName: item.jobTitle,
         intention: item.intention,
       }));
       let param = {
@@ -519,8 +522,7 @@ export const useResumeDetailStore = defineStore({
       }
       const res = await fetchApi.addCandidatePositionIntention(param);
       if (res.code == 1) {
-        //this.queryRecommendCandidatePosition(this.recommendCandidatePositionSearch);
-        //this.queryRecommendByMappingId();
+        this.queryCandidatePositionIntention(1);
       }
       return res;
     },

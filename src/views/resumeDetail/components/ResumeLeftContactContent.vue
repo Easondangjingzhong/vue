@@ -60,8 +60,8 @@
               />
             </a-form-item>
           </a-col>
-          <a-col :span="4">
-            <a-button type="primary" :loading="iconLoading" html-type="submit">保存</a-button>
+          <a-col :span="4" style="line-height: 2.4;">
+            <a-button type="primary" size="small" :loading="iconLoading" html-type="submit">保存</a-button>
           </a-col>
         </a-row>
       </a-form>
@@ -187,7 +187,7 @@
     };
   });
   const handleContactFlagHtml = (contactFlag) => {
-    if (['10', '14'].includes(contactFlag)) {
+    if (['10', '14', '19'].includes(contactFlag)) {
       return `<span style='color: green;'>${
         optionsContactFlag.value?.filter((item1) => item1.value == contactFlag)[0].label
       }</span>`;

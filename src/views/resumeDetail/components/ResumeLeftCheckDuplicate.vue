@@ -41,8 +41,8 @@
               ></a-select>
             </a-form-item>
           </a-col>
-          <a-col :span="5">
-            <a-button style="margin: 0 8px" type="primary" :loading="iconLoading" html-type="submit"
+          <a-col :span="5" style="line-height: 2.4;">
+            <a-button style="margin: 0 8px" type="primary" size="small" :loading="iconLoading" html-type="submit"
               >保存</a-button
             >
           </a-col>

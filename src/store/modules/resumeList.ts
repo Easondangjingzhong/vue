@@ -9,19 +9,23 @@ interface PaginationItem {
   total: Number;
 }
 interface ResumeListState {
-  resumeMenu: Item[];//左侧菜单数据
-  brandList: [];//品牌数据
-  resumeList: [];//查询结果数据
-  positionsList: [];//职位数据
-  markIdList: [];//商场数据
+  resumeMenu: Item[]; //左侧菜单数据
+  brandList: []; //品牌数据
+  resumeList: []; //查询结果数据
+  positionsList: []; //职位数据
+  markIdList: []; //商场数据
   companyList: []; //公司数据
   pagination: {}; //分页
-  formState: {};//搜索条件
-  systemType: string;//返回的权限 A T V S
+  formState: {}; //搜索条件
+  systemType: string; //返回的权限 A T V S
   loginNameChangeRecruitId: string; //切换后我的人才id
-  loginNameChangeRecruitName: string;//切换后我的人才姓名
+  loginNameChangeRecruitName: string; //切换后我的人才姓名
   teamPersonChangeArr: []; //查询团队数据
   serchResumeListNum: number; //一键搜索个数
+  serchResumeUpdate: boolean; //一键搜索修改状态
+  serchResumeUpdateData: {}; //一键搜索修改状态
+  sortResumeUpdate: boolean; //人才分类修改状态
+  sortResumeUpdateData: {}; //人才分类修改状态
 }
 
 export const useResumeListStore = defineStore({
@@ -39,6 +43,10 @@ export const useResumeListStore = defineStore({
     loginNameChangeRecruitId: '',
     loginNameChangeRecruitName: '',
     serchResumeListNum: 0,
+    serchResumeUpdate: false,
+    serchResumeUpdateData: {} as SearchResumeList,
+    sortResumeUpdate: false,
+    sortResumeUpdateData: {} as SearchResumeList,
     teamPersonChangeArr: [],
     pagination: {
       current: 1,
@@ -171,8 +179,8 @@ export const useResumeListStore = defineStore({
       if (res) {
         // save token
         this.setInfo(res.info);
-        this.fetchTeamData("51");
-        this.resumeMenu.forEach(item =>{
+        this.fetchTeamData('51');
+        this.resumeMenu.forEach((item) => {
           if (item.key === '01') {
             item.children?.forEach((temp) => {
               if (temp.key == 'teamData') {
@@ -182,8 +190,154 @@ export const useResumeListStore = defineStore({
               }
             });
           }
-        })
+        });
         this.queryTeamPersonChange();
+      }
+    },
+    /**
+     * 根据id查询一键搜索内容
+     * @param param 一键搜索id
+     */
+    async querySearchById(param) {
+      let formData = new FormData();
+      formData.append('id', param.split('-')[1]);
+      const res = await fetchApi.queryResumeSerchData(formData);
+      if (res.code == 1) {
+        let result = {} as SearchResumeList;
+        let hangye = [];
+        if (res.info.hangye) {
+          hangye = res.info.hangye.split(',');
+        }
+        let positionType = [];
+        if (res.info.positionType) {
+          positionType = res.info.positionType.split(',');
+        }
+        let positionLevel = [];
+        if (res.info.positionLevel) {
+          positionLevel = res.info.positionLevel.split(',');
+        }
+        let positionId = [];
+        if (res.info.positionId) {
+          positionId = res.info.positionId.split(',');
+        }
+        let city = [];
+        if (res.info.city) {
+          city = res.info.city.split(',');
+        }
+        let pinlei = [];
+        if (res.info.pinlei) {
+          pinlei = res.info.pinlei.split(',');
+        }
+        let leibie = [];
+        if (res.info.pinlei) {
+          leibie = res.info.leibie.split(',');
+        }
+        let pinjibie = [];
+        if (res.info.pinjibie) {
+          pinjibie = res.info.pinjibie.split(',');
+        }
+        let brandId = [];
+        if (res.info.brandId) {
+          brandId = res.info.brandId.split(',');
+        }
+        let markId = [];
+        if (res.info.markId) {
+          markId = res.info.markId.split(',');
+        }
+        let companyName = [];
+        if (res.info.companyName) {
+          companyName = res.info.companyName.split(',');
+        }
+        result = {
+          ...res.info,
+          hangye,
+          hangye2: hangye,
+          positionType,
+          positionLevel,
+          positionId,
+          city,
+          pinlei,
+          leibie,
+          pinjibie,
+          brandId,
+          markId,
+          companyName,
+        };
+        this.serchResumeUpdateData = result;
+        this.serchResumeUpdate = true;
+      }
+    },
+    /**
+     * 根据id查询人才分类内容
+     * @param param 人才分类id
+     */
+    async querySortById(param) {
+      let formData = new FormData();
+      formData.append('id', param.split('-')[1]);
+      const res = await fetchApi.querySortById(formData);
+      if (res.code == 1) {
+        let result = {} as SearchResumeList;
+        let hangye = [];
+        if (res.info.hangye) {
+          hangye = res.info.hangye.split(',');
+        }
+        let positionType = [];
+        if (res.info.positionType) {
+          positionType = res.info.positionType.split(',');
+        }
+        let positionLevel = [];
+        if (res.info.positionLevel) {
+          positionLevel = res.info.positionLevel.split(',');
+        }
+        let positionId = [];
+        if (res.info.positionId) {
+          positionId = res.info.positionId.split(',');
+        }
+        let city = [];
+        if (res.info.city) {
+          city = res.info.city.split(',');
+        }
+        let pinlei = [];
+        if (res.info.pinlei) {
+          pinlei = res.info.pinlei.split(',');
+        }
+        let leibie = [];
+        if (res.info.pinlei) {
+          leibie = res.info.leibie.split(',');
+        }
+        let pinjibie = [];
+        if (res.info.pinjibie) {
+          pinjibie = res.info.pinjibie.split(',');
+        }
+        let brandId = [];
+        if (res.info.brandId) {
+          brandId = res.info.brandId.split(',');
+        }
+        let markId = [];
+        if (res.info.markId) {
+          markId = res.info.markId.split(',');
+        }
+        let companyName = [];
+        if (res.info.companyName) {
+          companyName = res.info.companyName.split(',');
+        }
+        result = {
+          ...res.info,
+          hangye,
+          hangye2: hangye,
+          positionType,
+          positionLevel,
+          positionId,
+          city,
+          pinlei,
+          leibie,
+          pinjibie,
+          brandId,
+          markId,
+          companyName,
+        };
+        this.sortResumeUpdateData = result;
+        this.sortResumeUpdate = true;
       }
     },
     /**
@@ -192,6 +346,14 @@ export const useResumeListStore = defineStore({
      * @returns
      */
     async fetchTeamData(param: string) {
+      this.pagination = { ...this.pagination, current: 1 };
+      this.formState = {
+        ...this.formState,
+        sortId: '',
+        leftType: '',
+        recruitId: '444',
+        leftRecruitId: '',
+      };
       if (param.includes('teamLevel1')) {
         let formData = new FormData();
         formData.append('recruitId', '444');
@@ -272,49 +434,50 @@ export const useResumeListStore = defineStore({
           let result = {} as SearchResumeList;
           let hangye = [];
           if (res.info.hangye) {
-            hangye = res.info.hangye.split(",");
+            hangye = res.info.hangye.split(',');
           }
           let positionType = [];
           if (res.info.positionType) {
-            positionType = res.info.positionType.split(",");
+            positionType = res.info.positionType.split(',');
           }
           let positionLevel = [];
           if (res.info.positionLevel) {
-            positionLevel = res.info.positionLevel.split(",");
+            positionLevel = res.info.positionLevel.split(',');
           }
           let positionId = [];
           if (res.info.positionId) {
-            positionId = res.info.positionId.split(",");
+            positionId = res.info.positionId.split(',');
           }
           let city = [];
           if (res.info.city) {
-            city = res.info.city.split(",");
+            city = res.info.city.split(',');
           }
           let pinlei = [];
           if (res.info.pinlei) {
-            pinlei = res.info.pinlei.split(",");
+            pinlei = res.info.pinlei.split(',');
           }
           let leibie = [];
           if (res.info.pinlei) {
-            leibie = res.info.leibie.split(",");
+            leibie = res.info.leibie.split(',');
           }
           let pinjibie = [];
           if (res.info.pinlei) {
-            pinjibie = res.info.pinjibie.split(",");
+            pinjibie = res.info.pinjibie.split(',');
           }
           let brandId = [];
           if (res.info.brandId) {
-            brandId = res.info.brandId.split(",");
+            brandId = res.info.brandId.split(',');
           }
           let markId = [];
           if (res.info.markId) {
-            markId = res.info.markId.split(",");
+            markId = res.info.markId.split(',');
           }
           let companyName = [];
           if (res.info.companyName) {
-            companyName = res.info.companyName.split(",");
+            companyName = res.info.companyName.split(',');
           }
-          result = {...res.info,
+          result = {
+            ...res.info,
             hangye,
             hangye2: hangye,
             positionType,
@@ -329,29 +492,37 @@ export const useResumeListStore = defineStore({
             companyName,
           };
           this.formState = result;
-          
+
           //@ts-ignore
           this.queryResumeList(this.formState);
         }
       }
       if (param == '1' || param == '2' || param == '3') {
-        this.pagination = { ...this.pagination, current: 1 };
         this.formState = { ...this.formState, leftType: param };
         //@ts-ignore
         this.queryResumeList(this.formState);
       }
       if (param == '5') {
-        this.pagination = { ...this.pagination, current: 1 };
-        this.formState = { ...this.formState, leftType: param };
+        this.formState = {
+          ...this.formState,
+          leftType: param,
+          recruitId: this.loginNameChangeRecruitId,
+          leftRecruitId: this.loginNameChangeRecruitId,
+        };
         //@ts-ignore
-        this.queryResumeList({ ...this.formState, recruitId: this.loginNameChangeRecruitId,leftRecruitId: this.loginNameChangeRecruitId });
+        this.queryResumeList(this.formState);
       }
       if (param == '51') {
         let formData = new FormData();
         formData.append('recruitId', '444');
         formData.append('viewType', this.systemType);
         const res = await fetchApi.queryPersonTalentData(formData);
-        this.queryMyPersonData(res,param);
+        this.queryMyPersonData(res, param);
+      }
+      if (param.includes('sortResume')) {
+        this.formState = { ...this.formState, sortId: param.split('-')[1] };
+        //@ts-ignore
+        this.queryResumeList(this.formState);
       }
     },
     /**
@@ -359,20 +530,21 @@ export const useResumeListStore = defineStore({
      * @param recruitId 切换的id
      * @param viewType T 部门视角 （非Leader 此参数不生效 T也不影响） V 团队L视角  S个人视角
      */
-    async resumeLoginNameChange(recruitId: string,viewType: string) {
-      this.loginNameChangeRecruitId = recruitId.split("-")[0];
-      this.loginNameChangeRecruitName = recruitId.split("-")[1];
+    async resumeLoginNameChange(recruitId: string, viewType: string) {
+      this.loginNameChangeRecruitId = recruitId.split('-')[0];
+      this.loginNameChangeRecruitName = recruitId.split('-')[1];
       let formData = new FormData();
-      formData.append('recruitId', recruitId.split("-")[0]);
+      formData.append('recruitId', recruitId.split('-')[0] || '444');
       formData.append('viewType', viewType);
+      this.formState = { ...this.formState, viewType: viewType };
       const res = await fetchApi.queryPersonTalentData(formData);
-      this.queryMyPersonData(res,'51');
+      this.queryMyPersonData(res, '51');
     },
     /**
      * 我的人才数据查询返回
      * @param res 接口返回数据
      */
-    queryMyPersonData(res,param){
+    queryMyPersonData(res, param) {
       if (res.code == 1 && res.info) {
         const info = res.info;
         let mytalentResumeNameChildren = [];
@@ -442,18 +614,20 @@ export const useResumeListStore = defineStore({
             subItem.level = 2;
             //@ts-ignore
             myPersonSortResume.push(subItem);
-          })
+          });
         }
 
-        this.resumeMenu.forEach(item => {
+        this.resumeMenu.forEach((item) => {
           if (item.key == param) {
             item.children = mytalentResumeNameChildren;
-            item.label = this.loginNameChangeRecruitName ? this.loginNameChangeRecruitName : item.label;
+            item.label = this.loginNameChangeRecruitName
+              ? this.loginNameChangeRecruitName
+              : item.label;
           }
-          if (item.key == "6") {
+          if (item.key == '6') {
             item.children = myPersonSortResume;
           }
-        } )
+        });
         this.resumeMenu = [...this.resumeMenu];
       }
     },
@@ -544,7 +718,7 @@ export const useResumeListStore = defineStore({
           tempItem.age = item.age;
           tempItem.currentCity = item.currentCity;
           tempItem.positionName = item.positionName;
-          tempItem.customerServiceName = (item.customerServiceName || "公共库");
+          tempItem.customerServiceName = item.customerServiceName || '公共库';
           tempItem.registTimeStr = item.registTimeStr;
           tempItem.lastUpdateTimeStr = formatToDateMinute(item.lastUpdateTimeStr);
           tempItem.projectFlag = item.projectFlag;
@@ -589,7 +763,10 @@ export const useResumeListStore = defineStore({
       formData.append('phoneNum', param.phoneNum || '');
       formData.append('email', param.email || '');
       formData.append('sex', param.sex || '');
-      if ((param.positionType && param.positionType.length > 0)|| (param.positionLevel && param.positionLevel.length > 0)) {
+      if (
+        (param.positionType && param.positionType.length > 0) ||
+        (param.positionLevel && param.positionLevel.length > 0)
+      ) {
         formData.append('hangye2', param.hangye || '');
       } else {
         formData.append('hangye2', '');
@@ -621,6 +798,7 @@ export const useResumeListStore = defineStore({
       formData.append('leftType', param.leftType || '1');
       formData.append('isWorkExp', param.isWorkExp || '');
       formData.append('sortId', param.sortId || '');
+      formData.append('viewType', param.viewType || 'T');
       return formData;
     },
     /**
@@ -632,9 +810,17 @@ export const useResumeListStore = defineStore({
       formData.set('recruitId', '444');
       formData.append('realNameEn', 'Eason Dang');
       formData.append('sortName', param.sortName);
-      const res = await fetchApi.addSortResumeName(formData);
-      if (res.code == 1) {
-        this.fetchInfo();
+      if (this.sortResumeUpdateData) {
+        formData.append('id', this.sortResumeUpdateData.id);
+        const res = await fetchApi.updateResumeSort(formData);
+        if (res.code == 1) {
+          this.fetchInfo();
+        }
+      } else {
+        const res = await fetchApi.addSortResumeName(formData);
+        if (res.code == 1) {
+          this.fetchInfo();
+        }
       }
     },
     /**
@@ -645,26 +831,33 @@ export const useResumeListStore = defineStore({
       param = { ...param, pageNumber: '1', pageSize: '10', recruitId: '444' };
       let formData = this.paramSearchResumeListToformData(param);
       formData.append('serchName', searchName);
-      const res = await fetchApi.fetchAddSearchResume(formData);
-      if (res.code == 1) {
-        this.fetchInfo();
+      if (this.serchResumeUpdate) {
+        formData.append('id', this.serchResumeUpdateData.id);
+        const res = await fetchApi.fetchUpdateSearchResume(formData);
+        if (res.code == 1) {
+          this.fetchInfo();
+        }
+      } else {
+        const res = await fetchApi.fetchAddSearchResume(formData);
+        if (res.code == 1) {
+          this.fetchInfo();
+        }
       }
     },
     /**
      * 切换我的人才查询人才
      */
     async queryTeamPersonChange() {
-      let res = {code:"",info : ""};
-      if (this.systemType == "A") {
+      let res = { code: '', info: '' };
+      if (this.systemType == 'A') {
         res = await fetchApi.queryTeamPersonChangeSystemA();
-
       } else {
         res = await fetchApi.queryTeamPersonChangeSystemTs();
       }
-      if (res.code == "1") {
-        this.teamPersonChangeArr =  res.info;
+      if (res.code == '1') {
+        this.teamPersonChangeArr = res.info;
       }
-    }
+    },
   },
 });
 
