@@ -27,8 +27,16 @@
           ></a-select>
         </a-form-item>
       </a-col>
-      <a-col :span="spanCol">
-        <a-form-item name="positionLevel" title="职位级别" label="职级">
+      <a-col :span="spanCol" class="row_col_space">
+        <a-form-item name="positionNp" label="职级" class="row_col_space_left_mark">
+            <a-select
+              optionFilterProp="label"
+              v-model:value="formState.positionNp"
+              :options="optionsNp"
+              :showArrow="false"
+            ></a-select>
+          </a-form-item>
+        <a-form-item name="positionLevel" title="职位级别" class="row_col_space_right_mark">
           <a-select
             v-model:value="formState.positionLevel"
             :options="optionsPositionLevel"
@@ -140,8 +148,16 @@
           ></a-select>
         </a-form-item>
       </a-col>
-      <a-col :span="spanCol">
-        <a-form-item name="markId" label="商场">
+      <a-col :span="spanCol" class="row_col_space">
+        <a-form-item name="marketNp" label="商场" class="row_col_space_left_mark">
+            <a-select
+              optionFilterProp="label"
+              v-model:value="formState.marketNp"
+              :options="optionsNp"
+              :showArrow="false"
+            ></a-select>
+          </a-form-item>
+        <a-form-item name="markId" class="row_col_space_right_mark">
           <a-select
             v-model:value="formState.markId"
             show-search
@@ -156,25 +172,21 @@
       </a-col>
     </a-row>
     <a-row :gutter="24" v-if="expand > 2">
-      <a-col :span="spanCol">
-        <a-space :size="4">
-          <a-form-item style="width: 113%" name="minHeight" :label-col="{ span: 8 }" label="身高">
+      <a-col :span="spanCol" class="row_col_space">
+        <a-form-item name="minHeight" class="row_col_space_left_height" label="身高">
             <a-input-number v-model:value="formState.minHeight" />
           </a-form-item>
-          <a-form-item name="maxHeight" :wrapper-col="{ offset: 3 }">
+          <a-form-item name="maxHeight" class="row_col_space_right_height">
             <a-input-number v-model:value="formState.maxHeight" />
           </a-form-item>
-        </a-space>
       </a-col>
-      <a-col :span="spanCol">
-        <a-space>
-          <a-form-item style="width: 106%" label="年龄">
+      <a-col :span="spanCol" class="row_col_space">
+        <a-form-item name="minAge" class="row_col_space_left_age" label="年龄">
             <a-input-number class="minAge" v-model:value="formState.minAge" />
           </a-form-item>
-          <a-form-item name="maxAge">
+          <a-form-item name="maxAge" class="row_col_space_right_age">
             <a-input-number v-model:value="formState.maxAge" />
           </a-form-item>
-        </a-space>
       </a-col>
       <a-col :span="spanCol">
         <a-form-item name="education" label="学历">
@@ -196,13 +208,29 @@
       </a-col>
     </a-row>
     <a-row :gutter="24" v-if="expand > 3">
-      <a-col :span="spanCol">
-        <a-form-item :label-col="{ span: labelCol }" name="companyName" label="公司">
+      <a-col :span="spanCol" class="row_col_space">
+        <a-form-item name="companyNameRuleOut" label="公司" class="row_col_space_left_company">
+            <a-select
+              optionFilterProp="label"
+              v-model:value="formState.companyNameRuleOut"
+              :options="optionsNCp"
+              :showArrow="false"
+            ></a-select>
+          </a-form-item>
+          <a-form-item name="companyNameNp" class="row_col_space_centent_company">
+            <a-select
+              optionFilterProp="label"
+              v-model:value="formState.companyNameNp"
+              :options="optionsNp"
+              :showArrow="false"
+            ></a-select>
+          </a-form-item>
+        <a-form-item name="companyName" class="row_col_space_right_company">
           <a-select
             v-model:value="formState.companyName"
             show-search
             :max-tag-text-length="maxTagTextLength"
-            :max-tag-count="maxTagCount"
+            :max-tag-count="1"
             mode="multiple"
             :allowClear="true"
             :options="optionsCompanyId"
@@ -318,7 +346,15 @@
       default: false,
     },
   });
-
+  const optionsNp = ref([
+    {value: "1",label: "当前"},
+    {value: "2",label: "所有"},
+    {value: "3",label: "过往"},
+  ]);
+  const optionsNCp = ref([
+    {value: "1",label: "标准"},
+    {value: "2",label: "排除"},
+  ]);
   const cityStore = useCityStoreWithOut();
   cityStore.fetchCountryInfo();
   cityStore.fetchInfo();
@@ -684,6 +720,9 @@
   });
 </script>
 <style lang="less" scoped>
+.resume-content-search .ant-form .ant-form-item {
+    margin-bottom: 10px !important;
+  }
   .ant-input-number {
     width: 100%;
   }
@@ -693,5 +732,101 @@
     overflow: hidden; /* 隐藏溢出内容，如果需要可以设置为auto来显示滚动条 */
     text-overflow: ellipsis; /* 文本溢出时显示省略号 */
     white-space: nowrap; /* 禁止文本换行 */
+  }
+  :deep(.row_col_space) {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+  }
+  :deep(.row_col_space_right_height) {
+    width: 80%;
+  }
+  :deep(.row_col_space_right_height .ant-input-number) {
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+  }
+  :deep(.row_col_space_left_height) {
+    width: 110%;
+    padding-left: 19px;
+    margin-inline-end: -1px;
+  }
+  :deep(.row_col_space_left_height .ant-form-item-row .ant-form-item-label) {
+    display: contents;
+  }
+  :deep(.row_col_space_left_height .ant-input-number) {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+    height: auto;
+  }
+  :deep(.row_col_space_right_age) {
+    width: 80%;
+  }
+  :deep(.row_col_space_right_age .ant-input-number) {
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+  }
+  :deep(.row_col_space_left_age) {
+    width: 105%;
+    margin-inline-end: -1px;
+  }
+  :deep(.row_col_space_left_age .ant-form-item-row .ant-form-item-label) {
+    display: contents;
+  }
+  :deep(.row_col_space_left_age .ant-input-number) {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+    height: auto;
+  }
+  //商场样式
+  :deep(.row_col_space_right_mark) {
+    width: 80%;
+  }
+  :deep(.row_col_space_right_mark .ant-select-selector) {
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+  }
+  :deep(.row_col_space_left_mark) {
+    width: 45%;
+    margin-inline-end: -1px;
+  }
+  :deep(.row_col_space_left_mark .ant-form-item-row .ant-form-item-label) {
+    display: contents;
+  }
+  :deep(.row_col_space_left_mark .ant-select-selector) {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+    height: auto;
+  }
+  //公司样式
+  :deep(.row_col_space_right_company) {
+    width: 80%;
+  }
+  :deep(.row_col_space_right_company .ant-select-selector) {
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+  }
+  :deep(.row_col_space_left_company) {
+    width: 80%;
+    padding-left: 19px;
+    margin-inline-end: -1px;
+  }
+  :deep(.row_col_space_left_company .ant-form-item-row .ant-form-item-label) {
+    display: contents;
+  }
+  :deep(.row_col_space_left_company .ant-select-selector) {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+    height: auto;
+  }
+  :deep(.row_col_space_centent_company) {
+    width: 45%;
+    margin-inline-end: -1px;
+  }
+  :deep(.row_col_space_centent_company .ant-select-selector) {
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+    height: auto;
   }
 </style>

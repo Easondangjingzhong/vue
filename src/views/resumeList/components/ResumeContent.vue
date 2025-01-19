@@ -11,8 +11,16 @@
             />
           </a-form-item>
         </a-col>
-        <a-col :span="9">
-          <a-form-item :label-col="{ span: 3 }" name="brandId" label="品牌">
+        <a-col :span="9" class="row_col_space_brand">
+          <a-form-item name="brandNp" label="品牌" class="row_col_space_left_brand">
+            <a-select
+              optionFilterProp="label"
+              v-model:value="formState.brandNp"
+              :options="optionsNp"
+              :showArrow="false"
+            ></a-select>
+          </a-form-item>
+          <a-form-item  name="brandId" class="row_col_space_right_brand">
             <a-select
               :max-tag-text-length="3"
               :max-tag-count="5"
@@ -48,6 +56,7 @@
       :dataSource="resumeList"
       :pagination="false"
       rowKey="key"
+      :loading="tableLoading"
       :columns="columnsResumeRseult"
     >
     <template #bodyCell="{ column, record }">
@@ -131,7 +140,12 @@
   import { useResumeListStoreWithOut } from '/@/store/modules/resumeList';
   import type { SelectProps } from 'ant-design-vue';
   const resumeListStore = useResumeListStoreWithOut();
-  const { resumeList, brandList, pagination, formState,serchResumeListNum,serchResumeUpdate,serchResumeUpdateData } = storeToRefs(resumeListStore);
+  const { resumeList, brandList, pagination, formState,serchResumeListNum,serchResumeUpdate,serchResumeUpdateData,tableLoading } = storeToRefs(resumeListStore);
+  const optionsNp = ref([
+    {value: "1",label: "当前"},
+    {value: "2",label: "所有"},
+    {value: "3",label: "过往"},
+  ]);
   // 展开/收起状态
   const expand = ref(1);
   const expandArr = [1, 2, 3, 4, 0];
@@ -145,7 +159,15 @@
   const clearFromState = () => {
     //@ts-ignore
     searchContentChild?.value?.clearSelectOptions();
-    formState.value = {...{} as  SearchResumeList,sortId: formState.value.sortId,leftType: formState.value.leftType};
+    formState.value = {...{} as  SearchResumeList,
+    sortId: formState.value.sortId,
+    leftType: formState.value.leftType,
+    companyNameRuleOut: "1",
+    companyNameNp: "1",
+    brandNp: "1",
+    marketNp: "1",
+    positionNp: "1",
+  };
   };
   const onFinish = (e) => {
     if (e !== 1) {
@@ -311,7 +333,7 @@
     }
   });
 </script>
-<style lang="less">
+<style lang="less" scoped>
   .resume-content,
   .resume-content-search {
     background-color: #fff;
@@ -329,5 +351,30 @@
   }
   .ant-pagination.ant-pagination-mini .ant-pagination-prev, .ant-pagination.ant-pagination-mini .ant-pagination-next {
     margin-right: 5px;
+  }
+  :deep(.row_col_space_brand) {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    padding-right: 6px
+  }
+  :deep(.row_col_space_right_brand) {
+    width: 80%;
+  }
+  :deep(.row_col_space_right_brand .ant-select-selector) {
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+  }
+  :deep(.row_col_space_left_brand) {
+    width: 24%;
+    margin-inline-end: -1px;
+  }
+  :deep(.row_col_space_left_brand .ant-form-item-row .ant-form-item-label) {
+    display: contents;
+  }
+  :deep(.row_col_space_left_brand .ant-select-selector) {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+    height: auto;
   }
 </style>

@@ -16,8 +16,8 @@
           <a-tag color="pink">中文</a-tag>
           <LinkOutlined v-if="item.orginalPath"/>
         </span>
-        <span class="resume_span" v-if="!item.resumeIdEn">英文</span>
-        <span class="resume_span" v-else-if="item.resumeIdEn">
+        <!-- <span class="resume_span" v-if="!item.resumeIdEn">英文</span> -->
+        <span class="resume_span" v-if="item.resumeIdEn">
           <a-tag color="red">英文</a-tag>
           <LinkOutlined v-if="item.orginalPathEn"/>
         </span>

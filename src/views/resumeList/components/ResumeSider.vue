@@ -318,7 +318,7 @@
   //修改人才分类结束
   // 展开/收起状态
   const handleSelect = (key: object) => {
-    //@ts-ignore
+   //@ts-ignore
     state.selectedKeys = key.keyPath;
     //@ts-ignore
     resumeList.fetchTeamData(key.key);
@@ -474,5 +474,4 @@
     height: 15px;
     margin-top: 10px;
   }
-  
 </style>

@@ -8,7 +8,7 @@ enum URL {
   resume_list = '/candidate/rusume-vue-query-resume.action',
   resume_sort_name = '/candidate/rusume-vue-insert-sort-name.action',
   query_sort_by_id = '/candidate/rusume-vue-query-sort-byId.action',
-  update_sort_by_id = '/candidate/rusume-vue-query-sort-byId.action',
+  update_sort_by_id = '/candidate/rusume-vue-update-sort-name.action',
   resume_serch_name = '/candidate/rusume-vue-insert-serch.action',
   update_resume_serch_name = '/candidate/rusume-vue-update-sort-name.action',
   resume_positionsList = '/candidate/rusume-vue-query-position-all.action',

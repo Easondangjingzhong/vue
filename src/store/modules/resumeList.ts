@@ -26,6 +26,7 @@ interface ResumeListState {
   serchResumeUpdateData: {}; //一键搜索修改状态
   sortResumeUpdate: boolean; //人才分类修改状态
   sortResumeUpdateData: {}; //人才分类修改状态
+  tableLoading: boolean; //简历查询状态
 }
 
 export const useResumeListStore = defineStore({
@@ -33,7 +34,13 @@ export const useResumeListStore = defineStore({
   state: (): ResumeListState => ({
     //用户菜单
     resumeMenu: [],
-    formState: {} as SearchResumeList,
+    formState: {...{} as  SearchResumeList,
+      companyNameRuleOut: "1",
+      companyNameNp: "1",
+      brandNp: "1",
+      marketNp: "1",
+      positionNp: "1",
+    },
     brandList: [],
     resumeList: [],
     positionsList: [],
@@ -43,6 +50,7 @@ export const useResumeListStore = defineStore({
     loginNameChangeRecruitId: '',
     loginNameChangeRecruitName: '',
     serchResumeListNum: 0,
+    tableLoading: false,
     serchResumeUpdate: false,
     serchResumeUpdateData: {} as SearchResumeList,
     sortResumeUpdate: false,
@@ -353,6 +361,7 @@ export const useResumeListStore = defineStore({
         leftType: '',
         recruitId: '444',
         leftRecruitId: '',
+        leftTeamId: '',
       };
       if (param.includes('teamLevel1')) {
         let formData = new FormData();
@@ -391,6 +400,13 @@ export const useResumeListStore = defineStore({
         let formData = new FormData();
         formData.append('recruitId', '444');
         formData.append('teamId', param.split('_')[1]);
+        this.formState = {
+          ...this.formState,
+          leftType: '4',
+          leftTeamId: param.split('_')[1],
+        };
+        //@ts-ignore
+        this.queryResumeList(this.formState);
         const res = await fetchApi.queryPersonData(formData);
         if (res.info) {
           this.resumeMenu.forEach((item) => {
@@ -701,9 +717,10 @@ export const useResumeListStore = defineStore({
         pageNumber: this.pagination.current || 1,
         pageSize: this.pagination.pageSize || 15,
       };
-
+      this.tableLoading = true;
       const res = await fetchApi.queryResumeList(this.paramSearchResumeListToformData(param));
       if (res.info) {
+        this.tableLoading = false;
         let info = res.info;
         let list = res.info.list;
         let tempList = [];

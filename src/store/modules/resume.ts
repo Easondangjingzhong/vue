@@ -127,6 +127,7 @@ export const useResumeStore = defineStore({
         for (let i = 0; i < educationInfoList.length; i++) {
           let p = educationInfoList[i];
           edu = { ...p };
+          edu.schoolType = p.schoolType.length > 0 ? p.schoolType.join(",") : "";
           edu.startYear = (p.startYear ? (p.startYear.indexOf(".") != -1 ?  p.startYear.split('.')[0] : p.startYear.split('-')[0]): '');
           edu.startMonth = (p.startYear ? (p.startYear.indexOf(".") != -1 ?  p.startYear.split('.')[1] : p.startYear.split('-')[1]): '06');
           if (p.endYear == '-1' || p.endYear == '至今') {

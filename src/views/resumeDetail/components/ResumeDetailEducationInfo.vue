@@ -35,9 +35,16 @@
           resumeData.endMonth
         }}
       </a-col>
-      <a-col :span="8"> </a-col>
-      <a-col :span="4" style="text-align: right">
+      <a-col :span="10">
+        <span v-if="resumeData.schoolType?.length">
+          {{ resumeData.schoolType }}
+        </span>
+      </a-col>
+      <a-col :span="1" style="padding-left: 10px;padding-right: 0px;text-align: right;">
         <form-outlined @click="handleEduInfo"></form-outlined>
+      </a-col>
+      <a-col :span="1" style="padding-left: 10px;">
+        <delete-outlined @click="handleDeleteEducationExp"></delete-outlined>
       </a-col>
     </a-row>
     <a-row :gutter="24" class="resume_row">
@@ -88,14 +95,14 @@
             ></a-input>
           </a-form-item>
         </a-col>
-        <a-col :span="8">
+        <!-- <a-col :span="8">
           <a-form-item style="padding-left: 75px" name="schoolType" v-if="schoolTypeFlag">
             <a-checkbox-group v-model:value="formState.schoolType">
               <a-checkbox class="resume_box_right" value="985">985</a-checkbox>
               <a-checkbox class="resume_box_left" value="211">211</a-checkbox>
             </a-checkbox-group>
           </a-form-item>
-        </a-col>
+        </a-col> -->
         <!-- <a-col v-if="indexNum !== 0" :span="spanTitle" class="resume_del">
           <a-button type="primary" danger size="small" @click="delNewEducationInfoData(indexNum)">删除</a-button>
         </a-col> -->
@@ -196,7 +203,10 @@
   </div>
 </template>
 <script setup lang="ts">
-  import { FormOutlined,PlusOutlined } from '@ant-design/icons-vue';
+  import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
+  import { createVNode } from 'vue';
+  import { Modal } from 'ant-design-vue';
+  import { FormOutlined,PlusOutlined,DeleteOutlined } from '@ant-design/icons-vue';
   import { degreeArr } from '/@/store/data/resume';
   import { message } from 'ant-design-vue';
   import { dateUtil } from '/@/utils/dateUtil';
@@ -286,7 +296,8 @@
       props.resumeData?.degree == '博士+MBA' ||
       props.resumeData?.degree == '大学肄业'
     ) {
-      schoolTypeFlag.value = formState.value.schoolType.length > 0 ? true : false;
+      formState.value.schoolType =  (formState.value?.schoolType ? formState.value?.schoolType : []);
+      schoolTypeFlag.value = formState.value?.schoolType?.length > 0 ? true : false;
     } else {
       formState.value.schoolType = [];
       schoolTypeFlag.value = false;
@@ -322,6 +333,7 @@
   const handleSchoolName = () => {
     let schoolTypeTemp: String[] = [];
     if (formState.value.schoolName) {
+      console.log(formState.value.schoolName);
       // @ts-ignore
       let t985 = shcoolType985.filter(
         (items) => items === formState.value.schoolName.replace(/[\u200B-\u200F]+/g, ''),
@@ -348,18 +360,19 @@
         startMonth: formState.value.startYear.split("-")[1],
         endYear: formState.value.endYear.split("-")[0],
         endMonth: formState.value.endYear.split("-")[1],
+        schoolType: (formState.value.schoolType?.length > 0 ? formState.value.schoolType?.join(",") : ""),
       })
       .then((res) => {
         if (res == "Y") {
           resumeDetailStore.queryResumeDetail().then(() => {
           expend.value = !expend.value;
           resumeDetailStore.$patch({eduFlag: false});
-          iconLoading.value = false;
           message.success('保存成功');
         });
         } else {
           message.error('保存失败');
         }
+        iconLoading.value = false;
       })
       .catch(() => {
         message.error('保存失败');
@@ -368,6 +381,26 @@
   const handleAddEducationInfo = () => {
     resumeDetailStore.$patch({eduFlag: true})
   }
+   //删除教育经历开始
+   const handleDeleteEducationExp = () => {
+    Modal.confirm({
+    title: '是否删除教育经历?',
+    icon: createVNode(ExclamationCircleOutlined),
+    content: createVNode('div', { style: 'color:red;' }, props.resumeData.schoolName),
+    onOk() {
+      resumeDetailStore.deleteEducationExp(props.resumeData.id).then((res) => {
+        if (res == "Y") {
+          resumeDetailStore.queryResumeDetail().then(() => {
+            message.success('删除成功');
+          });
+        } else {
+          message.error('删除失败');
+        }
+      });
+    },
+  });
+  };
+  //删除教育经历结束
 </script>
 <style lang="less" scoped>
   .resume_header {

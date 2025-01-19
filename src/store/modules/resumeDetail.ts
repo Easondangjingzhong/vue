@@ -19,6 +19,7 @@ interface ResumeDetailState {
   mappingId: string; //mapping系统中的id
   recommendMapping: []; //推荐时查询推荐记录
   recommendFlag: boolean; //是否进行推荐
+  resumeShowFlag: boolean; //简历展示
   recommendCandidatePositionSearch: {}; //推荐职位查询条件
 }
 export const useResumeDetailStore = defineStore({
@@ -26,6 +27,7 @@ export const useResumeDetailStore = defineStore({
   state: (): ResumeDetailState => ({
     // info
     resumeDetail: {} as ResumeDetail,
+    resumeShowFlag: false,
     eduFlag: false,
     workFlag: false,
     candidatePositionFlag: false,
@@ -55,12 +57,14 @@ export const useResumeDetailStore = defineStore({
      */
     async queryResumeDetail() {
       let formData = new FormData();
+      this.resumeShowFlag = true;
       formData.append('resumeId', '384411'); // resumeId
       formData.append('resumeType', 'C'); // resumeType C
       formData.append('addConsultantId', '1829'); // 简历中的添加人Id
       formData.append('recruitId', '444'); //当前账号的id
       const res = await fetchApi.queryResumeDetail(formData);
       if (res.code == 1) {
+        this.resumeShowFlag = false;
         this.setResumeDetail(res.info);
         this.queryResumeRecord(1);
         this.queryResumeCheckResult(1);
@@ -539,6 +543,32 @@ export const useResumeDetailStore = defineStore({
       if (res.code == 1) {
         this.resumeIntention = res.info;
       }
+      return res;
+    },
+     /**
+     * 删除工作经历
+     * @returns
+     */
+     async deleteWorkExp(workExpId) {
+      let formData = new FormData();
+      const resumeId = this.resumeDetail.resumeId.toString();
+      formData.append('workExpId', workExpId);
+      formData.append('resumeId', resumeId);
+      formData.append('SystemRecruitId', '444');
+      const res = await fetchApi.deleteWorkExp(formData);
+      return res;
+    },
+    /**
+     * 删除工作经历
+     * @returns
+     */
+    async deleteEducationExp(eduExpId) {
+      let formData = new FormData();
+      const resumeId = this.resumeDetail.resumeId.toString();
+      formData.append('eduExpId', eduExpId);
+      formData.append('resumeId', resumeId);
+      formData.append('SystemRecruitId', '444');
+      const res = await fetchApi.deleteEducationExp(formData);
       return res;
     },
   },

@@ -161,9 +161,9 @@
   const pastLabel = ref(props.resumeData.pastLabel);
   const currentLabel = ref(props.resumeData.currentLabel);
   const resumeLabel = ref(props.resumeData.resumeLabel);
-  const pastArr = pastLabel.value?.split(',')[0]?.split('_');
-  const currentArr = currentLabel.value?.split('_');
-  const resumeArr = resumeLabel.value?.split('_');
+  const pastArr = pastLabel.value?.split(',')[0]?.split('_') || ['','',''];
+  const currentArr = currentLabel.value?.split('_') || ['','',''];
+  const resumeArr = resumeLabel.value?.split('_') || ['','',''];
 
   industryLabel.value = [...new Set([pastArr[0], currentArr[0], resumeArr[0]])].join('-');
   industryLabelTitle.value = [[pastArr[0], currentArr[0], resumeArr[0]]].join('-');

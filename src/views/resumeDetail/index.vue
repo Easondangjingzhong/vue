@@ -1,4 +1,5 @@
 <template>
+  <a-spin :spinning="resumeShowFlag" size="large">
   <a-layout>
     <a-layout-content class="resume_container resume_container_index">
       <div v-if="expendShow">
@@ -7,18 +8,8 @@
     <ResumeDetailPersonInfo :resumeData="resumeDetailTemp.resume"/>
     <ResumeDetailWorkInfo v-for="(item,index) in resumeDetailTemp.resume.workExpeList" :indexNum="index" :resumeData="item"/>
     <ResumeDetailWorkInfo class="resume_work_show" v-if="workFlag" :indexNum="resumeDetailTemp.resume.workExpeList.length + 1" :resumeData="{resumeId: resumeDetailTemp.resume.id}"/>
-    <!-- <a-row :gutter="24" v-if="!workFlag" style="margin-top: 10px;">
-      <a-col :span="24" style="display: flex;justify-content: center;">
-        <a-button type="primary" @click="handleAddWorkInfo">添加工作经历</a-button>
-      </a-col>
-    </a-row> -->
     <ResumeDetailEducationInfo v-for="(item,index) in resumeDetailTemp.resume.eduExpeList" :indexNum="index" :resumeData="item"/>
     <ResumeDetailEducationInfo v-if="eduFlag" :indexNum="resumeDetailTemp.resume.eduExpeList.length + 1" :resumeData="{resumeId: resumeDetailTemp.resume.id}"/>
-    <!-- <a-row :gutter="24" v-if="!eduFlag" style="margin-top: 10px;">
-      <a-col :span="24" style="display: flex;justify-content: center;">
-        <a-button type="primary" @click="handleAddEducationInfo">添加教育经历</a-button>
-      </a-col>
-    </a-row> -->
     <ResumeDetailLanguagesInfo :Languages="resumeDetailTemp.resume.resumeLanguageList" :resumeId="resumeDetailTemp.resume.id"/>
     <ResumeDetaiSelfInfo :resumeData="resumeDetailTemp.resume"/>
     </div>
@@ -34,6 +25,7 @@
       </div>
     </a-layout-sider>
   </a-layout>
+</a-spin>
 </template>
 <script setup lang="ts">
 import ResumeDetailHeader from './components/ResumeDetailHeader.vue';
@@ -55,7 +47,7 @@ import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   const resumeListStore = useResumeListStoreWithOut();
   const cityStore = useCityStoreWithOut();
   const resumeDetailStore = useResumeDetailStore();
-  const { resumeDetail,eduFlag,workFlag } =storeToRefs(resumeDetailStore);
+  const { resumeDetail,eduFlag,workFlag,resumeShowFlag } =storeToRefs(resumeDetailStore);
   const resumeDetailTemp = ref({} as ResumeDetail);
   const expendShow = ref(false);
   watch(resumeDetail,() => {

@@ -35,13 +35,16 @@
           resumeData.endMonth
         }}
       </a-col>
-      <a-col :span="19" class="resume_col">
+      <a-col :span="18" class="resume_col">
         {{ resumeData.companyName }}-{{ resumeData.cityName }}-{{ resumeData.marketName }}-{{
           resumeData.brandName
         }}-{{ resumeData.workFloor }}
       </a-col>
-      <a-col :span="1" style="padding-left: 10px">
+      <a-col :span="1" style="padding-left: 10px;padding-right: 0px;text-align: right;">
         <form-outlined @click="handleUpdateWorkInfo"></form-outlined>
+      </a-col>
+      <a-col :span="1" style="padding-left: 10px;">
+        <delete-outlined @click="handleDeleteWorkExp"></delete-outlined>
       </a-col>
     </a-row>
     <a-row :gutter="24" class="resume_row">
@@ -107,6 +110,56 @@
         <a-divider :dashed="true" style="background-color: #ccc; margin-top: 0" />
       </a-row>
       <a-row class="resume_row_update">
+        <a-col :span="12">
+          <a-form-item
+            name="companyName"
+            label="公司名称"
+            :rules="[{ required: true, message: '请输入公司名称' }]"
+          >
+            <a-select
+              v-model:value="formState.companyName"
+              placeholder="请输入公司名称"
+              :options="optionsCompanyId"
+              optionFilterProp="label"
+              showSearch
+            ></a-select>
+          </a-form-item>
+        </a-col>
+        <a-col :span="spanTitle">
+          <a-form-item
+            label="类别"
+            name="category"
+            style="padding-left: 21px"
+            :rules="[{ required: true, message: '请选择类别' }]"
+          >
+            <a-select
+              v-model:value="formState.category"
+              placeholder="请选择类别"
+              optionFilterProp="label"
+              showSearch
+              @change="handleCategory"
+              :options="optionCategory"
+            ></a-select>
+          </a-form-item>
+        </a-col>
+        <a-col :span="spanTitle" v-if="categoryFlag">
+          <a-form-item
+            label="撤店"
+            name="isRetreat"
+            style="padding-left: 20px"
+            :rules="[{ required: true, message: '请选择撤店' }]"
+          >
+            <a-select
+              v-model:value="formState.isRetreat"
+              placeholder="请选择撤店"
+              optionFilterProp="label"
+              showSearch
+              :options="optionRetreat"
+            ></a-select>
+          </a-form-item>
+        </a-col>
+      </a-row>
+      <a-row class="resume_row_update">
         <a-col :span="6">
           <a-form-item
             name="startYear"
@@ -166,56 +219,6 @@
               optionFilterProp="label"
               showSearch
               :options="optionNewtest"
-            ></a-select>
-          </a-form-item>
-        </a-col>
-      </a-row>
-      <a-row class="resume_row_update">
-        <a-col :span="12">
-          <a-form-item
-            name="companyName"
-            label="公司名称"
-            :rules="[{ required: true, message: '请输入公司名称' }]"
-          >
-            <a-select
-              v-model:value="formState.companyName"
-              placeholder="请输入公司名称"
-              :options="optionsCompanyId"
-              optionFilterProp="label"
-              showSearch
-            ></a-select>
-          </a-form-item>
-        </a-col>
-        <a-col :span="spanTitle">
-          <a-form-item
-            label="类别"
-            name="category"
-            style="padding-left: 21px"
-            :rules="[{ required: true, message: '请选择类别' }]"
-          >
-            <a-select
-              v-model:value="formState.category"
-              placeholder="请选择类别"
-              optionFilterProp="label"
-              showSearch
-              @change="handleCategory"
-              :options="optionCategory"
-            ></a-select>
-          </a-form-item>
-        </a-col>
-        <a-col :span="spanTitle" v-if="categoryFlag">
-          <a-form-item
-            label="撤店"
-            name="isRetreat"
-            style="padding-left: 20px"
-            :rules="[{ required: true, message: '请选择撤店' }]"
-          >
-            <a-select
-              v-model:value="formState.isRetreat"
-              placeholder="请选择撤店"
-              optionFilterProp="label"
-              showSearch
-              :options="optionRetreat"
             ></a-select>
           </a-form-item>
         </a-col>
@@ -400,7 +403,7 @@
   </div>
 </template>
 <script setup lang="ts">
-  import { FormOutlined, PlusOutlined } from '@ant-design/icons-vue';
+  import { FormOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons-vue';
   import { storeToRefs } from 'pinia';
   import { message } from 'ant-design-vue';
   import type { SelectProps } from 'ant-design-vue';
@@ -408,6 +411,9 @@
   import { useCityStoreWithOut } from '/@/store/modules/city';
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   import { workFloorArr } from '/@/store/data/resume';
+  import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
+  import { createVNode } from 'vue';
+  import { Modal } from 'ant-design-vue';
   const cityStore = useCityStoreWithOut();
   const resumeListStore = useResumeListStoreWithOut();
   const { positionsList, brandList, markIdList, companyList } = storeToRefs(resumeListStore);
@@ -748,6 +754,26 @@
       });
     }
   };
+  //删除工作经历开始
+  const handleDeleteWorkExp = () => {
+    Modal.confirm({
+    title: '是否删除工作经历?',
+    icon: createVNode(ExclamationCircleOutlined),
+    content: createVNode('div', { style: 'color:red;' }, props.resumeData.companyName),
+    onOk() {
+      resumeDetailStore.deleteWorkExp(props.resumeData.id).then((res) => {
+        if (res == "Y") {
+          resumeDetailStore.queryResumeDetail().then(() => {
+            message.success('删除成功');
+          });
+        } else {
+          message.error('删除失败');
+        }
+      });
+    },
+  });
+  };
+  //删除工作经历结束
 </script>
 <style lang="less" scoped>
   .resume_header {

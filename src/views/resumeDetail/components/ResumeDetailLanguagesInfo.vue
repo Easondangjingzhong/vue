@@ -552,7 +552,7 @@
       if (languageAbility11.includes('3')) {
         language.bujia = '3';
         // @ts-ignore
-        languageAbility11 = ['3'];
+        languageAbility1.value = ['3'];
         language.languageLevel = '';
         language.tinshuoLiuli = '';
         language.duxieLiuli = '';
@@ -586,7 +586,7 @@
       if (languageAbility22.includes('3')) {
         language.bujia = '3';
         // @ts-ignore
-        languageAbility22 = ['3'];
+        languageAbility2.value = ['3'];
         language.languageLevel = '';
         language.tinshuoLiuli = '';
         language.duxieLiuli = '';
@@ -621,7 +621,7 @@
       if (languageAbility33.includes('3')) {
         language.bujia = '3';
         // @ts-ignore
-        languageAbility33 = ['3'];
+        languageAbility3.value = ['3'];
         language.languageLevel = '';
         language.tinshuoLiuli = '';
         language.duxieLiuli = '';
@@ -656,7 +656,7 @@
       if (languageAbility44.includes('3')) {
         language.bujia = '3';
         // @ts-ignore
-        languageAbility44 = ['3'];
+        languageAbility4.value = ['3'];
         language.tinshuoLiuli = '';
         language.duxieLiuli = '';
       } else {
@@ -674,12 +674,14 @@
       // @ts-ignore
       if (languageAbility55.includes('1')) {
         language.tinshuoLiuli = '1';
+        language.bujia = '';
       } else {
         language.tinshuoLiuli = '';
       }
       // @ts-ignore
       if (languageAbility55.includes('2')) {
         language.duxieLiuli = '2';
+        language.bujia = '';
       } else {
         language.duxieLiuli = '';
       }
@@ -687,7 +689,7 @@
       if (languageAbility55.includes('3')) {
         language.bujia = '3';
         // @ts-ignore
-        languageAbility55 = ['3'];
+        languageAbility5.value = ['3'];
         language.languageLevel = '';
         language.tinshuoLiuli = '';
         language.duxieLiuli = '';
@@ -722,7 +724,7 @@
       if (languageAbility66.includes('3')) {
         language.bujia = '3';
         // @ts-ignore
-        languageAbility66 = ['3'];
+        languageAbility6.value = ['3'];
         language.languageLevel = '';
         language.tinshuoLiuli = '';
         language.duxieLiuli = '';
