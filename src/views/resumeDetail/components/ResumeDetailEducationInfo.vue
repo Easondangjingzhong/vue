@@ -229,6 +229,7 @@
   const resumeDetailStore = useResumeDetailStore();
   const spanTitle = 8;
   let iconLoading = ref(false);
+  const loginVueUser: {loginName: "", loginId: "", loginTocken: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
   const formState = ref({
     schoolName: '',
     schoolType: [],
@@ -242,7 +243,7 @@
     isRegular: '',
     resumeId: props.resumeData?.resumeId,
     id: '',
-    recruitId: '444',
+    recruitId: loginVueUser.loginId,
   });
   const degreeOptions = ref(degreeArr.map((item) => ({ value: item, label: item })));
   const degreeFlag = ref(true);

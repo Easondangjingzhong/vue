@@ -50,6 +50,7 @@ import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   const { resumeDetail,eduFlag,workFlag,resumeShowFlag } =storeToRefs(resumeDetailStore);
   const resumeDetailTemp = ref({} as ResumeDetail);
   const expendShow = ref(false);
+  const route = useRoute();
   watch(resumeDetail,() => {
     //@ts-ignore
     resumeDetailTemp.value = {...resumeDetail.value}
@@ -63,7 +64,7 @@ import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   resumeDetailStore.queryWeekNumByWorkDate();
   resumeDetailStore.queryWeekByYearAndMonth();
   resumeDetailStore.queryEnterpriseConsultant();
-  resumeDetailStore.queryResumeDetail().then(() => {
+  resumeDetailStore.queryResumeDetail(route.query.resumeId,route.query.addConsultantId).then(() => {
     expendShow.value = true;
   });
 </script>

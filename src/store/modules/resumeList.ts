@@ -3,6 +3,7 @@ import { store } from '/@/store';
 import fetchApi from '/@/api/resumeList';
 import { formatToDateMinute } from '/@/utils/dateUtil';
 import { SearchResumeList, Item } from '/@/api/resumeList/model';
+import {stringifyToFormData} from '/@/utils/formatDataUntils';
 interface PaginationItem {
   current: Number;
   pageSize: Number;
@@ -14,7 +15,8 @@ interface ResumeListState {
   resumeList: []; //查询结果数据
   positionsList: []; //职位数据
   markIdList: []; //商场数据
-  companyList: []; //公司数据
+  companyList: []; //公司数据全部
+  companyCnList: []; //公司数据简称
   pagination: {}; //分页
   formState: {}; //搜索条件
   systemType: string; //返回的权限 A T V S
@@ -27,26 +29,34 @@ interface ResumeListState {
   sortResumeUpdate: boolean; //人才分类修改状态
   sortResumeUpdateData: {}; //人才分类修改状态
   tableLoading: boolean; //简历查询状态
+  searchResumeType: string; //搜索查询内容 1 我的推荐  2 我的面试  3 我的OFFER
+  recommendCounselorArr: []; //查询推荐顾问
+  enterpriseConsultantArr: []; //查询企业顾问
 }
-
+const loginVueUser: { loginName: ''; loginId: ''; loginTocken: '' } = JSON.parse(
+  localStorage.getItem('loginVueUser'),
+);
 export const useResumeListStore = defineStore({
   id: 'app-Resume-List',
   state: (): ResumeListState => ({
     //用户菜单
     resumeMenu: [],
-    formState: {...{} as  SearchResumeList,
-      companyNameRuleOut: "1",
-      companyNameNp: "1",
-      brandNp: "1",
-      marketNp: "1",
-      positionNp: "1",
+    formState: {
+      ...({} as SearchResumeList),
+      companyNameRuleOut: '1',
+      companyNameNp: '1',
+      brandNp: '1',
+      marketNp: '1',
+      positionNp: '1',
     },
     brandList: [],
     resumeList: [],
     positionsList: [],
     markIdList: [],
     companyList: [],
+    companyCnList: [],
     systemType: '',
+    searchResumeType: '',
     loginNameChangeRecruitId: '',
     loginNameChangeRecruitName: '',
     serchResumeListNum: 0,
@@ -56,6 +66,8 @@ export const useResumeListStore = defineStore({
     sortResumeUpdate: false,
     sortResumeUpdateData: {} as SearchResumeList,
     teamPersonChangeArr: [],
+    recommendCounselorArr: [],
+    enterpriseConsultantArr: [],
     pagination: {
       current: 1,
       pageSize: 15,
@@ -182,7 +194,7 @@ export const useResumeListStore = defineStore({
      */
     async fetchInfo() {
       let formData = new FormData();
-      formData.append('recruitId', '444');
+      formData.append('recruitId', loginVueUser.loginId);
       const res = await fetchApi.resumeMenu(formData);
       if (res) {
         // save token
@@ -354,18 +366,28 @@ export const useResumeListStore = defineStore({
      * @returns
      */
     async fetchTeamData(param: string) {
+      console.log(param);
+      if (param == '52') {
+        this.searchResumeType = '1';
+      } else if (param == '53') {
+        this.searchResumeType = '2';
+      } else if (param == '54') {
+        this.searchResumeType = '3';
+      } else {
+        this.searchResumeType = '';
+      }
       this.pagination = { ...this.pagination, current: 1 };
       this.formState = {
         ...this.formState,
         sortId: '',
         leftType: '',
-        recruitId: '444',
+        recruitId: loginVueUser.loginId,
         leftRecruitId: '',
         leftTeamId: '',
       };
       if (param.includes('teamLevel1')) {
         let formData = new FormData();
-        formData.append('recruitId', '444');
+        formData.append('recruitId', loginVueUser.loginId);
         formData.append('teamId', param.split('_')[1]);
         const res = await fetchApi.queryTeamData(formData);
         if (res.info) {
@@ -398,7 +420,7 @@ export const useResumeListStore = defineStore({
       }
       if (param.includes('teamLevel2')) {
         let formData = new FormData();
-        formData.append('recruitId', '444');
+        formData.append('recruitId', loginVueUser.loginId);
         formData.append('teamId', param.split('_')[1]);
         this.formState = {
           ...this.formState,
@@ -522,16 +544,17 @@ export const useResumeListStore = defineStore({
         this.formState = {
           ...this.formState,
           leftType: param,
-          recruitId: this.loginNameChangeRecruitId,
-          leftRecruitId: this.loginNameChangeRecruitId,
+          recruitId: this.loginNameChangeRecruitId || loginVueUser.loginId,
+          leftRecruitId: this.loginNameChangeRecruitId || loginVueUser.loginId,
         };
         //@ts-ignore
         this.queryResumeList(this.formState);
       }
       if (param == '51') {
         let formData = new FormData();
-        formData.append('recruitId', '444');
-        formData.append('viewType', this.systemType);
+        formData.append('recruitId', loginVueUser.loginId);
+        //formData.append('viewType', this.systemType);
+        formData.append('viewType', 'S');
         const res = await fetchApi.queryPersonTalentData(formData);
         this.queryMyPersonData(res, param);
       }
@@ -550,7 +573,7 @@ export const useResumeListStore = defineStore({
       this.loginNameChangeRecruitId = recruitId.split('-')[0];
       this.loginNameChangeRecruitName = recruitId.split('-')[1];
       let formData = new FormData();
-      formData.append('recruitId', recruitId.split('-')[0] || '444');
+      formData.append('recruitId', recruitId.split('-')[0] || loginVueUser.loginId);
       formData.append('viewType', viewType);
       this.formState = { ...this.formState, viewType: viewType };
       const res = await fetchApi.queryPersonTalentData(formData);
@@ -707,6 +730,16 @@ export const useResumeListStore = defineStore({
       }
     },
     /**
+     * 根据公司数据类型参数查询
+     * @param param 行业
+     */
+    async queryCompanyCnList() {
+      const res = await fetchApi.queryCompanyCnList();
+      if (res.info) {
+        this.companyCnList = res.info;
+      }
+    },
+    /**
      * 根据搜索条件查询简历
      * @param param 搜索条件参数
      */
@@ -729,7 +762,7 @@ export const useResumeListStore = defineStore({
           tempItem.index = (info.pageNumber - 1) * info.pageSize + (index + 1);
           tempItem.key = item.id;
           tempItem.userName = item.userName;
-          tempItem.link = `http://work.wotui.com:8889/WTSM/system/consultant-query-resume.html?resumeId=${item.id}&resumeType=C`;
+          tempItem.addConsultantId = item.addConsultantId;
           tempItem.phone = item.phone;
           tempItem.gender = item.gender == 'F' ? '女' : '男';
           tempItem.age = item.age;
@@ -759,7 +792,7 @@ export const useResumeListStore = defineStore({
       let formData = new FormData();
       formData.append('pageNumber', param.pageNumber || '1');
       formData.append('pageSize', param.pageSize || '10');
-      formData.append('recruitId', param.recruitId || '444');
+      formData.append('recruitId', param.recruitId || loginVueUser.loginId);
       formData.append('hangye', param.hangye || '');
       formData.append('pinlei', param.pinlei || '');
       formData.append('leibie', param.leibie || '');
@@ -824,8 +857,8 @@ export const useResumeListStore = defineStore({
      */
     async addSortResumeName(param: any) {
       let formData = this.paramSearchResumeListToformData(param);
-      formData.set('recruitId', '444');
-      formData.append('realNameEn', 'Eason Dang');
+      formData.set('recruitId', loginVueUser.loginId);
+      formData.append('realNameEn', loginVueUser.loginName);
       formData.append('sortName', param.sortName);
       if (this.sortResumeUpdateData) {
         formData.append('id', this.sortResumeUpdateData.id);
@@ -845,7 +878,7 @@ export const useResumeListStore = defineStore({
      * @param param 搜索条件参数
      */
     async fetchAddSearchResume(param: SearchResumeList, searchName: string) {
-      param = { ...param, pageNumber: '1', pageSize: '10', recruitId: '444' };
+      param = { ...param, pageNumber: '1', pageSize: '10', recruitId: loginVueUser.loginId };
       let formData = this.paramSearchResumeListToformData(param);
       formData.append('serchName', searchName);
       if (this.serchResumeUpdate) {
@@ -869,12 +902,87 @@ export const useResumeListStore = defineStore({
       if (this.systemType == 'A') {
         res = await fetchApi.queryTeamPersonChangeSystemA();
       } else {
-        res = await fetchApi.queryTeamPersonChangeSystemTs();
+        let formData = new FormData();
+        formData.append('recruitId', loginVueUser.loginId);
+        res = await fetchApi.queryTeamPersonChangeSystemTs(formData);
       }
       if (res.code == '1') {
         this.teamPersonChangeArr = res.info;
       }
     },
+    /**
+     * 查询推荐顾问
+     * @param isQuit 在职 离职
+     * @param teamId 团队ID
+     */
+    async queryRecommendCounselor(isQuit?: string, teamId?: string) {
+      let formData = new FormData();
+      formData.append('isQuit', isQuit || '');
+      formData.append('teamId', teamId || '');
+      formData.append('SystemRecruitId', loginVueUser.loginId);
+      let res = await fetchApi.queryRecommendCounselor(formData);
+      if (res.code == '1') {
+        this.recommendCounselorArr = res.info;
+      }
+    },
+    /**
+     * 查询企业顾问
+     * @returns
+     */
+    async queryEnterpriseConsultant(teamId = '') {
+      let formData = new FormData();
+      formData.append('teamId', teamId);
+      const res = await fetchApi.queryEnterpriseConsultant(formData);
+      if (res.code == 1) {
+        this.enterpriseConsultantArr = res.info;
+      }
+      return res;
+    },
+     /**
+     * 查询顾问推荐记录
+     * @returns
+     */
+     async queryRecommendResumeButton(params) {
+      params = {...params,SystemRecruitId: loginVueUser.loginId,pageNumber: params.pageNumber || "1"}
+      let temp = stringifyToFormData(params);
+      const res = await fetchApi.queryRecommendResumeButton(temp);
+      return res;
+    },
+     /**
+     * 查询顾问面试跟踪记录
+     * @returns
+     */
+     async queryRecommendInterview(params) {
+      params = {...params,
+        realRecruitId: loginVueUser.loginId,
+        SystemRecruitId: loginVueUser.loginId,
+        pageNumber: params.pageNumber || "1",
+        typeNumber: params.typeNumber || "3"}
+      let temp = stringifyToFormData(params);
+      const res = await fetchApi.queryRecommendInterview(temp);
+      return res;
+    },
+      /**
+     * 查询顾问offer记录
+     * @returns
+     */
+      async queryRecommendOffer(params) {
+        params = {...params,
+          SystemRecruitId: loginVueUser.loginId}
+        let temp = stringifyToFormData(params);
+        const res = await fetchApi.queryRecommendOffer(temp);
+        return res;
+      },
+      /**
+     * 查询顾问offer记录
+     * @returns
+     */
+      async querySystemFunction() {
+        let formData = new FormData();
+        formData.append('SystemRecruitId', loginVueUser.loginId);
+        const res = await fetchApi.querySystemFunction(formData);
+        return res;
+      },
   },
 });
 

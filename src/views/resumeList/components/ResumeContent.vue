@@ -61,7 +61,7 @@
     >
     <template #bodyCell="{ column, record }">
       <template v-if="column.key === 'userName'">
-        <a @click="handleToResumeDetails(record.key)">
+        <a @click="handleToResumeDetails(record.key,record.addConsultantId)">
           {{ record.userName }}
         </a>
       </template>
@@ -95,7 +95,6 @@
       </template>
     </a-pagination>
     </a-row>
-    
   </div>
   <template>
     <a-modal
@@ -139,6 +138,7 @@
   import SearchContent from './resumeContent/SearchContent.vue';
   import { useResumeListStoreWithOut } from '/@/store/modules/resumeList';
   import type { SelectProps } from 'ant-design-vue';
+  const router = useRouter();
   const resumeListStore = useResumeListStoreWithOut();
   const { resumeList, brandList, pagination, formState,serchResumeListNum,serchResumeUpdate,serchResumeUpdateData,tableLoading } = storeToRefs(resumeListStore);
   const optionsNp = ref([
@@ -187,9 +187,6 @@
       title: '姓名',
       dataIndex: 'userName',
       key: 'userName',
-      // 使用 render 属性自定义渲染
-      render: (text, record) =>
-        h(`<a href=${record.link} target="_blank" rel="noopener noreferrer">${text}</a>`),
     },
     {
       title: '性别',
@@ -237,9 +234,15 @@
       key: 'options',
     },
   ];
-  const handleToResumeDetails = (key) => {
+  const handleToResumeDetails = (resumeId,addConsultantId) => {
+    const loginVueUser: {loginName: "", loginId: "", loginTocken: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
+    const href = router.resolve({
+      path: '/resume/detail',
+      query: {...loginVueUser, resumeId, addConsultantId},
+    });
+    window.open(href.href, '_blank')
     // 跳转到简历详情页
-    window.open(`http://work.wotui.com:8889/WTSM/system/consultant-query-resume.html?resumeId=${key}&resumeType=C`);
+    //window.open(`http://work.wotui.com:8889/WTSM/system/consultant-query-resume.html?resumeId=${resumeId}&resumeType=C&addConsultantId=${addConsultantId}`);
   };
   const handleResumeListData = (current) => {
     pagination.value = { ...pagination.value, current };

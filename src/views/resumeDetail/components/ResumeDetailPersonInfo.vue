@@ -384,8 +384,6 @@
     photoPath.value = e;
     const blob = dataURLtoBlob(e);
     const files = new window.File([blob], 'avatar.png', { type: 'application/png' });
-    console.log(props.resumeData.id);
-    console.log(files);
     resumeDetailStore.fetchResumePhote(props.resumeData.id, files);
   };
   const handleChangephotoUpload = (e) => {
@@ -394,8 +392,7 @@
       handleChangephoto();
     })
   };
-  
-  //修改个人信息展开和收起
+ //修改个人信息展开和收起
   const handleUpdatePersonInfo = () => {
     expend.value = !expend.value;
     formState.value = {
@@ -411,16 +408,17 @@
       positionsId: props.resumeData.positionsId,
       positionName: { value: props.resumeData.positionsId, label: props.resumeData.positionName },
       marriageStatus: props.resumeData.marriageStatus,
-      recruitId: '444',
+      recruitId: '',
       birthYear: props.resumeData.birthYear,
       bornDay: props.resumeData.bornDay,
       bornMonth: props.resumeData.bornMonth,
-      ageTime: `${props.resumeData.birthYear}-${
-        props.resumeData.bornMonth < 10
+      ageTime: !props.resumeData.birthYear ? '' : `${props.resumeData.birthYear}-${
+        !props.resumeData.bornMonth ? '01' : 
+        (props.resumeData.bornMonth < 10
           ? '0' + props.resumeData.bornMonth
-          : props.resumeData.bornMonth
+          : props.resumeData.bornMonth)
       }-${
-        props.resumeData.bornDay < 10 ? '0' + props.resumeData.bornDay : props.resumeData.bornDay
+        !props.resumeData.bornDay ? '01' : (props.resumeData.bornDay < 10 ? '0' + props.resumeData.bornDay : props.resumeData.bornDay)
       }`,
     };
   };

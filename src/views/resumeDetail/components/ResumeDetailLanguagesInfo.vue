@@ -742,7 +742,8 @@
     languages = languageAbility;
   };
   let iconLoading = ref(false);
-  const onFinish = () => {
+  const loginVueUser: {loginName: "", loginId: "", loginTocken: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
+const onFinish = () => {
     const temp = languages.filter(item => item.languageName == "英语");
     if (temp.length == 0) {
       message.warning("请填写英文能力");
@@ -751,7 +752,7 @@
     if (languages.length > 0) {
       iconLoading.value = true;
       let temp = {
-        recruitId: '444',
+        recruitId: loginVueUser.loginId,
         resumeLanguagelist: languages
       }
       resumeDetailStore

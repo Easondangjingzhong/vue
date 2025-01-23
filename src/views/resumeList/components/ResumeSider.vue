@@ -92,7 +92,6 @@
   watch(teamPersonChangeArr,() => {
  //@ts-ignore
  optionsLoginNameTeam.value = teamPersonChangeArr.value.map(item => ({value: item.teamId,label: item.teamName}));
-  
   });
   const handleResumeSvgClick = (e) => {
     e.stopPropagation();
@@ -152,7 +151,6 @@
             key: item.key,
             label: h('div', { class: 'resume-menu-title-one' }, [
                 h('span', { class: 'resume-menu-title-content' }, item.title),
-               h('span', { class: 'resume-menu-title-content-svg',onClick: handleResumeSvgClick, }, h(FormOutlined)),
               ]),
             title: `${item.title} ${item.label}`,
             children: item.children?.map((subItem) => ({

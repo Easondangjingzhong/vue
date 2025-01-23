@@ -446,6 +446,7 @@
       required: false,
     },
   });
+  const loginVueUser: {loginName: "", loginId: "", loginTocken: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
   const formState = reactive({
     companyName: '',
     category: '',
@@ -472,7 +473,7 @@
     workMark: '',
     workBrand: '',
     workCity: '',
-    recruitId: '444',
+    recruitId: loginVueUser.loginId,
   });
   if (!props.resumeData?.id) {
     expend.value = !expend.value;
@@ -522,11 +523,11 @@
     formState.department = props.resumeData?.department;
     formState.startYear =
       props.resumeData?.startYear +
-      (props.resumeData?.startMonth < 10
+      ((props.resumeData?.startMonth - 0) < 10
         ? '-0' + +props.resumeData?.startMonth
         : '-' + props.resumeData?.startMonth);
     formState.startMonth = props.resumeData?.startMonth;
-    formState.endYear =
+    formState.endYear = props.resumeData?.endYear == '-1' ? '' :
       props.resumeData?.endYear +
       (props.resumeData?.endMonth < 10
         ? '-0' + +props.resumeData?.endMonth
@@ -660,7 +661,7 @@
   };
   const handleMarketBrandFloor = () => {
     resumeDetailStore
-      .queryMarkBrandFloor(formState.marketName.value, formState.brandName.value, '444')
+      .queryMarkBrandFloor(formState.marketName.value, formState.brandName.value)
       .then((res) => {
         if (res.code == 1) {
           formState.workFloor = res.info[0].floor;

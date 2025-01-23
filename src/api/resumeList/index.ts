@@ -14,11 +14,61 @@ enum URL {
   resume_positionsList = '/candidate/rusume-vue-query-position-all.action',
   resume_markList = '/candidate/rusume-vue-query-market-addcity.action',
   resume_companyList = '/companyBrand/rusume-vue-query-companyBrand-Ajax.action',
+  resume_companyList_cn = '/companyBrand/resume-vue-query-company-all.action',
   resume_serchData = '/candidate/rusume-vue-query-serch-byId.action',
   resume_personTalentData = '/candidate/rusume-vue-query-personTalent-num.action',
   resume_teamPersonChangeSystemA = '/candidate/rusume-vue-query-left-teamperson-admin-qie.action',
   resume_teamPersonChangeSystemTs = '/candidate/rusume-vue-query-left-teamperson-qie.action',
+  query_recommend_counselor = '/candidate/resume-vue-query-consultant-byTeam.action',
+  query_enterprise_consultant = '/candidate/resume-vue-query-enterprise-consultant-all.action',
+  query_recommend_resume_record = '/candidateRecommend/rusume-vue-query-search-button-list-pager-ajax.action',
+  query_recommend_resume_interview = '/candidateRecommend/resume-vue-query-interview-notice-person-tui.action',
+  query_recommend_resume_offer = '/candidateRecommend/resume-vue-query-offer-collect-all-ajax.action',
+  query_system_function = '/system/resume-vue-system-function.action',
 }
+/**
+ * 查询顾问权限
+ * @returns 
+ */
+const querySystemFunction = (formData: any) =>
+  post<any>({ url: URL.query_system_function, data: formData});
+/**
+ * 查询顾问OFFER记录
+ * @returns 
+ */
+const queryRecommendOffer = (formData: any) =>
+  post<any>({ url: URL.query_recommend_resume_offer, data: formData});
+/**
+ * 查询顾问面试记录
+ * @returns 
+ */
+const queryRecommendInterview = (formData: any) =>
+  post<any>({ url: URL.query_recommend_resume_interview, data: formData});
+/**
+ * 查询顾问推荐记录
+ * @returns 
+ */
+const queryRecommendResumeButton = (formData: any) =>
+  post<any>({ url: URL.query_recommend_resume_record, data: formData});
+/**
+ * 查询所有签署公司简称
+ * @returns 
+ */
+const queryCompanyCnList = () =>
+  post<any>({ url: URL.resume_companyList_cn});
+/**
+ * 查询企业顾问
+ * @param formData 
+ * @returns 
+ */
+const queryEnterpriseConsultant = (formData: any) =>
+  post<any>({ url: URL.query_enterprise_consultant, data: formData });
+/**
+ * 查询推荐顾问
+ * @returns 
+ */
+const queryRecommendCounselor = async (data:any) =>
+  post<any>({ url: URL.query_recommend_counselor, data });
 /**
  * 人才分类查询
  * @returns 
@@ -41,8 +91,8 @@ const queryTeamPersonChangeSystemA = async () =>
  * 切换我的人才查询人才团队Leader 查询团队和人
  * @returns 
  */
-const queryTeamPersonChangeSystemTs = async () =>
-  post<any>({ url: URL.resume_teamPersonChangeSystemTs});
+const queryTeamPersonChangeSystemTs = async (data:any) =>
+  post<any>({ url: URL.resume_teamPersonChangeSystemTs,data});
 /**
  * 查询左侧主菜单
  * @param data recruitId
@@ -134,4 +184,4 @@ const queryResumeSerchData = async (data:any) =>
  */
 const queryPersonTalentData = async (data:any) =>
   post<any>({ url: URL.resume_personTalentData, data });
-export default { updateResumeSort,querySortById,fetchUpdateSearchResume,queryTeamPersonChangeSystemA,queryTeamPersonChangeSystemTs,queryPersonTalentData,queryResumeSerchData,queryCompanyList,resumeMenu,queryTeamData,queryPersonData,queryBranList,queryResumeList,addSortResumeName,fetchAddSearchResume,queryPositionsList,queryMarkList };
+export default { querySystemFunction,queryRecommendOffer,queryRecommendInterview,queryRecommendResumeButton,queryCompanyCnList,queryEnterpriseConsultant,queryRecommendCounselor,updateResumeSort,querySortById,fetchUpdateSearchResume,queryTeamPersonChangeSystemA,queryTeamPersonChangeSystemTs,queryPersonTalentData,queryResumeSerchData,queryCompanyList,resumeMenu,queryTeamData,queryPersonData,queryBranList,queryResumeList,addSortResumeName,fetchAddSearchResume,queryPositionsList,queryMarkList };

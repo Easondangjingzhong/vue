@@ -21,7 +21,10 @@ interface ResumeDetailState {
   recommendFlag: boolean; //是否进行推荐
   resumeShowFlag: boolean; //简历展示
   recommendCandidatePositionSearch: {}; //推荐职位查询条件
+  resumeId: string; //简历的ID
+  addConsultantId: string; //简历的添加顾问
 }
+const loginVueUser: {loginName: "", loginId: "", loginTocken: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
 export const useResumeDetailStore = defineStore({
   id: 'app-Resume',
   state: (): ResumeDetailState => ({
@@ -43,6 +46,8 @@ export const useResumeDetailStore = defineStore({
     recommendMapping: [],
     recommendFlag: false,
     recommendCandidatePositionSearch: {},
+    resumeId: '',
+    addConsultantId: '',
   }),
   actions: {
     /**
@@ -55,13 +60,19 @@ export const useResumeDetailStore = defineStore({
     /**
      * 查询简历详情
      */
-    async queryResumeDetail() {
+    async queryResumeDetail(resumeId='',addConsultantId='') {
       let formData = new FormData();
+      if (resumeId) {
+        this.resumeId = resumeId;
+      }
+      if (addConsultantId) {
+        this.addConsultantId = addConsultantId;
+      }
       this.resumeShowFlag = true;
-      formData.append('resumeId', '384411'); // resumeId
+      formData.append('resumeId', this.resumeId || resumeId); // resumeId
       formData.append('resumeType', 'C'); // resumeType C
-      formData.append('addConsultantId', '1829'); // 简历中的添加人Id
-      formData.append('recruitId', '444'); //当前账号的id
+      formData.append('addConsultantId', this.addConsultantId || resumeId); // 简历中的添加人Id
+      formData.append('recruitId', loginVueUser.loginId); //当前账号的id
       const res = await fetchApi.queryResumeDetail(formData);
       if (res.code == 1) {
         this.resumeShowFlag = false;
@@ -78,7 +89,7 @@ export const useResumeDetailStore = defineStore({
      * 修改个人信息
      */
     async updateResumePersonal(data) {
-      const res = await fetchApi.updateResumePersonal(data);
+      const res = await fetchApi.updateResumePersonal({...data,recruitId: loginVueUser.loginId});
       return res;
     },
     /**
@@ -162,11 +173,11 @@ export const useResumeDetailStore = defineStore({
       const res = await fetchApi.queryMarkList(formData);
       return res;
     },
-    async queryMarkBrandFloor(marketId, brandId, recruitId) {
+    async queryMarkBrandFloor(marketId, brandId) {
       let formData = new FormData();
       formData.append('marketId', marketId);
       formData.append('brandId', brandId);
-      formData.append('recruitId', recruitId);
+      formData.append('recruitId', loginVueUser.loginId);
       const res = await fetchApi.queryMarkBrandFloor(formData);
       return res;
     },
@@ -193,7 +204,7 @@ export const useResumeDetailStore = defineStore({
       const phone = this.resumeDetail.resume.phoneNum;
       formData.append('phone', phone);
       formData.append('PageNumber', PageNumber);
-      formData.append('recruitId', '444');
+      formData.append('recruitId', loginVueUser.loginId);
       const res = await fetchApi.queryResumeRecord(formData);
       if (res.code == 1) {
         this.resumeRecord = res.info;
@@ -211,7 +222,7 @@ export const useResumeDetailStore = defineStore({
       formData.append('companyName', data.companyName);
       formData.append('checkResult', data.checkResult);
       formData.append('resumeId', resumeId.toString());
-      formData.append('recruitId', '444');
+      formData.append('recruitId', loginVueUser.loginId);
       const res = await fetchApi.addResumeCheckResult(formData);
       if (res.code == 1) {
         this.queryResumeCheckResult(1);
@@ -244,7 +255,7 @@ export const useResumeDetailStore = defineStore({
       const res = await fetchApi.addResumeContactContent({
         ...data,
         resumeId: resumeId.toString(),
-        recruitId: '444',
+        recruitId: loginVueUser.loginId,
       });
       if (res.code == 1) {
         this.queryResumeContactContent(1);
@@ -261,7 +272,7 @@ export const useResumeDetailStore = defineStore({
       const resumeId = this.resumeDetail.resumeId;
       formData.append('resumeId', resumeId.toString());
       formData.append('PageNumber', PageNumber);
-      formData.append('recruitId', '444');
+      formData.append('recruitId', loginVueUser.loginId);
       const res = await fetchApi.queryResumeContactContent(formData);
       if (res.code == 1) {
         this.resumeContactContent = res.info;
@@ -276,7 +287,7 @@ export const useResumeDetailStore = defineStore({
       let formData = new FormData();
       const resumeId = this.resumeDetail.resumeId;
       formData.append('resumeId', resumeId.toString());
-      formData.append('recruitId', '444');
+      formData.append('recruitId', loginVueUser.loginId);
       const res = await fetchApi.queryResumeReport(formData);
       if (res.code == 1) {
         this.resumeReport = res.info;
@@ -291,7 +302,7 @@ export const useResumeDetailStore = defineStore({
       let formData = new FormData();
       const resumeId = this.resumeDetail.resumeId;
       formData.append('resumeId', resumeId.toString());
-      formData.append('recruitId', '444');
+      formData.append('recruitId', loginVueUser.loginId);
       formData.append('content', reportContent);
       const res = await fetchApi.updateResumeReportContent(formData);
       if (res.code == 1) {
@@ -307,7 +318,7 @@ export const useResumeDetailStore = defineStore({
       this.recommendCandidatePositionSearch = data;
       let formData = new FormData();
       formData.append('page', data.page);
-      formData.append('recruitId', '444');
+      formData.append('recruitId', loginVueUser.loginId);
       formData.append('recommendId', this.mappingId);
       formData.append('city', data.city || '');
       formData.append('brand', data.brand || '');
@@ -379,7 +390,7 @@ export const useResumeDetailStore = defineStore({
       let formData = new FormData();
       const resumeId = this.resumeDetail.resumeId.toString();
       formData.append('resumeId', resumeId);
-      formData.append('recruitId', "444");
+      formData.append('recruitId', loginVueUser.loginId);
       const res = await fetchApi.queryMappingIdByResumeId(formData);
       if (res.code == 1) {
         this.mappingId = res.info;
@@ -421,7 +432,7 @@ export const useResumeDetailStore = defineStore({
       formData.append('conflictId', data.conflictId);
       formData.append('appealRemark', data.appealRemark);
       formData.append('recruitId', data.recruitId);
-      formData.append('SystemRecruitId', '444');
+      formData.append('SystemRecruitId', loginVueUser.loginId);
       const res = await fetchApi.addCandidateRecommendAppeal(formData);
       if (res.code == 1) {
         this.queryRecommendCandidatePosition(this.recommendCandidatePositionSearch);
@@ -448,7 +459,7 @@ export const useResumeDetailStore = defineStore({
       formData.append('companyName', data.companyName);
       formData.append('recruitId', data.recruitId);
       formData.append('file', data.file);
-      formData.append('SystemRecruitId', '444');
+      formData.append('SystemRecruitId', loginVueUser.loginId);
       const res = await fetchApi.addCandidateRecommend(formData);
       if (res.code == 1) {
         this.queryRecommendCandidatePosition(this.recommendCandidatePositionSearch);
@@ -484,7 +495,7 @@ export const useResumeDetailStore = defineStore({
       formData.append('recommendId', data.recommendId);
       formData.append('companyName', data.companyName);
       formData.append('recruitId', data.recruitId);
-      formData.append('SystemRecruitId', '444');
+      formData.append('SystemRecruitId', loginVueUser.loginId);
       const res = await fetchApi.checkCandidateRecommendRepeat(formData);
       return res;
     },
@@ -496,7 +507,7 @@ export const useResumeDetailStore = defineStore({
       let formData = new FormData();
       formData.append('pId', data);
       formData.append('cId', this.mappingId);
-      formData.append('SystemRecruitId', '444');
+      formData.append('SystemRecruitId', loginVueUser.loginId);
       const res = await fetchApi.deleteRecommend(formData);
       if (res.code == 1) {
         this.queryRecommendCandidatePosition(this.recommendCandidatePositionSearch);
@@ -511,7 +522,7 @@ export const useResumeDetailStore = defineStore({
      async addCandidatePositionIntention(data) {
       let temp = data.map(item => ({
         resumeId: this.resumeDetail.resumeId,
-        recruitId: '444',
+        recruitId: loginVueUser.loginId,
         brandId: item.bId,
         city: item.city,
         marketId: item.mId,
@@ -521,7 +532,7 @@ export const useResumeDetailStore = defineStore({
         intention: item.intention,
       }));
       let param = {
-        recruitId: '444',
+        recruitId: loginVueUser.loginId,
         resumeContactRecordmaps: temp
       }
       const res = await fetchApi.addCandidatePositionIntention(param);
@@ -554,7 +565,7 @@ export const useResumeDetailStore = defineStore({
       const resumeId = this.resumeDetail.resumeId.toString();
       formData.append('workExpId', workExpId);
       formData.append('resumeId', resumeId);
-      formData.append('SystemRecruitId', '444');
+      formData.append('SystemRecruitId', loginVueUser.loginId);
       const res = await fetchApi.deleteWorkExp(formData);
       return res;
     },
@@ -567,7 +578,7 @@ export const useResumeDetailStore = defineStore({
       const resumeId = this.resumeDetail.resumeId.toString();
       formData.append('eduExpId', eduExpId);
       formData.append('resumeId', resumeId);
-      formData.append('SystemRecruitId', '444');
+      formData.append('SystemRecruitId', loginVueUser.loginId);
       const res = await fetchApi.deleteEducationExp(formData);
       return res;
     },
