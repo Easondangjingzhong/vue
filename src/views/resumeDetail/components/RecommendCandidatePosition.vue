@@ -16,19 +16,94 @@
     <div>
       <a-form ref="formRef" :model="formState" @finish="onFinish">
         <a-row :gutter="24">
-          <a-col :span="4">
+          <a-col :span="spanCol">
+            <a-form-item name="retail" label="行业">
+              <a-select
+                v-model:value="formState.retail"
+                :options="optionsHangye"
+                :allowClear="true"
+                @change="handleSearchFormState"
+              ></a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :span="spanCol">
+            <a-form-item name="jobcategory2" title="职位类别" label="职类">
+              <a-select
+                v-model:value="formState.jobcategory2"
+                :options="optionsPositionType"
+                :allowClear="true"
+                @change="handleSearchFormState"
+              ></a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :span="spanCol">
+            <a-form-item name="management2" title="职位级别" label="职级">
+              <a-select
+                v-model:value="formState.management2"
+                :options="optionsPositionLevel"
+                :allowClear="true"
+                @change="handleSearchFormState"
+              ></a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :span="6">
+            <a-form-item name="positionsId" label="职位">
+              <a-select
+                v-model:value="formState.positionsId"
+                :options="optionsPositions"
+                optionFilterProp="label"
+                :allowClear="true"
+                showSearch
+              ></a-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="spanCol">
             <a-form-item name="city" label="城市">
               <a-select
                 v-model:value="formState.city"
                 :options="optionsCity"
                 optionFilterProp="label"
                 :allowClear="true"
-                @change="handleCityName"
+                @change="handleSearchFormState"
                 showSearch
               ></a-select>
             </a-form-item>
           </a-col>
-          <a-col :span="8">
+          <a-col :span="spanCol">
+            <a-form-item name="category" title="品牌品类" label="品类">
+              <a-select
+                v-model:value="formState.category"
+                :options="optionsPinlei"
+                :allowClear="true"
+                @change="handleSearchFormState"
+              ></a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :span="spanCol">
+            <a-form-item name="leibie" title="品牌类别" label="类别">
+              <a-select
+                v-model:value="formState.leibie"
+                :allowClear="true"
+                @change="handleSearchFormState"
+                :options="optionsLeibie"
+              ></a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :span="spanCol">
+            <a-form-item name="retailLevel" title="品牌级别" label="品级">
+              <a-select
+                v-model:value="formState.retailLevel"
+                :allowClear="true"
+                :options="optionsPinjibie"
+                @change="handleSearchFormState"
+              ></a-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="spanCol">
             <a-form-item name="brand" label="品牌">
               <a-select
                 v-model:value="formState.brand"
@@ -39,7 +114,7 @@
               ></a-select>
             </a-form-item>
           </a-col>
-          <a-col :span="6">
+          <a-col :span="spanCol">
             <a-form-item name="market" label="商场">
               <a-select
                 v-model:value="formState.market"
@@ -57,20 +132,17 @@
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :span="6">
-            <a-form-item name="positionsId" label="职位">
+          <a-col :span="spanCol">
+            <a-form-item name="year" label="顾问">
               <a-select
-                v-model:value="formState.positionsId"
-                :options="optionsPositions"
-                optionFilterProp="label"
+                v-model:value="formState.companyRecruitId"
                 :allowClear="true"
                 showSearch
+                :options="optionsCompanyRecruitId"
               ></a-select>
             </a-form-item>
           </a-col>
-        </a-row>
-        <a-row :gutter="24">
-          <a-col :span="4">
+          <a-col :span="spanCol">
             <a-form-item name="jobType" label="类型">
               <a-select
                 v-model:value="formState.jobType"
@@ -79,6 +151,8 @@
               ></a-select>
             </a-form-item>
           </a-col>
+        </a-row>
+        <a-row :gutter="24">
           <a-col :span="8">
             <a-space class="resume_spance" style="display: flex">
               <a-form-item name="year" label="任务">
@@ -111,16 +185,7 @@
               </a-form-item>
             </a-space>
           </a-col>
-          <a-col :span="6">
-            <a-form-item name="year" label="顾问">
-              <a-select
-                v-model:value="formState.companyRecruitId"
-                :allowClear="true"
-                showSearch
-                :options="optionsCompanyRecruitId"
-              ></a-select>
-            </a-form-item>
-          </a-col>
+
           <a-col :span="6">
             <a-form-item>
               <a-button type="primary" style="margin-right: 8px" htmlType="submit">搜索</a-button>
@@ -184,7 +249,7 @@
               size="small"
               v-if="record.action == 4 && record.checkResult != '已拒绝'"
             >
-            申诉中
+              申诉中
             </a-button>
           </template>
         </template>
@@ -264,15 +329,10 @@
           </template>
           <template v-if="column.key === 'action'">
             <a-popconfirm title="撤回推荐" @confirm="confirm(record.pId)" v-if="record.action == 1">
-             <a-button
-              title="撤回推荐"
-              type="primary"
-              class="resume_btn"
-              size="small"
-            >
-              撤回
-            </a-button>
-          </a-popconfirm>
+              <a-button title="撤回推荐" type="primary" class="resume_btn" size="small">
+                撤回
+              </a-button>
+            </a-popconfirm>
             <span v-if="record.action == 2">-</span>
           </template>
         </template>
@@ -289,12 +349,25 @@
   import { message } from 'ant-design-vue';
   import RecommendCandidatePositionChecked from './RecommendCandidatePositionChecked.vue';
   import type { SelectProps } from 'ant-design-vue';
+  import {
+    brandArrDetail,
+    brandCategoryArr,
+    pinjibieArr,
+    pinjiArr,
+    positionsUpArrTitle,
+    genderArr,
+    marriageArr,
+    degreeSearchArr,
+    languageArr,
+    resumeTypeArr,
+  } from '/@/store/data/resume';
   import { formatToDateTime, dateUtil, currentDate, formatToDateMinute } from '/@/utils/dateUtil';
   import { CloseOutlined } from '@ant-design/icons-vue';
   import { useCityStoreWithOut } from '/@/store/modules/city';
   import { debounce } from 'lodash-es';
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   import { useResumeListStoreWithOut } from '/@/store/modules/resumeList';
+import { tryOnBeforeUnmount } from '@vueuse/core';
   const resumeListStore = useResumeListStoreWithOut();
   const cityStore = useCityStoreWithOut();
   const { province } = storeToRefs(cityStore);
@@ -308,6 +381,7 @@
     enterpriseConsultant,
     recommendMapping,
   } = storeToRefs(resumeDetailStore);
+  const spanCol = 6;
   interface RecommendPerson {
     index: string;
     city: string;
@@ -518,6 +592,12 @@
     }
   }
   const formState = ref({
+    retail: '',
+    jobcategory2: '',
+    management2: '',
+    category: '',
+    leibie: '',
+    retailLevel: '',
     city: '',
     brand: '',
     market: { value: '', label: '' },
@@ -680,7 +760,7 @@
             prev.push({
               apId: item.pId,
               checkResult: item.checkResult,
-              refuseRemark: item.refuseRemark || "",
+              refuseRemark: item.refuseRemark || '',
             });
           });
           return prev;
@@ -708,10 +788,10 @@
           temp.isTask = curr.isTask == 1 ? '是' : '-';
           if (positionArr.includes(curr.id)) {
             temp.action = '1'; //已推
-          }else if (appealTemp.includes(curr.id)) {
+          } else if (appealTemp.includes(curr.id)) {
             temp.action = '4'; //已推
-            temp.checkResult = apealArr.filter(item => item.apId)[0]?.checkResult;
-            temp.refuseRemark = apealArr.filter(item => item.apId)[0]?.refuseRemark;
+            temp.checkResult = apealArr.filter((item) => item.apId)[0]?.checkResult;
+            temp.refuseRemark = apealArr.filter((item) => item.apId)[0]?.refuseRemark;
           } else {
             if (curr.recruitingNum - curr.offerNum <= 0) {
               temp.action = '2'; //余职为0
@@ -891,6 +971,38 @@
         message.error('撤回失败');
       }
     });
+  };
+  //搜索条件
+  //行业数据展示
+  const optionsHangye = ref<SelectProps['options']>(
+    brandArrDetail.map((item) => ({ value: item.retail })),
+  );
+  //品类数据展示
+  const optionsPinlei = ref<SelectProps['options']>([{ value: '' }]);
+   //类别数据展示
+   const optionsLeibie = ref<SelectProps['options']>([{ value: '' }]);
+    //职类数据展示
+    const optionsPositionType = ref<SelectProps['options']>([{ value: '' }]);
+    watch(() => formState.value.retail,() => {
+      optionsPositionType.value = positionsUpArrTitle.filter((item) => item.industry === formState.value.retail)[0].content.map(item => ({value:item.jobCategory}));
+      optionsPinlei.value = brandArrDetail.filter((item) => item.retail === formState.value.retail)[0].categoryArr.map(item => ({value:item}))
+    })
+  //职级数据展示
+  const optionsPositionLevel = ref<SelectProps['options']>([{ value: '' }]);
+    watch(() => formState.value.jobcategory2,() => {
+      optionsPositionLevel.value = positionsUpArrTitle.filter((item) => item.industry === formState.value.retail)[0].content.filter(item => item.jobCategory === formState.value.jobcategory2)[0].management.map(item => ({value:item}))
+    })
+    watch(() => formState.value.category,() => {
+      optionsLeibie.value = brandCategoryArr.filter((item) => item.category === formState.value.category && (item.title ? item.title === brandArrDetail.filter((item) => item.retail === formState.value.retail)[0].title : true))[0].leibie.map(item => ({value:item}))
+    })
+  //品籍数据展示
+  //const optionsPinji = ref<SelectProps['options']>(pinjiArr);
+  //品级数据展示
+  const optionsPinjibie = ref<SelectProps['options']>(pinjibieArr);
+  const handleSearchFormState = () => {
+    resumeDetailStore.searchFormState(formState.value).then(res => {
+      
+    })
   }
 </script>
 <style lang="less" scoped>

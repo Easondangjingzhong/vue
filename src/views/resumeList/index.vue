@@ -12,7 +12,7 @@
         <a-layout-content class="resume_content">
           <ResumeRecommend v-if="searchResumeType == '1'" />
           <ResumeInterview v-else-if="searchResumeType == '2'" />
-          <ResumeOffer v-else-if="searchResumeType == '3'" />
+          <ResumeRecommendOffer v-else-if="searchResumeType == '3'" />
           <ResumeContent v-else="!searchResumeType" />
         </a-layout-content>
       </a-layout>
@@ -26,7 +26,8 @@
   import ResumeContent from './components/ResumeContent.vue';
   import ResumeRecommend from './components/ResumeRecommend.vue';
   import ResumeInterview from './components/ResumeInterview.vue';
-  import ResumeOffer from './components/ResumeOffer.vue';
+  //import ResumeOffer from './components/ResumeOffer.vue';
+  import ResumeRecommendOffer from './components/ResumeRecommendOffer.vue';
   import { MenuProps } from 'ant-design-vue';
   import { useResumeListStoreWithOut } from '/@/store/modules/resumeList';
   const resumeList = useResumeListStoreWithOut();
@@ -1199,7 +1200,7 @@ resumeList.querySystemFunction().then((res) => {
             ]
           })
       }
-      if (item.functionName == "荣誉榜") {
+      if (item.functionName == "荣誉榜" && (type == "A" || currentPositionId == 10)) {
         menuArrTemp.value.push({
             key: 'honorRoll',
             label: h('a', { href: `http://work.wotui.com:8889/WTSM/${item.functionUrl}`, target: '_blank' }, item.functionName),

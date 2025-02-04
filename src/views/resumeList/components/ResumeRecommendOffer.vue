@@ -226,7 +226,7 @@
     </a-form>
   </div>
   <div class="resume-content">
-    <a-row style="margin-bottom: 5px;">
+    <a-row style="margin-bottom: 5px;justify-content: end;">
       <a-tag v-for="item in listNumber" :class="item.classNum" @click="handleListNumber(item.btnNum)">{{ item.name }}{{ item.num }}</a-tag>
     </a-row>
     <a-table
@@ -236,7 +236,6 @@
       rowKey="key"
       :loading="tableLoading"
       :columns="columns"
-      :scroll="{ x: 1355 }"
     >
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'newRecommendTime'">
@@ -247,6 +246,15 @@
             >查看</a-tag
           >
           <a-tag v-else :title="record.newRecommendTime" color="cyan">查看</a-tag>
+        </template>
+        <template v-if="column.key === 'newPredictEntryTime'">
+          <a-tag :title="record.newPredictEntryTime" color="cyan">查看</a-tag>
+        </template>
+        <template v-if="column.key === 'newPracticalEntryTime'">
+          <a-tag :title="record.newPracticalEntryTime" color="cyan">查看</a-tag>
+        </template>
+        <template v-if="column.key === 'newGuaranteePeriodTime'">
+          <a-tag :title="record.newGuaranteePeriodTime" color="cyan">查看</a-tag>
         </template>
         <template v-if="column.key === 'recommendCounselor'">
           <a-tag v-if="record.overOneDay === '1'" title="超一日未发简历" color="red">{{
@@ -721,6 +729,7 @@
   const spanCol = 6;
   interface SearchForm {
     pageNumber: string;
+    pageSize: string;
     number: string;
     city: string;
     brand: string;
@@ -760,9 +769,11 @@
     recommendRecruitId: string;
     recommendChangeCounselor: string;
     timeType: string;
+    vueType: string;
   }
   const formState = ref<SearchForm>({
     pageNumber: '1',
+    pageSize: '12',
     number: '',
     city: '',
     brand: '',
@@ -802,12 +813,68 @@
     recommendRecruitId: '',
     recommendChangeCounselor: '',
     timeType: '',
+    vueType: '2',
   });
 
   const clearFromState = () => {
     // ��空搜索条件
-    formState.value = {} as SearchForm;
+    formState.value = {
+    pageNumber: '1',
+    pageSize: '12',
+    number: '',
+    city: '',
+    brand: '',
+    counselor: '',
+    recommendCounselor: '',
+    sex: '',
+    positions: '',
+    positionsId: '',
+    market: '',
+    recommendTimeStart: '',
+    recommendTimeEnd: '',
+    interviewTimeStart: '',
+    interviewTimeEnd: '',
+    recommendStatus: '',
+    hrFeedback: '',
+    consultantFeedback: '',
+    userName: '',
+    phone: '',
+    guaranteePeriodTimeStart: '',
+    guaranteePeriodTimeEnd: '',
+    predictEntryTimeStart: '',
+    predictEntryTimeEnd: '',
+    practicalEntryTimeStart: '',
+    practicalEntryTimeEnd: '',
+    interviewResult: '',
+    offerChoice: '',
+    endStatus: '',
+    recruitId: '',
+    isQuit: '',
+    teamId: '',
+    quality: '',
+    companyName: '',
+    zhiLei: '',
+    isErro: '',
+    id: '',
+    collectId: '',
+    recommendRecruitId: '',
+    recommendChangeCounselor: '',
+    timeType: '',
+    vueType: '2',
   };
+  listNumber.value = listNumber.value.reduce((prev,curr) => {
+      if (curr.btnNum === currentListNum.value) {
+        if (currentListNum.value == 19 || currentListNum.value == 20 || currentListNum.value == 27) {
+          return [...prev, {...curr,classNum: 'classNumRed'}];
+        } else {
+          return [...prev, {...curr,classNum: 'classNum'}];
+        }
+        
+      }
+      return [...prev, curr];
+    },[]);
+    currentListNum.value = 0;
+  }
   const expandArr = [1, 2, 3, 4, 2];
   const expand = ref(2);
   const handleExpand = () => {
@@ -823,7 +890,6 @@
       key: 'index',
       ellipsis: true,
       width: 45,
-      fixed: 'left',
     },
     {
       title: '姓名',
@@ -831,7 +897,6 @@
       ellipsis: true,
       key: 'userName',
       width: 80,
-      fixed: 'left',
     },
     {
       title: '性别',
@@ -839,7 +904,6 @@
       ellipsis: true,
       key: 'sex',
       width: 40,
-      fixed: 'left',
     },
     {
       title: '城市',
@@ -847,7 +911,6 @@
       ellipsis: true,
       key: 'city',
       width: 45,
-      fixed: 'left',
     },
     {
       title: '品牌',
@@ -855,7 +918,6 @@
       ellipsis: true,
       key: 'rBrand',
       width: 80,
-      fixed: 'left',
     },
     {
       title: '商场',
@@ -863,7 +925,6 @@
       ellipsis: true,
       key: 'rMarket',
       width: 80,
-      fixed: 'left',
     },
     {
       title: '职位',
@@ -871,7 +932,6 @@
       ellipsis: true,
       key: 'rPositions',
       width: 80,
-      fixed: 'left',
     },
     {
       title: '企顾',
@@ -879,7 +939,6 @@
       ellipsis: true,
       key: 'rCounselor',
       width: 70,
-      fixed: 'left',
     },
     {
       title: '推顾',
@@ -887,7 +946,6 @@
       ellipsis: true,
       key: 'recommendCounselor',
       width: 70,
-      fixed: 'left',
     },
     {
       title: '推时',
@@ -895,43 +953,6 @@
       key: 'newRecommendTime',
       ellipsis: true,
       width: 40,
-      fixed: 'left',
-    },
-    {
-      title: '顾反',
-      dataIndex: 'consultantFeedback',
-      key: 'consultantFeedback',
-      ellipsis: true,
-      width: 65,
-      fixed: 'left',
-    },
-    {
-      title: '简发',
-      dataIndex: 'sendResume',
-      key: 'sendResume',
-      ellipsis: true,
-      width: 40,
-    },
-    {
-      title: 'HR',
-      dataIndex: 'resumeCondition',
-      key: 'resumeCondition',
-      width: 60,
-      ellipsis: true,
-    },
-    {
-      title: 'HR审简',
-      dataIndex: 'hrFeedback',
-      key: 'hrFeedback',
-      width: 60,
-      ellipsis: true,
-    },
-    {
-      title: '面状',
-      dataIndex: 'rInterviewStatus',
-      key: 'rInterviewStatus',
-      width: 60,
-      ellipsis: true,
     },
     {
       title: 'OFFER',
@@ -945,28 +966,28 @@
       dataIndex: 'newPredictEntryTime',
       key: 'newPredictEntryTime',
       ellipsis: true,
-      width: 80,
+      width: 40,
     },
     {
       title: '实入',
       dataIndex: 'newPracticalEntryTime',
       key: 'newPracticalEntryTime',
       ellipsis: true,
-      width: 80,
+      width: 40,
     },
     {
       title: '保证',
       dataIndex: 'newGuaranteePeriodTime',
       key: 'newGuaranteePeriodTime',
       ellipsis: true,
-      width: 80,
+      width: 40,
     },
     {
       title: '最终',
       dataIndex: 'endStatus',
       key: 'endStatus',
       ellipsis: true,
-      width: 80,
+      width: 60,
     },
     {
       title: '当前状态',
@@ -974,7 +995,6 @@
       key: 'recommendStatus',
       ellipsis: true,
       width: 70,
-      fixed: 'right',
     },
     {
       title: '操作',
@@ -982,7 +1002,6 @@
       key: 'action',
       ellipsis: true,
       width: 40,
-      fixed: 'right',
     },
   ]);
   const pagination = ref({
@@ -1034,62 +1053,62 @@
   const currentListNum = ref(0);
   const generaListNumber = (listNum) => {
     listNumber.value = [];
-    listNumber.value.push({
-      index: 0,
-      btnNum: 1,
-      name: '待审',
-      num: listNum.consultantFeedbackPendingSum,
-      classNum: currentListNum.value == 1 ? 'classNumActivce' : 'classNum'
-    });
-    listNumber.value.push({
-      index: 1,
-      btnNum: 3,
-      name: '顾待',
-      num: listNum.consultantFeedbackRejectSum,
-      classNum: currentListNum.value == 3 ? 'classNumActivce' : 'classNum'
-    });
-    listNumber.value.push({
-      index: 2,
-      btnNum: 4,
-      name: '待简',
-      num: listNum.assendResumeSum,
-      classNum: currentListNum.value == 4 ? 'classNumActivce' : 'classNumRed'
-    });
-    listNumber.value.push({
-      index: 3,
-      btnNum: 5,
-      name: '待发HR',
-      num: listNum.resumeConditionPendingSum,
-      classNum: currentListNum.value == 5 ? 'classNumActivce' : 'classNum'
-    });
-    listNumber.value.push({
-      index: 4,
-      btnNum: 6,
-      name: '已发HR',
-      num: listNum.resumeConditionPassSum,
-      classNum: currentListNum.value == 6 ? 'classNumActivce' : 'classNum'
-    });
-    listNumber.value.push({
-      index: 5,
-      btnNum: 7,
-      name: 'HR过',
-      num: listNum.hrFeedbackPassSum,
-      classNum: currentListNum.value == 7 ? 'classNumActivce' : 'classNum'
-    });
-    listNumber.value.push({
-      index: 6,
-      btnNum: 9,
-      name: '面中',
-      num: listNum.interviewResultPendingSum,
-      classNum: currentListNum.value == 9 ? 'classNumActivce' : 'classNum'
-    });
-    listNumber.value.push({
-      index: 7,
-      btnNum: 15,
-      name: '面过',
-      num: listNum.interviewResultPassSum,
-      classNum: currentListNum.value == 15 ? 'classNumActivce' : 'classNum'
-    });
+    // listNumber.value.push({
+    //   index: 0,
+    //   btnNum: 1,
+    //   name: '待审',
+    //   num: listNum.consultantFeedbackPendingSum,
+    //   classNum: currentListNum.value == 1 ? 'classNumActivce' : 'classNum'
+    // });
+    // listNumber.value.push({
+    //   index: 1,
+    //   btnNum: 3,
+    //   name: '顾待',
+    //   num: listNum.consultantFeedbackRejectSum,
+    //   classNum: currentListNum.value == 3 ? 'classNumActivce' : 'classNum'
+    // });
+    // listNumber.value.push({
+    //   index: 2,
+    //   btnNum: 4,
+    //   name: '待简',
+    //   num: listNum.assendResumeSum,
+    //   classNum: currentListNum.value == 4 ? 'classNumActivce' : 'classNumRed'
+    // });
+    // listNumber.value.push({
+    //   index: 3,
+    //   btnNum: 5,
+    //   name: '待发HR',
+    //   num: listNum.resumeConditionPendingSum,
+    //   classNum: currentListNum.value == 5 ? 'classNumActivce' : 'classNum'
+    // });
+    // listNumber.value.push({
+    //   index: 4,
+    //   btnNum: 6,
+    //   name: '已发HR',
+    //   num: listNum.resumeConditionPassSum,
+    //   classNum: currentListNum.value == 6 ? 'classNumActivce' : 'classNum'
+    // });
+    // listNumber.value.push({
+    //   index: 5,
+    //   btnNum: 7,
+    //   name: 'HR过',
+    //   num: listNum.hrFeedbackPassSum,
+    //   classNum: currentListNum.value == 7 ? 'classNumActivce' : 'classNum'
+    // });
+    // listNumber.value.push({
+    //   index: 6,
+    //   btnNum: 9,
+    //   name: '面中',
+    //   num: listNum.interviewResultPendingSum,
+    //   classNum: currentListNum.value == 9 ? 'classNumActivce' : 'classNum'
+    // });
+    // listNumber.value.push({
+    //   index: 7,
+    //   btnNum: 15,
+    //   name: '面过',
+    //   num: listNum.interviewResultPassSum,
+    //   classNum: currentListNum.value == 15 ? 'classNumActivce' : 'classNum'
+    // });
     listNumber.value.push({
       index: 8,
       btnNum: 11,
@@ -1118,13 +1137,13 @@
       num: listNum.confirmedExceedSum,
       classNum: currentListNum.value == 20 ? 'classNumActivce' : 'classNumRed'
     });
-    listNumber.value.push({
-      index: 12,
-      btnNum: 27,
-      name: '流程中',
-      num: listNum.liuChengSumTrue,
-      classNum: currentListNum.value == 27 ? 'classNumActivce' : 'classNumRed'
-    });
+    // listNumber.value.push({
+    //   index: 12,
+    //   btnNum: 27,
+    //   name: '流程中',
+    //   num: listNum.liuChengSumTrue,
+    //   classNum: currentListNum.value == 27 ? 'classNumActivce' : 'classNumRed'
+    // });
     // listNumber.value.push({
     //   index: 13,
     //   btnNum: 22,
@@ -1141,9 +1160,12 @@
       }
       return [...prev, curr];
     },[]);
-    onFinish();
+    onFinish(1);
   }
-  const onFinish = () => {
+  const onFinish = (e) => {
+    if(e == 1) {
+    formState.value.pageNumber = '1';
+   }
     // 点击搜索时执行的函数
     tableLoading.value = true;
     resumeListStore.queryRecommendResumeButton(formState.value).then((res) => {
@@ -1213,11 +1235,11 @@
       }
     });
   };
-  onFinish();
+  onFinish(1);
   const handleResumeListData = (values) => {
     // 点击分页器时执行的函数
     formState.value = { ...formState.value, pageNumber: values };
-    onFinish();
+    onFinish(2);
   };
 </script>
 <style lang="less" scoped>
@@ -1245,18 +1267,24 @@
     color: #000;
     cursor: pointer;
     transition: all 0.2s, background 0s;
+    margin-inline-start: 8px;
+    margin-inline-end: 0;
   }
   .classNumRed {
     background-color: red;
     color: #fff;
     cursor: pointer;
     transition: all 0.2s, background 0s;
+    margin-inline-start: 8px;
+    margin-inline-end: 0;
   }
   .classNum:hover,
   .classNumRed:hover,
   .classNumActivce {
     background-color: #23c6c8;
     color: #000;
+    margin-inline-start: 8px;
+    margin-inline-end: 0;
   }
   :deep(.row_col_space_counselor) {
     display: flex;

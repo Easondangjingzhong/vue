@@ -130,7 +130,7 @@
   </div>
   <div class="resume-content">
     <a-row style="margin-bottom: 5px;justify-content: end;">
-      <a-tag v-for="(item,index) in listNumber"
+      <a-tag v-for="item in listNumber"
        :class="item.classNum"
        @click="handleListNumber(item.btnNum)">{{ item.name }}{{ item.num }}</a-tag>
     </a-row>
@@ -147,6 +147,7 @@
         <template v-if="column.key === 'interviewRound'">
           <a-tag v-if="record.interviewProcess == '标准面试'" title="标准面试" color="green">{{ record.interviewRound }}</a-tag>
           <a-tag v-else title="客户自排" color="red">{{ record.interviewRound }}</a-tag>
+          <span v-else>-</span>
         </template>
         <template v-if="column.key === 'interviewTime'">
           <span v-if="record.interviewTime">{{ record.interviewTime }}</span>
@@ -567,7 +568,6 @@
       title: '面轮',
       dataIndex: 'interviewRound',
       key: 'interviewRound',
-      ellipsis: true,
       width: 45,
     },
     {
@@ -596,14 +596,12 @@
       dataIndex: 'firstFollowFlag',
       key: 'firstFollowFlag',
       width: 60,
-      ellipsis: true,
     },
     {
       title: '出席状态',
       dataIndex: 'isAttend',
       key: 'isAttend',
       width: 60,
-      ellipsis: true,
     },
     {
       title: '面试状态',
@@ -824,18 +822,24 @@
     color: #000;
     cursor: pointer;
     transition: all 0.2s, background 0s;
+    margin-inline-start: 8px;
+    margin-inline-end: 0;
   }
   .classNumRed {
     background-color: red;
     color: #fff;
     cursor: pointer;
     transition: all 0.2s, background 0s;
+    margin-inline-start: 8px;
+    margin-inline-end: 0;
   }
   .classNum:hover,
   .classNumRed:hover,
   .classNumActivce {
     background-color: #23c6c8;
     color: #000;
+    margin-inline-start: 8px;
+    margin-inline-end: 0;
   }
   :deep(.row_col_space_counselor) {
     display: flex;

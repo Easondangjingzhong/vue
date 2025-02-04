@@ -12,7 +12,15 @@
           </a-form-item>
         </a-col>
         <a-col :span="9" class="row_col_space_brand">
-          <a-form-item name="brandNp" label="品牌" class="row_col_space_left_brand">
+          <a-form-item name="brandRuleOut" label="品牌" class="row_col_space_left_brand">
+            <a-select
+              optionFilterProp="label"
+              v-model:value="formState.brandRuleOut"
+              :options="optionsNCp"
+              :showArrow="false"
+            ></a-select>
+          </a-form-item>
+          <a-form-item name="brandNp" class="row_col_space_centent_brand">
             <a-select
               optionFilterProp="label"
               v-model:value="formState.brandNp"
@@ -51,6 +59,13 @@
     </a-form>
   </div>
   <div class="resume-content">
+    <a-row>
+      <a-button @click="handleToAddResumeDetails" size="small">新增人才</a-button>
+      <!-- <PicCenterOutlined v-if="searchWorkExp == '1'" style="cursor: pointer;font-size: 14px;margin-left: 5px;color: #03A9F4;"/>
+      <PicRightOutlined v-if="searchWorkExp == '1'" @click="handleChangeWorkExp" style="cursor: pointer;font-size: 14px;margin-left: 5px;"/>
+      <PicCenterOutlined v-if="searchWorkExp == '2'" @click="handleChangeWorkExp" style="cursor: pointer;font-size: 14px;margin-left: 5px;"/>
+      <PicRightOutlined v-if="searchWorkExp == '2'" style="cursor: pointer;font-size: 14px;margin-left: 5px;color: #03A9F4;"/> -->
+    </a-row>
     <a-table
       size="small"
       :dataSource="resumeList"
@@ -66,14 +81,38 @@
         </a>
       </template>
       <template v-else-if="column.key === 'projectFlag'">
-        <span>
-          <a-tag
-            :color="record.projectFlag === '不保' ? 'volcano' : record.projectFlag === '待保' ? 'orange' : 'green'"
-          >
-            {{ record.projectFlag }}
-          </a-tag>
-        </span>
+        <a-tag class="tagspan" v-if="(record.leftType == 2 || record.leftType == 1) && record.projectFlag == '在保'" color="#green">{{ record.projectFlag }}</a-tag>
+        <a-tag class="tagspan" v-if="(record.leftType == 2 || record.leftType == 1) && record.projectFlag == '不保'" color="#orange">{{ record.projectFlag }}</a-tag>
+        
+        <a-tag class="tagspan" v-if="(record.leftType != 2 && record.leftType != 1) && record.checkFlag == '待核'" color="#d8d8d8">{{ record.checkFlag }}</a-tag>
+        <a-tag class="tagspan" v-if="(record.leftType != 2 && record.leftType != 1) && record.checkFlag && record.checkFlag != '待核'" color="green">{{ record.checkFlag }}</a-tag>
+
+        <a-tag class="tagspan" v-if="(record.leftType != 2 && record.leftType != 1) && record.checkFlag == '待核' && record.fristFlag" color="#d8d8d8">{{ record.fristFlag }}</a-tag>
+        <a-tag class="tagspan" v-if="(record.leftType != 2 && record.leftType != 1) && record.checkFlag != '待核' && record.fristFlag" color="green">{{ record.fristFlag }}</a-tag>
+
+        <a-tag class="tagspan" v-if="(record.leftType != 2 && record.leftType != 1) && record.onlyFlag" color="green">{{ record.onlyFlag }}</a-tag>
+        
+        <a-tag class="tagspan" v-if="(record.leftType != 2 && record.leftType != 1) && record.commonFlag" color="green">{{ record.commonFlag }}</a-tag>
+        <a-tag class="tagspan" v-if="(record.leftType != 2 && record.leftType != 1) && record.gognGongFlag" color="orange">{{ record.gognGongFlag }}</a-tag>
+
+        <a-tag class="tagspan" v-if="(record.leftType != 2 && record.leftType != 1) && record.limitFlag == '保护'" color="green">{{ record.limitFlag }}</a-tag>
+        <a-tag class="tagspan" v-if="record.limitFlag == '限制'" color="orange">{{ record.limitFlag }}</a-tag>
+
       </template>
+    </template>
+    <template #expandedRowRender="{ record }">
+      <p style="margin: 0;margin-bottom: 4px;margin-left: 10%;" v-for="item in record.works">
+        <span v-if="item.endYear == '-1'">
+          {{ item.startYear }}.<span v-if="item.startMonth < 10">0{{ +item.startMonth }}</span><span v-if="item.startMonth > 9">{{ item.startMonth }}</span> - 至今
+        </span>
+        <span v-if="item.endYear != '-1'">
+          {{ item.startYear }}.<span v-if="item.startMonth < 10">0{{ +item.startMonth }}</span><span v-if="item.startMonth > 9">{{ item.startMonth }}</span> - {{ item.endYear }}.<span v-if="item.endMonth < 10">0{{ +item.endMonth }}</span><span v-if="item.endMonth > 9">{{ item.endMonth }}</span>
+        </span>
+        {{ item.companyName }}<span v-if="item.cityName">-{{ item.cityName }}</span>
+        <span v-if="item.marketName">-{{ item.marketName }}</span>
+        <span v-if="item.brandName">-{{ item.brandName }}</span>
+        <span v-if="item.positionName">-{{ item.positionName }}</span>
+      </p>
     </template>
   </a-table>
     <a-row style="justify-content: end;margin-top: 10px">
@@ -130,7 +169,7 @@
 </template>
 <script lang="ts" setup>
   import { ref } from 'vue';
-  import { DoubleRightOutlined, DoubleLeftOutlined } from '@ant-design/icons-vue';
+  import { DoubleRightOutlined, DoubleLeftOutlined, PicCenterOutlined, PicRightOutlined } from '@ant-design/icons-vue';
   import type { FormInstance } from 'ant-design-vue';
   import { storeToRefs } from 'pinia';
   import { message } from 'ant-design-vue';
@@ -140,11 +179,15 @@
   import type { SelectProps } from 'ant-design-vue';
   const router = useRouter();
   const resumeListStore = useResumeListStoreWithOut();
-  const { resumeList, brandList, pagination, formState,serchResumeListNum,serchResumeUpdate,serchResumeUpdateData,tableLoading } = storeToRefs(resumeListStore);
+  const { searchWorkExp, resumeList, brandList, pagination, formState,serchResumeListNum,serchResumeUpdate,serchResumeUpdateData,tableLoading } = storeToRefs(resumeListStore);
   const optionsNp = ref([
     {value: "1",label: "当前"},
     {value: "2",label: "所有"},
     {value: "3",label: "过往"},
+  ]);
+  const optionsNCp = ref([
+    {value: "1",label: "包含"},
+    {value: "2",label: "排除"},
   ]);
   // 展开/收起状态
   const expand = ref(1);
@@ -163,6 +206,7 @@
     sortId: formState.value.sortId,
     leftType: formState.value.leftType,
     companyNameRuleOut: "1",
+    brandRuleOut: "1",
     companyNameNp: "1",
     brandNp: "1",
     marketNp: "1",
@@ -224,7 +268,7 @@
       key: 'lastUpdateTimeStr',
     },
     {
-      title: '状态',
+      title: '标签',
       dataIndex: 'projectFlag',
       key: 'projectFlag',
     },
@@ -243,11 +287,21 @@
     window.open(href.href, '_blank')
     // 跳转到简历详情页
     //window.open(`http://work.wotui.com:8889/WTSM/system/consultant-query-resume.html?resumeId=${resumeId}&resumeType=C&addConsultantId=${addConsultantId}`);
-  };
+  }
+  const handleToAddResumeDetails = () => {
+    const loginVueUser: {loginName: "", loginId: "", loginTocken: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
+    const href = router.resolve({
+      path: '/resume',
+      query: {...loginVueUser},
+    });
+    window.open(href.href, '_blank')
+    // 跳转到简历详情页
+    //window.open(`http://work.wotui.com:8889/WTSM/system/consultant-query-resume.html?resumeId=${resumeId}&resumeType=C&addConsultantId=${addConsultantId}`);
+  }
   const handleResumeListData = (current) => {
     pagination.value = { ...pagination.value, current };
     onFinish(1);
-  };
+  }
   //@ts-ignore
   resumeListStore.queryBranList(formState.value);
   //品牌数据展示
@@ -335,6 +389,12 @@
       },1000)
     }
   });
+  const handleChangeWorkExp = () => {
+    resumeListStore.$patch({
+      searchWorkExp: searchWorkExp.value == "1" ? "2" : "1",
+    })
+    onFinish(2);
+  }
 </script>
 <style lang="less" scoped>
   .resume-content,
@@ -354,6 +414,10 @@
   }
   .ant-pagination.ant-pagination-mini .ant-pagination-prev, .ant-pagination.ant-pagination-mini .ant-pagination-next {
     margin-right: 5px;
+  }
+  .tagspan {
+    margin-inline-end: 4px;
+    border-radius: 8px;
   }
   :deep(.row_col_space_brand) {
     display: flex;
@@ -376,6 +440,17 @@
     display: contents;
   }
   :deep(.row_col_space_left_brand .ant-select-selector) {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+    height: auto;
+  }
+  :deep(.row_col_space_centent_brand) {
+    width: 14%;
+    margin-inline-end: -1px;
+  }
+  :deep(.row_col_space_centent_brand .ant-select-selector) {
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
     border-start-end-radius: 0;
     border-end-end-radius: 0;
     height: auto;

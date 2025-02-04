@@ -24,6 +24,7 @@
   const { resumeFormState,resumeId,closeBtn} = storeToRefs(resumeStore);
   const plagiarusnStore = usePlagiarusnStoreWithOut();
   const { resumeInfoFlag } = storeToRefs(plagiarusnStore);
+  const router = useRouter();
   const handleCloseBtn = () => {
     closeBtn.value = false;
     plagiarusnStore.plagiarusnInfoFlagShow(true);
@@ -31,7 +32,13 @@
   }
   const handleGoToBtn = () => {
     handleCloseBtn();
-    window.open(`http://work.wotui.com:8889/WTSM/system/consultant-query-resume.html?resumeId=${resumeId.value}&resumeType=C`);
+    const loginVueUser: {loginName: "", loginId: "", loginTocken: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
+    const href = router.resolve({
+      path: '/resume/list',
+      query: {...loginVueUser},
+    });
+    window.open(href.href, '_blank')
+    //window.open(`http://work.wotui.com:8889/WTSM/system/consultant-query-resume.html?resumeId=${resumeId.value}&resumeType=C`);
   }
   //const scaleKey = ref(1);
   /** 获取css 属性值 */

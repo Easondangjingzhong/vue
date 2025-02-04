@@ -35,7 +35,19 @@ enum URL {
   query_candidate_position_intention = '/seeker-contact-record/rusume-vue-query-resume-contact-record.action',
   delete_work_exp = '/resume/resume-vue-deleteWorkExpById.action',
   delete_edu_exp = '/resume/resume-vue-deleteEduExpById.action',
+  resume_copy_to_self = '/resume/rusume-vue-copyResume-byResumeId.action',
+  resume_add_tag = '/resume/rusume-vue-update-personLabel.action',
+  resume_add_checked = '/resume/resume-vue-update-resume-resume-issure.action',
+  resume_search_recommend = '/candidatePosition/resume-vue-query-position-guanlian-scarch.action',
 }
+const searchFormState = (formData: any) =>
+  post<any>({ url: URL.resume_search_recommend, data: formData });
+const addResumeChecked = (formData: any) =>
+  post<any>({ url: URL.resume_add_checked, data: formData });
+const addTag = (formData: any) =>
+  post<any>({ url: URL.resume_add_tag, data: formData });
+const resumeCopyToSelf = (formData: any) =>
+  post<any>({ url: URL.resume_copy_to_self, data: formData });
 const deleteEducationExp = (formData: any) =>
   post<any>({ url: URL.delete_edu_exp, data: formData });
 const deleteWorkExp = (formData: any) =>
@@ -106,6 +118,10 @@ const queryMarkBrandFloor = async (data: any) => post<any>({ url: URL.resume_mar
  */
 const queryMarkList = async (data: any) => post<any>({ url: URL.resume_markList, data });
 export default {
+  searchFormState,
+  addResumeChecked,
+  addTag,
+  resumeCopyToSelf,
   deleteEducationExp,
   deleteWorkExp,
   queryCandidatePositionIntention,

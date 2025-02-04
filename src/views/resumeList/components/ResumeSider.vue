@@ -80,7 +80,7 @@
   resumeList.fetchInfo();
   const { resumeMenu,teamPersonChangeArr,sortResumeUpdateData,sortResumeUpdate } = storeToRefs(resumeList);
   const state = reactive({
-    selectedKeys: ['1'],
+    selectedKeys: ['2'],
     openKeys: ['01','51','6','7'],
   });
   let items = ref([{}]);
@@ -116,10 +116,13 @@
               key: subItem.key,
               label: h('div', { class: 'resume-menu-title' }, [
                 h('span', { class: 'resume-menu-title-content' }, subItem.title),
-                h('span', { class: 'resume-menu-title-content-svg',onClick: (e) => {
+                h('span', { class: 'resume-menu-title-sort-content-svg',onClick: (e) => {
                   e.stopPropagation();
                   resumeList.querySortById(subItem.key);
-                }, }, h(FormOutlined)),
+                }, }, [
+               h(FormOutlined),
+               h('span',subItem.label)
+               ]),
               ]),
               title: `${subItem.title} ${subItem.label}`,
               type: subItem.type,
@@ -466,6 +469,10 @@
   .resume-menu-title-content-svg {
     width: 17px;
   }
+  .resume-menu-title-sort-content-svg {
+    width: 32px;
+  }
+  .resume-menu-title-sort-content-svg svg,
   .resume-menu-title-content-login-name svg,
   .resume-menu-title-content-svg svg{
     width: 15px;

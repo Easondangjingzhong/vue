@@ -352,7 +352,7 @@
     {value: "3",label: "过往"},
   ]);
   const optionsNCp = ref([
-    {value: "1",label: "标准"},
+    {value: "1",label: "包含"},
     {value: "2",label: "排除"},
   ]);
   const cityStore = useCityStoreWithOut();
@@ -653,7 +653,7 @@
       props.formState.hangye2 = props.formState.hangye;
       handleHangyePositions();
     } else {
-      props.formState.hangye = ['零售业'];
+      props.formState.hangye = [];
       handleHangye();
     }
   };

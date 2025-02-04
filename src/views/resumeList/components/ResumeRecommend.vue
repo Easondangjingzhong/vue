@@ -101,9 +101,9 @@
           </a-form-item>
         </a-col>
       </a-row>
-      <a-row :gutter="24" v-if="expand > 2">
+      <a-row :gutter="24" v-if="expand > 2" style="display: none;">
         <a-col :span="spanCol">
-          <a-form-item name="interviewResult" label="面试状态">
+          <a-form-item name="interviewResult" label="面试状态" style="display: none;">
             <a-select
               optionFilterProp="label"
               v-model:value="formState.interviewResult"
@@ -113,7 +113,7 @@
             ></a-select>
           </a-form-item>
         </a-col>
-        <a-col :span="spanCol">
+        <a-col :span="spanCol" style="display: none;">
           <a-form-item name="offerChoice" label="OFFER">
             <a-select
               optionFilterProp="label"
@@ -124,18 +124,8 @@
             ></a-select>
           </a-form-item>
         </a-col>
-        <a-col :span="spanCol">
-          <a-form-item name="recommendStatus" label="当前状态">
-            <a-select
-              optionFilterProp="label"
-              v-model:value="formState.recommendStatus"
-              show-search
-              :allowClear="true"
-              :options="optionsRecommendStatus"
-            ></a-select>
-          </a-form-item>
-        </a-col>
-        <a-col :span="spanCol">
+       
+        <a-col :span="spanCol" style="display: none;">
           <a-form-item name="endStatus" label="最终">
             <a-select
               optionFilterProp="label"
@@ -147,7 +137,7 @@
           </a-form-item>
         </a-col>
       </a-row>
-      <a-row :gutter="24" v-if="expand > 3">
+      <a-row :gutter="24" v-if="expand > 2">
         <a-col :span="spanCol">
           <a-form-item name="positionsId" label="职位">
             <a-select
@@ -208,15 +198,26 @@
         <a-col :span="spanCol">
           <a-range-picker v-model:value="selectTime" />
         </a-col>
-        <a-col :span="spanCol" style="margin-left: 50px">
+        <a-col :span="spanCol">
+          <a-form-item name="recommendStatus" label="当前状态">
+            <a-select
+              optionFilterProp="label"
+              v-model:value="formState.recommendStatus"
+              show-search
+              :allowClear="true"
+              :options="optionsRecommendStatus"
+            ></a-select>
+          </a-form-item>
+        </a-col>
+        <a-col :span="spanCol"  style="padding-left: 60px">
           <a-button style="margin: 0 0 0 8px" type="primary" html-type="submit">搜索</a-button>
           <a-button style="margin: 0 8px" @click="clearFromState">清空</a-button>
           <a @click="handleExpand">
-            <template v-if="expand < 4">
+            <template v-if="expand < 3">
               <DoubleRightOutlined :rotate="90" />
               更多
             </template>
-            <template v-else="expand == 4">
+            <template v-else="expand == 3">
               <DoubleLeftOutlined :rotate="90" />
               最简
             </template>
@@ -720,6 +721,7 @@
   const spanCol = 6;
   interface SearchForm {
     pageNumber: string;
+    pageSize: string;
     number: string;
     city: string;
     brand: string;
@@ -763,6 +765,7 @@
   }
   const formState = ref<SearchForm>({
     pageNumber: '1',
+    pageSize: '12',
     number: '',
     city: '',
     brand: '',
@@ -809,6 +812,7 @@
     // ��空搜索条件
     formState.value = {
     pageNumber: '1',
+    pageSize: '12',
     number: '',
     city: '',
     brand: '',
@@ -863,7 +867,7 @@
     },[]);
     currentListNum.value = 0;
   };
-  const expandArr = [1, 2, 3, 4, 2];
+  const expandArr = [1, 2, 3, 2];
   const expand = ref(2);
   const handleExpand = () => {
     // 点击更多或最简时执行的函数
@@ -946,7 +950,6 @@
       title: '顾反',
       dataIndex: 'consultantFeedback',
       key: 'consultantFeedback',
-      ellipsis: true,
       width: 65,
     },
     {
@@ -1145,8 +1148,9 @@
     onFinish(1);
   }
   const onFinish = (e) => {
-    console.log(e);
-    
+   if(e == 1) {
+    formState.value.pageNumber = '1';
+   }
     // 点击搜索时执行的函数
     tableLoading.value = true;
     resumeListStore.queryRecommendResumeButton(formState.value).then((res) => {
@@ -1216,11 +1220,11 @@
       }
     });
   };
-  onFinish();
+  onFinish(1);
   const handleResumeListData = (values) => {
     // 点击分页器时执行的函数
     formState.value = { ...formState.value, pageNumber: values };
-    onFinish(1);
+    onFinish(2);
   };
 </script>
 <style lang="less" scoped>
@@ -1248,18 +1252,24 @@
     color: #000;
     cursor: pointer;
     transition: all 0.2s, background 0s;
+    margin-inline-start: 8px;
+    margin-inline-end: 0;
   }
   .classNumRed {
     background-color: red;
     color: #fff;
     cursor: pointer;
     transition: all 0.2s, background 0s;
+    margin-inline-start: 8px;
+    margin-inline-end: 0;
   }
   .classNum:hover,
   .classNumRed:hover,
   .classNumActivce {
     background-color: #23c6c8;
     color: #000;
+    margin-inline-start: 8px;
+    margin-inline-end: 0;
   }
   :deep(.row_col_space_counselor) {
     display: flex;

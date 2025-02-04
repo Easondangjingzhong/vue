@@ -11,6 +11,8 @@ specifiers:
   '@vitejs/plugin-legacy': ^4.1.1
   '@vitejs/plugin-vue': ^4.3.4
   '@vitejs/plugin-vue-jsx': ^3.0.2
+  '@vue-office/docx': ^1.6.3
+  '@vue-office/pdf': ^2.0.10
   '@vueuse/core': ^6.8.0
   ant-design-vue: ^4.2.6
   autoprefixer: ^10.4.0
@@ -50,6 +52,7 @@ specifiers:
   vite-plugin-svg-icons: ^2.0.1
   vue: ^3.2.16
   vue-cropper: ^1.1.4
+  vue-demi: ^0.14.10
   vue-eslint-parser: ^7.11.0
   vue-request: ^1.2.3
   vue-router: ^4.0.12
@@ -57,6 +60,8 @@ specifiers:
 
 dependencies:
   '@ant-design/icons-vue': 7.0.1_vue@3.2.23
+  '@vue-office/docx': 1.6.3_b5bjqwjjgd4kqwznhzyqhuqgum
+  '@vue-office/pdf': 2.0.10_b5bjqwjjgd4kqwznhzyqhuqgum
   '@vueuse/core': 6.9.2_vue@3.2.23
   ant-design-vue: 4.2.6_vue@3.2.23
   axios: 0.24.0
@@ -68,6 +73,7 @@ dependencies:
   sanitize.css: 13.0.0
   vue: 3.2.23
   vue-cropper: 1.1.4
+  vue-demi: 0.14.10_vue@3.2.23
   vue-request: 1.2.3_vue@3.2.23
   vue-router: 4.0.12_vue@3.2.23
 
@@ -2506,6 +2512,36 @@ packages:
       vscode-uri: 3.0.8
     dev: true
 
+  /@vue-office/docx/1.6.3_b5bjqwjjgd4kqwznhzyqhuqgum:
+    resolution: {integrity: sha512-Cs+3CAaRBOWOiW4XAhTwwxJ0dy8cPIf6DqfNvYcD3YACiLwO4kuawLF2IAXxyijhbuOeoFsfvoVbOc16A/4bZA==}
+    requiresBuild: true
+    peerDependencies:
+      '@vue/composition-api': ^1.7.1
+      vue: ^2.0.0 || >=3.0.0
+      vue-demi: ^0.14.6
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+    dependencies:
+      vue: 3.2.23
+      vue-demi: 0.14.10_vue@3.2.23
+    dev: false
+
+  /@vue-office/pdf/2.0.10_b5bjqwjjgd4kqwznhzyqhuqgum:
+    resolution: {integrity: sha512-yHVLrMAKpMPBkhBwofFyGEtEeJF0Zd7oGmf56Pe5aj/xObdRq3E1CIZqTqhWJNgHV8oLQqaX0vs4p5T1zq+GIA==}
+    requiresBuild: true
+    peerDependencies:
+      '@vue/composition-api': ^1.7.1
+      vue: ^2.0.0 || >=3.0.0
+      vue-demi: ^0.14.6
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+    dependencies:
+      vue: 3.2.23
+      vue-demi: 0.14.10_vue@3.2.23
+    dev: false
+
   /@vue/babel-helper-vue-transform-on/1.1.5:
     resolution: {integrity: sha512-SgUymFpMoAyWeYWLAY+MkCK3QEROsiUnfaw5zxOVD/M64KQs8D/4oK6Q5omVA2hnvEOE0SCkH2TZxs/jnnUj7w==, registry: https://registry.nlark.com/, tarball: https://registry.nlark.com/@vue/babel-helper-vue-transform-on/-/babel-helper-vue-transform-on-1.1.5.tgz}
     dev: true
@@ -2666,7 +2702,7 @@ packages:
     dependencies:
       '@vueuse/shared': 6.9.2_vue@3.2.23
       vue: 3.2.23
-      vue-demi: 0.12.1_vue@3.2.23
+      vue-demi: 0.14.10_vue@3.2.23
 
   /@vueuse/shared/6.9.2_vue@3.2.23:
     resolution: {integrity: sha512-lAiMh6XROs0kSKVd0Yb/6GKoQMxC1fYrFDi6opvQWISPtcqRNluRrQxLUZ3WTI78ovtoKRLktjhkFAtydcfFDg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npm.taobao.org/@vueuse/shared/download/@vueuse/shared-6.9.2.tgz}
@@ -6980,7 +7016,7 @@ packages:
       '@vue/devtools-api': 6.0.0-beta.20.1
       typescript: 5.2.2
       vue: 3.2.23
-      vue-demi: 0.12.1_vue@3.2.23
+      vue-demi: 0.14.10_vue@3.2.23
     dev: false
 
   /pirates/4.0.1:
@@ -8538,20 +8574,6 @@ packages:
   /vue-cropper/1.1.4:
     resolution: {integrity: sha512-5m98vBsCEI9rbS4JxELxXidtAui3qNyTHLHg67Qbn7g8cg+E6LcnC+hh3SM/p94x6mFh6KRxT1ttnta+wCYqWA==}
     dev: false
-
-  /vue-demi/0.12.1_vue@3.2.23:
-    resolution: {integrity: sha1-9+GO++z/0RqwadFHLXoG4xm0F0w=, registry: https://registry.npm.taobao.org/, tarball: https://registry.npm.taobao.org/vue-demi/download/vue-demi-0.12.1.tgz}
-    engines: {node: '>=12'}
-    hasBin: true
-    requiresBuild: true
-    peerDependencies:
-      '@vue/composition-api': ^1.0.0-rc.1
-      vue: ^3.0.0-0 || ^2.6.0
-    peerDependenciesMeta:
-      '@vue/composition-api':
-        optional: true
-    dependencies:
-      vue: 3.2.23
 
   /vue-demi/0.14.10_vue@3.2.23:
     resolution: {integrity: sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg==}

@@ -29,6 +29,7 @@ export interface SearchResumeList {
   education: string;
   keyWords: string;
   brandNp: string;//1 当前 2 所有 3过往
+  brandRuleOut: string; //1 标准 2 排除
   companyNameRuleOut: string; //1 标准 2 排除
   companyNameNp: string;//1 当前 2 所有 3过往
   marketNp: string;//1 当前 2 所有 3过往

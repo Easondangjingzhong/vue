@@ -3,7 +3,7 @@
     <a-row :gutter="24">
       <a-col :span="24" class="resume_info">
         <h2 class="resume_h3">{{ resumeData.userName }}</h2>
-        <a-tag color="#ffd522" class="resume_tag_checked" v-if="resumeData.heDuiFlag == '待核'"
+        <a-tag style="cursor: pointer;" @click="handleAddChecked" color="#ffd522" class="resume_tag_checked" v-if="resumeData.heDuiFlag == '待核'"
           >待核</a-tag
         >
         <a-tag
@@ -34,6 +34,23 @@
           v-if="personBaohuFlag"
           >保护</a-tag
         >
+        <a-tag
+          color="#FF9800"
+          v-if="showResumeCopy"
+          class="resume_tag_checked_top"
+          @click="handleOpenResumeCopy"
+          >复制</a-tag
+        >
+        <a-modal v-model:open="openResumeCopy" title="复制简历" @ok="handleResumeCopy">
+      <p>是否将简历复制到自己名下</p>
+    </a-modal>
+    <a-modal v-model:open="openResumeChecked" title="简历核对" @ok="handleResumeChecked">
+      <p>请确认此简历匹配以下4条制度要求，方可核对</p>
+      <p>1. 候选人简历属于零售行业或属于目前公司在做的职位的寻找方向；</p>
+      <p>2. 新增的候选人简历的内容（个人信息、工作经历、教育经历等）完整准确真实，完整度需达到90%以上；</p>
+      <p>3. 与新增的候选人进行过有效电话沟通且填写匹配的有效沟通记录；</p>
+      <p>4. 简历与候选人进行过核对。</p>
+    </a-modal>
       </a-col>
     </a-row>
     <a-row :gutter="24" class="resume_row_center">
@@ -54,24 +71,33 @@
     <a-row :gutter="24" class="resume_row">
       <a-col :span="21">
         标签:
-        <a-tag color="#a2c9fd" v-if="industryLabel" :title="industryLabelTitle">{{
-          industryLabel
-        }}</a-tag>
-        <a-tag color="#a2c9fd" v-if="positionsLabel" :title="positionsLabelTitle">{{
-          positionsLabel
-        }}</a-tag>
-        <a-tag color="#a2c9fd" v-if="rankLabel" :title="rankLabelTitle">{{ rankLabel }}</a-tag>
-        <a-tag color="#a2c9fd" v-if="brandLabel" :title="brandLabelTitle">{{ brandLabel }}</a-tag>
-        <a-tag color="#a2c9fd" v-if="gradeLabel" :title="gradeLabelTitle">{{ gradeLabel }}</a-tag>
-        <a-tag color="#a2c9fd" v-if="language" :title="languageTitle">{{ language }}</a-tag>
-        <PlusSquareFilled />
+        <a-tag class="tagspan" color="#a2c9fd" v-if="industryLabel">
+          {{industryLabel}}
+          {{ brandLabel }}
+          {{ gradeLabel }}
+        </a-tag>
+        <a-tag class="tagspan" color="#a2c9fd" v-if="positionsLabel">
+          {{positionsLabel}}
+          {{ rankLabel }}
+        </a-tag>
+        <a-tag class="tagspan" color="#a2c9fd" v-if="language">{{ language }}</a-tag>
+        <a-tag class="tagspan" color="#a2c9fd" v-if="personLabel">{{ personLabel }}</a-tag>
+        <PlusSquareFilled v-if="!tagFlag" @click="handleShowAddTag"/>
+        <span v-if="tagFlag">
+        <a-input v-if="!tagType" size="small" style="width: 80px;margin-right: 5px;" v-model:value="tagValue"/>
+          <a-select v-if="tagType" size="small" style="width: 80px;margin-right: 5px;" v-model:value="tagValue" :options="optionsTag"></a-select>
+          <a-tag color="blue" style="cursor: pointer;" @click="handleAddTag">添加</a-tag>
+          <a-tag style="cursor: pointer;" @click="handleShowAddTag">取消</a-tag>
+          <a-tag v-if="!tagType" style="cursor: pointer;" @click="handleChangeAddTag">选择</a-tag>
+          <a-tag v-if="tagType" style="cursor: pointer;" @click="handleChangeAddTag">填写</a-tag>
+      </span>
       </a-col>
       <a-col :span="3" style="text-align: right">
         <a-button
-          v-if="resumeData.recommendLimit == '推荐'"
+          v-if="resumeData.recommendLimit == '推荐' && resumeData.heDuiFlag == '已核'"
           type="primary"
           danger
-          size="small"
+          size="middle"
           @click="handleRecommendCandidatePosition"
         >
           {{ resumeData.recommendLimit }}
@@ -111,6 +137,8 @@
   </div>
 </template>
 <script setup lang="ts">
+  import { message } from 'ant-design-vue';
+  import type { SelectProps } from 'ant-design-vue';
   import { formatToDateMinute } from '/@/utils/dateUtil';
   import { PlusSquareFilled, PhoneFilled } from '@ant-design/icons-vue';
   import RecommendCandidatePosition from './RecommendCandidatePosition.vue';
@@ -120,7 +148,7 @@
     resumeData: {
       type: Object,
       required: true,
-    },
+    }
   });
   const newTime = ref(
     props.resumeData.shouZengStartTime
@@ -181,6 +209,103 @@
   const handleRecommendCandidatePosition = () => {
     resumeDetailStore.queryMappingIdByResumeId();
   };
+  const openResumeCopy = ref(false);
+  const showResumeCopy = ref(false);
+  const loginVueUser: {loginName: "", loginId: "", loginTocken: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
+  // 如果简历的创建人不是当前登录人，则显示复制简历按钮
+    // 注意：此处需要和后端协商好，获取简历创建人id的api
+    // 假设resumeDetail.recruitId 就是简历创建人id
+    // 假设 resumeDetail.recruitId 和 loginVueUser.loginId 相等时，表示是创建人，可以显示复制简历按钮
+    // 假设 resumeDetail.recruitId 和 loginVueUser.loginId 不等时，表示不是创建人，不可以显示复制简历按钮
+    // 以下代码是假设简历创建人id是 resumeDetail.recruitId，loginVueUser.loginId是假设的登录人id
+    if (props.resumeData.recruitId?.toString() != loginVueUser.loginId) {
+      showResumeCopy.value = true;
+    }
+  const handleOpenResumeCopy = () => {
+    openResumeCopy.value = true;
+  };
+  const handleResumeCopy = () => {
+    // 复制简历
+    resumeDetailStore.resumeCopyToSelf().then(res => {
+      console.log(res);
+      if (res.code === 1) {
+        message.success('已复制到我的简历');
+        openResumeCopy.value = false;
+      }else if (res.code === 2) {
+        message.warning('已复制无需再次复制');
+        openResumeCopy.value = false;
+      } else {
+        message.error('复制简历失败');
+      }
+    });
+  }
+  const optionsTag = ref<SelectProps['options']>([
+    {
+      value: '零售业',
+      label: '零售业',
+    },
+    {
+      value: '服装服饰',
+      label: '服装服饰',
+    },
+    {
+      value: '全品类',
+      label: '全品类',
+    },
+  ]);
+  const tagType = ref(false);
+  const handleChangeAddTag = () => {
+    tagType.value = !tagType.value;
+  }
+  const personLabel = ref('');
+  personLabel.value = props.resumeData.personLabel;
+  const tagFlag = ref(false);
+
+  const tagValue = ref('');
+  const handleShowAddTag = () => {
+    tagFlag.value = !tagFlag.value;
+    tagType.value = false;
+    tagValue.value = '';
+  }
+  const handleAddTag = () => {
+    if (!tagValue.value) {
+      message.error('请填写标签名称');
+      return;
+    }
+    let tempTag = "";
+    if (personLabel.value) {
+      tempTag = `${personLabel.value}-${tagValue.value}`;
+    }
+    resumeDetailStore.addTag(tempTag).then((res) => {
+      if (res.code === 1) {
+        tagFlag.value = false;
+        tagType.value = false;
+        message.success('添加标签成功');
+        if (personLabel.value) {
+          personLabel.value = `${personLabel.value}-${tagValue.value}`;
+        } else {
+          personLabel.value = tagValue.value;
+        }
+        tagValue.value = '';
+      } else {
+        message.error('添加标签失败');
+      }
+    })
+  }
+  const openResumeChecked = ref(false);
+  const handleAddChecked = () => {
+    openResumeChecked.value = true;
+  }
+  const handleResumeChecked = () => {
+    resumeDetailStore.addResumeChecked().then((res) => {
+      if (res.code === 1) {
+        openResumeChecked.value = false;
+        message.success('添加已核成功');
+      } else {
+        message.error(res.info);
+      }
+    })
+  }
 </script>
 <style lang="less" scoped>
   .resume_header {
@@ -196,7 +321,7 @@
   }
   .resume_h3 {
     margin: 10px 0 5px;
-    font-size: 24px;
+    font-size: 26px;
   }
   .resume_row {
     margin: 5px 0;
@@ -210,16 +335,20 @@
   }
   .resume_tag_checked {
     margin-left: 5px;
-    margin-top: 3px;
+    margin-top: 10px;
   }
   .resume_tag_checked_top {
-    margin-top: 3px;
+    margin-top: 10px;
   }
   .resume_tag {
     margin-left: 15px;
   }
   .resume_tag_phone {
     color: #000;
+  }
+  .tagspan {
+    margin-inline-end: 4px;
+    border-radius: 8px;
   }
   :deep(.resume_tag_phone > .anticon + span, .resume_tag_phone > span + .anticon) {
     margin-inline-start: 0px !important;

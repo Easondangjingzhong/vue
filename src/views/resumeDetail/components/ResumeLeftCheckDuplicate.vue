@@ -58,7 +58,14 @@
       :columns="columns"
       :locale="{ emptyText: '暂无客户查重' }"
       @change="handleQueryResumeCheckResult"
-    ></a-table>
+    >
+    <template #bodyCell="{ column, record }">
+      <template v-if="column.key === 'checkResult'">
+          <a-tag v-if="record.checkResult == '录入成功' || record.checkResult == '到面'" color="green">{{ record.checkResult }}</a-tag>
+          <a-tag v-if="record.checkResult == '简历重复'" color="red">{{ record.checkResult }}</a-tag>
+        </template>
+      </template>
+  </a-table>
   </div>
 </template>
 <script setup lang="ts">

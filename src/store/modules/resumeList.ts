@@ -30,6 +30,7 @@ interface ResumeListState {
   sortResumeUpdateData: {}; //人才分类修改状态
   tableLoading: boolean; //简历查询状态
   searchResumeType: string; //搜索查询内容 1 我的推荐  2 我的面试  3 我的OFFER
+  searchWorkExp: string; //搜索查询内容 1 展示工作经历  2 不展示工作经历
   recommendCounselorArr: []; //查询推荐顾问
   enterpriseConsultantArr: []; //查询企业顾问
 }
@@ -44,6 +45,7 @@ export const useResumeListStore = defineStore({
     formState: {
       ...({} as SearchResumeList),
       companyNameRuleOut: '1',
+      brandRuleOut: '1',
       companyNameNp: '1',
       brandNp: '1',
       marketNp: '1',
@@ -57,6 +59,7 @@ export const useResumeListStore = defineStore({
     companyCnList: [],
     systemType: '',
     searchResumeType: '',
+    searchWorkExp: '1',
     loginNameChangeRecruitId: '',
     loginNameChangeRecruitName: '',
     serchResumeListNum: 0,
@@ -559,7 +562,7 @@ export const useResumeListStore = defineStore({
         this.queryMyPersonData(res, param);
       }
       if (param.includes('sortResume')) {
-        this.formState = { ...this.formState, sortId: param.split('-')[1] };
+        this.formState = { ...this.formState,leftType: "6", sortId: param.split('-')[1] };
         //@ts-ignore
         this.queryResumeList(this.formState);
       }
@@ -573,9 +576,15 @@ export const useResumeListStore = defineStore({
       this.loginNameChangeRecruitId = recruitId.split('-')[0];
       this.loginNameChangeRecruitName = recruitId.split('-')[1];
       let formData = new FormData();
-      formData.append('recruitId', recruitId.split('-')[0] || loginVueUser.loginId);
-      formData.append('viewType', viewType);
-      this.formState = { ...this.formState, viewType: viewType };
+      if ( viewType == "T") {
+        formData.append('recruitId', recruitId.split('-')[0] || loginVueUser.loginId);
+        formData.append('viewType', viewType);
+        this.formState = { ...this.formState, viewType: viewType };
+      } else {
+        formData.append('recruitId', loginVueUser.loginId);
+        formData.append('viewType', "S");
+        this.formState = { ...this.formState, viewType: "S" };
+      }
       const res = await fetchApi.queryPersonTalentData(formData);
       this.queryMyPersonData(res, '51');
     },
@@ -648,7 +657,7 @@ export const useResumeListStore = defineStore({
           info.sortResumeList.forEach((item) => {
             let subItem = {} as Item;
             subItem.key = `sortResume-${item.sortId}`;
-            subItem.label = '';
+            subItem.label = item.resumeNum || '0';
             subItem.title = item.sortName;
             subItem.level = 2;
             //@ts-ignore
@@ -771,8 +780,25 @@ export const useResumeListStore = defineStore({
           tempItem.customerServiceName = item.customerServiceName || '公共库';
           tempItem.registTimeStr = item.registTimeStr;
           tempItem.lastUpdateTimeStr = formatToDateMinute(item.lastUpdateTimeStr);
-          tempItem.projectFlag = item.projectFlag;
+          tempItem.checkFlag = item.checkFlag || ""; //待核 最新 过期
+          tempItem.fristFlag = item.fristFlag || ""; //首增
+          tempItem.commonFlag = item.commonFlag || ""; //私有
+          tempItem.onlyFlag = item.onlyFlag || ""; //唯一
+          tempItem.gognGongFlag = item.gognGongFlag || ""; //公共
+          tempItem.limitFlag = item.limitFlag || ""; //限制 保护
           tempItem.options = item.options;
+          tempItem.leftType = param.leftType;//参数
+          tempItem.projectFlag = item.projectFlag;
+          // if (item.works) {
+          //   let workTemp = "";
+          //   item.works.forEach(subItem => {
+          //     workTemp += `${subItem.companyName}<br/>`;
+          //   })
+          //   tempItem.works = workTemp;
+          // } else {
+          //   tempItem.works = "";
+          // }
+          tempItem.works = item.works;
           tempList.push(tempItem);
         });
         this.resumeList = tempList;
@@ -835,6 +861,7 @@ export const useResumeListStore = defineStore({
         param.keyWords ? param.keyWords.replaceAll('，', ',').replaceAll(',', '|') : '',
       );
       formData.append('brandNp', param.brandNp || '');
+      formData.append('brandRuleOut', param.brandRuleOut || '');
       formData.append('companyNameRuleOut', param.companyNameRuleOut || '');
       formData.append('companyNameNp', param.companyNameNp || '');
       formData.append('marketNp', param.marketNp || '');
@@ -845,8 +872,8 @@ export const useResumeListStore = defineStore({
       formData.append('maxAge', param.maxAge || '');
       formData.append('leftTeamId', param.leftTeamId || '');
       formData.append('leftRecruitId', param.leftRecruitId || '');
-      formData.append('leftType', param.leftType || '1');
-      formData.append('isWorkExp', param.isWorkExp || '');
+      formData.append('leftType', param.leftType || '2');
+      formData.append('isWorkExp', this.searchWorkExp);
       formData.append('sortId', param.sortId || '');
       formData.append('viewType', param.viewType || 'T');
       return formData;
@@ -943,7 +970,11 @@ export const useResumeListStore = defineStore({
      * @returns
      */
      async queryRecommendResumeButton(params) {
-      params = {...params,SystemRecruitId: loginVueUser.loginId,pageNumber: params.pageNumber || "1"}
+      params = {...params,
+        SystemRecruitId: this.loginNameChangeRecruitId ||loginVueUser.loginId,
+        recommendRecruitId: params.recommendRecruitId || this.loginNameChangeRecruitId || loginVueUser.loginId,
+        pageNumber: params.pageNumber || "1"
+      }
       let temp = stringifyToFormData(params);
       const res = await fetchApi.queryRecommendResumeButton(temp);
       return res;
@@ -954,8 +985,9 @@ export const useResumeListStore = defineStore({
      */
      async queryRecommendInterview(params) {
       params = {...params,
-        realRecruitId: loginVueUser.loginId,
-        SystemRecruitId: loginVueUser.loginId,
+        realRecruitId: this.loginNameChangeRecruitId || loginVueUser.loginId,
+        SystemRecruitId: this.loginNameChangeRecruitId || loginVueUser.loginId,
+        recruitId: params.recruitId || this.loginNameChangeRecruitId || loginVueUser.loginId,
         pageNumber: params.pageNumber || "1",
         typeNumber: params.typeNumber || "3"}
       let temp = stringifyToFormData(params);

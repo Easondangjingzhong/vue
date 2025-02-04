@@ -81,7 +81,18 @@
       :columns="columns"
       @change="handleResumeList"
       :locale="{ emptyText: '暂无职位意向' }"
-    ></a-table>
+    >
+    <template #bodyCell="{ column, record }">
+      <template v-if="column.key === 'intention'">
+          <a-tag v-if="record.intention == '明确考虑'" color="green">{{ record.intention }}</a-tag>
+          <a-tag v-if="record.intention == '需要打听'" color="orange">{{ record.intention }}</a-tag>
+          <a-tag v-if="record.intention == '拒绝考虑'" color="red">{{ record.intention }}</a-tag>
+        </template>
+        <template v-if="column.key === 'date'">
+          <a-tag :title="record.date">查看</a-tag>
+        </template>
+      </template>
+  </a-table>
   </div>
 </template>
 <script setup lang="ts">
@@ -112,49 +123,47 @@ import { storeToRefs } from 'pinia';
       dataIndex: 'index',
       key: 'index',
       ellipsis: true,
-      with: 40,
+      width: 30,
     },
     {
       title: '城市',
       dataIndex: 'city',
       key: 'city',
       ellipsis: true,
-      with: 40,
+      width: 35,
     },
     {
       title: '商场',
       dataIndex: 'market',
       key: 'market',
       ellipsis: true,
-      with: 50,
+      width: 50,
     },
     {
       title: '品牌',
       dataIndex: 'brand',
       key: 'brand',
       ellipsis: true,
-      with: 65,
+      width: 65,
     },
     {
       title: '职位',
       dataIndex: 'positions',
       key: 'positions',
       ellipsis: true,
-      with: 65,
+      width: 65,
     },
     {
       title: '意向',
       dataIndex: 'intention',
       key: 'intention',
-      ellipsis: true,
-      with: 65,
+      width: 50,
     },
     {
       title: '日期',
       dataIndex: 'date',
       key: 'date',
-      ellipsis: true,
-      with: 70, 
+      width: 35, 
     },
   ];
   const resumeList = ref([

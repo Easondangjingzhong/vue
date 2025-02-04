@@ -582,6 +582,65 @@ export const useResumeDetailStore = defineStore({
       const res = await fetchApi.deleteEducationExp(formData);
       return res;
     },
+    /**
+     * 简历复制到登录人名下
+     * @returns 
+     */
+    async resumeCopyToSelf() {
+      let formData = new FormData();
+      const resumeId = this.resumeDetail.resumeId.toString();
+      formData.append('resumeId', resumeId);
+      formData.append('recruitId', loginVueUser.loginId);
+      const res = await fetchApi.resumeCopyToSelf(formData);
+      return res;
+    },
+    /**
+     * 添加自定义标签
+     * @param tagValue 
+     * @returns 
+     */
+    async addTag(tagValue) {
+      let formData = new FormData();
+      const resumeId = this.resumeDetail.resumeId.toString();
+      formData.append('resumeId', resumeId);
+      formData.append('personLabel', tagValue);
+      const res = await fetchApi.addTag(formData);
+      return res;
+    },
+    /**
+     * 简历核对
+     * @returns 
+     */
+    async addResumeChecked() {
+      let formData = new FormData();
+      const resumeId = this.resumeDetail.resumeId.toString();
+      formData.append('resumeId', resumeId);
+      formData.append('SystemRecruitId', loginVueUser.loginId);
+      formData.append('phoneNum', this.resumeDetail.resume.phoneNum);
+      const res = await fetchApi.addResumeChecked(formData);
+      return res;
+    },
+    /**
+     * 推荐职位条件搜索
+     * @returns 
+     */
+    async searchFormState(formState) {
+      let formData = new FormData();
+      formData.append('city', formState.city);
+      formData.append('mId', formState.market.value);
+      formData.append('positionId', formState.positionsId);
+      formData.append('bId', formState.brand);
+      formData.append('retail', formState.retail);
+      formData.append('retailLevel', formState.retailLevel);
+      formData.append('category', formState.category);
+      formData.append('pinji', '');
+      formData.append('leibie', formState.leibie);
+      formData.append('industry', formState.retail);
+      formData.append('jobcategory2', formState.jobcategory2);
+      formData.append('management2', formState.management2);
+      const res = await fetchApi.searchFormState(formData);
+      return res;
+    },
   },
 });
 export function useResumeStoreWithOut() {

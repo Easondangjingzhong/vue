@@ -36,9 +36,11 @@
         }}
       </a-col>
       <a-col :span="18" class="resume_col">
-        {{ resumeData.companyName }}-{{ resumeData.cityName }}-{{ resumeData.marketName }}-{{
-          resumeData.brandName
-        }}-{{ resumeData.workFloor }}
+        <span v-if="resumeData.companyName">{{ resumeData.companyName }}</span>
+        <span v-if="resumeData.cityName">-{{ resumeData.cityName }}</span>
+        <span v-if="resumeData.marketName">-{{ resumeData.marketName }}</span>
+        <span v-if="resumeData.brandName">-{{ resumeData.brandName }}</span>
+        <span v-if="resumeData.workFloor">-{{ resumeData.workFloor }}</span>
       </a-col>
       <a-col :span="1" style="padding-left: 10px;padding-right: 0px;text-align: right;">
         <form-outlined @click="handleUpdateWorkInfo"></form-outlined>
@@ -62,8 +64,8 @@
       >
     </a-row>
     <a-row :gutter="24" class="resume_row">
-      <a-col :span="8" class="resume_col"> 行业: <span class="resume_span"></span></a-col>
-      <a-col :span="5" class="resume_col"> 品类: <span class="resume_span"></span></a-col>
+      <a-col :span="8" class="resume_col" style="padding-left: 34px;"> 行业: <span class="resume_span">{{ resumeData.brandRetailLevel }}</span></a-col>
+      <a-col :span="5" class="resume_col" style="padding-left: 34px;"> 品类: <span class="resume_span">{{ resumeData.brandCategory }}</span></a-col>
     </a-row>
     <a-row :gutter="24" class="resume_row">
       <a-col :span="12" class="resume_col">
@@ -416,7 +418,7 @@
   import { Modal } from 'ant-design-vue';
   const cityStore = useCityStoreWithOut();
   const resumeListStore = useResumeListStoreWithOut();
-  const { positionsList, brandList, markIdList, companyList } = storeToRefs(resumeListStore);
+  const { positionsList, brandList, companyList } = storeToRefs(resumeListStore);
   const { province } = storeToRefs(cityStore);
   const spanTitle = 6;
   const resumeDetailStore = useResumeDetailStore();
@@ -473,6 +475,8 @@
     workMark: '',
     workBrand: '',
     workCity: '',
+    brandRetailLevel: '',
+    brandCategory: '',
     recruitId: loginVueUser.loginId,
   });
   if (!props.resumeData?.id) {
@@ -486,10 +490,10 @@
     }
   });
   const endYearTemp =
-    props.resumeData?.endYear +
+    (props.resumeData?.endYear == -1 ? "" : props.resumeData?.endYear +
     (props.resumeData?.endMonth < 10
       ? '-0' + props.resumeData?.endMonth
-      : '-' + props.resumeData?.endMonth);
+      : '-' + props.resumeData?.endMonth));
   const onChangeEndYearFlag = () => {
     if (endYearFlag.value) {
       endYearFlag.value = true;
@@ -552,7 +556,10 @@
     formState.reporter = props.resumeData?.reporter;
     formState.isRetreat = props.resumeData?.isRetreat;
     formState.isNewtest = props.resumeData?.isNewtest;
+    formState.brandRetailLevel = props.resumeData?.brandRetailLevel;
+    formState.brandCategory = props.resumeData?.brandCategory;
     handleCategory();
+    handleCityName(formState.cityName);
   };
   //职位数据
   const optionsPositions = ref<SelectProps['options']>([]);
@@ -628,21 +635,22 @@
   }, []);
   //商场数据展示
   const optionsMarkId = ref<SelectProps['options']>([]);
-  let tempOptionMarkId = [];
-  markIdList.value.forEach((item) => {
-    //@ts-ignore
-    let tempObj = {
-      //@ts-ignore
-      label: item.text,
-      //@ts-ignore
-      value: item.id,
-    };
-    //@ts-ignore
-    tempOptionMarkId.push(tempObj);
-  });
-  optionsMarkId.value = tempOptionMarkId;
+  // let tempOptionMarkId = [];
+  // markIdList.value.forEach((item) => {
+  //   //@ts-ignore
+  //   let tempObj = {
+  //     //@ts-ignore
+  //     label: item.text,
+  //     //@ts-ignore
+  //     value: item.id,
+  //   };
+  //   //@ts-ignore
+  //   tempOptionMarkId.push(tempObj);
+  // });
+  // optionsMarkId.value = tempOptionMarkId;
   const handleCityName = (values) => {
     let tempOptionMarkIdUpdate = [];
+    let marktFlag = false;
     //商场数据
     resumeDetailStore.queryMarkList(values.label).then((res) => {
       res.info.forEach((item) => {
@@ -653,18 +661,27 @@
           //@ts-ignore
           value: item.id,
         };
+        if (item.id == formState.marketName.value) {
+          marktFlag = true;
+        }
         //@ts-ignore
         tempOptionMarkIdUpdate.push(tempObj);
       });
       optionsMarkId.value = tempOptionMarkIdUpdate;
+      if (!marktFlag) {
+        formState.marketName = {value: "", label: ""};
+      }
     });
   };
+
   const handleMarketBrandFloor = () => {
     resumeDetailStore
       .queryMarkBrandFloor(formState.marketName.value, formState.brandName.value)
       .then((res) => {
         if (res.code == 1) {
           formState.workFloor = res.info[0].floor;
+        } else {
+          formState.workFloor = "";
         }
       });
   };
@@ -818,7 +835,7 @@
   .resume_box {
     position: absolute;
     top: 8%;
-    left: 102%;
+    left: 112%;
     width: 100px;
   }
   .resume_col_padding {

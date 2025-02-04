@@ -7,7 +7,7 @@
     <div class="resume_container_detail">
     <ResumeDetailPersonInfo :resumeData="resumeDetailTemp.resume"/>
     <ResumeDetailWorkInfo v-for="(item,index) in resumeDetailTemp.resume.workExpeList" :indexNum="index" :resumeData="item"/>
-    <ResumeDetailWorkInfo class="resume_work_show" v-if="workFlag" :indexNum="resumeDetailTemp.resume.workExpeList.length + 1" :resumeData="{resumeId: resumeDetailTemp.resume.id}"/>
+    <ResumeDetailWorkInfo class="resume_work_show" v-if="workFlag" :indexNum="(resumeDetailTemp.resume.workExpeList ? resumeDetailTemp.resume.workExpeList.length + 1 : 0)" :resumeData="{resumeId: resumeDetailTemp.resume.id}"/>
     <ResumeDetailEducationInfo v-for="(item,index) in resumeDetailTemp.resume.eduExpeList" :indexNum="index" :resumeData="item"/>
     <ResumeDetailEducationInfo v-if="eduFlag" :indexNum="resumeDetailTemp.resume.eduExpeList.length + 1" :resumeData="{resumeId: resumeDetailTemp.resume.id}"/>
     <ResumeDetailLanguagesInfo :Languages="resumeDetailTemp.resume.resumeLanguageList" :resumeId="resumeDetailTemp.resume.id"/>
@@ -54,7 +54,19 @@ import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   watch(resumeDetail,() => {
     //@ts-ignore
     resumeDetailTemp.value = {...resumeDetail.value}
-  })
+    if (!resumeDetailTemp.value.resume.workExpeList) {
+      resumeDetailStore.$patch({
+        workFlag: true
+      })
+      workFlag.value = true;
+    }
+    if (!resumeDetailTemp.value.resume.eduExpeList || resumeDetailTemp.value.resume.eduExpeList.length == 0) {
+      resumeDetailStore.$patch({
+        eduFlag: true
+      })
+      eduFlag.value = true;
+    }
+    })
   cityStore.fetchCountryInfo();
   cityStore.fetchInfo();
   resumeListStore.queryPositionsList();
