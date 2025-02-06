@@ -83,6 +83,7 @@
     selectedKeys: ['2'],
     openKeys: ['01','51','6','7'],
   });
+  let tempSelcet = false;
   let items = ref([{}]);
   const optionsLoginNameTeam = ref<SelectProps['options']>([]);
   const handleResumeLoginNameClick = (e) => {
@@ -236,15 +237,23 @@
             children: item.children?.map((subItem) => ({
               key: subItem.key,
               label: h('div', { class: 'resume-menu-title' }, [
-                h('span', { class: 'resume-menu-title-content' }, subItem.title),
+              (subItem.key == "teamData" ? h('span', { class: 'resume-menu-title-content-team',onClick: (e) => {
+                  e.stopPropagation();
+                  state.selectedKeys = [subItem.key]
+                    resumeList.fetchTeamData('teamLevel1_9999',"1");
+                }, }, subItem.title) : h('span', { class: 'resume-menu-title-content' }, subItem.title)),
                 h('span', { class: 'resume-menu-title-content-num' }, subItem.label),
               ]),
-              title: `${subItem.title} ${subItem.label}`,
+              title:  `${subItem.title} ${subItem.label}`,
               type: subItem.type,
               children: subItem.children?.map((tempItem) => ({
                 key: tempItem.key,
                 label: h('div', { class: 'resume-menu-title' }, [
-                  h('span', { class: 'resume-menu-title-content' }, tempItem.title),
+                (subItem.key == "teamData" ? h('span', { class: 'resume-menu-title-content-team',onClick: (e) => {
+                  e.stopPropagation();
+                  state.selectedKeys = [tempItem.key]
+                    resumeList.fetchTeamData(tempItem.key,"1");
+                }, }, tempItem.title) : h('span', { class: 'resume-menu-title-content' }, tempItem.title)),
                   h('span', { class: 'resume-menu-title-content-num' }, tempItem.label),
                 ]),
                 title: `${tempItem.title} ${tempItem.label}`,
@@ -323,6 +332,7 @@
     state.selectedKeys = key.keyPath;
     //@ts-ignore
     resumeList.fetchTeamData(key.key);
+    tempSelcet = true;
   };
   
   const resumeLoginNameFlag = ref(false);
@@ -351,11 +361,13 @@
     }
     const realNameEn = teamSelectPersonArr.value?.filter(item => teamSelectPerson.value[0] == item.recruitId)[0]?.realNameEn || "";
     let viewType = "S";
-    if (person == 1) {
+    if (person != 1) {
       viewType = "T";
     }
     resumeList.resumeLoginNameChange(teamSelectPerson.value[0]+"-"+realNameEn,viewType).then(() => {
       message.success('操作成功');
+      state.selectedKeys = ["5"]
+      resumeList.fetchTeamData("5");
       handleResumeLoginNameClose();
     });
   }
@@ -433,6 +445,7 @@
     line-height: 40px;
     align-items: center;
   }
+  .resume-menu-title-content-team,
   .resume-menu-title-content {
     min-width: 0;
     overflow: hidden;
@@ -441,6 +454,9 @@
     text-overflow: ellipsis;
     opacity: 1;
     transition: opacity 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), margin 0.3s, color 0.3s;
+  }
+  .resume-menu-title-content-team {
+    min-width: 160px;
   }
   .resume-menu-title-content-num {
     background-color: #f1f0f0;

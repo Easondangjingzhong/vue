@@ -122,13 +122,12 @@
                 optionFilterProp="label"
                 label-in-value
                 :allowClear="true"
-                @search="handleMarketName"
-                :not-found-content="fetching ? undefined : null"
                 showSearch
               >
-                <template v-if="fetching" #notFoundContent>
+                <!-- @search="handleMarketName"
+                :not-found-content="fetching ? undefined : null"<template v-if="fetching" #notFoundContent>
                   <a-spin size="small" />
-                </template>
+                </template> -->
               </a-select>
             </a-form-item>
           </a-col>
@@ -446,61 +445,7 @@ import { tryOnBeforeUnmount } from '@vueuse/core';
   const optionsWeekNum = ref<SelectProps['options']>(
     currentWeek.value.map((item) => ({ value: item.weekNum, label: selectWeekNum(item.weekNum) })),
   );
-  const optionsCity = ref<SelectProps['options']>([]);
-  optionsCity.value = province.value.reduce((prev, curr) => {
-    //@ts-ignore
-    if (
-      (curr.provinceName == curr.cityName || !curr.cityName) &&
-      !(curr.cityName == '吉林' || curr.cityName == '海南')
-    ) {
-      //@ts-ignore
-      prev.push({
-        //@ts-ignore
-        label: curr.provinceName,
-        //@ts-ignore
-        value: curr.provinceName,
-      });
-    } else {
-      //@ts-ignore
-      prev.push({
-        //@ts-ignore
-        label: curr.cityName,
-        //@ts-ignore
-        value: curr.cityName,
-      });
-    }
-    return prev;
-  }, []);
-  //品牌数据展示
-  const optionsBrand = ref<SelectProps['options']>([]);
-  let tempOptionBrand = [];
-  brandList.value.forEach((item) => {
-    //@ts-ignore
-    let tempObj = {
-      //@ts-ignore
-      label: positionsListShow(item.cnName, item.usName),
-      //@ts-ignore
-      value: item.brandId,
-    };
-    //@ts-ignore
-    tempOptionBrand.push(tempObj);
-  });
-  optionsBrand.value = tempOptionBrand;
-  //商场数据展示
-  const optionsMarkId = ref<SelectProps['options']>([]);
-  let tempOptionMarkId = [];
-  markIdList.value.forEach((item) => {
-    //@ts-ignore
-    let tempObj = {
-      //@ts-ignore
-      label: item.text,
-      //@ts-ignore
-      value: item.id,
-    };
-    //@ts-ignore
-    tempOptionMarkId.push(tempObj);
-  });
-  optionsMarkId.value = tempOptionMarkId;
+ 
   const handleCityName = debounce(() => {
     let tempOptionMarkIdUpdate = [];
     //商场数据
@@ -542,21 +487,7 @@ import { tryOnBeforeUnmount } from '@vueuse/core';
       fetching.value = false;
     });
   }, 500);
-  //职位数据
-  const optionsPositions = ref<SelectProps['options']>([]);
-  let tempOptionPositions = [];
-  positionsList.value.forEach((item) => {
-    //@ts-ignore
-    let tempObj = {
-      //@ts-ignore
-      label: positionsListShow(item.cnPosition, item.usPosition),
-      //@ts-ignore
-      value: item.positionId,
-    };
-    //@ts-ignore
-    tempOptionPositions.push(tempObj);
-  });
-  optionsPositions.value = tempOptionPositions;
+ 
   function positionsListShow(cnName, usName) {
     if (cnName && usName) {
       return `${cnName}/${usName}`;
@@ -612,6 +543,12 @@ import { tryOnBeforeUnmount } from '@vueuse/core';
   const handleClearSearch = () => {
     formState.value = {
       ...formState.value,
+      retail: '',
+    jobcategory2: '',
+    management2: '',
+    category: '',
+    leibie: '',
+    retailLevel: '',
       city: '',
       brand: '',
       market: { value: '', label: '' },
@@ -620,6 +557,7 @@ import { tryOnBeforeUnmount } from '@vueuse/core';
       isTask: '',
       companyRecruitId: '',
     };
+    handleSearchFormState();
   };
   const loading = ref(false);
   const columns = ref([
@@ -997,13 +935,33 @@ import { tryOnBeforeUnmount } from '@vueuse/core';
     })
   //品籍数据展示
   //const optionsPinji = ref<SelectProps['options']>(pinjiArr);
+   //职位数据
+   const optionsPositions = ref<SelectProps['options']>([]);
+  
   //品级数据展示
   const optionsPinjibie = ref<SelectProps['options']>(pinjibieArr);
+   //品牌数据展示
+   const optionsBrand = ref<SelectProps['options']>([]);
+ //商场数据展示
+ const optionsMarkId = ref<SelectProps['options']>([]);
+  
+ const optionsCity = ref<SelectProps['options']>([]);
+  
   const handleSearchFormState = () => {
     resumeDetailStore.searchFormState(formState.value).then(res => {
-      
+      const positionListSearch= res.info.positionList;
+      const brandListSearch= res.info.brandList;
+      const markIdListSearch= res.info.markList;
+      const cityListSearch= res.info.cityList;
+      if (!optionsCity.value || optionsCity.value.length == 0) {
+        optionsCity.value = cityListSearch.map(item => ({value: item.city}))
+      }
+      optionsPositions.value = positionListSearch.map(item => ({value: item.positionId,label: item.positionName}));
+      optionsBrand.value = brandListSearch.map(item => ({value: item.bId,label: item.brandName}));
+      optionsMarkId.value = markIdListSearch.map(item => ({value: item.mId,label: item.markName}));
     })
   }
+  handleSearchFormState();
 </script>
 <style lang="less" scoped>
   .resume_h4 {

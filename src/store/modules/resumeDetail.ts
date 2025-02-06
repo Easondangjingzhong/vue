@@ -23,8 +23,10 @@ interface ResumeDetailState {
   recommendCandidatePositionSearch: {}; //推荐职位查询条件
   resumeId: string; //简历的ID
   addConsultantId: string; //简历的添加顾问
+  addRecruitId: string; //简历的添加顾问id
+  searchRecommend: string; //企业顾问查看简历
 }
-const loginVueUser: {loginName: "", loginId: "", loginTocken: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
+const loginVueUser: {loginName: "", loginId: "", loginTocken: "",loginType: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
 export const useResumeDetailStore = defineStore({
   id: 'app-Resume',
   state: (): ResumeDetailState => ({
@@ -48,6 +50,8 @@ export const useResumeDetailStore = defineStore({
     recommendCandidatePositionSearch: {},
     resumeId: '',
     addConsultantId: '',
+    addRecruitId: '',
+    searchRecommend: '',
   }),
   actions: {
     /**
@@ -115,6 +119,7 @@ export const useResumeDetailStore = defineStore({
         workCity: data.cityName.value,
         marketName: data.marketName.label,
         workMark: data.marketName.value,
+        qichachaSign: "1",
       };
       if (dataTemp.id) {
         res = await fetchApi.updateResumeWorkExp(dataTemp);
@@ -287,7 +292,12 @@ export const useResumeDetailStore = defineStore({
       let formData = new FormData();
       const resumeId = this.resumeDetail.resumeId;
       formData.append('resumeId', resumeId.toString());
-      formData.append('recruitId', loginVueUser.loginId);
+      if (this.searchRecommend == "Q") {
+        formData.append('recruitId', this.addRecruitId);
+      } else {
+        formData.append('recruitId', loginVueUser.loginId);
+      }
+      formData.append('SystemRecruitId', loginVueUser.loginId);
       const res = await fetchApi.queryResumeReport(formData);
       if (res.code == 1) {
         this.resumeReport = res.info;
@@ -639,6 +649,41 @@ export const useResumeDetailStore = defineStore({
       formData.append('jobcategory2', formState.jobcategory2);
       formData.append('management2', formState.management2);
       const res = await fetchApi.searchFormState(formData);
+      return res;
+    },
+    /**
+     * 文件路径转换为Blob
+     * @param path 
+     * @returns 
+     */
+    async resumeFlieToBlob(path) {
+      let formData = new FormData();
+      formData.append('fileUrl', path);
+      const res = await fetchApi.resumeFlieToBlob(formData);
+      return res;
+    },
+    async queryCompanyQiChacha(companyName?: string) {
+      let formData = new FormData();
+      const token = '47532bc3-1d66-4d13-8f63-fcff06028d7f';
+      const url = `http://open.api.tianyancha.com/services/open/search/2.0?word=${companyName}&pageSize=20&pageNum=1`;
+      formData.append('token', token);
+      formData.append('url', url);
+      const res = await fetchApi.queryCompanyQiChacha(formData);
+      return res;
+    },
+    async queryConsultant() {
+      let formData = new FormData();
+      formData.append('SystemRecruitId', loginVueUser.loginId);
+      const res = await fetchApi.queryConsultant(formData);
+      return res;
+    },
+    async recommendPersonRecommendAll(recruitId) {
+      let formData = new FormData();
+      formData.append('phone', this.resumeDetail.resume.phoneNum);
+      formData.append('phoneOther', '');
+      formData.append('recruitId', recruitId);
+      formData.append('SystemRecruitId', loginVueUser.loginId);
+      const res = await fetchApi.recommendPersonRecommendAll(formData);
       return res;
     },
   },

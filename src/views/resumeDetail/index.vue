@@ -3,19 +3,19 @@
   <a-layout>
     <a-layout-content class="resume_container resume_container_index">
       <div v-if="expendShow">
-    <ResumeDetailHeader :resumeData="resumeDetailTemp.resume"/>
+    <ResumeDetailHeader :resumeData="resumeDetailTemp.resume" :showResumeAdd="showResumeAdd" :showResumeAddReport="showResumeAddReport"/>
     <div class="resume_container_detail">
-    <ResumeDetailPersonInfo :resumeData="resumeDetailTemp.resume"/>
-    <ResumeDetailWorkInfo v-for="(item,index) in resumeDetailTemp.resume.workExpeList" :indexNum="index" :resumeData="item"/>
-    <ResumeDetailWorkInfo class="resume_work_show" v-if="workFlag" :indexNum="(resumeDetailTemp.resume.workExpeList ? resumeDetailTemp.resume.workExpeList.length + 1 : 0)" :resumeData="{resumeId: resumeDetailTemp.resume.id}"/>
-    <ResumeDetailEducationInfo v-for="(item,index) in resumeDetailTemp.resume.eduExpeList" :indexNum="index" :resumeData="item"/>
-    <ResumeDetailEducationInfo v-if="eduFlag" :indexNum="resumeDetailTemp.resume.eduExpeList.length + 1" :resumeData="{resumeId: resumeDetailTemp.resume.id}"/>
-    <ResumeDetailLanguagesInfo :Languages="resumeDetailTemp.resume.resumeLanguageList" :resumeId="resumeDetailTemp.resume.id"/>
-    <ResumeDetaiSelfInfo :resumeData="resumeDetailTemp.resume"/>
+    <ResumeDetailPersonInfo :resumeData="resumeDetailTemp.resume" :showResumeAdd="showResumeAdd"/>
+    <ResumeDetailWorkInfo v-for="(item,index) in resumeDetailTemp.resume.workExpeList" :indexNum="index" :resumeData="item" :showResumeAdd="showResumeAdd"/>
+    <ResumeDetailWorkInfo :showResumeAdd="showResumeAdd" class="resume_work_show" v-if="workFlag && showResumeAdd" :indexNum="(resumeDetailTemp.resume.workExpeList ? resumeDetailTemp.resume.workExpeList.length + 1 : 0)" :resumeData="{resumeId: resumeDetailTemp.resume.id}"/>
+    <ResumeDetailEducationInfo v-for="(item,index) in resumeDetailTemp.resume.eduExpeList"  :showResumeAdd="showResumeAdd" :indexNum="index" :resumeData="item"/>
+    <ResumeDetailEducationInfo :showResumeAdd="showResumeAdd" v-if="eduFlag && showResumeAdd" :indexNum="resumeDetailTemp.resume.eduExpeList.length + 1" :resumeData="{resumeId: resumeDetailTemp.resume.id}"/>
+    <ResumeDetailLanguagesInfo :Languages="resumeDetailTemp.resume.resumeLanguageList" :showResumeAdd="showResumeAdd" :resumeId="resumeDetailTemp.resume.id"/>
+    <ResumeDetaiSelfInfo :resumeData="resumeDetailTemp.resume" :showResumeAdd="showResumeAdd"/>
     </div>
   </div>
     </a-layout-content>
-    <a-layout-sider class="resume_sider">
+    <a-layout-sider v-if="showResumeAdd" class="resume_sider">
       <div v-if="expendShow">
         <ResumeLeftHeader/>
         <ResumeLeftCheckDuplicate/>
@@ -51,9 +51,26 @@ import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   const resumeDetailTemp = ref({} as ResumeDetail);
   const expendShow = ref(false);
   const route = useRoute();
+  const showResumeAdd = ref(true);
+  const showResumeAddReport = ref(true);
+  //const loginVueUser: {loginName: "", loginId: "", loginTocken: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
+  // 如果简历的创建人不是当前登录人，则显示复制简历按钮
+    // 注意：此处需要和后端协商好，获取简历创建人id的api
+    // 假设resumeDetail.recruitId 就是简历创建人id
+    // 假设 resumeDetail.recruitId 和 loginVueUser.loginId 相等时，表示是创建人，可以显示复制简历按钮
+    // 假设 resumeDetail.recruitId 和 loginVueUser.loginId 不等时，表示不是创建人，不可以显示复制简历按钮
+    // 以下代码是假设简历创建人id是 resumeDetail.recruitId，loginVueUser.loginId是假设的登录人id
+    
   watch(resumeDetail,() => {
     //@ts-ignore
     resumeDetailTemp.value = {...resumeDetail.value}
+    if (route.query?.searchRecommend == "Q") {
+      showResumeAdd.value = false;
+    }
+    if (route.query?.searchRecommend == "T") {
+      showResumeAdd.value = false;
+      showResumeAddReport.value = false;
+    }
     if (!resumeDetailTemp.value.resume.workExpeList) {
       resumeDetailStore.$patch({
         workFlag: true
@@ -76,6 +93,12 @@ import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   resumeDetailStore.queryWeekNumByWorkDate();
   resumeDetailStore.queryWeekByYearAndMonth();
   resumeDetailStore.queryEnterpriseConsultant();
+  if (route.query?.searchRecommend == "Q") {
+    resumeDetailStore.$patch({
+      searchRecommend: "Q",
+      addRecruitId: route.query?.addRecruitId
+    })
+  }
   resumeDetailStore.queryResumeDetail(route.query.resumeId,route.query.addConsultantId).then(() => {
     expendShow.value = true;
   });

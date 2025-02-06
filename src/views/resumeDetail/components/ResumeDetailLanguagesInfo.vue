@@ -29,7 +29,7 @@
           </svg>
           语言能力</h4
         >
-        <form-outlined @click="handleUpdateLanguagesInfo"></form-outlined>
+        <form-outlined v-if="showResumeAdd" @click="handleUpdateLanguagesInfo"></form-outlined>
       </a-col>
       <a-divider :dashed="true" style="background-color: #ccc; margin-top: 0" />
     </a-row>
@@ -299,6 +299,10 @@
       type: Number,
       required: true,
     },
+    showResumeAdd: {
+      type: Boolean,
+      required: true,
+    }
   });
   const expandUpdate = ref(false);
   const handleUpdateLanguagesInfo = () => {

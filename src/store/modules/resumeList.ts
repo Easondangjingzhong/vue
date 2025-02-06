@@ -131,7 +131,7 @@ export const useResumeListStore = defineStore({
         let item = {} as Item;
         item.key = 'teamData';
         item.label = teamDataNum + '';
-        item.title = '团队数据';
+        item.title = '团队简历';
         item.children = teamDataChildren;
         item.level = 2;
         //@ts-ignore
@@ -368,7 +368,7 @@ export const useResumeListStore = defineStore({
      * @param param teamId
      * @returns
      */
-    async fetchTeamData(param: string) {
+    async fetchTeamData(param: string,type= '') {
       console.log(param);
       if (param == '52') {
         this.searchResumeType = '1';
@@ -392,36 +392,47 @@ export const useResumeListStore = defineStore({
         let formData = new FormData();
         formData.append('recruitId', loginVueUser.loginId);
         formData.append('teamId', param.split('_')[1]);
-        const res = await fetchApi.queryTeamData(formData);
-        if (res.info) {
-          this.resumeMenu.forEach((item) => {
-            if (item.key === '01') {
-              item.children?.forEach((temp) => {
-                if (temp.key == 'teamData') {
-                  temp.children?.forEach((subItem) => {
-                    if (subItem.key === param) {
-                      let myDataChildren = [];
-                      res.info.forEach((items: any) => {
-                        let teamItem = {} as Item;
-                        teamItem.key = `teamLevel2_${items.teamId}`;
-                        teamItem.label = items.resumeNum;
-                        teamItem.title = items.teamName;
-                        teamItem.level = 2;
-                        //@ts-ignore
-                        myDataChildren.push(teamItem);
-                      });
-                      subItem.children = myDataChildren;
-                    }
-                  });
-                }
-              });
-            }
-          });
-          this.resumeMenu = [...this.resumeMenu];
+        if (type) {
+          this.formState = {
+            ...this.formState,
+            leftType: '4',
+            leftTeamId: param.split('_')[1],
+          };
+          //@ts-ignore
+          this.queryResumeList(this.formState);
         }
-        return res;
+        if (param.split('_')[1] != "0903") {
+          const res = await fetchApi.queryTeamData(formData);
+          if (res.info) {
+            this.resumeMenu.forEach((item) => {
+              if (item.key === '01') {
+                item.children?.forEach((temp) => {
+                  if (temp.key == 'teamData') {
+                    temp.children?.forEach((subItem) => {
+                      if (subItem.key === param) {
+                        let myDataChildren = [];
+                        res.info.forEach((items: any) => {
+                          let teamItem = {} as Item;
+                          teamItem.key = `teamLevel2_${items.teamId}`;
+                          teamItem.label = items.resumeNum;
+                          teamItem.title = items.teamName;
+                          teamItem.level = 2;
+                          //@ts-ignore
+                          myDataChildren.push(teamItem);
+                        });
+                        subItem.children = myDataChildren;
+                      }
+                    });
+                  }
+                });
+              }
+            });
+            this.resumeMenu = [...this.resumeMenu];
+          }
+          return res;
+        }
       }
-      if (param.includes('teamLevel2')) {
+      if (param.includes('teamLevel2') ) {
         let formData = new FormData();
         formData.append('recruitId', loginVueUser.loginId);
         formData.append('teamId', param.split('_')[1]);
@@ -573,14 +584,17 @@ export const useResumeListStore = defineStore({
      * @param viewType T 部门视角 （非Leader 此参数不生效 T也不影响） V 团队L视角  S个人视角
      */
     async resumeLoginNameChange(recruitId: string, viewType: string) {
-      this.loginNameChangeRecruitId = recruitId.split('-')[0];
-      this.loginNameChangeRecruitName = recruitId.split('-')[1];
+    
       let formData = new FormData();
       if ( viewType == "T") {
+        this.loginNameChangeRecruitId = recruitId.split('-')[0];
+        this.loginNameChangeRecruitName = recruitId.split('-')[1];
         formData.append('recruitId', recruitId.split('-')[0] || loginVueUser.loginId);
         formData.append('viewType', viewType);
-        this.formState = { ...this.formState, viewType: viewType };
+        this.formState = { ...this.formState, viewType: "T" };
       } else {
+        this.loginNameChangeRecruitId = loginVueUser.loginId;
+        this.loginNameChangeRecruitName = loginVueUser.loginName;
         formData.append('recruitId', loginVueUser.loginId);
         formData.append('viewType', "S");
         this.formState = { ...this.formState, viewType: "S" };
@@ -787,7 +801,7 @@ export const useResumeListStore = defineStore({
           tempItem.gognGongFlag = item.gognGongFlag || ""; //公共
           tempItem.limitFlag = item.limitFlag || ""; //限制 保护
           tempItem.options = item.options;
-          tempItem.leftType = param.leftType;//参数
+          tempItem.leftType = param.leftType || "2";//参数
           tempItem.projectFlag = item.projectFlag;
           // if (item.works) {
           //   let workTemp = "";

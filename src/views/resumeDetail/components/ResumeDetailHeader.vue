@@ -1,9 +1,14 @@
 <template>
   <div class="resume_header">
+    <a-row :gutter="24" v-if="!showResumeAdd && showResumeAddReport" style="height: 100px;overflow-y: auto;border-bottom: 1px solid #ccc;">
+      <a-col :span="24" v-if="resumeReportDetails.length > 0" v-for="item in resumeReportDetails">
+        <div v-html="item.reportContent"></div>
+      </a-col>
+    </a-row>
     <a-row :gutter="24">
       <a-col :span="24" class="resume_info">
         <h2 class="resume_h3">{{ resumeData.userName }}</h2>
-        <a-tag style="cursor: pointer;" @click="handleAddChecked" color="#ffd522" class="resume_tag_checked" v-if="resumeData.heDuiFlag == '待核'"
+        <a-tag style="cursor: pointer;" @click="handleAddChecked" color="#ffd522" class="resume_tag_checked" v-if="showResumeAdd && resumeData.heDuiFlag == '待核'"
           >待核</a-tag
         >
         <a-tag
@@ -34,13 +39,35 @@
           v-if="personBaohuFlag"
           >保护</a-tag
         >
-        <a-tag
-          color="#FF9800"
-          v-if="showResumeCopy"
+         <a-tag
+          color="red"
           class="resume_tag_checked_top"
-          @click="handleOpenResumeCopy"
-          >复制</a-tag
+          v-if="resumeData.recommendLimit == '限制推荐'"
+          >限制</a-tag
         >
+        <a-modal :maskClosable="false" @cancel="handleCloseResumeUpload" v-model:open="openResumeUpload" style="width: 800px;" title="下载简历" :footer="null">
+          <a-row :gutter="24">
+            <a-col :span="7">
+              推荐人员: 
+              <a-select :disabled="templateTypeShow" size="small" show-search optionFilterProp="label" style="width: 120px;" v-model:value="workRecommendPerson" @change="handleRecommendPerson" :options="optionsWorkRecommendPerson"></a-select>
+            </a-col>
+            <a-col :span="16">
+              推荐信息: 
+              <a-select :disabled="templateTypeShow" size="small" style="width: 380px;" v-model:value="workRecommendAll" :options="optionsWorkRecommendAll"></a-select>
+              <a-button size="small" v-if="!templateTypeShow" style="margin-left: 5px;" @click="handleWorkRecommendAll" type="primary">确认</a-button>
+            </a-col>
+          </a-row>
+          <a-row :gutter="24" v-if="templateTypeShow" style="margin-top: 10px;">
+            <a-col :span="24">
+              <a-radio-group v-model:value="templateType">
+              <a-radio value="youtai">优态模板</a-radio>
+              <a-radio value="wotui">我推模板</a-radio>
+              </a-radio-group>
+              <a-button size="small" style="margin-left: 5px;" @click="handleTemplateType" type="primary">下载</a-button>
+            </a-col>
+    
+          </a-row>
+        </a-modal>
         <a-modal v-model:open="openResumeCopy" title="复制简历" @ok="handleResumeCopy">
       <p>是否将简历复制到自己名下</p>
     </a-modal>
@@ -58,7 +85,7 @@
         >{{ resumeData.resumeProgress }}%</a-tag
       >
       <a-tag color="#00bcd4" title="来源">{{ resumeData.talentSource }}</a-tag>
-      <a-tag color="#ccc" class="resume_tag_phone"
+      <a-tag color="#ccc" class="resume_tag_phone" style="cursor: pointer;" @click="handlePhoneNumToSystem(resumeData.phoneNum)"
         ><PhoneFilled :style="{ fontSize: '8px' }" :rotate="90" />
         <a-popover placement="topLeft">
           <template #content>
@@ -69,7 +96,7 @@
       </a-tag>
     </a-row>
     <a-row :gutter="24" class="resume_row">
-      <a-col :span="21">
+      <a-col :span="18">
         标签:
         <a-tag class="tagspan" color="#a2c9fd" v-if="industryLabel">
           {{industryLabel}}
@@ -82,7 +109,7 @@
         </a-tag>
         <a-tag class="tagspan" color="#a2c9fd" v-if="language">{{ language }}</a-tag>
         <a-tag class="tagspan" color="#a2c9fd" v-if="personLabel">{{ personLabel }}</a-tag>
-        <PlusSquareFilled v-if="!tagFlag" @click="handleShowAddTag"/>
+        <PlusSquareFilled v-if="!tagFlag && showResumeAdd" @click="handleShowAddTag"/>
         <span v-if="tagFlag">
         <a-input v-if="!tagType" size="small" style="width: 80px;margin-right: 5px;" v-model:value="tagValue"/>
           <a-select v-if="tagType" size="small" style="width: 80px;margin-right: 5px;" v-model:value="tagValue" :options="optionsTag"></a-select>
@@ -92,9 +119,22 @@
           <a-tag v-if="tagType" style="cursor: pointer;" @click="handleChangeAddTag">填写</a-tag>
       </span>
       </a-col>
-      <a-col :span="3" style="text-align: right">
+      <a-col :span="6" style="text-align: right">
         <a-button
-          v-if="resumeData.recommendLimit == '推荐' && resumeData.heDuiFlag == '已核'"
+          v-if="showResumeAdd && resumeData.heDuiFlag == '已核'"
+          style="margin-left: 4px;background-color: #FF9800;color: #fff;"
+           size="middle"
+          @click="handleOpenResumeUpload"
+          >下载</a-button>
+       <a-button
+          v-if="showResumeCopy"
+          style="margin-left: 4px;"
+           size="middle"
+          @click="handleOpenResumeCopy"
+          >复制</a-button>
+        <a-button
+        style="margin-left: 4px;"
+          v-if="showResumeAdd && resumeData.recommendLimit == '推荐' && resumeData.heDuiFlag == '已核'"
           type="primary"
           danger
           size="middle"
@@ -103,11 +143,10 @@
           {{ resumeData.recommendLimit }}
         </a-button>
         <a-button
-          v-if="resumeData.recommendLimit == '限制推荐'"
-          disabled
-          type="primary"
-          danger
-          size="small"
+          v-if="showResumeAdd && resumeData.recommendLimit != '推荐' && resumeData.recommendLimit != '限制推荐'"
+          size="middle"
+          :disabled="true"
+          title="需要核对后才能推荐"
         >
           {{ resumeData.recommendLimit }}
         </a-button>
@@ -138,18 +177,48 @@
 </template>
 <script setup lang="ts">
   import { message } from 'ant-design-vue';
+  import { storeToRefs } from 'pinia';
   import type { SelectProps } from 'ant-design-vue';
   import { formatToDateMinute } from '/@/utils/dateUtil';
   import { PlusSquareFilled, PhoneFilled } from '@ant-design/icons-vue';
   import RecommendCandidatePosition from './RecommendCandidatePosition.vue';
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   const resumeDetailStore = useResumeDetailStore();
+  const { resumeReport,resumeId,resumeDetail } =storeToRefs(resumeDetailStore);
   const props = defineProps({
     resumeData: {
       type: Object,
       required: true,
+    },
+    showResumeAdd: {
+      type: Boolean,
+      default: false,
+    },
+    showResumeAddReport: {
+      type: Boolean,
+      default: false,
     }
   });
+  const resumeReportDetails = ref([{
+  index: '',
+  resumeId: '',
+  realNameEn: '',
+  reportContent: '',
+  orginalPathEn: '',
+  resumeIdEn: '',
+  orginalPath: ''
+}])
+watch(resumeReport,()=> {
+  resumeReportDetails.value = resumeReport.value?.map((item,index) => ({
+    index: (index + 1).toString(),
+    resumeId: item.resumeId,
+    realNameEn: item.realNameEn,
+    reportContent: item.reportContent,
+    orginalPathEn: item.orginalPathEn,
+    resumeIdEn: item.resumeIdEn,
+    orginalPath: item.orginalPath
+  }))
+})
   const newTime = ref(
     props.resumeData.shouZengStartTime
       ? `最新: ${formatToDateMinute(props.resumeData.newtestStartTime)} - ${formatToDateMinute(
@@ -165,7 +234,7 @@
       : '',
   );
   const personBaohuFlag = ref(
-    props.resumeData.newtestEndTime && props.resumeData.newtestEndTime < new Date().getTime(),
+    props.resumeData.newtestEndTime && props.resumeData.newtestEndTime > new Date().getTime(),
   );
   const personBaohuTime = ref(
     props.resumeData.newtestEndTime
@@ -224,10 +293,14 @@
   const handleOpenResumeCopy = () => {
     openResumeCopy.value = true;
   };
+  const resumeCopyFlag = ref(true);
   const handleResumeCopy = () => {
+    if(!resumeCopyFlag.value) {
+      return;
+    }
+    resumeCopyFlag.value = false;
     // 复制简历
     resumeDetailStore.resumeCopyToSelf().then(res => {
-      console.log(res);
       if (res.code === 1) {
         message.success('已复制到我的简历');
         openResumeCopy.value = false;
@@ -299,12 +372,68 @@
   const handleResumeChecked = () => {
     resumeDetailStore.addResumeChecked().then((res) => {
       if (res.code === 1) {
-        openResumeChecked.value = false;
-        message.success('添加已核成功');
+        resumeDetailStore.queryResumeDetail().then(() =>{
+          openResumeChecked.value = false;
+          message.success('添加已核成功');
+        })
+        
       } else {
         message.error(res.info);
       }
     })
+  }
+  //下载简历
+  const openResumeUpload = ref(false);
+  const workRecommendPerson = ref("");
+  const workRecommendAll = ref("");
+  const templateTypeShow = ref(false);
+  const templateType = ref("");
+  const optionsWorkRecommendPerson = ref<SelectProps['options']>([]);
+  const optionsWorkRecommendAll = ref<SelectProps['options']>([]);
+  const handleOpenResumeUpload = () => {
+    openResumeUpload.value = true;
+    resumeDetailStore.queryConsultant().then(res => {
+      if (res.code === 1) {
+        optionsWorkRecommendPerson.value = res.info.map(item => ({value: item.id,label: item.realNameEn}))
+      }
+    })
+  }
+  const handleRecommendPerson = () => {
+    resumeDetailStore.recommendPersonRecommendAll(workRecommendPerson.value).then(res => {
+      if (res.code === 1 && res.info.length > 0) {
+        optionsWorkRecommendAll.value = res.info.map(item => ({value: item.id,label: `${item.city}-${item.brand}-${item.market}-${item.positions}-${item.counselor}`}));
+      }
+    })
+  }
+  const handleWorkRecommendAll = () => {
+    if (!workRecommendAll.value) {
+      message.error('请选择推荐信息');
+      return;
+    }
+    templateTypeShow.value = true;
+  }
+  const screenWidth = Math.round(window.screen.width * window.devicePixelRatio);
+  const handleCloseResumeUpload = () => {
+    openResumeUpload.value = false;
+    templateTypeShow.value = false;
+    templateType.value = '';
+    workRecommendPerson.value = '';
+    workRecommendAll.value = '';
+  }
+  const handleTemplateType = () => {
+    if (!templateType.value) {
+      message.error('请选择模板');
+      return;
+    }
+    const realNameEn = resumeDetail.value.realNameEn;
+    console.log(resumeId.value)
+    //location.href = "http://work.wotui.com:8889/WTSM/" + "DownloadResumeServlet?resumeId=${resume.id }&resumeType=C&systemUser=" + resumeTypeFlag + "&template=" + valTemp + "&realEnName=" + realNameEn+"&screenWidth="+screenWidth;
+    location.href = `http://work.wotui.com:8889/WTSM/DownloadResumeServlet?resumeId=${resumeId.value}&resumeType=C&systemUser=1&template=${templateType.value}&realEnName=${realNameEn}&screenWidth=${screenWidth}`
+    handleCloseResumeUpload();
+  }
+  const handlePhoneNumToSystem = (phone) => {
+   // 跳转到��号器��打电话
+    window.open("http://work.wotui.com:8889/WTSM/employee-group/query-phone-resume-call.html?phoneNum=" + phone+"&userName="+props.resumeData.userName+"&workPlace="+resumeDetail.value.resume.currentCity+"&positionName="+resumeDetail.value.resume.positionName,"_blank ");
   }
 </script>
 <style lang="less" scoped>

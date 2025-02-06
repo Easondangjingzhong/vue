@@ -32,7 +32,7 @@ function getQueryVariable(variable)
 export const routerQuery = () => {
   localStorage.removeItem("loginVueUser");
   // @ts-ignore
-  localStorage.setItem("loginVueUser",JSON.stringify({"loginId": getQueryVariable("loginId"),"loginName": getQueryVariable("loginName"),"loginTocken": getQueryVariable("loginTocken")}));
+  localStorage.setItem("loginVueUser",JSON.stringify({"loginId": getQueryVariable("loginId"),"loginName": getQueryVariable("loginName"),"loginTocken": getQueryVariable("loginTocken"),"loginType": getQueryVariable("loginType")}));
   // const { searchParams } = new URL(window.location.href);
   // Array.from(searchParams.entries()).reduce((params, [key, value]) => {
   //   params[key] = value;

@@ -22,7 +22,7 @@
           </svg>
           工作经历
         </h4>
-        <PlusOutlined @click="handleAddWorkInfo" style="margin-top: 9px" />
+        <PlusOutlined v-if="showResumeAdd" @click="handleAddWorkInfo" style="margin-top: 9px" />
       </a-col>
       <a-divider :dashed="true" style="background-color: #ccc; margin-top: 0" />
     </a-row>
@@ -42,10 +42,10 @@
         <span v-if="resumeData.brandName">-{{ resumeData.brandName }}</span>
         <span v-if="resumeData.workFloor">-{{ resumeData.workFloor }}</span>
       </a-col>
-      <a-col :span="1" style="padding-left: 10px;padding-right: 0px;text-align: right;">
+      <a-col v-if="showResumeAdd" :span="1" style="padding-left: 10px;padding-right: 0px;text-align: right;">
         <form-outlined @click="handleUpdateWorkInfo"></form-outlined>
       </a-col>
-      <a-col :span="1" style="padding-left: 10px;">
+      <a-col v-if="showResumeAdd" :span="1" style="padding-left: 10px;">
         <delete-outlined @click="handleDeleteWorkExp"></delete-outlined>
       </a-col>
     </a-row>
@@ -64,15 +64,15 @@
       >
     </a-row>
     <a-row :gutter="24" class="resume_row">
-      <a-col :span="8" class="resume_col" style="padding-left: 34px;"> 行业: <span class="resume_span">{{ resumeData.brandRetailLevel }}</span></a-col>
-      <a-col :span="5" class="resume_col" style="padding-left: 34px;"> 品类: <span class="resume_span">{{ resumeData.brandCategory }}</span></a-col>
+      <a-col :span="8" class="resume_col" style="padding-left: 36px;"> 行业: <span class="resume_span">{{ resumeData.brandRetail }}</span></a-col>
+      <a-col :span="5" class="resume_col" style="padding-left: 36px;"> 品类: <span class="resume_span">{{ resumeData.brandCategory }}</span></a-col>
     </a-row>
-    <a-row :gutter="24" class="resume_row">
+    <a-row :gutter="24" class="resume_row" v-if="resumeData.salaryStructure">
       <a-col :span="12" class="resume_col">
         薪资构架: <span class="resume_span">{{ resumeData.salaryStructure }}</span></a-col
       >
     </a-row>
-    <a-row :gutter="24" class="resume_row">
+    <a-row :gutter="24" class="resume_row" v-if="resumeData.personnelStructure">
       <a-col :span="12" class="resume_col">
         团队构架: <span class="resume_span">{{ resumeData.personnelStructure }}</span></a-col
       >
@@ -124,7 +124,13 @@
               :options="optionsCompanyId"
               optionFilterProp="label"
               showSearch
-            ></a-select>
+              @search="handleCompanyName"
+              :not-found-content="fetching ? undefined : null"
+            >
+          <template v-if="fetching" #notFoundContent>
+                  <a-spin size="small" />
+                </template>
+          </a-select>
           </a-form-item>
         </a-col>
         <a-col :span="spanTitle">
@@ -415,6 +421,7 @@
   import { workFloorArr } from '/@/store/data/resume';
   import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
   import { createVNode } from 'vue';
+  import { debounce } from 'lodash-es';
   import { Modal } from 'ant-design-vue';
   const cityStore = useCityStoreWithOut();
   const resumeListStore = useResumeListStoreWithOut();
@@ -447,6 +454,10 @@
       type: Number,
       required: false,
     },
+    showResumeAdd: {
+      type: Boolean,
+      required: true,
+    }
   });
   const loginVueUser: {loginName: "", loginId: "", loginTocken: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
   const formState = reactive({
@@ -476,6 +487,7 @@
     workBrand: '',
     workCity: '',
     brandRetailLevel: '',
+    brandRetail: '',
     brandCategory: '',
     recruitId: loginVueUser.loginId,
   });
@@ -557,6 +569,7 @@
     formState.isRetreat = props.resumeData?.isRetreat;
     formState.isNewtest = props.resumeData?.isNewtest;
     formState.brandRetailLevel = props.resumeData?.brandRetailLevel;
+    formState.brandRetail = props.resumeData?.brandRetail;
     formState.brandCategory = props.resumeData?.brandCategory;
     handleCategory();
     handleCityName(formState.cityName);
@@ -699,7 +712,30 @@
     tempOptionCompanyId.push(tempObj);
   });
   optionsCompanyId.value = tempOptionCompanyId;
-
+  const fetching = ref(false);
+  const fetchingCompanyName = ref(false);
+  const handleCompanyName = debounce((value) => {
+    let tempOptionMarkIdUpdate = [];
+    fetching.value = true;
+    fetchingCompanyName.value = true;
+    //商场数据
+    resumeDetailStore.queryCompanyQiChacha(value).then((res) => {
+      const result = JSON.parse(res.info).result?.items;
+      result?.forEach((item) => {
+        //@ts-ignore
+        let tempObj = {
+          //@ts-ignore
+          label: item.name,
+          //@ts-ignore
+          value: item.name,
+        };
+        //@ts-ignore
+        tempOptionMarkIdUpdate.push(tempObj);
+      });
+      optionsCompanyId.value = tempOptionMarkIdUpdate;
+      fetching.value = false;
+    });
+  }, 2000);
   const onFinish = () => {
     iconLoading.value = true;
     resumeDetailStore

@@ -22,7 +22,7 @@
           </svg>
           教育经历
         </h4>
-        <PlusOutlined @click="handleAddEducationInfo" style="margin-top: 9px;"/>
+        <PlusOutlined v-if="showResumeAdd" @click="handleAddEducationInfo" style="margin-top: 9px;"/>
       </a-col>
       <a-divider :dashed="true" style="background-color: #ccc; margin-top: 0" />
     </a-row>
@@ -40,10 +40,10 @@
           {{ resumeData.schoolType }}
         </span>
       </a-col>
-      <a-col :span="1" style="padding-left: 10px;padding-right: 0px;text-align: right;">
+      <a-col v-if="showResumeAdd" :span="1" style="padding-left: 10px;padding-right: 0px;text-align: right;">
         <form-outlined @click="handleEduInfo"></form-outlined>
       </a-col>
-      <a-col :span="1" style="padding-left: 10px;">
+      <a-col v-if="showResumeAdd" :span="1" style="padding-left: 10px;">
         <delete-outlined @click="handleDeleteEducationExp"></delete-outlined>
       </a-col>
     </a-row>
@@ -221,6 +221,10 @@
       type: Number,
       required: false,
     },
+    showResumeAdd: {
+      type: Boolean,
+      required: true,
+    }
   });
   const expend = ref(false);
   if (!props.resumeData?.id) {

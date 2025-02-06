@@ -21,7 +21,7 @@
           </svg>
           个人信息
         </h4>
-        <form-outlined @click="handleUpdatePersonInfo"></form-outlined>
+        <form-outlined v-if="showResumeAdd" @click="handleUpdatePersonInfo"></form-outlined>
       </a-col>
       <a-divider :dashed="true" style="background-color: #ccc; margin-top: 0" />
     </a-row>
@@ -348,6 +348,10 @@
       type: Object,
       required: true,
     },
+    showResumeAdd: {
+      type: Boolean,
+      required: true,
+    }
   });
   const coverOptions = {
     autoCrop: true, //是否默认生成截图框

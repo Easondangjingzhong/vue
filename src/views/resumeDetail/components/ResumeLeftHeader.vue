@@ -10,24 +10,31 @@
     </a-row>
     <a-row :gutter="24" class="resume_row" :key="item.resumeId" v-if="resumeReportDetails.length > 0" v-for="item in resumeReportDetails">
       <a-col :span="24">
-        <span class="resume_span">{{ item.index }}</span>
+        <span class="resume_span_one">{{ item.index }}</span>
         <span class="resume_span_name">{{ item.realNameEn }}</span>
-        <span class="resume_span">
+        <span class="resume_span_name">{{ item.teamName }}</span>
+        <span class="resume_span_two">{{ item.source }}</span>
+        <span class="resume_span_name">{{ item.registTime }}</span>
+        <span class="resume_span_name">
           <a-tag color="pink">中文</a-tag>
           <LinkOutlined v-if="item.orginalPath" @click="handleResumeOrginalPath(item.orginalPath)"/>
         </span>
         <!-- <span class="resume_span" v-if="!item.resumeIdEn">英文</span> -->
-        <span class="resume_span" v-if="item.resumeIdEn">
-          <a-tag color="red">英文</a-tag>
+        <span class="resume_span_two">
+          <a-tag  v-if="!item.resumeIdEn" style="cursor: not-allowed;">英文</a-tag>
+          <a-tag  v-if="item.resumeIdEn" color="pink">英文</a-tag>
           <LinkOutlined v-if="item.orginalPathEn" @click="handleResumeOrginalPath(item.orginalPath)"/>
         </span>
-        <span class="resume_span"><a-tag color="#ffa500" style="cursor: pointer;" @click="handleReportContent(item.reportContent)">报告</a-tag></span>
+        <span class="resume_span">
+          <a-tag v-if="item.reportContent" color="#ffa500" style="cursor: pointer;" @click="handleReportContent(item.reportContent)">报告</a-tag>
+          <a-tag v-if="!item.reportContent" style="cursor: pointer;" @click="handleReportContent(item.reportContent)">报告</a-tag>
+        </span>
       </a-col>
     </a-row>
     <div v-if="expend">
       <a-row :gutter="24">
         <a-col :span="24">
-        {{ formState.reportContent }}
+          <div v-html="formState.reportContent"></div>
         </a-col>
       </a-row>
       <a-row :gutter="24">
@@ -65,6 +72,7 @@
  import {  LinkOutlined } from '@ant-design/icons-vue';
  import { storeToRefs } from 'pinia';
  import { message } from 'ant-design-vue';
+ import { formatToDate } from '/@/utils/dateUtil';
 import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
 import OrginalPath from '/@/components/OrginalPath/index.vue'
 const resumeDetailStore = useResumeDetailStore();
@@ -82,7 +90,11 @@ const resumeReportDetails = ref([{
   reportContent: '',
   orginalPathEn: '',
   resumeIdEn: '',
-  orginalPath: ''
+  orginalPath: '',
+  teamName: '',
+  source: '',
+  registTime: '',
+  addConsultantId: '',
 }])
 watch(resumeReport,()=> {
   resumeReportDetails.value = resumeReport.value?.map((item,index) => ({
@@ -92,7 +104,11 @@ watch(resumeReport,()=> {
     reportContent: item.reportContent,
     orginalPathEn: item.orginalPathEn,
     resumeIdEn: item.resumeIdEn,
-    orginalPath: item.orginalPath
+    orginalPath: item.orginalPath,
+    teamName: item.teamName || "",
+    source: item.source || "",
+    registTime: (item.registTime ? formatToDate(item.registTime) : ""),
+    addConsultantId: item.addConsultantId,
   }))
 })
 const formState = ref({
@@ -100,8 +116,14 @@ const formState = ref({
 })
 const iconLoading = ref(false);
 const handleReportContent = (reportContent) => {
-  formState.value.reportContent = reportContent?.replaceAll(/<[^>]+>/g, '');
-  expend.value = true;
+  if (reportContent) {
+    formState.value.reportContent = reportContent?.replaceAll(/<[^>]+>/g, '');
+    expend.value = true;
+  } else {
+    expendUpdate.value = true;
+    formState.value.reportContent = '';
+  }
+  
 }
 const handleCancelReportContent = () => {
   expend.value = false;
@@ -124,8 +146,10 @@ const onFinish = () => {
 const orginalPath = ref('');
 const orginalPathShow = ref(false);
 const handleResumeOrginalPath = (path) => {
-  orginalPath.value = path;
-  orginalPathShow.value = true;
+  resumeDetailStore.resumeFlieToBlob(path).then(res => {
+    orginalPath.value = path;
+    orginalPathShow.value = true;
+  })
 }
 </script>
 <style lang="less" scoped>
@@ -139,15 +163,22 @@ const handleResumeOrginalPath = (path) => {
     margin: 5px 0;
     font-size: 16px;
   }
+  .resume_span_two,
+  .resume_span_one,
   .resume_span_name,
   .resume_span {
     display: inline-block;
     width: 40px;
-    margin-right: 40px;
     font-size: 14px;
     font-weight: 400;
   }
   .resume_span_name {
     width: 80px;
+  }
+  .resume_span_one {
+    width: 20px;
+  }
+  .resume_span_two {
+    width: 60px;
   }
 </style>

@@ -81,8 +81,10 @@
         </a>
       </template>
       <template v-else-if="column.key === 'projectFlag'">
-        <a-tag class="tagspan" v-if="(record.leftType == 2 || record.leftType == 1) && record.projectFlag == '在保'" color="#green">{{ record.projectFlag }}</a-tag>
-        <a-tag class="tagspan" v-if="(record.leftType == 2 || record.leftType == 1) && record.projectFlag == '不保'" color="#orange">{{ record.projectFlag }}</a-tag>
+        <a-tag class="tagspan" v-if="(record.leftType == 2 || record.leftType == 1) && record.projectFlag == '待保'" color="red">过保</a-tag>
+        <a-tag class="tagspan" v-if="(record.leftType == 2 || record.leftType == 1) && record.projectFlag == '在保'" color="green">{{ record.projectFlag }}</a-tag>
+        <a-tag class="tagspan" v-if="(record.leftType == 2 || record.leftType == 1) && record.projectFlag == '不保'" color="red">过保</a-tag>
+        <a-tag class="tagspan" v-if="(record.leftType == 2 || record.leftType == 1) && record.projectFlag == '过保'" color="red">{{ record.projectFlag }}</a-tag>
         
         <a-tag class="tagspan" v-if="(record.leftType != 2 && record.leftType != 1) && record.checkFlag == '待核'" color="#d8d8d8">{{ record.checkFlag }}</a-tag>
         <a-tag class="tagspan" v-if="(record.leftType != 2 && record.leftType != 1) && record.checkFlag && record.checkFlag != '待核'" color="green">{{ record.checkFlag }}</a-tag>
@@ -205,6 +207,9 @@
     formState.value = {...{} as  SearchResumeList,
     sortId: formState.value.sortId,
     leftType: formState.value.leftType,
+    leftRecruitId: formState.value.leftRecruitId,
+    viewType: formState.value.viewType,
+    leftTeamId: formState.value.leftTeamId,
     companyNameRuleOut: "1",
     brandRuleOut: "1",
     companyNameNp: "1",
@@ -225,64 +230,89 @@
       title: '编号',
       dataIndex: 'index',
       key: 'index',
-      width: 60,
+      ellipsis: true,
+      width: 50,
     },
     {
       title: '姓名',
       dataIndex: 'userName',
+      ellipsis: true,
       key: 'userName',
+      width: 60,
     },
     {
       title: '性别',
       dataIndex: 'gender',
       key: 'gender',
+      ellipsis: true,
+      width: 40,
     },
     {
       title: '年龄',
       dataIndex: 'age',
       key: 'age',
+      ellipsis: true,
+      width: 40,
     },
     {
       title: '城市',
       dataIndex: 'currentCity',
       key: 'currentCity',
+      ellipsis: true,
+      width: 40,
     },
     {
       title: '当前职位',
       dataIndex: 'positionName',
       key: 'positionName',
+      ellipsis: true,
+      width: 90,
     },
     {
       title: '顾问',
       dataIndex: 'customerServiceName',
       key: 'customerServiceName',
+      ellipsis: true,
+      width: 70,
     },
     {
       title: '录入日期',
       dataIndex: 'registTimeStr',
       key: 'registTimeStr',
+      ellipsis: true,
+      width: 90,
     },
     {
       title: '联络日期',
       dataIndex: 'lastUpdateTimeStr',
       key: 'lastUpdateTimeStr',
+      ellipsis: true,
+      width: 90,
     },
     {
       title: '标签',
       dataIndex: 'projectFlag',
       key: 'projectFlag',
+      ellipsis: true,
+      width: 130,
     },
     {
       title: '操作',
       dataIndex: 'options',
       key: 'options',
+      ellipsis: true,
+      width: 30,
     },
   ];
   const handleToResumeDetails = (resumeId,addConsultantId) => {
-    const loginVueUser: {loginName: "", loginId: "", loginTocken: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
+    const loginVueUser: {loginName: "", loginId: "", loginTocken: "",loginType: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
+    let query = {...loginVueUser, resumeId, addConsultantId};
+    if (loginVueUser.loginType != "A" && (!formState.value.leftType || formState.value.leftType == "1" || formState.value.leftType == "2" || formState.value.leftType == "3" || formState.value.leftType == "4")) {
+      query = {...loginVueUser, resumeId, addConsultantId,searchRecommend: "T"};
+    }
     const href = router.resolve({
       path: '/resume/detail',
-      query: {...loginVueUser, resumeId, addConsultantId},
+      query: query,
     });
     window.open(href.href, '_blank')
     // 跳转到简历详情页
@@ -350,7 +380,7 @@
   const clearSearchResume = () => {
     confirmLoading.value = false;
     searchName.value = '';
-    openFormState.value = {} as SearchResumeList;
+    openFormState.value = {...{} as SearchResumeList};
     resumeListStore.$patch({
       serchResumeUpdate:false,
       serchResumeUpdateData: {},

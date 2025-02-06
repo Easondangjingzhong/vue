@@ -73,11 +73,12 @@
       </a-form-item>
     </a-form> -->
     </a-card>
-    <a-card v-if="plagiarusnRseult != 0 && plagiarusnRseult != 1" class="resume_card">
+    <a-card v-if="plagiarusnRseult != 0 && plagiarusnRseult == 99" class="resume_card">
       <h3 class="resume_title_h3">查重结果</h3>
       <a-divider class="resume_divider" dashed />
-      <a-result class="resume_result" status="warning" :title="`此人才的简历与系统中简历重复度在${ resultPpercentage }，您不能继续上传哦！`"></a-result>
-       <!-- <template #extra>
+      <a-result class="resume_result" status="warning" :title="`此人才简历与您“我的简历”库中简历重复度为100%，您不能重复上传哦！`"></a-result>
+      <!-- <a-result class="resume_result" status="warning" :title="`此人才的简历与系统中简历重复度在${ resultPpercentage }，您不能继续上传哦！`"></a-result>
+       <template #extra>
           <a-button type="primary" @click="handleUploadBtn" style="background-color: orange;border-color: orange;">完善简历</a-button>
         </template> -->
       <a-table size="small" :dataSource="plagiarusnInfo.info" :columns="columnsPlagiarusnRseult" />
@@ -86,10 +87,12 @@
       <h3 class="resume_title_h3">警告信息</h3>
       <a-divider class="resume_divider" dashed />
       <div>
-        <p class="resume_p">1、系统候选人简历具有唯一性，如系统中候选人简历已经存在，顾问还采用更换手机号码等方式重复添加简历，则公司将按照制度处罚！（如候选人系统中手机号码已经不再使用，则可联系行政部修改，禁止重复添加此人简历）</p
+        <!-- <p class="resume_p">1、系统候选人简历具有唯一性，如系统中候选人简历已经存在，顾问还采用更换手机号码等方式重复添加简历，则公司将按照制度处罚！（如候选人系统中手机号码已经不再使用，则可联系行政部修改，禁止重复添加此人简历）</p
         >
         <p class="resume_p">2、添加简历查重时，候选人“中文姓名”“手机”“邮箱”“当前城市”都是非常重要的信息，如填写虚假或错误信息，则此数据为垃圾数据，并导致系统查重失败引起重复，如发现以上情况，公司不接受任何借口和理由，将统一按照制度处罚，请务必慎重对待！</p
-        >
+        > -->
+        <p class="resume_p">系统中候选人简历具有唯一性，同一名候选人简历若存在不同的顾问名下，则系统将根据“姓名”“手机”“邮箱”“工作经历”等信息关联为同一人才，禁止顾问采用更换手机号码、更换邮箱等方式来规避系统的查重检测，若发现公司将按照制度严重处罚！</p
+          >
       </div>
     </a-card>
   </div>

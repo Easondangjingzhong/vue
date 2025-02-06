@@ -39,7 +39,19 @@ enum URL {
   resume_add_tag = '/resume/rusume-vue-update-personLabel.action',
   resume_add_checked = '/resume/resume-vue-update-resume-resume-issure.action',
   resume_search_recommend = '/candidatePosition/resume-vue-query-position-guanlian-scarch.action',
+  resume_file_blob = '/resume/resume-vue-filetoBlob.action',
+  resume_tianyan_executeGet = '/candidateRecommend/resume-vue-tianyan-executeGet.action',
+  resume_consultant = '/candidate/resume-vue-query-consultant.action',
+  resume_person_all = '/candidateRecommend/resume-vue-find-candidateRecommend-by-poneAndRecommendName.action',
 }
+const recommendPersonRecommendAll = (formData: any) =>
+  post<any>({ url: URL.resume_person_all, data: formData });
+const queryConsultant = (formData: any) =>
+  post<any>({ url: URL.resume_consultant, data: formData });
+const queryCompanyQiChacha = (formData: any) =>
+  post<any>({ url: URL.resume_tianyan_executeGet, data: formData });
+const resumeFlieToBlob = (formData: any) =>
+  post<any>({ url: URL.resume_file_blob, data: formData });
 const searchFormState = (formData: any) =>
   post<any>({ url: URL.resume_search_recommend, data: formData });
 const addResumeChecked = (formData: any) =>
@@ -118,6 +130,10 @@ const queryMarkBrandFloor = async (data: any) => post<any>({ url: URL.resume_mar
  */
 const queryMarkList = async (data: any) => post<any>({ url: URL.resume_markList, data });
 export default {
+  recommendPersonRecommendAll,
+  queryConsultant,
+  queryCompanyQiChacha,
+  resumeFlieToBlob,
   searchFormState,
   addResumeChecked,
   addTag,
