@@ -59,8 +59,8 @@
     </a-form>
   </div>
   <div class="resume-content">
-    <a-row>
-      <a-button @click="handleToAddResumeDetails" size="small">新增人才</a-button>
+    <a-row style="margin-bottom: 4px;">
+      <a-button @click="handleToAddResumeDetails" style="background-color: #eee;" size="small">新增人才</a-button>
       <!-- <PicCenterOutlined v-if="searchWorkExp == '1'" style="cursor: pointer;font-size: 14px;margin-left: 5px;color: #03A9F4;"/>
       <PicRightOutlined v-if="searchWorkExp == '1'" @click="handleChangeWorkExp" style="cursor: pointer;font-size: 14px;margin-left: 5px;"/>
       <PicCenterOutlined v-if="searchWorkExp == '2'" @click="handleChangeWorkExp" style="cursor: pointer;font-size: 14px;margin-left: 5px;"/>
@@ -81,29 +81,29 @@
         </a>
       </template>
       <template v-else-if="column.key === 'projectFlag'">
-        <a-tag class="tagspan" v-if="(record.leftType == 2 || record.leftType == 1) && record.projectFlag == '待保'" color="red">过保</a-tag>
-        <a-tag class="tagspan" v-if="(record.leftType == 2 || record.leftType == 1) && record.projectFlag == '在保'" color="green">{{ record.projectFlag }}</a-tag>
-        <a-tag class="tagspan" v-if="(record.leftType == 2 || record.leftType == 1) && record.projectFlag == '不保'" color="red">过保</a-tag>
-        <a-tag class="tagspan" v-if="(record.leftType == 2 || record.leftType == 1) && record.projectFlag == '过保'" color="red">{{ record.projectFlag }}</a-tag>
+        <a-tag class="tagspan" v-if="!record.recruitId && record.projectFlag == '待保'" color="red">过保</a-tag>
+        <a-tag class="tagspan" v-if="!record.recruitId && record.projectFlag == '在保'" color="green">{{ record.projectFlag }}</a-tag>
+        <a-tag class="tagspan" v-if="!record.recruitId && record.projectFlag == '不保'" color="red">过保</a-tag>
+        <a-tag class="tagspan" v-if="!record.recruitId && record.projectFlag == '过保'" color="red">{{ record.projectFlag }}</a-tag>
+        <a-tag class="tagspan" v-if="!record.recruitId" color="orange">公共</a-tag>
+        <a-tag class="tagspan" v-if="record.recruitId && record.checkFlag == '待核'" color="#d8d8d8">{{ record.checkFlag }}</a-tag>
+        <a-tag class="tagspan" v-if="record.recruitId && record.checkFlag && record.checkFlag != '待核'" color="green">{{ record.checkFlag }}</a-tag>
+
+        <a-tag class="tagspan" v-if="record.recruitId && record.checkFlag == '待核' && record.fristFlag" color="#d8d8d8">{{ record.fristFlag }}</a-tag>
+        <a-tag class="tagspan" v-if="record.recruitId && record.checkFlag != '待核' && record.fristFlag" color="green">{{ record.fristFlag }}</a-tag>
+
+        <a-tag class="tagspan" v-if="record.recruitId && record.onlyFlag" color="green">{{ record.onlyFlag }}</a-tag>
         
-        <a-tag class="tagspan" v-if="(record.leftType != 2 && record.leftType != 1) && record.checkFlag == '待核'" color="#d8d8d8">{{ record.checkFlag }}</a-tag>
-        <a-tag class="tagspan" v-if="(record.leftType != 2 && record.leftType != 1) && record.checkFlag && record.checkFlag != '待核'" color="green">{{ record.checkFlag }}</a-tag>
+        <a-tag class="tagspan" v-if="record.recruitId && record.commonFlag" color="green">{{ record.commonFlag }}</a-tag>
+        <a-tag class="tagspan" v-if="record.recruitId && record.gognGongFlag" color="orange">{{ record.gognGongFlag }}</a-tag>
 
-        <a-tag class="tagspan" v-if="(record.leftType != 2 && record.leftType != 1) && record.checkFlag == '待核' && record.fristFlag" color="#d8d8d8">{{ record.fristFlag }}</a-tag>
-        <a-tag class="tagspan" v-if="(record.leftType != 2 && record.leftType != 1) && record.checkFlag != '待核' && record.fristFlag" color="green">{{ record.fristFlag }}</a-tag>
-
-        <a-tag class="tagspan" v-if="(record.leftType != 2 && record.leftType != 1) && record.onlyFlag" color="green">{{ record.onlyFlag }}</a-tag>
-        
-        <a-tag class="tagspan" v-if="(record.leftType != 2 && record.leftType != 1) && record.commonFlag" color="green">{{ record.commonFlag }}</a-tag>
-        <a-tag class="tagspan" v-if="(record.leftType != 2 && record.leftType != 1) && record.gognGongFlag" color="orange">{{ record.gognGongFlag }}</a-tag>
-
-        <a-tag class="tagspan" v-if="(record.leftType != 2 && record.leftType != 1) && record.limitFlag == '保护'" color="green">{{ record.limitFlag }}</a-tag>
+        <!-- <a-tag class="tagspan" v-if="record.recruitId && record.limitFlag == '保护'" color="green">{{ record.limitFlag }}</a-tag> -->
         <a-tag class="tagspan" v-if="record.limitFlag == '限制'" color="orange">{{ record.limitFlag }}</a-tag>
 
       </template>
     </template>
     <template #expandedRowRender="{ record }">
-      <p style="margin: 0;margin-bottom: 4px;margin-left: 10%;" v-for="item in record.works">
+      <p style="margin: 0;margin-bottom: 4px;margin-left: 10.7%;" v-for="item in record.works">
         <span v-if="item.endYear == '-1'">
           {{ item.startYear }}.<span v-if="item.startMonth < 10">0{{ +item.startMonth }}</span><span v-if="item.startMonth > 9">{{ item.startMonth }}</span> - 至今
         </span>
@@ -238,7 +238,7 @@
       dataIndex: 'userName',
       ellipsis: true,
       key: 'userName',
-      width: 60,
+      width: 70,
     },
     {
       title: '性别',

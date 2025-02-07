@@ -43,7 +43,11 @@ enum URL {
   resume_tianyan_executeGet = '/candidateRecommend/resume-vue-tianyan-executeGet.action',
   resume_consultant = '/candidate/resume-vue-query-consultant.action',
   resume_person_all = '/candidateRecommend/resume-vue-find-candidateRecommend-by-poneAndRecommendName.action',
+  resume_recommend_msg = '/candidate/resume-vue-update-resumeRecommendMsg.action',
 }
+
+const resumeRecommendMsg = (formData: any) =>
+  post<any>({ url: URL.resume_recommend_msg, data: formData });
 const recommendPersonRecommendAll = (formData: any) =>
   post<any>({ url: URL.resume_person_all, data: formData });
 const queryConsultant = (formData: any) =>
@@ -130,6 +134,7 @@ const queryMarkBrandFloor = async (data: any) => post<any>({ url: URL.resume_mar
  */
 const queryMarkList = async (data: any) => post<any>({ url: URL.resume_markList, data });
 export default {
+  resumeRecommendMsg,
   recommendPersonRecommendAll,
   queryConsultant,
   queryCompanyQiChacha,

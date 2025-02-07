@@ -6,8 +6,8 @@
     <ResumeDetailHeader :resumeData="resumeDetailTemp.resume" :showResumeAdd="showResumeAdd" :showResumeAddReport="showResumeAddReport"/>
     <div class="resume_container_detail">
     <ResumeDetailPersonInfo :resumeData="resumeDetailTemp.resume" :showResumeAdd="showResumeAdd"/>
-    <ResumeDetailWorkInfo v-for="(item,index) in resumeDetailTemp.resume.workExpeList" :indexNum="index" :resumeData="item" :showResumeAdd="showResumeAdd"/>
     <ResumeDetailWorkInfo :showResumeAdd="showResumeAdd" class="resume_work_show" v-if="workFlag && showResumeAdd" :indexNum="(resumeDetailTemp.resume.workExpeList ? resumeDetailTemp.resume.workExpeList.length + 1 : 0)" :resumeData="{resumeId: resumeDetailTemp.resume.id}"/>
+    <ResumeDetailWorkInfo v-for="(item,index) in resumeDetailTemp.resume.workExpeList" :indexNum="index" :resumeData="item" :showResumeAdd="showResumeAdd"/>
     <ResumeDetailEducationInfo v-for="(item,index) in resumeDetailTemp.resume.eduExpeList"  :showResumeAdd="showResumeAdd" :indexNum="index" :resumeData="item"/>
     <ResumeDetailEducationInfo :showResumeAdd="showResumeAdd" v-if="eduFlag && showResumeAdd" :indexNum="resumeDetailTemp.resume.eduExpeList.length + 1" :resumeData="{resumeId: resumeDetailTemp.resume.id}"/>
     <ResumeDetailLanguagesInfo :Languages="resumeDetailTemp.resume.resumeLanguageList" :showResumeAdd="showResumeAdd" :resumeId="resumeDetailTemp.resume.id"/>

@@ -502,7 +502,7 @@
     }
   });
   const endYearTemp =
-    (props.resumeData?.endYear == -1 ? "" : props.resumeData?.endYear +
+    (props.resumeData?.endYear == -1 ? "-1" : props.resumeData?.endYear +
     (props.resumeData?.endMonth < 10
       ? '-0' + props.resumeData?.endMonth
       : '-' + props.resumeData?.endMonth));
@@ -527,7 +527,7 @@
     }
     formState.companyName = props.resumeData?.companyName;
     formState.brandName = {
-      value: props.resumeData?.workBrand,
+      value: props.resumeData?.workBrand.toString(),
       label: props.resumeData?.brandName,
     };
     formState.category = props.resumeData?.category;
@@ -543,7 +543,7 @@
         ? '-0' + +props.resumeData?.startMonth
         : '-' + props.resumeData?.startMonth);
     formState.startMonth = props.resumeData?.startMonth;
-    formState.endYear = props.resumeData?.endYear == '-1' ? '' :
+    formState.endYear = props.resumeData?.endYear == '-1' ? '-1' :
       props.resumeData?.endYear +
       (props.resumeData?.endMonth < 10
         ? '-0' + +props.resumeData?.endMonth
@@ -561,7 +561,7 @@
     formState.workDuty = props.resumeData?.workDuty?.replaceAll(/<[^>]+>/g, '');
     formState.workFloor = props.resumeData?.workFloor;
     formState.workMark = props.resumeData?.workMark;
-    formState.workBrand = props.resumeData?.workBrand;
+    formState.workBrand = props.resumeData?.workBrand.toString();
     formState.workCity = props.resumeData?.workCity;
     formState.monthSalary = props.resumeData?.monthSalary;
     formState.department = props.resumeData?.department;
@@ -614,7 +614,7 @@
       //@ts-ignore
       label: positionsListShow(item.cnName, item.usName),
       //@ts-ignore
-      value: item.brandId,
+      value: item.brandId.toString(),
     };
     //@ts-ignore
     tempOptionBrand.push(tempObj);
@@ -790,7 +790,7 @@
       formState.workMark = '';
       formState.isRetreat = '';
       formState.marketName ={ value: '', label: '' };
-      formState.brandName ={ value: '', label: '' };
+      //formState.brandName ={ value: '', label: '' };
       resumeDetailStore.queryResumePositions().then((res) => {
         let tempOption = [];
         res.info.postList.forEach((item) => {

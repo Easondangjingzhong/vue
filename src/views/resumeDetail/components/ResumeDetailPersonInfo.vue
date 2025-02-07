@@ -49,7 +49,7 @@
         国籍: <span class="resume_span">{{ resumeData.nationality }}</span>
       </a-col>
       <a-col :span="spancol">
-       年龄: <span class="resume_span">{{ resumeData.age }}岁</span>
+       年龄: <span class="resume_span">{{ resumeData.age }}岁 {{resumeData.ageTime ? (resumeData.ageTime) : ""}}</span>
       </a-col>
     </a-row>
     <a-row :gutter="24" class="resume_row">
@@ -103,6 +103,33 @@
       <a-divider :dashed="true" style="background-color: #ccc; margin-top: 0" />
     </a-row>
     <a-form ref="formRef" :model="formState" @finish="onFinish">
+      <a-row :gutter="24" class="resume_row_update">
+        <a-col :span="spancol">
+          <a-form-item
+            label="姓名"
+            name="userName"
+            :rules="[{ required: true, message: '请输入姓名' }]"
+          >
+            <a-input
+            style="width: 100%"
+              v-model:value="formState.userName"
+              placeholder="请输入姓名"
+            />
+          </a-form-item>
+        </a-col>
+        <a-col :span="spancol">
+          <a-form-item
+            label="手机"
+            :rules="[{ required: true, message: '请输入手机' }]"
+          >
+            <a-input
+            style="width: 100%"
+              :disabled="true"
+              v-model:value="formState.phoneNum"
+            />
+          </a-form-item>
+        </a-col>
+      </a-row>
       <a-row :gutter="24" class="resume_row_update" style="position: relative">
         <a-col :span="spancol">
           <a-form-item
@@ -326,6 +353,8 @@
   const expend = ref(false);
   const formState = ref({
     id: '',
+    userName: '',
+    phoneNum: '',
     currentCity: '',
     gender: '',
     nationality: '',
@@ -402,6 +431,8 @@
     formState.value = {
       id: props.resumeData.id,
       currentCity: props.resumeData.currentCity,
+      userName: props.resumeData.userName,
+      phoneNum: props.resumeData.phoneNum,
       gender: props.resumeData.gender,
       nationality: props.resumeData.nationality,
       age: props.resumeData.age,

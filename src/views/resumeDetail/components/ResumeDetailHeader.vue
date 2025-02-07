@@ -8,37 +8,45 @@
     <a-row :gutter="24">
       <a-col :span="24" class="resume_info">
         <h2 class="resume_h3">{{ resumeData.userName }}</h2>
-        <a-tag style="cursor: pointer;" @click="handleAddChecked" color="#ffd522" class="resume_tag_checked" v-if="showResumeAdd && resumeData.heDuiFlag == '待核'"
+        <a-tag class="resume_tag_checked_top" v-if="!resumeData.recruitId && resumeData.projectFlag == '待保'" color="red">过保</a-tag>
+        <a-tag class="resume_tag_checked_top" v-if="!resumeData.recruitId && resumeData.projectFlag == '在保'" color="green">{{ resumeData.projectFlag }}</a-tag>
+        <a-tag class="resume_tag_checked_top" v-if="!resumeData.recruitId && resumeData.projectFlag == '不保'" color="red">过保</a-tag>
+        <a-tag class="resume_tag_checked_top" v-if="!resumeData.recruitId && resumeData.projectFlag == '过保'" color="red">{{ resumeData.projectFlag }}</a-tag>
+        <a-tag class="resume_tag_checked_top" v-if="!resumeData.recruitId" color="orange">公共</a-tag>
+        <a-tag style="cursor: pointer;" @click="handleAddChecked" color="#ffd522" class="resume_tag_checked" v-if="showResumeAdd && resumeData.recruitId && resumeData.checkFlag == '待核'"
           >待核</a-tag
         >
         <a-tag
           color="#4bb632"
           class="resume_tag_checked"
           :title="newTime"
-          v-if="resumeData.heDuiFlag == '已核'"
+          v-if="resumeData.recruitId && resumeData.checkFlag && resumeData.checkFlag != '待核'"
           >最新</a-tag
         >
         <a-tag
           color="#ccc"
           class="resume_tag_checked_top"
           :title="repeatTime"
-          v-if="!resumeData.isRepeat && resumeData.heDuiFlag == '待核'"
+          v-if="resumeData.recruitId && resumeData.checkFlag == '待核' && resumeData.fristFlag"
           >首增</a-tag
         >
         <a-tag
           color="#4bb632"
           class="resume_tag_checked_top"
           :title="repeatTime"
-          v-if="!resumeData.isRepeat && resumeData.heDuiFlag == '已核'"
+          v-if="resumeData.recruitId && resumeData.checkFlag != '待核' && resumeData.fristFlag"
           >首增</a-tag
         >
-        <a-tag
+        <a-tag class="resume_tag_checked_top" v-if="resumeData.recruitId && resumeData.onlyFlag" color="#4bb632">{{ resumeData.onlyFlag }}</a-tag>
+        <a-tag class="resume_tag_checked_top" v-if="resumeData.recruitId && resumeData.commonFlag" color="#4bb632">{{ resumeData.commonFlag }}</a-tag>
+        <a-tag class="resume_tag_checked_top" v-if="resumeData.recruitId && resumeData.gognGongFlag" color="#d46b08">{{ resumeData.gognGongFlag }}</a-tag>
+        <!-- <a-tag
           color="#4bb632"
           class="resume_tag_checked_top"
           :title="personBaohuTime"
           v-if="personBaohuFlag"
           >保护</a-tag
-        >
+        > -->
          <a-tag
           color="red"
           class="resume_tag_checked_top"
@@ -84,7 +92,7 @@
       <a-tag color="#4bb632" title="完整度" class="resume_tag"
         >{{ resumeData.resumeProgress }}%</a-tag
       >
-      <a-tag color="#00bcd4" title="来源">{{ resumeData.talentSource }}</a-tag>
+      <a-tag v-if="resumeData.talentSource" color="#00bcd4" title="来源">{{ resumeData.talentSource }}</a-tag>
       <a-tag color="#ccc" class="resume_tag_phone" style="cursor: pointer;" @click="handlePhoneNumToSystem(resumeData.phoneNum)"
         ><PhoneFilled :style="{ fontSize: '8px' }" :rotate="90" />
         <a-popover placement="topLeft">
@@ -410,7 +418,18 @@ watch(resumeReport,()=> {
       message.error('请选择推荐信息');
       return;
     }
-    templateTypeShow.value = true;
+    const temp = optionsWorkRecommendAll.value?.filter(item => item.value == workRecommendAll.value)[0]?.label.split("-");
+    let tempObj = {
+      recommendCity: temp[0],
+      recommendMarket: temp[2],
+      recommendBrand: temp[1],
+      recommendPosition: temp[3],
+    }
+    resumeDetailStore.resumeRecommendMsg(tempObj).then(res => {
+      console.log(res)
+      templateTypeShow.value = true;
+    })
+    
   }
   const screenWidth = Math.round(window.screen.width * window.devicePixelRatio);
   const handleCloseResumeUpload = () => {

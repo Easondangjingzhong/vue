@@ -3,7 +3,7 @@
     <a-row :gutter="24">
       <a-col :span="24" class="resume_detail_title">
         <h4 class="resume_h4">
-          简历
+          简历信息
         </h4>
       </a-col>
       <a-divider :dashed="true" style="background-color: #ccc;margin-top: 0;margin-bottom: 5px;" />

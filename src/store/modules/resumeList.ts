@@ -152,7 +152,7 @@ export const useResumeListStore = defineStore({
         //@ts-ignore
         itemsTemp.push({
           title: '我的人才',
-          label: 'Eason Dang',
+          label: loginVueUser.loginName,
           key: '51',
           level: 1,
         });
@@ -801,6 +801,7 @@ export const useResumeListStore = defineStore({
           tempItem.gognGongFlag = item.gognGongFlag || ""; //公共
           tempItem.limitFlag = item.limitFlag || ""; //限制 保护
           tempItem.options = item.options;
+          tempItem.recruitId = item.recruitId;
           tempItem.leftType = param.leftType || "2";//参数
           tempItem.projectFlag = item.projectFlag;
           // if (item.works) {

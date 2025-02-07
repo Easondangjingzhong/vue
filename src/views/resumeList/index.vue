@@ -1231,6 +1231,7 @@ resumeList.querySystemFunction().then((res) => {
     width: 100%;
     font-size: 14px;
     font-weight: 600;
+    z-index: 1;
   }
   .resume_container {
     max-width: 1920px;

@@ -686,6 +686,17 @@ export const useResumeDetailStore = defineStore({
       const res = await fetchApi.recommendPersonRecommendAll(formData);
       return res;
     },
+    async resumeRecommendMsg(temp) {
+      let formData = new FormData();
+      const resumeId = this.resumeDetail.resumeId.toString();
+      formData.append('id', resumeId);
+      formData.append('recommendCity', temp.recommendCity);
+      formData.append('recommendMarket', temp.recommendMarket);
+      formData.append('recommendBrand', temp.recommendBrand);
+      formData.append('recommendPosition', temp.recommendPosition);
+      const res = await fetchApi.resumeRecommendMsg(formData);
+      return res;
+    },
   },
 });
 export function useResumeStoreWithOut() {
