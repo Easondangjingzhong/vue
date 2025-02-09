@@ -1,45 +1,40 @@
 <template>
   <div class="resume_header">
-    <a-row :gutter="24" v-if="!showResumeAdd && showResumeAddReport" style="height: 100px;overflow-y: auto;border-bottom: 1px solid #ccc;">
-      <a-col :span="24" v-if="resumeReportDetails.length > 0" v-for="item in resumeReportDetails">
-        <div v-html="item.reportContent"></div>
-      </a-col>
-    </a-row>
     <a-row :gutter="24">
       <a-col :span="24" class="resume_info">
         <h2 class="resume_h3">{{ resumeData.userName }}</h2>
-        <a-tag class="resume_tag_checked_top" v-if="!resumeData.recruitId && resumeData.projectFlag == '待保'" color="red">过保</a-tag>
-        <a-tag class="resume_tag_checked_top" v-if="!resumeData.recruitId && resumeData.projectFlag == '在保'" color="green">{{ resumeData.projectFlag }}</a-tag>
-        <a-tag class="resume_tag_checked_top" v-if="!resumeData.recruitId && resumeData.projectFlag == '不保'" color="red">过保</a-tag>
-        <a-tag class="resume_tag_checked_top" v-if="!resumeData.recruitId && resumeData.projectFlag == '过保'" color="red">{{ resumeData.projectFlag }}</a-tag>
+        <a-tag class="resume_tag_checked" v-if="!resumeData.recruitId && resumeData.projectFlag == '待保'" color="red">过保</a-tag>
+        <a-tag class="resume_tag_checked" v-if="!resumeData.recruitId && resumeData.projectFlag == '在保'" color="green">{{ resumeData.projectFlag }}</a-tag>
+        <a-tag class="resume_tag_checked" v-if="!resumeData.recruitId && resumeData.projectFlag == '不保'" color="red">过保</a-tag>
+        <a-tag class="resume_tag_checked" v-if="!resumeData.recruitId && resumeData.projectFlag == '过保'" color="red">{{ resumeData.projectFlag }}</a-tag>
         <a-tag class="resume_tag_checked_top" v-if="!resumeData.recruitId" color="orange">公共</a-tag>
-        <a-tag style="cursor: pointer;" @click="handleAddChecked" color="#ffd522" class="resume_tag_checked" v-if="showResumeAdd && resumeData.recruitId && resumeData.checkFlag == '待核'"
+        <a-tag style="cursor: pointer;" color="#d8d8d8" class="resume_tag_checked" v-if="showResumeAdd && resumeData.recruitId && resumeData.checkFlag == '待核'"
           >待核</a-tag
         >
         <a-tag
-          color="#4bb632"
+          color="green"
           class="resume_tag_checked"
           :title="newTime"
           v-if="resumeData.recruitId && resumeData.checkFlag && resumeData.checkFlag != '待核'"
           >最新</a-tag
         >
         <a-tag
-          color="#ccc"
+          color="#d8d8d8"
           class="resume_tag_checked_top"
           :title="repeatTime"
           v-if="resumeData.recruitId && resumeData.checkFlag == '待核' && resumeData.fristFlag"
           >首增</a-tag
         >
         <a-tag
-          color="#4bb632"
+          color="green"
           class="resume_tag_checked_top"
           :title="repeatTime"
           v-if="resumeData.recruitId && resumeData.checkFlag != '待核' && resumeData.fristFlag"
           >首增</a-tag
         >
-        <a-tag class="resume_tag_checked_top" v-if="resumeData.recruitId && resumeData.onlyFlag" color="#4bb632">{{ resumeData.onlyFlag }}</a-tag>
-        <a-tag class="resume_tag_checked_top" v-if="resumeData.recruitId && resumeData.commonFlag" color="#4bb632">{{ resumeData.commonFlag }}</a-tag>
-        <a-tag class="resume_tag_checked_top" v-if="resumeData.recruitId && resumeData.gognGongFlag" color="#d46b08">{{ resumeData.gognGongFlag }}</a-tag>
+        <a-tag class="resume_tag_checked_top" v-if="resumeData.recruitId && resumeData.onlyFlag" color="green">{{ resumeData.onlyFlag }}</a-tag>
+        <a-tag class="resume_tag_checked_top" v-if="resumeData.recruitId && resumeData.commonFlag" color="green">{{ resumeData.commonFlag }}</a-tag>
+        <a-tag class="resume_tag_checked_top" v-if="resumeData.recruitId && resumeData.gognGongFlag" color="orange">{{ resumeData.gognGongFlag }}</a-tag>
         <!-- <a-tag
           color="#4bb632"
           class="resume_tag_checked_top"
@@ -48,43 +43,20 @@
           >保护</a-tag
         > -->
          <a-tag
-          color="red"
+          color="orange"
           class="resume_tag_checked_top"
           v-if="resumeData.recommendLimit == '限制推荐'"
           >限制</a-tag
-        >
-        <a-modal :maskClosable="false" @cancel="handleCloseResumeUpload" v-model:open="openResumeUpload" style="width: 800px;" title="下载简历" :footer="null">
-          <a-row :gutter="24">
-            <a-col :span="7">
-              推荐人员: 
-              <a-select :disabled="templateTypeShow" size="small" show-search optionFilterProp="label" style="width: 120px;" v-model:value="workRecommendPerson" @change="handleRecommendPerson" :options="optionsWorkRecommendPerson"></a-select>
-            </a-col>
-            <a-col :span="16">
-              推荐信息: 
-              <a-select :disabled="templateTypeShow" size="small" style="width: 380px;" v-model:value="workRecommendAll" :options="optionsWorkRecommendAll"></a-select>
-              <a-button size="small" v-if="!templateTypeShow" style="margin-left: 5px;" @click="handleWorkRecommendAll" type="primary">确认</a-button>
-            </a-col>
-          </a-row>
-          <a-row :gutter="24" v-if="templateTypeShow" style="margin-top: 10px;">
-            <a-col :span="24">
-              <a-radio-group v-model:value="templateType">
-              <a-radio value="youtai">优态模板</a-radio>
-              <a-radio value="wotui">我推模板</a-radio>
-              </a-radio-group>
-              <a-button size="small" style="margin-left: 5px;" @click="handleTemplateType" type="primary">下载</a-button>
-            </a-col>
-    
-          </a-row>
-        </a-modal>
+        >      
         <a-modal v-model:open="openResumeCopy" title="复制简历" @ok="handleResumeCopy">
       <p>是否将简历复制到自己名下</p>
     </a-modal>
     <a-modal v-model:open="openResumeChecked" title="简历核对" @ok="handleResumeChecked">
-      <p>请确认此简历匹配以下4条制度要求，方可核对</p>
+      <p>请确认此简历匹配以下4条要求，方可继续点击已核按钮：</p>
       <p>1. 候选人简历属于零售行业或属于目前公司在做的职位的寻找方向；</p>
-      <p>2. 新增的候选人简历的内容（个人信息、工作经历、教育经历等）完整准确真实，完整度需达到90%以上；</p>
+      <p>2. 新增的候选人简历的内容（个人信息、工作经历、教育经历、语言能力等）完整准确真实，完整度需达到90%以上；</p>
       <p>3. 与新增的候选人进行过有效电话沟通且填写匹配的有效沟通记录；</p>
-      <p>4. 简历与候选人进行过核对。</p>
+      <p>4. 已按照公司“简历核对制度”要求仔细且正确的核对此候选人简历。</p>
     </a-modal>
       </a-col>
     </a-row>
@@ -92,7 +64,7 @@
       <a-tag color="#4bb632" title="完整度" class="resume_tag"
         >{{ resumeData.resumeProgress }}%</a-tag
       >
-      <a-tag v-if="resumeData.talentSource" color="#00bcd4" title="来源">{{ resumeData.talentSource }}</a-tag>
+      <a-tag class="resume_tag_source" v-if="resumeData.talentSource" color="#00bcd4" title="来源">{{ resumeData.talentSource }}</a-tag>
       <a-tag color="#ccc" class="resume_tag_phone" style="cursor: pointer;" @click="handlePhoneNumToSystem(resumeData.phoneNum)"
         ><PhoneFilled :style="{ fontSize: '8px' }" :rotate="90" />
         <a-popover placement="topLeft">
@@ -129,11 +101,17 @@
       </a-col>
       <a-col :span="6" style="text-align: right">
         <a-button
+          v-if="showResumeAdd && resumeData.recruitId && resumeData.checkFlag == '待核'"
+          style="margin-left: 4px;background-color: orange;color: #fff;"
+           size="middle"
+          @click="handleAddChecked"
+          >核对</a-button>
+        <!-- <a-button
           v-if="showResumeAdd && resumeData.heDuiFlag == '已核'"
           style="margin-left: 4px;background-color: #FF9800;color: #fff;"
            size="middle"
           @click="handleOpenResumeUpload"
-          >下载</a-button>
+          >下载</a-button> -->
        <a-button
           v-if="showResumeCopy"
           style="margin-left: 4px;"
@@ -144,6 +122,17 @@
         style="margin-left: 4px;"
           v-if="showResumeAdd && resumeData.recommendLimit == '推荐' && resumeData.heDuiFlag == '已核'"
           type="primary"
+          danger
+          size="middle"
+          @click="handleRecommendCandidatePosition"
+        >
+          {{ resumeData.recommendLimit }}
+        </a-button>
+        <a-button
+        style="margin-left: 4px;"
+          v-if="showResumeAdd && resumeData.recommendLimit == '推荐' && resumeData.checkFlag == '待核'"
+          :disabled="true"
+          title="需要核对后才能推荐"
           danger
           size="middle"
           @click="handleRecommendCandidatePosition"
@@ -192,7 +181,7 @@
   import RecommendCandidatePosition from './RecommendCandidatePosition.vue';
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   const resumeDetailStore = useResumeDetailStore();
-  const { resumeReport,resumeId,resumeDetail } =storeToRefs(resumeDetailStore);
+  const { resumeDetail } =storeToRefs(resumeDetailStore);
   const props = defineProps({
     resumeData: {
       type: Object,
@@ -201,32 +190,9 @@
     showResumeAdd: {
       type: Boolean,
       default: false,
-    },
-    showResumeAddReport: {
-      type: Boolean,
-      default: false,
     }
   });
-  const resumeReportDetails = ref([{
-  index: '',
-  resumeId: '',
-  realNameEn: '',
-  reportContent: '',
-  orginalPathEn: '',
-  resumeIdEn: '',
-  orginalPath: ''
-}])
-watch(resumeReport,()=> {
-  resumeReportDetails.value = resumeReport.value?.map((item,index) => ({
-    index: (index + 1).toString(),
-    resumeId: item.resumeId,
-    realNameEn: item.realNameEn,
-    reportContent: item.reportContent,
-    orginalPathEn: item.orginalPathEn,
-    resumeIdEn: item.resumeIdEn,
-    orginalPath: item.orginalPath
-  }))
-})
+  
   const newTime = ref(
     props.resumeData.shouZengStartTime
       ? `最新: ${formatToDateMinute(props.resumeData.newtestStartTime)} - ${formatToDateMinute(
@@ -375,6 +341,10 @@ watch(resumeReport,()=> {
   }
   const openResumeChecked = ref(false);
   const handleAddChecked = () => {
+    if (props.resumeData.resumeProgress < 90) {
+      message.error('简历完整度需要大于90');
+      return;
+    }
     openResumeChecked.value = true;
   }
   const handleResumeChecked = () => {
@@ -390,66 +360,7 @@ watch(resumeReport,()=> {
       }
     })
   }
-  //下载简历
-  const openResumeUpload = ref(false);
-  const workRecommendPerson = ref("");
-  const workRecommendAll = ref("");
-  const templateTypeShow = ref(false);
-  const templateType = ref("");
-  const optionsWorkRecommendPerson = ref<SelectProps['options']>([]);
-  const optionsWorkRecommendAll = ref<SelectProps['options']>([]);
-  const handleOpenResumeUpload = () => {
-    openResumeUpload.value = true;
-    resumeDetailStore.queryConsultant().then(res => {
-      if (res.code === 1) {
-        optionsWorkRecommendPerson.value = res.info.map(item => ({value: item.id,label: item.realNameEn}))
-      }
-    })
-  }
-  const handleRecommendPerson = () => {
-    resumeDetailStore.recommendPersonRecommendAll(workRecommendPerson.value).then(res => {
-      if (res.code === 1 && res.info.length > 0) {
-        optionsWorkRecommendAll.value = res.info.map(item => ({value: item.id,label: `${item.city}-${item.brand}-${item.market}-${item.positions}-${item.counselor}`}));
-      }
-    })
-  }
-  const handleWorkRecommendAll = () => {
-    if (!workRecommendAll.value) {
-      message.error('请选择推荐信息');
-      return;
-    }
-    const temp = optionsWorkRecommendAll.value?.filter(item => item.value == workRecommendAll.value)[0]?.label.split("-");
-    let tempObj = {
-      recommendCity: temp[0],
-      recommendMarket: temp[2],
-      recommendBrand: temp[1],
-      recommendPosition: temp[3],
-    }
-    resumeDetailStore.resumeRecommendMsg(tempObj).then(res => {
-      console.log(res)
-      templateTypeShow.value = true;
-    })
-    
-  }
-  const screenWidth = Math.round(window.screen.width * window.devicePixelRatio);
-  const handleCloseResumeUpload = () => {
-    openResumeUpload.value = false;
-    templateTypeShow.value = false;
-    templateType.value = '';
-    workRecommendPerson.value = '';
-    workRecommendAll.value = '';
-  }
-  const handleTemplateType = () => {
-    if (!templateType.value) {
-      message.error('请选择模板');
-      return;
-    }
-    const realNameEn = resumeDetail.value.realNameEn;
-    console.log(resumeId.value)
-    //location.href = "http://work.wotui.com:8889/WTSM/" + "DownloadResumeServlet?resumeId=${resume.id }&resumeType=C&systemUser=" + resumeTypeFlag + "&template=" + valTemp + "&realEnName=" + realNameEn+"&screenWidth="+screenWidth;
-    location.href = `http://work.wotui.com:8889/WTSM/DownloadResumeServlet?resumeId=${resumeId.value}&resumeType=C&systemUser=1&template=${templateType.value}&realEnName=${realNameEn}&screenWidth=${screenWidth}`
-    handleCloseResumeUpload();
-  }
+  
   const handlePhoneNumToSystem = (phone) => {
    // 跳转到��号器��打电话
     window.open("http://work.wotui.com:8889/WTSM/employee-group/query-phone-resume-call.html?phoneNum=" + phone+"&userName="+props.resumeData.userName+"&workPlace="+resumeDetail.value.resume.currentCity+"&positionName="+resumeDetail.value.resume.positionName,"_blank ");
@@ -484,15 +395,30 @@ watch(resumeReport,()=> {
   .resume_tag_checked {
     margin-left: 5px;
     margin-top: 10px;
+    margin-inline-end: 0;
+    border-radius: 8px;
   }
   .resume_tag_checked_top {
     margin-top: 10px;
+    margin-left: 5px;
+    margin-inline-end: 0;
+    border-radius: 8px;
   }
   .resume_tag {
     margin-left: 15px;
+    margin-inline-end: 0;
+    border-radius: 8px;
+  }
+  .resume_tag_source {
+    margin-left: 5px;
+    margin-inline-end: 0;
+    border-radius: 8px;
   }
   .resume_tag_phone {
     color: #000;
+    margin-left: 5px;
+    margin-inline-end: 0;
+    border-radius: 8px;
   }
   .tagspan {
     margin-inline-end: 4px;

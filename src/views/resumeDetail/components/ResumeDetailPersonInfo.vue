@@ -161,8 +161,8 @@
         <a-col class="resume_photo_col_update">
           <span class="resume_photo_img">
             <a-image
-              :width="104"
-              :height="135"
+              :width="124"
+              :height="161"
               class="resume_photo_image"
               mode="aspectFill"
               :src="photoPath"
@@ -183,7 +183,7 @@
                 background-color: #f0ad4e;
                 border-color: #eea236;
                 color: #fff;
-                margin-left: 12px;
+                margin-left: 25px;
               "
               >上传</a-button
             >
@@ -607,7 +607,7 @@
   .resume_photo_col_update {
     position: absolute;
     left: 73%;
-    top: 0;
+    top: -100%;
     padding: 0 !important;
   }
   .resume_photo_col_update .ant-image .resume_photo_image {

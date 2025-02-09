@@ -8,22 +8,22 @@
       </a-col>
       <a-divider :dashed="true" style="background-color: #ccc;margin-top: 0;margin-bottom: 5px;" />
     </a-row>
-    <a-row :gutter="24" class="resume_row" :key="item.resumeId" v-if="resumeReportDetails.length > 0" v-for="item in resumeReportDetails">
+    <a-row :gutter="24" :key="item.resumeId" v-if="resumeReportDetails.length > 0" v-for="item in resumeReportDetails" :class="item.resumeId == resumeId ? ['resume_row','active'] : 'resume_row'" >
       <a-col :span="24">
         <span class="resume_span_one">{{ item.index }}</span>
         <span class="resume_span_name">{{ item.realNameEn }}</span>
         <span class="resume_span_name">{{ item.teamName }}</span>
         <span class="resume_span_two">{{ item.source }}</span>
         <span class="resume_span_name">{{ item.registTime }}</span>
-        <span class="resume_span_name">
-          <a-tag color="pink">中文</a-tag>
-          <LinkOutlined v-if="item.orginalPath" @click="handleResumeOrginalPath(item.orginalPath)"/>
+        <span class="resume_span">
+          <a-tag color="pink" style="cursor: pointer;" @click="handleChangeResume(item.resumeId,item.addConsultantId)">中文</a-tag>
         </span>
         <!-- <span class="resume_span" v-if="!item.resumeIdEn">英文</span> -->
-        <span class="resume_span_two">
+        <span class="resume_span_name">
           <a-tag  v-if="!item.resumeIdEn" style="cursor: not-allowed;">英文</a-tag>
           <a-tag  v-if="item.resumeIdEn" color="pink">英文</a-tag>
           <LinkOutlined v-if="item.orginalPathEn" @click="handleResumeOrginalPath(item.orginalPath)"/>
+          <LinkOutlined v-if="item.orginalPath" @click="handleResumeOrginalPath(item.orginalPath)"/>
         </span>
         <span class="resume_span">
           <a-tag v-if="item.reportContent" color="#ffa500" style="cursor: pointer;" @click="handleReportContent(item.reportContent)">报告</a-tag>
@@ -39,8 +39,8 @@
       </a-row>
       <a-row :gutter="24">
           <a-col :span="24" style="text-align: right;">
-            <a-button type="primary" size="small" style="margin: 0 8px;" @click="handleReportContentUpdate">修改</a-button>
-            <a-button size="small" @click="expend = false">关闭</a-button>
+            <a-button v-if="showResumeAdd" type="primary" size="small" style="margin: 0 8px;" @click="handleReportContentUpdate">修改</a-button>
+            <a-button v-if="showResumeAdd" size="small" @click="expend = false">关闭</a-button>
           </a-col>
         </a-row>
     </div>
@@ -76,7 +76,13 @@
 import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
 import OrginalPath from '/@/components/OrginalPath/index.vue'
 const resumeDetailStore = useResumeDetailStore();
-const { resumeReport } =storeToRefs(resumeDetailStore);
+const { resumeReport,resumeId } =storeToRefs(resumeDetailStore);
+defineProps({
+    showResumeAdd: {
+      type: Boolean,
+      default: false,
+    }
+  });
 const expend = ref(false);
 const expendUpdate = ref(false);
 const handleReportContentUpdate = () => {
@@ -151,13 +157,22 @@ const handleResumeOrginalPath = (path) => {
     orginalPathShow.value = true;
   })
 }
+const handleChangeResume = (resumeIdChange,addConsultantIdChange) =>{
+  resumeDetailStore.queryResumeDetail(resumeIdChange,addConsultantIdChange);
+}
 </script>
 <style lang="less" scoped>
  .resume_header {
   margin: 10px 20px;
  }
  .resume_row {
-   margin: 5px 0;
+   margin: 1px 0;
+   padding-top: 2px;
+   padding-bottom: 2px;
+ }
+ .active {
+  background-color: aliceblue;
+  border-radius: 4px;
  }
  .resume_h4 {
     margin: 5px 0;
@@ -168,9 +183,12 @@ const handleResumeOrginalPath = (path) => {
   .resume_span_name,
   .resume_span {
     display: inline-block;
-    width: 40px;
+    width: 45px;
     font-size: 14px;
     font-weight: 400;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
   .resume_span_name {
     width: 80px;
@@ -179,6 +197,6 @@ const handleResumeOrginalPath = (path) => {
     width: 20px;
   }
   .resume_span_two {
-    width: 60px;
+    width: 70px;
   }
 </style>

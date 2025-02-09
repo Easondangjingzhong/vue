@@ -3,8 +3,8 @@
     <a-row :gutter="24">
       <a-col :span="24" class="resume_detail_title">
         <h4 class="resume_h4"> 客户查重 </h4>
-        <PlusOutlined v-if="!expend" @click="handleCheckResult" />
-        <CloseOutlined v-if="expend" @click="handleCheckResult" />
+        <PlusOutlined v-if="!expend && showResumeAdd" @click="handleCheckResult" />
+        <CloseOutlined v-if="expend && showResumeAdd" @click="handleCheckResult" />
       </a-col>
       <a-divider :dashed="true" style="background-color: #ccc; margin-top: 0; margin-bottom: 5px" />
     </a-row>
@@ -77,6 +77,12 @@
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   const resumeDetailStore = useResumeDetailStore();
   const { resumeCheckResult } = storeToRefs(resumeDetailStore);
+  defineProps({
+    showResumeAdd: {
+      type: Boolean,
+      default: false,
+    }
+  });
   const expend = ref(false);
   const iconLoading = ref(false);
   const optionsCheckResult = ref<SelectProps['options']>([

@@ -3,7 +3,7 @@
   <a-layout>
     <a-layout-content class="resume_container resume_container_index">
       <div v-if="expendShow">
-    <ResumeDetailHeader :resumeData="resumeDetailTemp.resume" :showResumeAdd="showResumeAdd" :showResumeAddReport="showResumeAddReport"/>
+    <ResumeDetailHeader :resumeData="resumeDetailTemp.resume" :showResumeAdd="showResumeAdd"/>
     <div class="resume_container_detail">
     <ResumeDetailPersonInfo :resumeData="resumeDetailTemp.resume" :showResumeAdd="showResumeAdd"/>
     <ResumeDetailWorkInfo :showResumeAdd="showResumeAdd" class="resume_work_show" v-if="workFlag && showResumeAdd" :indexNum="(resumeDetailTemp.resume.workExpeList ? resumeDetailTemp.resume.workExpeList.length + 1 : 0)" :resumeData="{resumeId: resumeDetailTemp.resume.id}"/>
@@ -15,13 +15,18 @@
     </div>
   </div>
     </a-layout-content>
-    <a-layout-sider v-if="showResumeAdd" class="resume_sider">
+    <a-layout-sider class="resume_sider">
+      <!-- <a-row :gutter="24" v-if="!showResumeAdd && showResumeAddReport" style="height: 100px;overflow-y: auto;border-bottom: 1px solid #ccc;">
+      <a-col :span="24" v-if="resumeReportDetails.length > 0" v-for="item in resumeReportDetails">
+        <div v-html="item.reportContent"></div>
+      </a-col>
+    </a-row> -->
       <div v-if="expendShow">
-        <ResumeLeftHeader/>
-        <ResumeLeftCheckDuplicate/>
-        <ResumeLeftPositions/>
-        <ResumeLeftContactContent/>
-        <ResumeLeftRecommendRecord/>
+        <ResumeLeftHeader v-if="showResumeRightHeader" :showResumeAdd="showResumeAdd"/>
+        <ResumeLeftCheckDuplicate v-if="showResumeRightHeader" :showResumeAdd="showResumeAdd"/>
+        <ResumeLeftPositions v-if="showResumePositionsAndRecommendRecord"/>
+        <ResumeLeftContactContent v-if="showResumeRightContact" :showResumeAdd="showResumeAdd"/>
+        <ResumeLeftRecommendRecord v-if="showResumePositionsAndRecommendRecord"/>
       </div>
     </a-layout-sider>
   </a-layout>
@@ -47,12 +52,14 @@ import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   const resumeListStore = useResumeListStoreWithOut();
   const cityStore = useCityStoreWithOut();
   const resumeDetailStore = useResumeDetailStore();
-  const { resumeDetail,eduFlag,workFlag,resumeShowFlag } =storeToRefs(resumeDetailStore);
+  const { resumeDetail,eduFlag,workFlag,resumeShowFlag,commRecruitId } =storeToRefs(resumeDetailStore);
   const resumeDetailTemp = ref({} as ResumeDetail);
   const expendShow = ref(false);
   const route = useRoute();
-  const showResumeAdd = ref(true);
-  const showResumeAddReport = ref(true);
+  const showResumeAdd = ref(true); //控制简历按钮是否可以修改,或者是否可以操作
+  const showResumeRightHeader = ref(true); //控制简历右边简历详情和客户查重是否展示
+  const showResumeRightContact = ref(true); //控制简历右边联络记录是否展示
+  const showResumePositionsAndRecommendRecord = ref(true); //控制简历右边职位意向及推荐记录是否展示
   //const loginVueUser: {loginName: "", loginId: "", loginTocken: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
   // 如果简历的创建人不是当前登录人，则显示复制简历按钮
     // 注意：此处需要和后端协商好，获取简历创建人id的api
@@ -64,13 +71,30 @@ import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   watch(resumeDetail,() => {
     //@ts-ignore
     resumeDetailTemp.value = {...resumeDetail.value}
-    if (route.query?.searchRecommend == "Q") {
+   
+    //如果是公共简历只能看简历详情,客户查重,以及联系记录,并且不能修改
+    if (!commRecruitId.value) {
       showResumeAdd.value = false;
+      showResumePositionsAndRecommendRecord.value = false;
+    } else {
+      showResumeAdd.value = true;
+      showResumePositionsAndRecommendRecord.value = true;
+      showResumeRightContact.value = true;
+      showResumeRightHeader.value = true;
     }
-    if (route.query?.searchRecommend == "T") {
+    if (route.query?.loginType == "S" && route.query?.loginId != commRecruitId.value) {
       showResumeAdd.value = false;
-      showResumeAddReport.value = false;
+      showResumePositionsAndRecommendRecord.value = false;
     }
+     //企顾查看推荐简历只能看不能修改
+     if (route.query?.searchRecommend == "Q") {
+      showResumeAdd.value = false;
+      showResumeRightContact.value = false;
+      showResumePositionsAndRecommendRecord.value = false;
+    }
+    // if (route.query?.searchRecommend == "T") {
+    //   showResumeAdd.value = false;
+    // }
     if (!resumeDetailTemp.value.resume.workExpeList) {
       resumeDetailStore.$patch({
         workFlag: true

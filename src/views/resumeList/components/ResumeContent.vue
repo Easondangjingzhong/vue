@@ -307,9 +307,9 @@
   const handleToResumeDetails = (resumeId,addConsultantId) => {
     const loginVueUser: {loginName: "", loginId: "", loginTocken: "",loginType: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
     let query = {...loginVueUser, resumeId, addConsultantId};
-    if (loginVueUser.loginType != "A" && (!formState.value.leftType || formState.value.leftType == "1" || formState.value.leftType == "2" || formState.value.leftType == "3" || formState.value.leftType == "4")) {
-      query = {...loginVueUser, resumeId, addConsultantId,searchRecommend: "T"};
-    }
+    // if (loginVueUser.loginType != "A" && (!formState.value.leftType || formState.value.leftType == "1" || formState.value.leftType == "2" || formState.value.leftType == "3" || formState.value.leftType == "4")) {
+    //   query = {...loginVueUser, resumeId, addConsultantId,searchRecommend: "T"};
+    // }
     const href = router.resolve({
       path: '/resume/detail',
       query: query,

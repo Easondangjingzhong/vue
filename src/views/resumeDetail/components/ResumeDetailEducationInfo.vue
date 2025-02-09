@@ -263,7 +263,7 @@
       ? props.resumeData?.startYear + (props.resumeData.startMonth < 10 ? '-0' + (+props.resumeData.startMonth) : '-'+props.resumeData.startMonth)
       : '';
     formState.value.startMonth = props.resumeData?.startMonth;
-    formState.value.endYear = props.resumeData?.endYear
+    formState.value.endYear = props.resumeData?.endYear != '-1'
       ? props.resumeData.endYear + (props.resumeData.endMonth < 10 ? '-0' + (+props.resumeData.endMonth) : '-'+props.resumeData.endMonth)
       : '';
     formState.value.endMonth = props.resumeData?.endMonth;

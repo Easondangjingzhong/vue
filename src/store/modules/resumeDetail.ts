@@ -24,6 +24,7 @@ interface ResumeDetailState {
   resumeId: string; //简历的ID
   addConsultantId: string; //简历的添加顾问
   addRecruitId: string; //简历的添加顾问id
+  commRecruitId: string; //不为空是正常简历,空是公共库简历
   searchRecommend: string; //企业顾问查看简历
 }
 const loginVueUser: {loginName: "", loginId: "", loginTocken: "",loginType: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
@@ -51,6 +52,7 @@ export const useResumeDetailStore = defineStore({
     resumeId: '',
     addConsultantId: '',
     addRecruitId: '',
+    commRecruitId: '',
     searchRecommend: '',
   }),
   actions: {
@@ -60,6 +62,7 @@ export const useResumeDetailStore = defineStore({
      */
     setResumeDetail(info) {
       this.resumeDetail = info;
+      this.commRecruitId = info.resume.recruitId;
     },
     /**
      * 查询简历详情

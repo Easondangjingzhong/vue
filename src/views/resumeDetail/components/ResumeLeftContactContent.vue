@@ -3,8 +3,8 @@
     <a-row :gutter="24">
       <a-col :span="24" class="resume_detail_title">
         <h4 class="resume_h4"> 联络记录 </h4>
-        <PlusOutlined v-if="!expend" @click="handleContactContent" />
-        <CloseOutlined v-if="expend" @click="handleContactContent" />
+        <PlusOutlined v-if="!expend && showResumeAdd" @click="handleContactContent" />
+        <CloseOutlined v-if="expend && showResumeAdd" @click="handleContactContent" />
       </a-col>
       <a-divider :dashed="true" style="background-color: #ccc; margin-top: 0; margin-bottom: 5px" />
     </a-row>
@@ -69,7 +69,7 @@
     <div v-if="resumeContact.length > 0" v-for="item in resumeContact">
       <a-row :gutter="24" class="resume_row">
         <a-col :span="24">
-          {{ item.index }}、<span v-html="item.contactFlag"></span> - {{ item.contactTool }}
+          {{ item.index }}、<span v-html="item.contactFlag"></span> {{ item.contactTool ? `- ${item.contactTool}` : '' }}
           <span v-if="item.nextTime"> 下次联络: {{ item.nextTime }} </span>
         </a-col>
       </a-row>
@@ -104,6 +104,12 @@
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   const resumeDetailStore = useResumeDetailStore();
   const { resumeContactContent } = storeToRefs(resumeDetailStore);
+  defineProps({
+    showResumeAdd: {
+      type: Boolean,
+      default: false,
+    }
+  });
   const iconLoading = ref(false);
   const expend = ref(false);
   const formState = ref({
@@ -173,7 +179,7 @@
       contactFlag: item.contactFlag ? handleContactFlagHtml(item.contactFlag) : "日常联系",
       contactTool: item.contactTool ? contactTool.filter((item1) => item1.value == item.contactTool)[0].label : (item.content ? item.content.split(";")[0]?.split(":")[1] : ""),
       nextTime: item.nextTime ? formatToDateMinute(item.nextTime) : '',
-      content: item.contactFlag ? item.content?.replaceAll(/<[^>]+>/g, '') : (item.content ? item.content.split(";")[1] : ""),
+      content: item.contactFlag ? item.content?.replaceAll(/<[^>]+>/g, '') : (item.content ? (item.content.split(";")[1] ? item.content.split(";")[1] : item.content?.replaceAll(/<[^>]+>/g, '')) : ""),
       createTime: item.createTime ? formatToDateMinute(item.createTime) : '',
       realNameEn: item.realNameEn,
       index: ((resumeContactContent.value.pageNumber - 1) * resumeContactContent.value.pageSize + (index + 1)),

@@ -64,8 +64,8 @@
       >
     </a-row>
     <a-row :gutter="24" class="resume_row">
-      <a-col :span="8" class="resume_col" style="padding-left: 36px;"> 行业: <span class="resume_span">{{ resumeData.brandRetail }}</span></a-col>
-      <a-col :span="5" class="resume_col" style="padding-left: 36px;"> 品类: <span class="resume_span">{{ resumeData.brandCategory }}</span></a-col>
+      <a-col :span="8" class="resume_col" style="padding-left: 34px;"> 行业: <span class="resume_span">{{ resumeData.brandRetail }}</span></a-col>
+      <a-col :span="5" class="resume_col" style="padding-left: 34px;"> 品类: <span class="resume_span">{{ resumeData.brandCategory }}</span></a-col>
     </a-row>
     <a-row :gutter="24" class="resume_row" v-if="resumeData.salaryStructure">
       <a-col :span="12" class="resume_col">
@@ -543,11 +543,16 @@
         ? '-0' + +props.resumeData?.startMonth
         : '-' + props.resumeData?.startMonth);
     formState.startMonth = props.resumeData?.startMonth;
-    formState.endYear = props.resumeData?.endYear == '-1' ? '-1' :
+    if (props.resumeData?.endYear == '-1') {
+      formState.endYear = '-1';
+    } else {
+      formState.endYear = !props.resumeData?.endYear ? '' :
       props.resumeData?.endYear +
       (props.resumeData?.endMonth < 10
         ? '-0' + +props.resumeData?.endMonth
         : '-' + props.resumeData?.endMonth);
+    }
+   
     formState.endMonth = props.resumeData?.endMonth;
     formState.positionName = props.resumeData?.positionName;
     formState.positionsId = {
@@ -790,6 +795,9 @@
       formState.workMark = '';
       formState.isRetreat = '';
       formState.marketName ={ value: '', label: '' };
+      if (formState.brandName?.value == '1224') {
+        formState.brandName ={ value: '', label: '' };
+      }
       //formState.brandName ={ value: '', label: '' };
       resumeDetailStore.queryResumePositions().then((res) => {
         let tempOption = [];

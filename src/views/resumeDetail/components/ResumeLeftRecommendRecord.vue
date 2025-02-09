@@ -17,15 +17,46 @@
       class="row_table"
       :locale="{ emptyText: '暂无推荐记录' }"
       @change="handleQueryResumeRecord"
-    ></a-table>
+    >
+    <template #bodyCell="{ column, record }">
+      <template v-if="column.key === 'action' && (record.currentStatus == '顾问通过' || record.currentStatus == 'HR通过' || record.currentStatus == '简发顾问'
+|| record.currentStatus == '推荐顾问'  || record.currentStatus == 'OFFER接受' || record.currentStatus == '简发HR' || record.currentStatus == '简发HR')
+      ">
+      <VerticalAlignBottomOutlined @click="handleOpenResumeUpload(record.city,record.market,record.brand,record.positions,record.pId)"/>
+      </template>
+      <template v-if="column.key === 'date'">
+        <a-tage :title="`${record.counselor} ${record.date}`">查看</a-tage>
+      </template>
+    </template>
+  </a-table>
   </div>
+  <a-modal :maskClosable="false" @cancel="handleCloseResumeUpload" v-model:open="openResumeUpload" style="width: 600px;" title="下载简历" :footer="null">
+          <a-row :gutter="24">
+            <a-col :span="24">
+              推荐信息: 
+              <a-input :disabled="true" size="small" style="width: 90%;" v-model:value="workRecommendAll"/> 
+            </a-col>
+          </a-row>
+          <a-row :gutter="24" style="margin-top: 10px;">
+            <a-col :span="24">
+              <a-radio-group v-model:value="templateType">
+              <a-radio value="youtai">优态模板</a-radio>
+              <a-radio value="wotui">我推模板</a-radio>
+              </a-radio-group>
+              <a-button size="small" style="margin-left: 5px;" @click="handleTemplateType" type="primary">下载</a-button>
+            </a-col>
+          </a-row>
+        </a-modal>
 </template>
 <script setup lang="ts">
+ import { VerticalAlignBottomOutlined } from '@ant-design/icons-vue';
+import { message } from 'ant-design-vue';
 import { storeToRefs } from 'pinia';
-import { formatToDate } from '/@/utils/dateUtil';
+import type { SelectProps } from 'ant-design-vue';
+import { formatToDateMinute } from '/@/utils/dateUtil';
 import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
 const resumeDetailStore = useResumeDetailStore();
-const { resumeRecord } =storeToRefs(resumeDetailStore);
+const { resumeId,resumeRecord,resumeDetail } =storeToRefs(resumeDetailStore);
 const resumeList = ref([])
 const pagination = ref({
   pageSize: 10,
@@ -41,8 +72,10 @@ watch(resumeRecord,() => {
     city: (item.city || ""),
     market: (item.marketName || ""),
     brand: item.brand,
+    counselor: item.counselor,
+    pId: item.pId,
     positions: item.positions,
-    date: (item.time ? formatToDate(item.time) : ''),
+    date: (item.time ? formatToDateMinute(item.time) : ''),
     currentStatus: item.status,
   }));
   pagination.value = { pageSize: resumeRecord.value.pageSize, current: resumeRecord.value.pageNumber, total: resumeRecord.value.totalCount,hideOnSinglePage: true,size: 'small' };
@@ -81,13 +114,13 @@ watch(resumeRecord,() => {
       dataIndex: 'positions',
       key: 'positions',
       ellipsis: true,
-      width: 65,
+      width: 95,
     },
     {
       title: '推时',
       dataIndex: 'date',
       key: 'date',
-      width: 70,
+      width: 40,
     },
     {
       title: '当前状态',
@@ -95,9 +128,57 @@ watch(resumeRecord,() => {
       key: 'currentStatus',
       width: 65,
     },
+    {
+      title: '',
+      dataIndex: 'action',
+      key: 'action',
+      width: 20,
+    },
   ];
   const handleQueryResumeRecord = (pagination) => {
     resumeDetailStore.queryResumeRecord(pagination.current);
+  }
+  //下载简历
+  const openResumeUpload = ref(false);
+  const workRecommendAll = ref("");
+  const templateTypeShow = ref(false);
+  const templateType = ref("");
+  const handleOpenResumeUpload = (recommendCity,recommendMarket,recommendBrand,recommendPosition,pId) => {
+    openResumeUpload.value = true;
+    let tempObj = {
+      recommendCity: recommendCity,
+      recommendMarket: recommendMarket,
+      recommendBrand: recommendBrand,
+      recommendPosition: recommendPosition,
+    }
+    workRecommendAll.value = `${recommendCity}-${recommendBrand}-${recommendMarket}-${recommendPosition}`
+    resumeDetailStore.resumeRecommendMsg(tempObj).then(res => {
+      resumeDetailStore.queryCandidatePositionRequest(pId).then(res => {
+        if (res.code == 1) {
+          if (res.info) {
+            templateType.value = res.info.template == '0' ? 'youtai' : 'wotui';
+            templateTypeShow.value = true;
+          }
+        }
+      })
+    })
+  }
+  const screenWidth = Math.round(window.screen.width * window.devicePixelRatio);
+  const handleCloseResumeUpload = () => {
+    openResumeUpload.value = false;
+    templateTypeShow.value = false;
+    templateType.value = '';
+    workRecommendAll.value = '';
+  }
+  const handleTemplateType = () => {
+    if (!templateType.value) {
+      message.error('请选择模板');
+      return;
+    }
+    const realNameEn = resumeDetail.value.realNameEn;
+    //location.href = "http://work.wotui.com:8889/WTSM/" + "DownloadResumeServlet?resumeId=${resume.id }&resumeType=C&systemUser=" + resumeTypeFlag + "&template=" + valTemp + "&realEnName=" + realNameEn+"&screenWidth="+screenWidth;
+    location.href = `http://work.wotui.com:8889/WTSM/DownloadResumeServlet?resumeId=${resumeId.value}&resumeType=C&systemUser=1&template=${templateType.value}&realEnName=${realNameEn}&screenWidth=${screenWidth}`
+    handleCloseResumeUpload();
   }
 </script>
 <style lang="less" scoped>

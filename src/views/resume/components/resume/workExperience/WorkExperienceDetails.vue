@@ -194,7 +194,6 @@
    const handleEndYearTime = (value) => {
       const startYear = peops.workExperienceData.startYear;
       if (startYear && value) {
-        console.log(startYear,value);
         let endYear = value.split("-");
         //let startYearArr = startYear.toString().indexof(".") != -1 ? startYear.split("-") : startYear.split("-");
         let startYearArr = startYear.split(".").length < 2 ? startYear.split("-") : startYear.split(".");
