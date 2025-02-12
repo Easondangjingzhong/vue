@@ -10,7 +10,7 @@ enum URL {
   query_sort_by_id = '/candidate/rusume-vue-query-sort-byId.action',
   update_sort_by_id = '/candidate/rusume-vue-update-sort-name.action',
   resume_serch_name = '/candidate/rusume-vue-insert-serch.action',
-  update_resume_serch_name = '/candidate/rusume-vue-update-sort-name.action',
+  update_resume_serch_name = '/candidate/rusume-vue-update-serch.action',
   resume_positionsList = '/candidate/rusume-vue-query-position-all.action',
   resume_markList = '/candidate/rusume-vue-query-market-addcity.action',
   resume_companyList = '/companyBrand/rusume-vue-query-companyBrand-Ajax.action',

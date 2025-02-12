@@ -20,7 +20,7 @@ export const brandArrDetail = [
       '商超',
     ],
   },
-  { retail: '汽车房产', categoryArr: ['汽车摩托', '房产别墅 '] },
+  { retail: '汽车房产', categoryArr: ['汽车摩托', '房产别墅'] },
   { retail: '酒店餐饮', categoryArr: ['服务'], title: '酒店' },
   { retail: '出行服务', categoryArr: ['服务'], title: '出行' },
   { retail: '美容美体', categoryArr: ['服务'], title: '美容' },

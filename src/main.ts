@@ -8,16 +8,19 @@ import '/@/styles/ant/antd.css'
 
 import { createApp } from 'vue';
 import App from './App.vue';
-import { router } from './router';
+import { router,routerQuery } from './router';
 import { store } from './store';
 import VueCropper from 'vue-cropper'
 import 'vue-cropper/dist/index.css'
+
 //import screenAdapter from 'screen-adapter-plugin'
 
 
 //import { setupGlobDirectives } from './directives';
 //import './router/permission';
 //import { setupComponents } from './plugin';
+const temprouterQuery =  routerQuery();
+if (temprouterQuery) {
 
 const app = createApp(App);
 
@@ -35,4 +38,6 @@ app.use(VueCropper);
 // 全局属性
 // app.config.globalProperties.AuthEnum = AuthEnum;
 
-app.mount('#app');
+  app.mount('#app');
+}
+

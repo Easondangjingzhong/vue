@@ -64,7 +64,6 @@
               <a-select
                 v-model:value="formState.city"
                 :options="optionsCity"
-                optionFilterProp="label"
                 :allowClear="true"
                 @change="handleSearchFormState"
                 showSearch
@@ -339,6 +338,7 @@
     </div>
   </a-drawer>
   <RecommendCandidatePositionChecked
+    @doHandlePagination="handlePagination"
     :recommendPerson="recommendPerson"
     :userName="resumeDetail.resume.userName"
   />
@@ -903,7 +903,7 @@ import { tryOnBeforeUnmount } from '@vueuse/core';
   });
   const confirm = (id) => {
     resumeDetailStore.deleteRecommend(id).then((res) => {
-      if (res.success) {
+      if (res.code == 1) {
         message.success('撤回成功');
       } else {
         message.error('撤回失败');

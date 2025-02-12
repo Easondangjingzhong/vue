@@ -167,6 +167,7 @@
             optionFilterProp="label"
             :allowClear="true"
             :options="optionsMarkId"
+            @search="handleMarkIdSearch"
           ></a-select>
         </a-form-item>
       </a-col>
@@ -314,7 +315,7 @@
 <script lang="ts" setup>
   import { ref } from 'vue';
   import { storeToRefs } from 'pinia';
-  //import { debounce } from 'lodash-es';
+  import { debounce } from 'lodash-es';
   import type { SelectProps, TreeSelectProps } from 'ant-design-vue';
   import {
     brandArrDetail,
@@ -665,6 +666,9 @@
     resumeListStore.queryMarkList(props.formState);
   };
   handleMarkId();
+  const handleMarkIdSearch = debounce((value) => {
+    resumeListStore.queryMarkListSearch(props.formState?.city ? (props.formState?.city.includes('-') ? props.formState?.split('-')[1] : props.formState?.city) : '',value);
+  },1000);
   //商场数据展示
   let optionsMarkId = ref<SelectProps['options']>([]);
   watch(markIdList, () => {

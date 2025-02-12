@@ -117,8 +117,8 @@
       label: '小仙炖',
     },
     {
-      value: 'Lagardere',
-      label: 'Lagardere',
+      value: '拉格代尔',
+      label: '拉格代尔',
     },
     {
       value: '亚玛芬',

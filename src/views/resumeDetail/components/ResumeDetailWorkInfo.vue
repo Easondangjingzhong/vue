@@ -197,7 +197,6 @@
           </a-form-item>
           <a-checkbox
             class="resume_box"
-            v-if="indexNum === 0"
             v-model:checked="endYearFlag"
             @change="onChangeEndYearFlag"
             >目前在职</a-checkbox
@@ -208,7 +207,6 @@
             ><span class="resume_col_padding">至今</span>
             <a-checkbox
               v-model:checked="endYearFlag"
-              v-if="indexNum === 0"
               @change="onChangeEndYearFlag"
               >目前在职</a-checkbox
             >
@@ -265,7 +263,9 @@
               :labelInValue="true"
               showSearch
               @change="handleMarketBrandFloor"
-            ></a-select>
+              @search="handleCityAndMarktName"
+            >
+          </a-select>
           </a-form-item>
         </a-col>
         <a-col :span="spanTitle">
@@ -502,10 +502,10 @@
     }
   });
   const endYearTemp =
-    (props.resumeData?.endYear == -1 ? "-1" : props.resumeData?.endYear +
+    (props.resumeData?.endYear == -1 ? "" : (!props.resumeData?.endYear ? '' :props.resumeData?.endYear +
     (props.resumeData?.endMonth < 10
       ? '-0' + props.resumeData?.endMonth
-      : '-' + props.resumeData?.endMonth));
+      : '-' + props.resumeData?.endMonth)));
   const onChangeEndYearFlag = () => {
     if (endYearFlag.value) {
       endYearFlag.value = true;
@@ -527,7 +527,7 @@
     }
     formState.companyName = props.resumeData?.companyName;
     formState.brandName = {
-      value: props.resumeData?.workBrand.toString(),
+      value: props.resumeData?.workBrand?.toString(),
       label: props.resumeData?.brandName,
     };
     formState.category = props.resumeData?.category;
@@ -566,7 +566,7 @@
     formState.workDuty = props.resumeData?.workDuty?.replaceAll(/<[^>]+>/g, '');
     formState.workFloor = props.resumeData?.workFloor;
     formState.workMark = props.resumeData?.workMark;
-    formState.workBrand = props.resumeData?.workBrand.toString();
+    formState.workBrand = props.resumeData?.workBrand?.toString();
     formState.workCity = props.resumeData?.workCity;
     formState.monthSalary = props.resumeData?.monthSalary;
     formState.department = props.resumeData?.department;
@@ -619,7 +619,7 @@
       //@ts-ignore
       label: positionsListShow(item.cnName, item.usName),
       //@ts-ignore
-      value: item.brandId.toString(),
+      value: item.brandId?.toString(),
     };
     //@ts-ignore
     tempOptionBrand.push(tempObj);
@@ -690,8 +690,32 @@
         formState.marketName = {value: "", label: ""};
       }
     });
-  };
-
+  }
+  const handleCityAndMarktName = (values) => {
+    let tempOptionMarkIdUpdate = [];
+    let marktFlag = false;
+    //商场数据
+    resumeDetailStore.queryMarkList(formState.cityName.value,values).then((res) => {
+      res.info.forEach((item) => {
+        //@ts-ignore
+        let tempObj = {
+          //@ts-ignore
+          label: item.text,
+          //@ts-ignore
+          value: item.id,
+        };
+        if (item.id == formState.marketName.value) {
+          marktFlag = true;
+        }
+        //@ts-ignore
+        tempOptionMarkIdUpdate.push(tempObj);
+      });
+      optionsMarkId.value = tempOptionMarkIdUpdate;
+      if (!marktFlag) {
+        formState.marketName = {value: "", label: ""};
+      }
+    });
+  }
   const handleMarketBrandFloor = () => {
     resumeDetailStore
       .queryMarkBrandFloor(formState.marketName.value, formState.brandName.value)

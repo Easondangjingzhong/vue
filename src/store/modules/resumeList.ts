@@ -739,6 +739,16 @@ export const useResumeListStore = defineStore({
         this.markIdList = res.info;
       }
     },
+    async queryMarkListSearch(city="",marketName="") {
+      let formData = new FormData();
+      formData.append('city',city);
+      formData.append('marketName', marketName || '');
+      formData.append('curPage', '1');
+      const res = await fetchApi.queryMarkList(formData);
+      if (res.info) {
+        this.markIdList = res.info;
+      }
+    },
     /**
      * 根据公司数据类型参数查询
      * @param param 行业

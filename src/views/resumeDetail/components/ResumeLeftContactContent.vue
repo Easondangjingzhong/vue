@@ -103,7 +103,7 @@
   import type { SelectProps } from 'ant-design-vue';
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   const resumeDetailStore = useResumeDetailStore();
-  const { resumeContactContent } = storeToRefs(resumeDetailStore);
+  const { resumeContactContent,commRecruitId } = storeToRefs(resumeDetailStore);
   defineProps({
     showResumeAdd: {
       type: Boolean,
@@ -175,7 +175,19 @@
     size: 'small',
   });
   watch(resumeContactContent, () => {
-    resumeContact.value = resumeContactContent.value.list.map((item,index) => ({
+    if (!commRecruitId.value) {
+      resumeContact.value = resumeContactContent.value?.list.map((item,index) => ({
+      contactFlag: item.contactFlag ? handleContactFlagHtml(item.contactFlag) : "日常联系",
+      contactTool: item.contactTool ? contactTool.filter((item1) => item1.value == item.contactTool)[0].label : (item.content ? item.content.split(";")[0]?.split(":")[1] : ""),
+      nextTime: item.nextTime ? formatToDateMinute(item.nextTime) : '',
+      content: item.contactFlag ? item.content?.replaceAll(/<[^>]+>/g, '') : (item.content ? (item.content.split(";")[1] ? item.content.split(";")[1] : item.content?.replaceAll(/<[^>]+>/g, '')) : ""),
+      createTime: item.createTime ? formatToDateMinute(item.createTime) : formatToDateMinute(item.contactDate),
+      realNameEn: (item.realNameEn ? item.realNameEn : item.positionCustomer),
+      index: ((resumeContactContent.value.pageNumber - 1) * resumeContactContent.value.pageSize + (index + 1)),
+    }));
+
+    } else {
+      resumeContact.value = resumeContactContent.value?.list.map((item,index) => ({
       contactFlag: item.contactFlag ? handleContactFlagHtml(item.contactFlag) : "日常联系",
       contactTool: item.contactTool ? contactTool.filter((item1) => item1.value == item.contactTool)[0].label : (item.content ? item.content.split(";")[0]?.split(":")[1] : ""),
       nextTime: item.nextTime ? formatToDateMinute(item.nextTime) : '',
@@ -184,6 +196,7 @@
       realNameEn: item.realNameEn,
       index: ((resumeContactContent.value.pageNumber - 1) * resumeContactContent.value.pageSize + (index + 1)),
     }));
+    }
     pagination.value = {
       pageSize: resumeContactContent.value.pageSize,
       current: resumeContactContent.value.pageNumber,

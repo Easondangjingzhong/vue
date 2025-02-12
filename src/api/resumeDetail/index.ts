@@ -18,6 +18,7 @@ enum URL {
   resume_query_checkResult = '/resume/rusume-vue-query-resume-customer-check-duplicate.action',
   resume_contact_content = '/seeker-contact-record/rusume-vue-add-resume-contactContent.action',
   resume_query_contact_content = '/seeker-contact-record/rusume-vue-query-resume-contactContent.action',
+  resume_query_contact_content_comment = '/seeker-contact-record/resume-vue-query-resume-contact.action',
   resume_report = '/resume/rusume-vue-query-resume-report-message.action',
   resume_update_report = '/resume/rusume-vue-update-resume-report-message.action',
   recommend_update_candidate_position = '/candidatePosition/rusume-vue-query-candidatePosition.action',
@@ -97,6 +98,8 @@ const queryRecommendCandidatePosition = (formData: any) =>
 const updateResumeReportContent = (formData: any) =>
   post<any>({ url: URL.resume_update_report, data: formData });
 const queryResumeReport = (formData: any) => post<any>({ url: URL.resume_report, data: formData });
+const queryResumeContactContentComment = (formData: any) =>
+  post<any>({ url: URL.resume_query_contact_content_comment, data: formData });
 const queryResumeContactContent = (formData: any) =>
   post<any>({ url: URL.resume_query_contact_content, data: formData });
 const addResumeContactContent = (data: any) => post<any>({ url: URL.resume_contact_content, data });
@@ -160,6 +163,7 @@ export default {
   queryRecommendCandidatePosition,
   updateResumeReportContent,
   queryResumeReport,
+  queryResumeContactContentComment,
   queryResumeContactContent,
   addResumeContactContent,
   queryResumeCheckResult,

@@ -215,7 +215,13 @@
   import { message } from 'ant-design-vue';
   import { CloseOutlined } from '@ant-design/icons-vue';
   import { formatToDateMinute } from '/@/utils/dateUtil';
+  import type { UploadProps } from 'ant-design-vue';
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
+  const emit = defineEmits([ "doHandlePagination" ]);
+  const doHandlePagination = () => {
+    emit('doHandlePagination');
+  }
+  
   const resumeDetailStore = useResumeDetailStore();
   const { recommendFlag, mappingId } = storeToRefs(resumeDetailStore);
   const props = defineProps({
@@ -226,14 +232,15 @@
     userName: {
       type: String,
       required: true,
-    },
+    }
   });
   const drawerWidth = ref(800);
   const isloading = ref(false);
   const isVideo = ref(false);
   const spinning = ref(true);
-  const videoFile = ref([]);
-  const handleChangeFileUpload = () => {
+  const videoFile = ref<UploadProps['fileList']>([]);
+  const handleChangeFileUpload = file => {
+    videoFile.value = [...(videoFile.value || []), file];
     return false;
   };
   const repeatFlag = ref(0); //查重结果 0 查重中 1查重通过 2查重重复
@@ -409,6 +416,8 @@
           if (res.info) {
             template.value = res.info.template == '0' ? '优态' : '我推';
             isVideoTemp.value = res.info.isVideo;
+            isVideo.value = res.info.isVideo == "1" ?  true : false;
+
             description.value = res.info.description;
           }
           resumeDetailStore.checkCandidateRecommendRepeat({...props.recommendPerson,recommendId: mappingId.value}).then((data) => {
@@ -538,15 +547,22 @@
   };
 
   const handleAddRecommend = () => {
-    if (isVideo.value && videoFile.value.length == 0) {
+    console.log(videoFile.value[0])
+    if (isVideo.value && videoFile?.value.length == 0) {
       message.warning('请上传视频面试截图');
       return;
     }
-    if (isVideo.value && !/\.(jpg|png|jpeg)$/.test(videoFile.value[0].name.toLowerCase())) {
+    if (isVideo.value && !/\.(jpg|png|jpeg)$/.test(videoFile?.value[0]?.name.toLowerCase())) {
       message.warning('请上传图片格式的视频面试截图');
       videoFile.value = [];
       return;
     }
+    // let fileName = "";
+    // if (isVideo.value ) {
+    //   videoFile.value?.forEach((file: UploadProps['fileList'][number]) => {
+    //     fileName = new File(file as any,"面试截图'");
+    //   });
+    // }
     let formData = {
       id: props.recommendPerson.id,
       brand: props.recommendPerson.brand,
@@ -560,27 +576,39 @@
       recommendId: mappingId.value,
       companyName: props.recommendPerson.companyName,
       recruitId: props.recommendPerson.recruitId,
-      file: (videoFile.value && videoFile.value[0]) || '',
+      file: (isVideo.value ? videoFile.value[0]: ""),
     };
     isloading.value = true;
     resumeDetailStore.addCandidateRecommend(formData).then((res) => {
       if (res.code == 1) {
         message.success('推荐成功');
+        doHandlePagination();
+        handleColsePosition();
+        isloading.value = false;
       } else if (res.code == 2) {
         message.error(
           '该人选在60天内，被推荐过公司制度规定范围内的同一类型的HR或品牌，本次不能推荐',
         );
+        handleColsePosition();
+        isloading.value = false;
       } else if (res.code == 3) {
         message.error('您30天内有该候选人推荐过该候选人给同一HR，并且超时关闭，本次不能推荐');
+        handleColsePosition();
+        isloading.value = false;
       } else if (res.code == 15) {
         message.error('新发布的职位,15分钟内不能推荐');
+        handleColsePosition();
+        isloading.value = false;
       } else if (res.code == 4) {
         message.error('重启流程保护中，无法推荐');
+        handleColsePosition();
+        isloading.value = false;
       } else {
         message.error(res.info);
+        handleColsePosition();
+        isloading.value = false;
       }
-      handleColsePosition();
-      isloading.value = false;
+     
     });
   };
 </script>

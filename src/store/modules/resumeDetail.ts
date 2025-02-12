@@ -281,11 +281,17 @@ export const useResumeDetailStore = defineStore({
       formData.append('resumeId', resumeId.toString());
       formData.append('PageNumber', PageNumber);
       formData.append('recruitId', loginVueUser.loginId);
-      const res = await fetchApi.queryResumeContactContent(formData);
-      if (res.code == 1) {
-        this.resumeContactContent = res.info;
+      if (this.commRecruitId) {
+        const res = await fetchApi.queryResumeContactContent(formData);
+        if (res.code == 1) {
+          this.resumeContactContent = res.info;
+        }
+        return res;
+      } else {
+        const res = await fetchApi.queryResumeContactContentComment(formData);
+        this.resumeContactContent = res.pager;
+        return res;
       }
-      return res;
     },
     /**
      * 查询简历简历报告
@@ -471,7 +477,7 @@ export const useResumeDetailStore = defineStore({
       formData.append('recommendId', data.recommendId);
       formData.append('companyName', data.companyName);
       formData.append('recruitId', data.recruitId);
-      formData.append('file', data.file);
+      formData.append('file', data.file ? data.file.originFileObj : "");
       formData.append('SystemRecruitId', loginVueUser.loginId);
       const res = await fetchApi.addCandidateRecommend(formData);
       if (res.code == 1) {

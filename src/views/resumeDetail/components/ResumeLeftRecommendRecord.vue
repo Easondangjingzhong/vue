@@ -19,13 +19,13 @@
       @change="handleQueryResumeRecord"
     >
     <template #bodyCell="{ column, record }">
-      <template v-if="column.key === 'action' && (record.currentStatus == '顾问通过' || record.currentStatus == 'HR通过' || record.currentStatus == '简发顾问'
+      <template v-if="column.key === 'action' && (record.currentStatus == '顾问通过' || record.currentStatus == 'HR通过' || record.currentStatus == '简发顾问' || record.currentStatus == '重新推荐'
 || record.currentStatus == '推荐顾问'  || record.currentStatus == 'OFFER接受' || record.currentStatus == '简发HR' || record.currentStatus == '简发HR')
       ">
       <VerticalAlignBottomOutlined @click="handleOpenResumeUpload(record.city,record.market,record.brand,record.positions,record.pId)"/>
       </template>
       <template v-if="column.key === 'date'">
-        <a-tage :title="`${record.counselor} ${record.date}`">查看</a-tage>
+        <a-tag :title="`${record.counselor} ${record.date}`">查看</a-tag>
       </template>
     </template>
   </a-table>
@@ -37,12 +37,16 @@
               <a-input :disabled="true" size="small" style="width: 90%;" v-model:value="workRecommendAll"/> 
             </a-col>
           </a-row>
+          <a-row :gutter="24" style="margin-top: 10px;" v-if="description">
+            <a-col :span="24">{{ description }}</a-col>
+          </a-row>
           <a-row :gutter="24" style="margin-top: 10px;">
             <a-col :span="24">
-              <a-radio-group v-model:value="templateType">
+              <a-radio-group v-model:value="templateType" :disabled="true">
               <a-radio value="youtai">优态模板</a-radio>
               <a-radio value="wotui">我推模板</a-radio>
               </a-radio-group>
+              <a-switch style="margin-bottom: 3px;" v-model:checked="systemUser" :disabled="management == '2'" checked-children="展示联系方式" un-checked-children="隐藏联系方式" />
               <a-button size="small" style="margin-left: 5px;" @click="handleTemplateType" type="primary">下载</a-button>
             </a-col>
           </a-row>
@@ -143,6 +147,9 @@ watch(resumeRecord,() => {
   const workRecommendAll = ref("");
   const templateTypeShow = ref(false);
   const templateType = ref("");
+  const description = ref("");
+  const management = ref("");
+  const systemUser = ref(true);
   const handleOpenResumeUpload = (recommendCity,recommendMarket,recommendBrand,recommendPosition,pId) => {
     openResumeUpload.value = true;
     let tempObj = {
@@ -157,6 +164,11 @@ watch(resumeRecord,() => {
         if (res.code == 1) {
           if (res.info) {
             templateType.value = res.info.template == '0' ? 'youtai' : 'wotui';
+            description.value = res.info.description;
+            management.value = res.info.management == '管理' ? '2' : '1';
+            if (res.info.management == '管理') {
+              systemUser.value = false;
+            }
             templateTypeShow.value = true;
           }
         }
@@ -176,8 +188,9 @@ watch(resumeRecord,() => {
       return;
     }
     const realNameEn = resumeDetail.value.realNameEn;
+    const systemUserTemp = systemUser.value ? "1" : "2";
     //location.href = "http://work.wotui.com:8889/WTSM/" + "DownloadResumeServlet?resumeId=${resume.id }&resumeType=C&systemUser=" + resumeTypeFlag + "&template=" + valTemp + "&realEnName=" + realNameEn+"&screenWidth="+screenWidth;
-    location.href = `http://work.wotui.com:8889/WTSM/DownloadResumeServlet?resumeId=${resumeId.value}&resumeType=C&systemUser=1&template=${templateType.value}&realEnName=${realNameEn}&screenWidth=${screenWidth}`
+    location.href = `http://work.wotui.com:8889/WTSM/DownloadResumeServlet?resumeId=${resumeId.value}&resumeType=C&systemUser=${systemUserTemp}&template=${templateType.value}&realEnName=${realNameEn}&screenWidth=${screenWidth}`
     handleCloseResumeUpload();
   }
 </script>

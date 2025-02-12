@@ -98,7 +98,9 @@
         <a-tag class="tagspan" v-if="record.recruitId && record.gognGongFlag" color="orange">{{ record.gognGongFlag }}</a-tag>
 
         <!-- <a-tag class="tagspan" v-if="record.recruitId && record.limitFlag == '保护'" color="green">{{ record.limitFlag }}</a-tag> -->
-        <a-tag class="tagspan" v-if="record.limitFlag == '限制'" color="orange">{{ record.limitFlag }}</a-tag>
+        <a-tag class="tagspan" v-if="record.limitFlag == '限制禁推' || record.limitFlag == '限制分单'" color="orange">限制</a-tag>
+        <a-tag class="tagspan" v-if="record.limitFlag == '限制'" color="orange">限制</a-tag>
+        <a-tag class="tagspan" v-if="record.limitFlag == 'OFFER'" color="orange">OFFER</a-tag>
 
       </template>
     </template>

@@ -45,8 +45,35 @@
          <a-tag
           color="orange"
           class="resume_tag_checked_top"
-          v-if="resumeData.recommendLimit == '限制推荐'"
+          v-if="resumeData.limitFlag == '限制'"
+          title="OFFER推荐禁止"
           >限制</a-tag
+        >
+        <a-tag
+          color="orange"
+          class="resume_tag_checked_top"
+          v-if="resumeData.limitFlag == '限制禁推'"
+          title="在保推荐禁止"
+          >限制</a-tag
+        >
+        <a-tag
+          color="orange"
+          class="resume_tag_checked_top"
+          v-if="resumeData.limitFlag == '限制分单'"
+          title="在保推荐分单"
+          >限制</a-tag
+        >
+        <a-tag
+          color="orange"
+          class="resume_tag_checked_top"
+          v-if="resumeData.limitFlag == 'OFFER'"
+          >OFFER</a-tag
+        > 
+        <a-tag
+          color="orange"
+          class="resume_tag_checked_top"
+          v-if="resumeData.limitFlag == '激活'"
+          >激活</a-tag
         >      
         <a-modal v-model:open="openResumeCopy" title="复制简历" @ok="handleResumeCopy">
       <p>是否将简历复制到自己名下</p>
@@ -120,7 +147,7 @@
           >复制</a-button>
         <a-button
         style="margin-left: 4px;"
-          v-if="showResumeAdd && resumeData.recommendLimit == '推荐' && resumeData.heDuiFlag == '已核'"
+          v-if="showResumeAdd && resumeData.recommendLimit == '推荐' && resumeData.checkFlag == '最新'"
           type="primary"
           danger
           size="middle"
@@ -130,22 +157,39 @@
         </a-button>
         <a-button
         style="margin-left: 4px;"
-          v-if="showResumeAdd && resumeData.recommendLimit == '推荐' && resumeData.checkFlag == '待核'"
-          :disabled="true"
-          title="需要核对后才能推荐"
+          v-if="showResumeAdd && resumeData.recommendLimit == '限制分单' && resumeData.checkFlag == '最新'"
+          type="primary"
           danger
+          title="在保推荐分单"
           size="middle"
           @click="handleRecommendCandidatePosition"
-        >
-          {{ resumeData.recommendLimit }}
-        </a-button>
+        >推荐</a-button>
         <a-button
-          v-if="showResumeAdd && resumeData.recommendLimit != '推荐' && resumeData.recommendLimit != '限制推荐'"
+        style="margin-left: 4px;"
+          v-if="showResumeAdd && resumeData.checkFlag == '待核'"
           size="middle"
           :disabled="true"
           title="需要核对后才能推荐"
         >
-          {{ resumeData.recommendLimit }}
+        推荐
+        </a-button>
+        <a-button
+        style="margin-left: 4px;"
+          v-if="showResumeAdd && resumeData.recommendLimit == '限制推荐'"
+          size="middle"
+          :disabled="true"
+          title="OFFER推荐禁止"
+        >
+        推荐
+        </a-button>
+        <a-button
+        style="margin-left: 4px;"
+          v-if="showResumeAdd && resumeData.recommendLimit == '限制禁推'"
+          size="middle"
+          :disabled="true"
+          title="在保推荐禁止"
+        >
+        推荐
         </a-button>
       </a-col>
     </a-row>

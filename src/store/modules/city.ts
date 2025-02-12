@@ -57,6 +57,12 @@ export const useCityStore = defineStore({
       }
       return res;
     },
+    async resuemCheckLogin(loginTocken) {
+      let formData = new FormData();
+      formData.append('loginTocken', loginTocken);
+      const res = await fetchApi.resuemCheckLogin(formData);
+      return res;
+    },
   },
 });
 
