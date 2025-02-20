@@ -557,11 +557,9 @@
       videoFile.value = [];
       return;
     }
-    // let fileName = "";
-    // if (isVideo.value ) {
-    //   videoFile.value?.forEach((file: UploadProps['fileList'][number]) => {
-    //     fileName = new File(file as any,"面试截图'");
-    //   });
+    // if (isVideo.value && videoFile?.value.length == 0) {
+    //   message.warning('请上传视频面试截图');
+    //   return;
     // }
     let formData = {
       id: props.recommendPerson.id,

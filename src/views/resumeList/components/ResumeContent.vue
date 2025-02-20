@@ -61,6 +61,7 @@
   <div class="resume-content">
     <a-row style="margin-bottom: 4px;">
       <a-button @click="handleToAddResumeDetails" style="background-color: #eee;" size="small">新增人才</a-button>
+      <a-switch style="margin-bottom: 3px;margin-left: 4px;" @click="handleChangeTwoYearFlag" v-model:checked="isTwoYearFlag" checked-children="全部" un-checked-children="两年" />
       <!-- <PicCenterOutlined v-if="searchWorkExp == '1'" style="cursor: pointer;font-size: 14px;margin-left: 5px;color: #03A9F4;"/>
       <PicRightOutlined v-if="searchWorkExp == '1'" @click="handleChangeWorkExp" style="cursor: pointer;font-size: 14px;margin-left: 5px;"/>
       <PicCenterOutlined v-if="searchWorkExp == '2'" @click="handleChangeWorkExp" style="cursor: pointer;font-size: 14px;margin-left: 5px;"/>
@@ -73,6 +74,8 @@
       rowKey="key"
       :loading="tableLoading"
       :columns="columnsResumeRseult"
+      :expandedRowKeys="expandedRowKeysArr"
+      @expand="onExpand"
     >
     <template #bodyCell="{ column, record }">
       <template v-if="column.key === 'userName'">
@@ -86,8 +89,11 @@
         <a-tag class="tagspan" v-if="!record.recruitId && record.projectFlag == '不保'" color="red">过保</a-tag>
         <a-tag class="tagspan" v-if="!record.recruitId && record.projectFlag == '过保'" color="red">{{ record.projectFlag }}</a-tag>
         <a-tag class="tagspan" v-if="!record.recruitId" color="orange">公共</a-tag>
+        <a-tag class="tagspan" v-if="!record.recruitId && record.twoYearFlag == '两年'" color="green">两年</a-tag>
         <a-tag class="tagspan" v-if="record.recruitId && record.checkFlag == '待核'" color="#d8d8d8">{{ record.checkFlag }}</a-tag>
-        <a-tag class="tagspan" v-if="record.recruitId && record.checkFlag && record.checkFlag != '待核'" color="green">{{ record.checkFlag }}</a-tag>
+        <a-tag class="tagspan" v-if="record.recruitId && record.checkFlag == '待激活'" color="#d8d8d8">激活</a-tag>
+        <!-- <a-tag class="tagspan" v-if="record.recruitId && record.checkFlag == '已激活'" color="green">激活</a-tag> -->
+        <a-tag class="tagspan" v-if="record.recruitId && record.checkFlag && record.checkFlag != '待核' && record.checkFlag != '待激活' && record.checkFlag != '已激活'" color="green">{{ record.checkFlag }}</a-tag>
 
         <a-tag class="tagspan" v-if="record.recruitId && record.checkFlag == '待核' && record.fristFlag" color="#d8d8d8">{{ record.fristFlag }}</a-tag>
         <a-tag class="tagspan" v-if="record.recruitId && record.checkFlag != '待核' && record.fristFlag" color="green">{{ record.fristFlag }}</a-tag>
@@ -100,16 +106,17 @@
         <!-- <a-tag class="tagspan" v-if="record.recruitId && record.limitFlag == '保护'" color="green">{{ record.limitFlag }}</a-tag> -->
         <a-tag class="tagspan" v-if="record.limitFlag == '限制禁推' || record.limitFlag == '限制分单'" color="orange">限制</a-tag>
         <a-tag class="tagspan" v-if="record.limitFlag == '限制'" color="orange">限制</a-tag>
+        <a-tag class="tagspan" v-if="record.limitFlag == '激活'" color="orange">激活</a-tag>
         <a-tag class="tagspan" v-if="record.limitFlag == 'OFFER'" color="orange">OFFER</a-tag>
 
       </template>
     </template>
     <template #expandedRowRender="{ record }">
-      <p style="margin: 0;margin-bottom: 4px;margin-left: 10.7%;" v-for="item in record.works">
-        <span v-if="item.endYear == '-1'">
+      <p style="margin: 0;margin-bottom: 4px;margin-left: 15.3%;" v-for="item in record.works">
+        <span v-if="item.endYear == '-1'" style="margin-right: 5.1%;">
           {{ item.startYear }}.<span v-if="item.startMonth < 10">0{{ +item.startMonth }}</span><span v-if="item.startMonth > 9">{{ item.startMonth }}</span> - 至今
         </span>
-        <span v-if="item.endYear != '-1'">
+        <span v-if="item.endYear != '-1'" style="margin-right: 3.2%;">
           {{ item.startYear }}.<span v-if="item.startMonth < 10">0{{ +item.startMonth }}</span><span v-if="item.startMonth > 9">{{ item.startMonth }}</span> - {{ item.endYear }}.<span v-if="item.endMonth < 10">0{{ +item.endMonth }}</span><span v-if="item.endMonth > 9">{{ item.endMonth }}</span>
         </span>
         {{ item.companyName }}<span v-if="item.cityName">-{{ item.cityName }}</span>
@@ -117,6 +124,10 @@
         <span v-if="item.brandName">-{{ item.brandName }}</span>
         <span v-if="item.positionName">-{{ item.positionName }}</span>
       </p>
+    </template>
+    <template #expandColumnTitle>
+      <PlusSquareOutlined style="font-size: 14px;" v-if="!expandedRowKeysFlag" @click="handleExpandedRowKeys"/>
+      <MinusSquareOutlined style="font-size: 14px;" v-if="expandedRowKeysFlag" @click="handleExpandedRowKeys"/>
     </template>
   </a-table>
     <a-row style="justify-content: end;margin-top: 10px">
@@ -173,7 +184,7 @@
 </template>
 <script lang="ts" setup>
   import { ref } from 'vue';
-  import { DoubleRightOutlined, DoubleLeftOutlined, PicCenterOutlined, PicRightOutlined } from '@ant-design/icons-vue';
+  import { DoubleRightOutlined, DoubleLeftOutlined,PlusSquareOutlined,MinusSquareOutlined } from '@ant-design/icons-vue';
   import type { FormInstance } from 'ant-design-vue';
   import { storeToRefs } from 'pinia';
   import { message } from 'ant-design-vue';
@@ -183,7 +194,7 @@
   import type { SelectProps } from 'ant-design-vue';
   const router = useRouter();
   const resumeListStore = useResumeListStoreWithOut();
-  const { searchWorkExp, resumeList, brandList, pagination, formState,serchResumeListNum,serchResumeUpdate,serchResumeUpdateData,tableLoading } = storeToRefs(resumeListStore);
+  const { expandedRowKeys,isTwoYearFlagStatus,searchWorkExp, resumeList, brandList, pagination, formState,serchResumeListNum,serchResumeUpdate,serchResumeUpdateData,tableLoading } = storeToRefs(resumeListStore);
   const optionsNp = ref([
     {value: "1",label: "当前"},
     {value: "2",label: "所有"},
@@ -195,7 +206,7 @@
   ]);
   // 展开/收起状态
   const expand = ref(1);
-  const expandArr = [1, 2, 3, 4, 0];
+  const expandArr = [4, 4, 4, 4, 0];
   const handleExpand = () => {
     expand.value = expandArr[expand.value];
   };
@@ -218,7 +229,28 @@
     brandNp: "1",
     marketNp: "1",
     positionNp: "1",
+    isTwoYear: '',
   };
+  };
+  const isTwoYearFlag = ref<boolean>(true);
+  console.log(isTwoYearFlagStatus.value);
+  watch(() => isTwoYearFlagStatus.value,() => {
+    if (!isTwoYearFlagStatus.value) {
+      isTwoYearFlag.value = true;
+    }
+  })
+
+  const handleChangeTwoYearFlag = () => {
+    if (isTwoYearFlag.value) {
+      formState.value = {...formState.value,
+      isTwoYear: '',
+      };
+    } else {
+      formState.value = {...formState.value,
+      isTwoYear: '1',
+      };
+    }
+    onFinish(2);
   };
   const onFinish = (e) => {
     if (e !== 1) {
@@ -228,6 +260,13 @@
     resumeListStore.queryResumeList(formState.value);
   };
   const columnsResumeRseult = [
+  {
+      title: '完整度',
+      dataIndex: 'resumeProgress',
+      key: 'resumeProgress',
+      ellipsis: true,
+      width: 45,
+    },
     {
       title: '编号',
       dataIndex: 'index',
@@ -268,7 +307,7 @@
       dataIndex: 'positionName',
       key: 'positionName',
       ellipsis: true,
-      width: 90,
+      width: 110,
     },
     {
       title: '顾问',
@@ -296,16 +335,42 @@
       dataIndex: 'projectFlag',
       key: 'projectFlag',
       ellipsis: true,
-      width: 130,
+      width: 160,
     },
     {
       title: '操作',
       dataIndex: 'options',
       key: 'options',
       ellipsis: true,
-      width: 30,
+      width: 40,
     },
   ];
+  //const expandedRowKeys = ref(['']);
+  console.log("expandedRowKeys", expandedRowKeys.value);
+  const expandedRowKeysFlag = ref(false);
+  const expandedRowKeysArr = ref([]);
+ 
+  watch(() => expandedRowKeys.value,() => {
+    if (expandedRowKeysFlag.value) {
+    expandedRowKeysArr.value = expandedRowKeys.value;
+  }
+  })
+  const handleExpandedRowKeys = () => {
+    expandedRowKeysFlag.value = !expandedRowKeysFlag.value; 
+    if (expandedRowKeysFlag.value) {
+      expandedRowKeysArr.value = expandedRowKeys.value;
+    } else {
+      expandedRowKeysArr.value = [];
+    }
+    
+  }
+  const onExpand = (expanded, record) => {
+      if (expanded) {
+        expandedRowKeysArr.value = [...expandedRowKeysArr.value,record.key]; // 确保这里的 key 是唯一的
+      } else {
+        expandedRowKeysArr.value = expandedRowKeysArr.value.filter(item => item != record.key);
+      }
+    }
   const handleToResumeDetails = (resumeId,addConsultantId) => {
     const loginVueUser: {loginName: "", loginId: "", loginTocken: "",loginType: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
     let query = {...loginVueUser, resumeId, addConsultantId};

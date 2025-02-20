@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import routes from './router.config';
-import {useCityStoreWithOut} from '/@/store/modules/city'
-const cityStore = useCityStoreWithOut();
+//import {useCityStoreWithOut} from '/@/store/modules/city'
+//const cityStore = useCityStoreWithOut();
 // app router
 export const router = createRouter({
   // 解决 二级路径存在时，路径地址路由不匹配的问题
@@ -30,30 +30,30 @@ function getQueryVariable(variable)
     }
     return("");
 }
-export const routerQuery = () => {
-  console.log(",,,,,",localStorage.getItem("loginFirst"))
-  if (getQueryVariable("loginFirst")) {
+export const routerQuery = async () => {
+  //if (getQueryVariable("loginFirst")) {
     localStorage.removeItem("loginVueUser");
     localStorage.setItem("loginVueUser",JSON.stringify({"loginId": getQueryVariable("loginId"),"loginName": getQueryVariable("loginName"),"loginTocken": getQueryVariable("loginTocken"),"loginType": getQueryVariable("loginType")}));
     return true;
-  }
-  cityStore.resuemCheckLogin(getQueryVariable("loginTocken")).then(res => {
-    console.log(",,,,,",localStorage.getItem("loginVueUser"))
-    if (res == 1) {
-      const loginVueUser: {loginName: "", loginId: "", loginTocken: "",loginType: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
-      if (getQueryVariable("loginId") && (!loginVueUser.loginId || (loginVueUser.loginId && loginVueUser.loginId != getQueryVariable("loginId")))) {
-        window.open("http://work.wotui.com:8889/WTSM/","_self");
-        return false;
-      }
-      localStorage.removeItem("loginVueUser");
-      localStorage.setItem("loginVueUser",JSON.stringify({"loginId": getQueryVariable("loginId"),"loginName": getQueryVariable("loginName"),"loginTocken": getQueryVariable("loginTocken"),"loginType": getQueryVariable("loginType")}));
-      return true;
-    } else {
-      window.open("http://work.wotui.com:8889/WTSM/","_self");
-      return false;
-   }
-  });
-  return false;
+  //}
+  // return await cityStore.resuemCheckLogin(getQueryVariable("loginTocken")).then(res => {
+  //   if (res.code == 1) {
+  //     const loginVueUser: {loginName: "", loginId: "", loginTocken: "",loginType: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
+  //     if (getQueryVariable("loginId") && (!loginVueUser.loginId || (loginVueUser.loginId && loginVueUser.loginId != getQueryVariable("loginId")))) {
+  //       window.open("http://work.wotui.com:8889/WTSM/","_self");
+  //       return false;
+  //     }
+  //     localStorage.removeItem("loginVueUser");
+  //     localStorage.setItem("loginVueUser",JSON.stringify({"loginId": getQueryVariable("loginId"),"loginName": getQueryVariable("loginName"),"loginTocken": getQueryVariable("loginTocken"),"loginType": getQueryVariable("loginType")}));
+  //     return true;
+  //   } else {
+  //     window.open("http://work.wotui.com:8889/WTSM/","_self");
+  //     return false;
+  //  }
+  // })
+
+  //console.log(",,,,,7",localStorage.getItem("loginVueUser"))
+  //return true;
 //   window.addEventListener('message', function (e) {
 //    console.log(e.data)
 // }); 

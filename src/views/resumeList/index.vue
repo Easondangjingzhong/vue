@@ -489,7 +489,7 @@ resumeList.querySystemFunction().then((res) => {
       if (item.functionName == "合同") {
         menuArrTemp.value.push({
           key: 'concart',
-          label: item.functionName,
+          label: h('a', { href: `http://work.wotui.com:8889/WTSM/${item.functionUrl}`, target: '_blank' }, item.functionName),
           title: item.functionName,
           showFlag: false,
           index: 7,
@@ -498,7 +498,7 @@ resumeList.querySystemFunction().then((res) => {
       if (item.functionName == "制度") {
         menuArrTemp.value.push({
           key: 'institution',
-          label: item.functionName,
+          label: h('a', { href: `http://work.wotui.com:8889/WTSM/${item.functionUrl}`, target: '_blank' }, item.functionName),
           title: item.functionName,
           showFlag: false,
           index: 8,

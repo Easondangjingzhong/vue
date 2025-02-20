@@ -5,10 +5,13 @@
       <h3 class="resume_title_h3">上传简历</h3>
       <a-divider class="resume_divider" dashed />
       <a-row>
-        <a-col :span="1.5" class="resume_type">
-          <a-select name="resumeType" :value="resumeType">
+        <a-col :span="1.5" class="resume_type_sorce">
+          <a-select name="resumeSource" :value="resumeSource">
             <a-select-option value="原始简历">原始简历</a-select-option>
           </a-select>
+        </a-col>
+        <a-col :span="1.4" class="resume_type">
+          <a-select v-model:value="resumeTypeEnglish" :options="resumeTypePotion" @change="handleResumeTypeEnglish"></a-select>
         </a-col>
         <a-col :span="1.5" class="resume_source">
           <a-select
@@ -21,7 +24,7 @@
             style="width: 100%;"
           ></a-select>
         </a-col>
-        <a-col :span="18" v-if="uploadFlag">
+        <a-col :span="16.5" v-if="uploadFlag">
           <a-upload
             v-model:file-list="fileList"
             name="file"
@@ -53,7 +56,24 @@
   import { ResumeFormState } from '/@/api/resume/model';
   import { storeToRefs } from 'pinia';
   const { createMessage } = useMessage();
-  const resumeType = ref('原始简历');
+  const resumeStore = useResumeStoreWithOut();
+  const { resumeFormState,resumeTypeEnglish } = storeToRefs(resumeStore);
+  const resumeSource = ref('原始简历');
+  const resumeTypePotion = ref<SelectProps['options']>([
+    {
+      value: '2',
+      label: '中文',
+    },
+    {
+      value: '1',
+      label: '英文',
+    }
+  ])
+  const handleResumeTypeEnglish = (value: string) => {
+    resumeStore.$patch({
+      resumeTypeEnglish: value,
+    })
+  };
   const talentSource = ref(undefined);
   const uploadFlag = ref(false);
   const plagiarusnStore = usePlagiarusnStoreWithOut();
@@ -104,8 +124,6 @@
     },
   ]);
 
-  const resumeStore = useResumeStoreWithOut();
-  const { resumeFormState } = storeToRefs(resumeStore);
   /**
    * 更改简历来源及修改简历信息中的来源数据
    */
@@ -146,9 +164,15 @@
     await resumeStore
       .fetchInfo(formData)
       .then((res) => {
-        data.onSuccess(res, data.file);
-        plagiarusnResume();
-        createMessage.success('上传成功');
+        const Info = JSON.parse(res.info);
+        if (Info.status.code == 265) {
+          createMessage.error('简历上传文件太大,请调整后重新上传');
+          return;
+        } else {
+          data.onSuccess(res, data.file);
+          plagiarusnResume();
+          createMessage.success('上传成功');
+        }
       })
       .catch((err) => {
         data.onError(err, err, data.file);
@@ -232,9 +256,13 @@
     .ant-card-body {
       padding: 0 55px 24px!important;
     }
-    .resume_type {
+    .resume_type_sorce {
       margin-right: 10px;
       width: 100px;
+    }
+    .resume_type {
+      margin-right: 10px;
+      width: 72px;
     }
     .resume_source {
       margin-right: 10px;

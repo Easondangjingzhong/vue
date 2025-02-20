@@ -22,7 +22,11 @@
           </svg>
           教育经历
         </h4>
-        <PlusOutlined v-if="showResumeAdd" @click="handleAddEducationInfo" style="margin-top: 9px;"/>
+        <span style="margin-top: 15px">
+          <a-tag color="green" v-if="!educationWholeFlag">完整</a-tag>
+          <a-tag color="red" v-if="educationWholeFlag">缺失</a-tag>
+        <PlusOutlined v-if="showResumeAdd" @click="handleAddEducationInfo"/>
+        </span>
       </a-col>
       <a-divider :dashed="true" style="background-color: #ccc; margin-top: 0" />
     </a-row>
@@ -43,7 +47,7 @@
       <a-col v-if="showResumeAdd" :span="1" style="padding-left: 10px;padding-right: 0px;text-align: right;">
         <form-outlined @click="handleEduInfo"></form-outlined>
       </a-col>
-      <a-col v-if="showResumeAdd" :span="1" style="padding-left: 10px;">
+      <a-col v-if="showResumeAdd" :span="1" :class="educationWholeFlagTemp ? 'educationWholeFlagRed' : 'educationWholeFlagGreen'" :title="educationWholeFlagTemp ? '缺失' : '完整'">
         <delete-outlined @click="handleDeleteEducationExp"></delete-outlined>
       </a-col>
     </a-row>
@@ -205,6 +209,7 @@
 <script setup lang="ts">
   import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
   import { createVNode } from 'vue';
+  import { storeToRefs } from 'pinia';
   import { Modal } from 'ant-design-vue';
   import { FormOutlined,PlusOutlined,DeleteOutlined } from '@ant-design/icons-vue';
   import { degreeArr } from '/@/store/data/resume';
@@ -212,6 +217,8 @@
   import { dateUtil } from '/@/utils/dateUtil';
   import { shcoolType985, shcoolType211 } from '/@/utils/schoolType';
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
+  const resumeDetailStore = useResumeDetailStore();
+  const { educationWholeFlag } = storeToRefs(resumeDetailStore);
   const props = defineProps({
     resumeData: {
       type: Object,
@@ -226,11 +233,24 @@
       required: true,
     }
   });
+  const educationWholeFlagTemp = ref(false);
+  if (!props.resumeData.startYear || !props.resumeData.startMonth || !props.resumeData.endYear || !props.resumeData.endMonth
+  || !props.resumeData.degree || (!(props.resumeData.degree == "初中" || props.resumeData.degree == "高中") && !props.resumeData.majorName) || !props.resumeData.isRegular ) {
+    educationWholeFlagTemp.value = true;
+  }
+  watch(() => props.resumeData,(newProps) => {
+    if (!newProps.startYear || !newProps.startMonth || !newProps.endYear || !newProps.endMonth
+  || !newProps.degree || (!(newProps.degree == "初中" || newProps.degree == "高中") && !newProps.majorName) || !newProps.isRegular ) {
+    educationWholeFlagTemp.value = true;
+  } else {
+    educationWholeFlagTemp.value = false;
+  }
+  })
   const expend = ref(false);
   if (!props.resumeData?.id) {
     expend.value = !expend.value;
   }
-  const resumeDetailStore = useResumeDetailStore();
+  
   const spanTitle = 8;
   let iconLoading = ref(false);
   const loginVueUser: {loginName: "", loginId: "", loginTocken: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
@@ -442,5 +462,13 @@
   }
   .resume_span {
     padding-left: 15px;
+  }
+  .educationWholeFlagRed {
+    padding-left: 10px;
+    background: linear-gradient(225deg, red 16%, transparent 0);
+  }
+  .educationWholeFlagGreen {
+    padding-left: 10px;
+    background: linear-gradient(225deg, green 16%, transparent 0);
   }
 </style>

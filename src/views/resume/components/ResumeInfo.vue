@@ -6,7 +6,7 @@
       :model="resumeFormState"
       name="resumeFormState"
       autocomplete="off"
-      :label-col="{span: 5}"
+      :label-col="labelCol"
       :wrapper-col="{span: 14}"
       :scrollToFirstError="true"
       @finish="onSubmit"
@@ -38,8 +38,15 @@
   import { storeToRefs } from 'pinia';
   const resumeStore= useResumeStoreWithOut();
   let iconLoading = ref(false);
-
-  const {resumeFormState,updatePhotoFlag} = storeToRefs(resumeStore);
+  const labelCol = ref({span: 5});
+  const {resumeFormState,updatePhotoFlag,resumeTypeEnglish} = storeToRefs(resumeStore);
+  watch(() => resumeTypeEnglish.value,() => {
+    if (resumeTypeEnglish.value == "1") {
+      labelCol.value = {span: 8};
+    } else {
+      labelCol.value = {span: 5};
+    }
+  })
   const plagiarusnStore = usePlagiarusnStoreWithOut();
   const formRef = ref();
   const scorllView = () => {

@@ -14,7 +14,7 @@
       <CloseOutlined @click="handleColseCandidatePosition" />
     </template>
     <div>
-      <a-form ref="formRef" :model="formState" @finish="onFinish">
+      <a-form ref="formRef" class="resume_row_candidate" :model="formState" @finish="onFinish">
         <a-row :gutter="24">
           <a-col :span="spanCol">
             <a-form-item name="retail" label="行业">
@@ -226,11 +226,11 @@
               @click="handleRecommendChecked(record)"
               class="resume_btn"
               size="small"
-              v-if="record.action == 3"
+              v-if="record.action == 3 || (record.action == 4 && record.checkResult == '已拒绝')"
             >
               推荐
             </a-button>
-            <a-button
+            <!-- <a-button
               type="primary"
               disabled
               class="resume_btn_yu"
@@ -239,7 +239,7 @@
               v-if="record.action == 4 && record.checkResult == '已拒绝'"
             >
               已拒绝
-            </a-button>
+            </a-button> -->
             <a-button
               type="primary"
               disabled
@@ -502,6 +502,7 @@ import { tryOnBeforeUnmount } from '@vueuse/core';
   const optionsJobType = ref<SelectProps['options']>([
     { label: '猎头', value: '猎头' },
     { label: '外包', value: '外包' },
+    { label: '保密', value: '保密' },
   ]);
   const optionsTask = ref<SelectProps['options']>([
     { label: '是', value: '1' },
@@ -964,6 +965,9 @@ import { tryOnBeforeUnmount } from '@vueuse/core';
   handleSearchFormState();
 </script>
 <style lang="less" scoped>
+.resume_row_candidate .ant-form-item {
+    margin-bottom: 10px !important;
+  }
   .resume_h4 {
     font-size: 16px;
     color: #333;

@@ -1,7 +1,6 @@
 <template>
   <div v-if="!expend" class="resume_header">
-    <a-row :gutter="24">
-      <a-col :span="24" class="resume_detail_title">
+    <a-row :gutter="24"><a-col :span="24" class="resume_detail_title">
         <h4 class="resume_h4">
           <svg
             style="vertical-align: middle"
@@ -21,7 +20,11 @@
           </svg>
           个人信息
         </h4>
-        <form-outlined v-if="showResumeAdd" @click="handleUpdatePersonInfo"></form-outlined>
+        <span>
+          <a-tag color="green" v-if="!personWholeFlagTemp">完整</a-tag>
+          <a-tag color="red" v-if="personWholeFlagTemp">缺失</a-tag>
+          <form-outlined v-if="showResumeAdd" @click="handleUpdatePersonInfo"></form-outlined>
+        </span>
       </a-col>
       <a-divider :dashed="true" style="background-color: #ccc; margin-top: 0" />
     </a-row>
@@ -49,7 +52,7 @@
         国籍: <span class="resume_span">{{ resumeData.nationality }}</span>
       </a-col>
       <a-col :span="spancol">
-       年龄: <span class="resume_span">{{ resumeData.age }}岁 {{resumeData.ageTime ? (resumeData.ageTime) : ""}}</span>
+       年龄: <span class="resume_span">{{ resumeData.age }}岁 {{ ageTimeTemp }}</span>
       </a-col>
     </a-row>
     <a-row :gutter="24" class="resume_row">
@@ -382,6 +385,43 @@
       required: true,
     }
   });
+  const personWholeFlagTemp = ref(false);
+  if (!props.resumeData.userName || !props.resumeData.phoneNum || !props.resumeData.currentCity || !props.resumeData.province 
+  || !props.resumeData.gender || !props.resumeData.photoPath || !props.resumeData.nationality || !props.resumeData.height || !props.resumeData.birthYear
+  || !props.resumeData.email || !props.resumeData.weight || !props.resumeData.positionName || !props.resumeData.marriageStatus) {
+    resumeDetailStore.$patch({
+      personWholeFlag: true
+    })
+    personWholeFlagTemp.value = true;
+  } else {
+    resumeDetailStore.$patch({
+      personWholeFlag: false
+    })
+    personWholeFlagTemp.value = false;
+  }
+  watch(()=> props.resumeData,(newProps) => {
+    if (!newProps.userName || !newProps.phoneNum || !newProps.currentCity || !newProps.province 
+  || !newProps.gender || !newProps.photoPath || !newProps.nationality || !newProps.height || !newProps.birthYear
+  || !newProps.email || !newProps.weight || !newProps.positionName || !newProps.marriageStatus) {
+    resumeDetailStore.$patch({
+      personWholeFlag: true
+    })
+    personWholeFlagTemp.value = true;
+  } else {
+    resumeDetailStore.$patch({
+      personWholeFlag: false
+    })
+    personWholeFlagTemp.value = false;
+  }
+  })
+  const ageTimeTemp = !props.resumeData.birthYear ? '' : `(${props.resumeData.birthYear}-${
+        !props.resumeData.bornMonth ? '01' : 
+        (props.resumeData.bornMonth < 10
+          ? '0' + props.resumeData.bornMonth
+          : props.resumeData.bornMonth)
+      }-${
+        !props.resumeData.bornDay ? '01' : (props.resumeData.bornDay < 10 ? '0' + props.resumeData.bornDay : props.resumeData.bornDay)
+})`
   const coverOptions = {
     autoCrop: true, //是否默认生成截图框
     autoCropWidth: 140, //默认生成截图框宽度

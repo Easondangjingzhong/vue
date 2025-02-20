@@ -5,6 +5,7 @@
         <h4 class="resume_h4">
           简历信息
         </h4>
+        <a-button type="primary" danger size="small" @click="handleResumeMapping">M</a-button>
       </a-col>
       <a-divider :dashed="true" style="background-color: #ccc;margin-top: 0;margin-bottom: 5px;" />
     </a-row>
@@ -67,6 +68,65 @@
     </div>
     <OrginalPath v-if="orginalPathShow" :orginalPath="orginalPath"/>
   </div>
+  <a-drawer
+    v-model:open="resumeMappinglag"
+    title="Mapping信息"
+    :keyboard="false"
+    :closable="false"
+    :width="1000"
+    :bodyStyle="{ padding: '14px' }"
+    :headerStyle="{ padding: '5px 18px 5px 12px' }"
+    placement="right"
+  >
+  <a-table
+      size="small"
+      :dataSource="personMappingList"
+      rowKey="key"
+      :pagination="false"
+      :columns="personMappingColumns"
+      :locale="{ emptyText: '暂无信息' }"
+    ></a-table>
+    <div>
+    <a-row :gutter="24" style="margin-top: 5px;">
+        <a-col :span="24">
+          <h4 class="resume_h4">行业信息</h4>
+        </a-col>
+        <a-divider :dashed="true" style="background-color: #0505050f; margin-top: 0" />
+      </a-row>
+    <a-table
+      size="small"
+      :dataSource="workBrandMappingList"
+      rowKey="key"
+      :pagination="false"
+      :columns="workBrandColumns"
+      :locale="{ emptyText: '暂无信息' }"
+    ></a-table>
+  </div>
+  <div>
+    <a-row :gutter="24" style="margin-top: 5px;">
+        <a-col :span="24">
+          <h4 class="resume_h4">职位信息</h4>
+        </a-col>
+        <a-divider :dashed="true" style="background-color: #0505050f; margin-top: 0" />
+      </a-row>
+    <a-table
+      size="small"
+      :dataSource="workExpMappingList"
+      rowKey="key"
+      :pagination="false"
+      :columns="workExpColumns"
+      :locale="{ emptyText: '暂无信息' }"
+    >
+    <template #bodyCell="{ column, record }">
+      <template v-if="column.key === 'siGongNum'">
+          <a v-if="record.siGongNum" @click="handleMappingJiaGou(record.brandId,record.marketId)">{{ record.siGongNum }}</a>
+          <a v-else>{{ record.siGongNum }}</a>
+        </template>
+      </template>
+  </a-table>
+  </div>
+  <div v-if="mappingJiaGouFlag"></div>
+  </a-drawer>
 </template>
 <script setup lang="ts">
  import {  LinkOutlined } from '@ant-design/icons-vue';
@@ -160,11 +220,232 @@ const handleResumeOrginalPath = (path) => {
 const handleChangeResume = (resumeIdChange,addConsultantIdChange) =>{
   resumeDetailStore.queryResumeDetail(resumeIdChange,addConsultantIdChange);
 }
+const personMappingColumns = [
+    {
+      title: '姓名',
+      dataIndex: 'userName',
+      key: 'userName',
+      width: 90,
+    },
+    {
+      title: '性别',
+      dataIndex: 'sex',
+      key: 'sex',
+      ellipsis: true,
+      width: 40,
+    },
+    {
+      title: '年龄',
+      dataIndex: 'age',
+      key: 'age',
+      ellipsis: true,
+      width: 50,
+    },
+    {
+      title: '职状',
+      dataIndex: 'jubStatus',
+      key: 'jubStatus',
+      ellipsis: true,
+      width: 50,
+    },
+    {
+      title: '',
+      dataIndex: 'action',
+      key: 'action',
+      ellipsis: true,
+      width: 750,
+    },
+  ];
+  const workBrandColumns = [
+    {
+      title: '周期',
+      dataIndex: 'isNewtest',
+      key: 'isNewtest',
+      width: 50,
+    },
+    {
+      title: '行业',
+      dataIndex: 'retail',
+      key: 'retail',
+      ellipsis: true,
+      width: 70,
+    },
+    {
+      title: '品类',
+      dataIndex: 'category',
+      key: 'category',
+      ellipsis: true,
+      width: 70,
+    },
+    {
+      title: '类别',
+      dataIndex: 'leiBie',
+      key: 'leiBie',
+      ellipsis: true,
+      width: 50,
+    },
+    {
+      title: '品籍',
+      dataIndex: 'pinJi',
+      key: 'pinJi',
+      ellipsis: true,
+      width: 50,
+    },
+    {
+      title: '品级',
+      dataIndex: 'retailLevel',
+      key: 'retailLevel',
+      ellipsis: true,
+      width: 50,
+    },
+    {
+      title: '',
+      dataIndex: 'action',
+      key: 'action',
+      ellipsis: true,
+      width: 640,
+    },
+  ];
+  const workExpColumns = [
+    {
+      title: '周期',
+      dataIndex: 'isNewtest',
+      key: 'isNewtest',
+      width: 50,
+    },
+    {
+      title: '类别',
+      dataIndex: 'category',
+      key: 'category',
+      ellipsis: true,
+      width: 70,
+    },
+    {
+      title: '城市',
+      dataIndex: 'city',
+      key: 'city',
+      ellipsis: true,
+      width: 70,
+    },
+    {
+      title: '商场',
+      dataIndex: 'marketName',
+      key: 'marketName',
+      ellipsis: true,
+      width: 100,
+    },
+    {
+      title: '品牌',
+      dataIndex: 'brand',
+      key: 'brand',
+      ellipsis: true,
+      width: 150,
+    },
+    {
+      title: '楼层',
+      dataIndex: 'workFloor',
+      key: 'workFloor',
+      ellipsis: true,
+      width: 50,
+    },
+    {
+      title: '职位',
+      dataIndex: 'postitonName',
+      key: 'postitonName',
+      ellipsis: true,
+      width: 250,
+    },
+    {
+      title: '年限',
+      dataIndex: 'workYear',
+      key: 'workYear',
+      ellipsis: true,
+      width: 50,
+    },
+    {
+      title: '架构',
+      dataIndex: 'siGongNum',
+      key: 'siGongNum',
+      ellipsis: true,
+      width: 50,
+    },
+    {
+      title: '',
+      dataIndex: 'action',
+      key: 'action',
+      ellipsis: true,
+      width: 140,
+    },
+  ];
+const personMappingList = ref([]);
+const workBrandMappingList = ref([]);
+const workExpMappingList = ref([]);
+const resumeMappinglag = ref(false);
+const handleResumeMapping = () => {
+  resumeMappinglag.value = true;
+  resumeDetailStore.resumeMapping().then(res => {
+    if (res.code == 1) {
+        const {personMapping,workBrandList,workExpList} = res.info;
+        personMappingList.value = personMapping.map(item => {
+          return {
+            key: item.id,
+            userName: item.userName,
+            sex: item.sex,
+            age: item.age,
+            jubStatus: item.jubStatus == "1" ? "在职" : "离职",
+          }
+        })
+        workBrandMappingList.value = workBrandList.map((item,index) => {
+          return {
+            key: item.WORK_BRAND  || index,
+            isNewtest: item.IS_NEWTEST == 1 ? "当前" : "过往",
+            retail: item.RETAIL || "",
+            category: item.CATEGORY || "",
+            leiBie: item.LEIBIE || "",
+            pinJi: item.PINJI || "",
+            retailLevel: item.RETAILLEVEL || "",
+          }
+        })
+        workExpMappingList.value = workExpList.map(item => {
+          return {
+            key: item.id,
+            isNewtest: item.IS_NEWTEST == 1 ? "当前" : "过往",
+            category: item.category || "-",
+            city: item.city || -"",
+            marketId: item.marketId || "",
+            marketName: item.marketName || "-",
+            brandId: item.brandId || "",
+            brand: item.brand || "-",
+            workFloor: item.workFloor || "-",
+            postitonName: item.postitonName || "-",
+            workYear: (item.workYear ? (item.workYear < 0 ? "0" : item.workYear.toFixed(2)) : ""),
+            siGongNum: (item.siNum ? (item.siNum || "")+"/"+(item.gongNum || "") : "-"),
+          }
+        })
+    }
+  });
+}
+const mappingJiaGouFlag = ref(false);
+const handleMappingJiaGou = (brandId,marketId) =>{
+  resumeDetailStore.resumeMappingJiagou(brandId,marketId).then(res => {
+    if (res.code == 1) {
+        mappingJiaGouFlag.value = true;
+    }
+  });
+}
 </script>
 <style lang="less" scoped>
  .resume_header {
   margin: 10px 20px;
  }
+ .resume_detail_title {
+    font-size: 14px;
+    text-align: left;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
  .resume_row {
    margin: 1px 0;
    padding-top: 2px;

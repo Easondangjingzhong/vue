@@ -20,6 +20,7 @@ interface ResumeState {
   positionOffice: Position[];//职位数据-office
   endYearFlag: boolean;//是否有最近工作 true 有 false 无
   resumeId: string;//简历ID
+  resumeTypeEnglish: string;//简历类型 1 英文 2或其他是中文
   closeBtn: boolean;//上传完成提示 true 展开 false 关闭
   updatePhotoFlag: Number;//简历照片状态 0 是无照片  1 是有照片  2 是有照片已修改 
 }
@@ -49,6 +50,7 @@ export const useResumeStore = defineStore({
     positionOffice: [],
     endYearFlag: false,
     resumeId: "",
+    resumeTypeEnglish: "2",
     closeBtn: false,
     updatePhotoFlag: 0,
   }),
@@ -174,12 +176,15 @@ export const useResumeStore = defineStore({
       };
       const res = await fetchApi.addResumeInfo(resume);
       if (res && res != "上传失败") {
-        console.log(res);
         this.resumeId = res;
         this.fetchResumeFile(res,this.resumeFormState.resumeFile);
         this.fetchResumePhote(res,this.resumeFormState.resumePhoto);
         this.closeBtn = true;
         this.updatePhotoFlag = 0;
+        let formData = new FormData();
+        formData.append('resumeId', res);
+        formData.append('recruitId', loginVueUser.loginId);
+        fetchApi.queryMappingIdByResumeId(formData);
         return res;
       }
       return res;

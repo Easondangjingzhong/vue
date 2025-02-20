@@ -39,14 +39,18 @@ enum URL {
   resume_copy_to_self = '/resume/rusume-vue-copyResume-byResumeId.action',
   resume_add_tag = '/resume/rusume-vue-update-personLabel.action',
   resume_add_checked = '/resume/resume-vue-update-resume-resume-issure.action',
+  resume_add_checked_two_year = '/resume/resume-vue-issure-twoYear.action',
   resume_search_recommend = '/candidatePosition/resume-vue-query-position-guanlian-scarch.action',
   resume_file_blob = '/resume/resume-vue-filetoBlob.action',
   resume_tianyan_executeGet = '/candidateRecommend/resume-vue-tianyan-executeGet.action',
   resume_consultant = '/candidate/resume-vue-query-consultant.action',
   resume_person_all = '/candidateRecommend/resume-vue-find-candidateRecommend-by-poneAndRecommendName.action',
   resume_recommend_msg = '/candidate/resume-vue-update-resumeRecommendMsg.action',
+  resume_mapping = '/candidate/resume-vue-query-mapping-msg.action',
+  resume_mapping_jiagou = '/candidate/resume-vue-query-mark-jiagou.action',
 }
-
+const resumeMapping = (formData: any) =>
+  post<any>({ url: URL.resume_mapping, data: formData });
 const resumeRecommendMsg = (formData: any) =>
   post<any>({ url: URL.resume_recommend_msg, data: formData });
 const recommendPersonRecommendAll = (formData: any) =>
@@ -59,6 +63,9 @@ const resumeFlieToBlob = (formData: any) =>
   post<any>({ url: URL.resume_file_blob, data: formData });
 const searchFormState = (formData: any) =>
   post<any>({ url: URL.resume_search_recommend, data: formData });
+
+const addResumeCheckedTwoYear = (formData: any) =>
+  post<any>({ url: URL.resume_add_checked_two_year, data: formData });
 const addResumeChecked = (formData: any) =>
   post<any>({ url: URL.resume_add_checked, data: formData });
 const addTag = (formData: any) =>
@@ -136,7 +143,10 @@ const queryMarkBrandFloor = async (data: any) => post<any>({ url: URL.resume_mar
  * @returns
  */
 const queryMarkList = async (data: any) => post<any>({ url: URL.resume_markList, data });
+const resumeMappingJiagou = async (data: any) => post<any>({ url: URL.resume_mapping_jiagou, data });
 export default {
+  resumeMappingJiagou,
+  resumeMapping,
   resumeRecommendMsg,
   recommendPersonRecommendAll,
   queryConsultant,
@@ -144,6 +154,7 @@ export default {
   resumeFlieToBlob,
   searchFormState,
   addResumeChecked,
+  addResumeCheckedTwoYear,
   addTag,
   resumeCopyToSelf,
   deleteEducationExp,

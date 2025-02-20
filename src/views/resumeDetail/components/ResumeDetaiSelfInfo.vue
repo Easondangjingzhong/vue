@@ -5,7 +5,11 @@
         <h4 class="resume_h4">
           <svg t="1735638439700" style="vertical-align: middle" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="11897" width="13" height="13"><path d="M971.808 267.616a64 64 0 0 0-89.184 15.68L552.256 755.136l104.832 73.44 330.4-471.84a64.064 64.064 0 0 0-15.68-89.12zM512 922.24l124.864-68.8-102.912-72.064z" p-id="11898"></path><path d="M671.136 912.928l-1.952-1.312L480 992l-18.56-225.888L810.112 268.064c8.576-12.128 29.952-13.632 53.888-10.144V96a96 96 0 0 0-96-96H128a96 96 0 0 0-96 96v832a96 96 0 0 0 96 96h640a96 96 0 0 0 96-96v-290.496l-192.864 275.424zM192 160h512a32 32 0 1 1 0 64H192a32 32 0 1 1 0-64z m0 160h416a32 32 0 1 1 0 64H192a32 32 0 1 1 0-64z m-32 192a32 32 0 0 1 32-32h320a32 32 0 1 1 0 64H192a32 32 0 0 1-32-32z" p-id="11899"></path></svg>
           自我评价</h4>
+          <span style="margin-top: 15px;">
+          <a-tag color="green" v-if="!selfWholeFlagTemp">完整</a-tag>
+          <a-tag color="red" v-if="selfWholeFlagTemp">缺失</a-tag>
         <form-outlined v-if="showResumeAdd" @click="handleUpdateSelfInfo"></form-outlined>
+        </span>
       </a-col>
       <a-divider :dashed="true" style="background-color: #ccc;margin-top: 0;margin-bottom: 0;" />
     </a-row>
@@ -63,6 +67,31 @@
       required: true,
     }
   })
+  const selfWholeFlagTemp = ref(false);
+  if (!props.resumeData.selfEvaluation) {
+    resumeDetailStore.$patch({
+      selfWholeFlag: true
+    })
+    selfWholeFlagTemp.value = true;
+  } else {
+    resumeDetailStore.$patch({
+      selfWholeFlag: false
+    })
+    selfWholeFlagTemp.value = false;
+  }
+  watch(() => props.resumeData,(newProps) => {
+    if (!newProps.selfEvaluation) {
+    resumeDetailStore.$patch({
+      selfWholeFlag: true
+    })
+    selfWholeFlagTemp.value = true;
+  } else {
+    resumeDetailStore.$patch({
+      selfWholeFlag: false
+    })
+    selfWholeFlagTemp.value = false;
+  }
+  })
   const formState = ref({
     selfEvaluation: '',
     resumeId: '',
@@ -71,7 +100,7 @@
   const expend = ref(false);
   const handleUpdateSelfInfo = () => {
     expend.value = !expend.value;
-    formState.value.selfEvaluation = props.resumeData?.selfEvaluation.replaceAll(/<[^>]+>/g, '');
+    formState.value.selfEvaluation = props.resumeData?.selfEvaluation?.replaceAll(/<[^>]+>/g, '');
     formState.value.resumeId = props.resumeData.id;
     formState.value.consultantId = props.resumeData.addConsultantId;
   };

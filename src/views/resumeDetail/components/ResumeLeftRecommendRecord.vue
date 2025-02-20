@@ -19,10 +19,10 @@
       @change="handleQueryResumeRecord"
     >
     <template #bodyCell="{ column, record }">
-      <template v-if="column.key === 'action' && (record.currentStatus == '顾问通过' || record.currentStatus == 'HR通过' || record.currentStatus == '简发顾问' || record.currentStatus == '重新推荐'
+      <template v-if="column.key === 'action' && (record.currentStatus == '顾问通过' || record.currentStatus == 'HR通过' || record.currentStatus == '简发顾问' || record.currentStatus == '重新推荐' || record.currentStatus == '超时未审'
 || record.currentStatus == '推荐顾问'  || record.currentStatus == 'OFFER接受' || record.currentStatus == '简发HR' || record.currentStatus == '简发HR')
       ">
-      <VerticalAlignBottomOutlined @click="handleOpenResumeUpload(record.city,record.market,record.brand,record.positions,record.pId)"/>
+      <VerticalAlignBottomOutlined :style="{fontSize: '16px'}" @click="handleOpenResumeUpload(record.city,record.market,record.brand,record.positions,record.pId)"/>
       </template>
       <template v-if="column.key === 'date'">
         <a-tag :title="`${record.counselor} ${record.date}`">查看</a-tag>
@@ -38,6 +38,7 @@
             </a-col>
           </a-row>
           <a-row :gutter="24" style="margin-top: 10px;" v-if="description">
+            <a-col :span="24">企顾要求: </a-col>
             <a-col :span="24">{{ description }}</a-col>
           </a-row>
           <a-row :gutter="24" style="margin-top: 10px;">
@@ -46,7 +47,7 @@
               <a-radio value="youtai">优态模板</a-radio>
               <a-radio value="wotui">我推模板</a-radio>
               </a-radio-group>
-              <a-switch style="margin-bottom: 3px;" v-model:checked="systemUser" :disabled="management == '2'" checked-children="展示联系方式" un-checked-children="隐藏联系方式" />
+              <a-switch style="margin-bottom: 3px;" v-model:checked="systemUser" checked-children="联系方式已展示" un-checked-children="联系方式已隐藏" />
               <a-button size="small" style="margin-left: 5px;" @click="handleTemplateType" type="primary">下载</a-button>
             </a-col>
           </a-row>
@@ -56,7 +57,7 @@
  import { VerticalAlignBottomOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import { storeToRefs } from 'pinia';
-import type { SelectProps } from 'ant-design-vue';
+//import type { SelectProps } from 'ant-design-vue';
 import { formatToDateMinute } from '/@/utils/dateUtil';
 import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
 const resumeDetailStore = useResumeDetailStore();

@@ -78,12 +78,11 @@
   import { SearchResumeList } from '/@/api/resumeList/model';
   const resumeList = useResumeListStoreWithOut();
   resumeList.fetchInfo();
-  const { resumeMenu,teamPersonChangeArr,sortResumeUpdateData,sortResumeUpdate } = storeToRefs(resumeList);
+  const { resumeMenu,teamPersonChangeArr,sortResumeUpdateData,sortResumeUpdate,formState } = storeToRefs(resumeList);
   const state = reactive({
     selectedKeys: ['2'],
     openKeys: ['01','51','6','7'],
   });
-  let tempSelcet = false;
   let items = ref([{}]);
   const optionsLoginNameTeam = ref<SelectProps['options']>([]);
   const handleResumeLoginNameClick = (e) => {
@@ -91,9 +90,12 @@
     resumeLoginNameFlag.value = true;
   }
   watch(teamPersonChangeArr,() => {
- //@ts-ignore
- optionsLoginNameTeam.value = teamPersonChangeArr.value.map(item => ({value: item.teamId,label: item.teamName}));
-  });
+    if (!optionsLoginNameTeam.value || optionsLoginNameTeam.value.length == 0) {
+      console.log("1111111")
+      //@ts-ignore
+      optionsLoginNameTeam.value = teamPersonChangeArr.value.map(item => ({value: item.teamId,label: item.teamName}));
+    }
+});
   const handleResumeSvgClick = (e) => {
     e.stopPropagation();
     openSortResume.value = true;
@@ -328,11 +330,23 @@
   //修改人才分类结束
   // 展开/收起状态
   const handleSelect = (key: object) => {
+    if (!(key.key == '1' || key.key == '2')) {
+        resumeList.$patch({
+          isTwoYearFlagStatus: false,
+          formState: {
+            ...formState.value,
+            isTwoYear: '',
+          }
+        })
+      } else {
+        resumeList.$patch({
+          isTwoYearFlagStatus: true
+        })
+      }
    //@ts-ignore
     state.selectedKeys = key.keyPath;
     //@ts-ignore
     resumeList.fetchTeamData(key.key);
-    tempSelcet = true;
   };
   
   const resumeLoginNameFlag = ref(false);
@@ -352,7 +366,6 @@
   const handleResumeLoginNameClose = () => {
     teamPersonChange.value = '';
     resumeLoginNameFlag.value = false;
-    optionsLoginNameTeam.value = [];
   }
   const handleResumeLoginNameChange = (person = 0) => {
     if (person != 1 && !teamSelectPerson.value[0]) {

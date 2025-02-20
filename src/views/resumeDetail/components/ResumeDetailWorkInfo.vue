@@ -22,7 +22,11 @@
           </svg>
           工作经历
         </h4>
-        <PlusOutlined v-if="showResumeAdd" @click="handleAddWorkInfo" style="margin-top: 9px" />
+        <span style="margin-top: 15px">
+          <a-tag color="green" v-if="!workWholeFlag">完整</a-tag>
+          <a-tag color="red" v-if="workWholeFlag">缺失</a-tag>
+        <PlusOutlined v-if="showResumeAdd" @click="handleAddWorkInfo" />
+        </span>
       </a-col>
       <a-divider :dashed="true" style="background-color: #ccc; margin-top: 0" />
     </a-row>
@@ -45,7 +49,7 @@
       <a-col v-if="showResumeAdd" :span="1" style="padding-left: 10px;padding-right: 0px;text-align: right;">
         <form-outlined @click="handleUpdateWorkInfo"></form-outlined>
       </a-col>
-      <a-col v-if="showResumeAdd" :span="1" style="padding-left: 10px;">
+      <a-col v-if="showResumeAdd" :span="1" :class="workWholeFlagTemp ? 'workWholeFlagRed' : 'workWholeFlagGreen'" :title="workWholeFlagTemp ? '缺失' : '完整'">
         <delete-outlined @click="handleDeleteWorkExp"></delete-outlined>
       </a-col>
     </a-row>
@@ -283,8 +287,15 @@
               :options="optionsBrand"
               @change="handleMarketBrandFloor"
               showSearch
+              v-if="!brandFlag"
             ></a-select>
+            <a-input v-if="brandFlag" style="width: 50%" v-model:value="brandNameCn" placeholder="品牌中文"></a-input>
+            <a-input v-if="brandFlag" style="width: 50%" v-model:value="brnadNameEn" placeholder="品牌英文"></a-input>
           </a-form-item>
+        </a-col>
+        <a-col :span="spanTitle" v-if="!categoryFlag">
+            <a-button style="margin-top: 2%;margin-left: 2%;" @click="handleChangeBrandFlag" size="small" type="primary" title="切换为填写" danger v-if="!brandFlag">切换</a-button>
+            <a-button style="margin-top: 2%;margin-left: 2%;" @click="handleChangeBrandFlag" size="small" type="primary" title="切换为选择" danger v-if="brandFlag">切换</a-button>
         </a-col>
         <a-col :span="spanTitle" v-if="categoryFlag">
           <a-form-item
@@ -429,9 +440,11 @@
   const { province } = storeToRefs(cityStore);
   const spanTitle = 6;
   const resumeDetailStore = useResumeDetailStore();
+  const { workWholeFlag } = storeToRefs(resumeDetailStore);
   const expend = ref(false);
   const iconLoading = ref(false);
   const categoryFlag = ref(true);
+  const brandFlag = ref(false);
   const formRef = ref(null);
   const optionCategory = ref([
     { value: '店铺', label: '店铺' },
@@ -459,6 +472,26 @@
       required: true,
     }
   });
+  const workWholeFlagTemp = ref(false);
+  const handleWorkWholeFlagTemp = () => {
+    if (!props.resumeData.startYear || !props.resumeData.startMonth || !props.resumeData.endYear || (props.resumeData.endYear != "-1" && !props.resumeData.endMonth) || !props.resumeData.category || !props.resumeData.companyName
+  || (props.resumeData.category == "店铺" && (!props.resumeData.marketName || !props.resumeData.workFloor || !(props.resumeData.isRetreat == 0 || props.resumeData.isRetreat == 1))) || !(props.resumeData.isNewtest == 0 || props.resumeData.isNewtest == 1)
+  || !props.resumeData.positionName || !props.resumeData.workDuty || !props.resumeData.cityName || !props.resumeData.brandName) {
+    workWholeFlagTemp.value = true;
+  }
+  }
+  handleWorkWholeFlagTemp();
+  watch(() => props.resumeData,(newProps) => {
+   if (!newProps.startYear || !newProps.startMonth || !newProps.endYear || (newProps.endYear != "-1" && !newProps.endMonth) || !newProps.category || !newProps.companyName
+  || (newProps.category == "店铺" && (!newProps.marketName || !newProps.workFloor || !(newProps.isRetreat == 0 || newProps.isRetreat == 1))) || !(newProps.isNewtest == 0 || newProps.isNewtest == 1)
+  || !newProps.positionName || !newProps.workDuty || !newProps.cityName || !newProps.brandName) {
+    workWholeFlagTemp.value = true;
+  } else {
+    workWholeFlagTemp.value = false;
+  }
+  })
+ 
+  
   const loginVueUser: {loginName: "", loginId: "", loginTocken: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
   const formState = reactive({
     companyName: '',
@@ -489,6 +522,9 @@
     brandRetailLevel: '',
     brandRetail: '',
     brandCategory: '',
+    brandWrite: '',
+    brandNameCn: '',
+    brnadNameEn: '',
     recruitId: loginVueUser.loginId,
   });
   if (!props.resumeData?.id) {
@@ -540,7 +576,7 @@
     formState.startYear =
       props.resumeData?.startYear +
       ((props.resumeData?.startMonth - 0) < 10
-        ? '-0' + +props.resumeData?.startMonth
+        ? '-0' + (+props.resumeData?.startMonth == 0 ? 1 : +props.resumeData?.startMonth)
         : '-' + props.resumeData?.startMonth);
     formState.startMonth = props.resumeData?.startMonth;
     if (props.resumeData?.endYear == '-1') {
@@ -549,7 +585,7 @@
       formState.endYear = !props.resumeData?.endYear ? '' :
       props.resumeData?.endYear +
       (props.resumeData?.endMonth < 10
-        ? '-0' + +props.resumeData?.endMonth
+        ? '-0' + (+props.resumeData?.endMonth == 0 ? 1 : +props.resumeData?.endMonth)
         : '-' + props.resumeData?.endMonth);
     }
    
@@ -564,6 +600,7 @@
     formState.salaryStructure = props.resumeData?.salaryStructure;
     formState.personnelStructure = props.resumeData?.personnelStructure;
     formState.workDuty = props.resumeData?.workDuty?.replaceAll(/<[^>]+>/g, '');
+    //formState.workDuty = props.resumeData?.workDuty;
     formState.workFloor = props.resumeData?.workFloor;
     formState.workMark = props.resumeData?.workMark;
     formState.workBrand = props.resumeData?.workBrand?.toString();
@@ -577,7 +614,7 @@
     formState.brandRetail = props.resumeData?.brandRetail;
     formState.brandCategory = props.resumeData?.brandCategory;
     handleCategory();
-    handleCityName(formState.cityName);
+    handleCityName(formState.cityName,formState.marketName.label);
   };
   //职位数据
   const optionsPositions = ref<SelectProps['options']>([]);
@@ -666,11 +703,15 @@
   //   tempOptionMarkId.push(tempObj);
   // });
   // optionsMarkId.value = tempOptionMarkId;
-  const handleCityName = (values) => {
+  const handleCityName = (values,marketName) => {
+    let temp = "";
+    if (!(Object.prototype.toString.call(marketName) === '[object Object]')) {
+      temp = marketName;
+    }
     let tempOptionMarkIdUpdate = [];
     let marktFlag = false;
     //商场数据
-    resumeDetailStore.queryMarkList(values.label).then((res) => {
+    resumeDetailStore.queryMarkList(values.label,temp).then((res) => {
       res.info.forEach((item) => {
         //@ts-ignore
         let tempObj = {
@@ -718,7 +759,7 @@
   }
   const handleMarketBrandFloor = () => {
     resumeDetailStore
-      .queryMarkBrandFloor(formState.marketName.value, formState.brandName.value)
+      .queryMarkBrandFloor(formState.marketName.value, (formState.brandName.value || ""))
       .then((res) => {
         if (res.code == 1) {
           formState.workFloor = res.info[0].floor;
@@ -765,38 +806,16 @@
       fetching.value = false;
     });
   }, 2000);
-  const onFinish = () => {
-    iconLoading.value = true;
-    resumeDetailStore
-      .updateResumeWorkExp(formState)
-      .then((res) => {
-        if (res.code == 1) {
-          resumeDetailStore.queryResumeDetail().then(() => {
-            iconLoading.value = false;
-            expend.value = !expend.value;
-            if (!props.resumeData?.id) {
-              resumeDetailStore.$patch({ workFlag: false });
-            }
-            message.success('保存成功');
-          });
-        } else {
-          iconLoading.value = false;
-          message.error('保存失败');
-        }
-      })
-      .catch(() => {
-        iconLoading.value = false;
-        message.error('保存失败');
-      });
-  };
-  const handleAddWorkInfo = () => {
-    resumeDetailStore.$patch({ workFlag: true });
-    // const domindex = document.getElementsByClassName("resume_container_index")[0];
-    // console.log(domindex.scrollTop);
-    // const domWork = document.getElementsByClassName("resume_work_show")[0];
-    // console.log(domWork.scrollTop);
-  };
+  const brandNameCn = ref('');
+  const brnadNameEn = ref('');
+  const handleChangeBrandFlag = () => {
+    brandFlag.value =!brandFlag.value;
+    brandNameCn.value = '';
+    brnadNameEn.value = '';
+  }
   const handleCategory = () => {
+    brandNameCn.value = '';
+    brnadNameEn.value = '';
     if (formState.category == '店铺') {
       categoryFlag.value = true;
       let tempOptionPositions = [];
@@ -840,6 +859,59 @@
       });
     }
   };
+  const onFinish = () => {
+    if (!brandFlag.value && !formState.brandName.label) {
+      message.error('请选择品牌');
+      return;
+    }
+    if (brandFlag.value && (!brandNameCn.value && !brnadNameEn.value)) {
+      message.error('请填写品牌');
+      return;
+    }
+    if (brandFlag.value && (brandNameCn.value || brnadNameEn.value)) {
+      formState.brandWrite = "1";
+      formState.brandNameCn = brandNameCn.value;
+      formState.brnadNameEn = brnadNameEn.value;
+    }
+    iconLoading.value = true;
+    resumeDetailStore
+      .updateResumeWorkExp(formState)
+      .then((res) => {
+        if (res.code == 1) {
+          brandNameCn.value = '';
+          brnadNameEn.value = '';
+          brandFlag.value = false;
+          formState.brandWrite = "";
+          formState.brandNameCn = '';
+          formState.brnadNameEn = '';
+          resumeDetailStore.queryResumeDetail().then(() => {
+            iconLoading.value = false;
+            expend.value = !expend.value;
+            brandFlag.value = false;
+            
+            if (!props.resumeData?.id) {
+              resumeDetailStore.$patch({ workFlag: false });
+            }
+            message.success('保存成功');
+          });
+        } else {
+          iconLoading.value = false;
+          message.error('保存失败');
+        }
+      })
+      .catch(() => {
+        iconLoading.value = false;
+        message.error('保存失败');
+      });
+  };
+  const handleAddWorkInfo = () => {
+    resumeDetailStore.$patch({ workFlag: true });
+    // const domindex = document.getElementsByClassName("resume_container_index")[0];
+    // console.log(domindex.scrollTop);
+    // const domWork = document.getElementsByClassName("resume_work_show")[0];
+    // console.log(domWork.scrollTop);
+  };
+ 
   //删除工作经历开始
   const handleDeleteWorkExp = () => {
     Modal.confirm({
@@ -917,5 +989,13 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+  }
+  .workWholeFlagRed {
+    padding-left: 10px;
+    background: linear-gradient(225deg, red 16%, transparent 0);
+  }
+  .workWholeFlagGreen {
+    padding-left: 10px;
+    background: linear-gradient(225deg, green 16%, transparent 0);
   }
 </style>

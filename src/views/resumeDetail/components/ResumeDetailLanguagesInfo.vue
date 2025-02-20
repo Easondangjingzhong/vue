@@ -29,7 +29,11 @@
           </svg>
           语言能力</h4
         >
+        <span style="margin-top: 15px;">
+          <a-tag color="green" v-if="!languageWholeFlagTemp">完整</a-tag>
+          <a-tag color="red" v-if="languageWholeFlagTemp">缺失</a-tag>
         <form-outlined v-if="showResumeAdd" @click="handleUpdateLanguagesInfo"></form-outlined>
+      </span>
       </a-col>
       <a-divider :dashed="true" style="background-color: #ccc; margin-top: 0" />
     </a-row>
@@ -245,7 +249,7 @@
           </a-form-item>
         </a-col>
       </a-row>
-      <a-row v-if="expand">
+      <a-row v-if="expand && expandUpdateChinese">
         <a-col :span="24">
           <a-form-item
             name="languageAbility5"
@@ -302,8 +306,18 @@
     showResumeAdd: {
       type: Boolean,
       required: true,
+    },
+    resumeData: {
+      type: Object,
+      required: true,
     }
   });
+  const expandUpdateChinese = ref(true);
+  if (props.resumeData.nationality == "中国") {
+    expandUpdateChinese.value = false;
+  }
+  const languageWholeFlagTemp = ref(false);
+
   const expandUpdate = ref(false);
   const handleUpdateLanguagesInfo = () => {
     expandUpdate.value = !expandUpdate.value;
@@ -324,6 +338,10 @@
   if (lang && lang.length > 0) {
     lang.forEach((element) => {
       if (element.languageName == '英语') {
+        languageWholeFlagTemp.value = false;
+        resumeDetailStore.$patch({
+          languageWholeFlag: false
+        })
         if (element.languageLevel) {
           langArr = element.languageLevel.split(',').reduce((prev, curr) => {
             if (curr.includes('IELTS')) {
@@ -376,6 +394,20 @@
             langArr2.push(element.bujia);
           }
         }
+        if (element.languageName == '德语') {
+          if (element.languageLevel) {
+            langArr3 = element.languageLevel.split(',');
+          }
+          if (element.tinshuoLiuli) {
+            langArr3.push(element.tinshuoLiuli);
+          }
+          if (element.duxieLiuli) {
+            langArr3.push(element.duxieLiuli);
+          }
+          if (element.bujia) {
+            langArr3.push(element.bujia);
+          }
+        }
         if (element.languageName == '韩语') {
           if (element.languageLevel) {
             langArr6 = element.languageLevel.split(',');
@@ -420,6 +452,11 @@
         }
       }
     });
+  } else {
+    languageWholeFlagTemp.value = true;
+        resumeDetailStore.$patch({
+          languageWholeFlag: true
+        })
   }
   const languageAbility0 = ref(langArr.length > 0 ? langArr : []);
   const languageAbility1 = ref(langArr1.length > 0 ? langArr1 : []);
@@ -673,7 +710,7 @@
     }
     if (languageAbility55.length > 0) {
       let language = {} as Language;
-      language.languageName = '汉语';
+      language.languageName = '中文';
       language.resumeId = props.resumeId;
       // @ts-ignore
       if (languageAbility55.includes('1')) {

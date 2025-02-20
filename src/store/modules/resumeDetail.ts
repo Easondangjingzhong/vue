@@ -26,6 +26,11 @@ interface ResumeDetailState {
   addRecruitId: string; //简历的添加顾问id
   commRecruitId: string; //不为空是正常简历,空是公共库简历
   searchRecommend: string; //企业顾问查看简历
+  personWholeFlag: boolean; //简历个人信息完整 true false 30 
+  workWholeFlag: boolean; //简历工作信息完整 true false 30 
+  educationWholeFlag: boolean; //简历教育信息完整 true false 20 
+  languageWholeFlag: boolean; //简历语言信息完整 false true 10 
+  selfWholeFlag: boolean; //简历自我评价信息完整 true false 10 
 }
 const loginVueUser: {loginName: "", loginId: "", loginTocken: "",loginType: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
 export const useResumeDetailStore = defineStore({
@@ -54,6 +59,11 @@ export const useResumeDetailStore = defineStore({
     addRecruitId: '',
     commRecruitId: '',
     searchRecommend: '',
+    personWholeFlag: false,
+    workWholeFlag: false,
+    educationWholeFlag: false,
+    languageWholeFlag: true,
+    selfWholeFlag: false,
   }),
   actions: {
     /**
@@ -104,16 +114,21 @@ export const useResumeDetailStore = defineStore({
      */
     async updateResumeWorkExp(data) {
       let res = '';
+      let endYearTemp = '';
+      let endMonthTemp = '';
       if (data.endYear == '-1') {
-        data.endMonth = '-1';
+        endMonthTemp = '-1';
+        endYearTemp = '-1';
       } else {
-        data.endMonth = data.endYear.split('-')[1];
-        data.endYear = data.endYear.split('-')[0];
+        endMonthTemp = data.endYear.split('-')[1];
+        endYearTemp = data.endYear.split('-')[0];
       }
-      data.startMonth = data.startYear.split('-')[1];
-      data.startYear = data.startYear.split('-')[0];
       const dataTemp = {
         ...data,
+        endYear: endYearTemp,
+        endMonth: endMonthTemp,
+        startYear: data.startYear.split('-')[0],
+        startMonth: data.startYear.split('-')[1],
         positionName: data.positionsId.label,
         positionsId: data.positionsId.value,
         brandName: data.brandName.label,
@@ -304,7 +319,7 @@ export const useResumeDetailStore = defineStore({
       if (this.searchRecommend == "Q") {
         formData.append('recruitId', this.addRecruitId);
       } else {
-        formData.append('recruitId', loginVueUser.loginId);
+        formData.append('recruitId', this.commRecruitId || loginVueUser.loginId);
       }
       formData.append('SystemRecruitId', loginVueUser.loginId);
       const res = await fetchApi.queryResumeReport(formData);
@@ -405,13 +420,13 @@ export const useResumeDetailStore = defineStore({
      * 点击推荐查询mapping的id 没有生成
      * @returns
      */
-    async queryMappingIdByResumeId() {
+    async queryMappingIdByResumeId(resumeIdTemp='') {
       let formData = new FormData();
-      const resumeId = this.resumeDetail.resumeId.toString();
+      const resumeId = resumeIdTemp || this.resumeDetail.resumeId.toString();
       formData.append('resumeId', resumeId);
       formData.append('recruitId', loginVueUser.loginId);
       const res = await fetchApi.queryMappingIdByResumeId(formData);
-      if (res.code == 1) {
+      if (!resumeIdTemp && res.code == 1) {
         this.mappingId = res.info;
         this.queryRecommendByMappingId();
         this.candidatePositionFlag = true;
@@ -605,10 +620,11 @@ export const useResumeDetailStore = defineStore({
      * 简历复制到登录人名下
      * @returns 
      */
-    async resumeCopyToSelf() {
+    async resumeCopyToSelf(isTwoYear) {
       let formData = new FormData();
       const resumeId = this.resumeDetail.resumeId.toString();
       formData.append('resumeId', resumeId);
+      formData.append('isTwoYear', isTwoYear);
       formData.append('recruitId', loginVueUser.loginId);
       const res = await fetchApi.resumeCopyToSelf(formData);
       return res;
@@ -630,13 +646,28 @@ export const useResumeDetailStore = defineStore({
      * 简历核对
      * @returns 
      */
-    async addResumeChecked() {
+    async addResumeChecked(resumeProgress) {
       let formData = new FormData();
       const resumeId = this.resumeDetail.resumeId.toString();
       formData.append('resumeId', resumeId);
+      formData.append('resumeProgress', resumeProgress);
       formData.append('SystemRecruitId', loginVueUser.loginId);
       formData.append('phoneNum', this.resumeDetail.resume.phoneNum);
       const res = await fetchApi.addResumeChecked(formData);
+      return res;
+    },
+    /**
+     * 简历激活
+     * @returns 
+     */
+    async addResumeCheckedTwoYear(resumeProgress) {
+      let formData = new FormData();
+      const resumeId = this.resumeDetail.resumeId.toString();
+      formData.append('resumeId', resumeId);
+      formData.append('resumeProgress', resumeProgress);
+      formData.append('SystemRecruitId', loginVueUser.loginId);
+      formData.append('phoneNum', this.resumeDetail.resume.phoneNum);
+      const res = await fetchApi.addResumeCheckedTwoYear(formData);
       return res;
     },
     /**
@@ -704,6 +735,33 @@ export const useResumeDetailStore = defineStore({
       formData.append('recommendBrand', temp.recommendBrand);
       formData.append('recommendPosition', temp.recommendPosition);
       const res = await fetchApi.resumeRecommendMsg(formData);
+      return res;
+    },
+    /**
+     * 查询mapping信息
+     * @returns 
+     */
+    async resumeMapping() {
+      let formData = new FormData();
+      const resumeId = this.resumeDetail.resumeId.toString();
+      formData.append('resumeId', resumeId);
+      formData.append('recruitId', this.commRecruitId);
+      formData.append('phone', this.resumeDetail.resume.phoneNum);
+      formData.append('SystemRecruitId', loginVueUser.loginId);
+      const res = await fetchApi.resumeMapping(formData);
+      return res;
+    },
+    /**
+     * 查询mapping架构信息
+     * @returns 
+     */
+    async resumeMappingJiagou(brandId,marketId) {
+      let formData = new FormData();
+      formData.append('brandId', brandId);
+      formData.append('recruitId', this.commRecruitId);
+      formData.append('phone', this.resumeDetail.resume.phoneNum);
+      formData.append('marketId', marketId);
+      const res = await fetchApi.resumeMappingJiagou(formData);
       return res;
     },
   },

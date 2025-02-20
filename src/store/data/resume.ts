@@ -5,6 +5,13 @@ export const marriageArr = [
   { label: '离异', value: '离异' },
   { label: '保密', value: '保密' },
 ];
+export const marriageEnArr = [
+  { label: 'Secret', value: 'Secret' },
+  { label: 'Single', value: 'Single' },
+  { label: 'Married Without Children', value: 'Married Without Children' },
+  { label: 'Married With Children', value: 'Married With Children' },
+  { label: 'Divorce', value: 'Divorce' },
+];
 export const brandArrDetail = [
   {
     retail: '零售业',
@@ -223,6 +230,16 @@ export const degreeArr = [
   '硕士+MBA',
   '博士+MBA',
   '大学肄业',
+];
+export const degreeEnArr = [
+  'Doctorate',
+  'MBA/EMBA',
+  'Master',
+  'Bachelor',
+  'Junior College',
+  'Special School',
+  'Senior high school',
+  'Junior middle school',
 ];
 export const degreeSearchArr = [
   '中专及以上',

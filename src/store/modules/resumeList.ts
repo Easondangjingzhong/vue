@@ -19,10 +19,12 @@ interface ResumeListState {
   companyCnList: []; //公司数据简称
   pagination: {}; //分页
   formState: {}; //搜索条件
+  isTwoYearFlagStatus: boolean; //搜索条件 控制两年搜索
   systemType: string; //返回的权限 A T V S
   loginNameChangeRecruitId: string; //切换后我的人才id
   loginNameChangeRecruitName: string; //切换后我的人才姓名
   teamPersonChangeArr: []; //查询团队数据
+  expandedRowKeys: String[]; //展开字段key
   serchResumeListNum: number; //一键搜索个数
   serchResumeUpdate: boolean; //一键搜索修改状态
   serchResumeUpdateData: {}; //一键搜索修改状态
@@ -50,13 +52,16 @@ export const useResumeListStore = defineStore({
       brandNp: '1',
       marketNp: '1',
       positionNp: '1',
+      isTwoYear: '',
     },
+    isTwoYearFlagStatus: true,
     brandList: [],
     resumeList: [],
     positionsList: [],
     markIdList: [],
     companyList: [],
     companyCnList: [],
+    expandedRowKeys: [''],
     systemType: '',
     searchResumeType: '',
     searchWorkExp: '1',
@@ -790,11 +795,13 @@ export const useResumeListStore = defineStore({
         let info = res.info;
         let list = res.info.list;
         let tempList = [];
+        this.expandedRowKeys = [''];
         list.forEach((item: any, index) => {
           let tempItem = {};
           tempItem.index = (info.pageNumber - 1) * info.pageSize + (index + 1);
           tempItem.key = item.id;
           tempItem.userName = item.userName;
+          tempItem.resumeProgress = `${item.resumeProgress}%`;
           tempItem.addConsultantId = item.addConsultantId;
           tempItem.phone = item.phone;
           tempItem.gender = item.gender == 'F' ? '女' : '男';
@@ -814,6 +821,7 @@ export const useResumeListStore = defineStore({
           tempItem.recruitId = item.recruitId;
           tempItem.leftType = param.leftType || "2";//参数
           tempItem.projectFlag = item.projectFlag;
+          tempItem.twoYearFlag = item.twoYearFlag; //两年
           // if (item.works) {
           //   let workTemp = "";
           //   item.works.forEach(subItem => {
@@ -825,6 +833,7 @@ export const useResumeListStore = defineStore({
           // }
           tempItem.works = item.works;
           tempList.push(tempItem);
+          this.expandedRowKeys.push(item.id);
         });
         this.resumeList = tempList;
         this.pagination = {
@@ -901,6 +910,8 @@ export const useResumeListStore = defineStore({
       formData.append('isWorkExp', this.searchWorkExp);
       formData.append('sortId', param.sortId || '');
       formData.append('viewType', param.viewType || 'T');
+      formData.append('isTwoYear', param.isTwoYear || '');
+      formData.append('id', param.id || '');
       return formData;
     },
     /**

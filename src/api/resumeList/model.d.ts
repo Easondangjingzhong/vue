@@ -47,6 +47,7 @@ export interface SearchResumeList {
   id: string; //一键搜搜或人才分类的id
   searchName: string; //一键搜搜名称
   sortName: string; //人才分类名称
+  isTwoYear: string; // 1 查询两年 空其他的查询全部
 }
 
 export interface Item {
