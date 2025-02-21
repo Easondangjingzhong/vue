@@ -11,6 +11,7 @@ export interface PlagiarusnItem {
   companyNames: string;
   birthYear: string;
   gender: string;
+  isEnglish: string;
   index: Number;
 }
 

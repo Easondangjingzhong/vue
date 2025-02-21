@@ -171,7 +171,7 @@
   let degreeFlag = ref(true);
   let schoolTypeFlag = ref(true);
   onBeforeMount(() => {
-    if (props.educationInfoData.degree == '初中' || props.educationInfoData.degree == '高中') {
+    if (props.educationInfoData.degree == '初中' || props.educationInfoData.degree == '高中' || props.educationInfoData.degree == 'Junior middle school' || props.educationInfoData.degree == 'Senior high school') {
       props.educationInfoData.isRegular = 'Y';
       props.educationInfoData.majorName = '';
       degreeFlag.value = false;
@@ -185,7 +185,13 @@
       props.educationInfoData.degree == '本科+MBA' ||
       props.educationInfoData.degree == '硕士+MBA' ||
       props.educationInfoData.degree == '博士+MBA' ||
-      props.educationInfoData.degree == '大学肄业'
+      props.educationInfoData.degree == '大学肄业' ||
+      props.educationInfoData.degree == 'Doctorate' ||
+      props.educationInfoData.degree == 'MBA/EMBA' ||
+      props.educationInfoData.degree == 'Master' ||
+      props.educationInfoData.degree == 'Bachelor' ||
+      props.educationInfoData.degree == 'Junior College' ||
+      props.educationInfoData.degree == 'Special School'
     ) {
       schoolTypeFlag.value = true;
     } else {

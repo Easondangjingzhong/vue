@@ -1,7 +1,7 @@
 //import 'ant-design-vue';
-import 'sanitize.css';
-import 'sanitize.css/forms.css';
-import 'sanitize.css/typography.css';
+//import 'sanitize.css';
+//import 'sanitize.css/forms.css';
+//import 'sanitize.css/typography.css';
 import '/@/styles/index.less';
 import './utils/flexible'
 import '/@/styles/ant/antd.css'

@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import routes from './router.config';
-//import {useCityStoreWithOut} from '/@/store/modules/city'
-//const cityStore = useCityStoreWithOut();
+import {useCityStoreWithOut} from '/@/store/modules/city'
+const cityStore = useCityStoreWithOut();
 // app router
 export const router = createRouter({
   // 解决 二级路径存在时，路径地址路由不匹配的问题

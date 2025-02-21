@@ -1,6 +1,7 @@
 <template>
   <div v-if="!expend" class="resume_header">
-    <a-row :gutter="24"><a-col :span="24" class="resume_detail_title">
+    <a-row :gutter="24"
+      ><a-col :span="24" class="resume_detail_title">
         <h4 class="resume_h4">
           <svg
             style="vertical-align: middle"
@@ -30,10 +31,12 @@
     </a-row>
     <a-row :gutter="24" class="resume_row" style="position: relative">
       <a-col :span="spancol">
-        城市: <span class="resume_span">{{ resumeData.currentCity }}</span>
+        {{ themeLanguage?.currentCity?.label }}:
+        <span class="resume_span">{{ resumeData.currentCity }}</span>
       </a-col>
       <a-col :span="spancol">
-        性别: <span class="resume_span">{{ resumeData.gender == 'M' ? '男' : '女' }}</span>
+        {{ themeLanguage?.gender?.label }}:
+        <span class="resume_span">{{ resumeData.gender == 'M' ? '男' : '女' }}</span>
       </a-col>
       <a-col class="resume_photo_col">
         <a-image
@@ -49,34 +52,42 @@
     </a-row>
     <a-row :gutter="24" class="resume_row">
       <a-col :span="spancol">
-        国籍: <span class="resume_span">{{ resumeData.nationality }}</span>
+        {{ themeLanguage?.nationality?.label }}:
+        <span class="resume_span">{{ resumeData.nationality }}</span>
       </a-col>
       <a-col :span="spancol">
-       年龄: <span class="resume_span">{{ resumeData.age }}岁 {{ ageTimeTemp }}</span>
-      </a-col>
-    </a-row>
-    <a-row :gutter="24" class="resume_row">
-      <a-col :span="spancol">
-        户籍: <span class="resume_span">{{ resumeData.province }}</span>
-      </a-col>
-      <a-col :span="spancol">
-        身高: <span class="resume_span">{{ resumeData.height }}cm</span>
+        {{ themeLanguage?.age?.label }}:
+        <span class="resume_span">{{ resumeData.age }}岁 {{ ageTimeTemp }}</span>
       </a-col>
     </a-row>
     <a-row :gutter="24" class="resume_row">
       <a-col :span="spancol">
-        邮箱: <span class="resume_span">{{ resumeData.email }}</span>
+        {{ themeLanguage?.huji?.label }}: <span class="resume_span">{{ resumeData.province }}</span>
       </a-col>
       <a-col :span="spancol">
-       体重: <span class="resume_span">{{ resumeData.weight }}kg</span>
+        {{ themeLanguage?.height?.label }}:
+        <span class="resume_span">{{ resumeData.height }}cm</span>
       </a-col>
     </a-row>
     <a-row :gutter="24" class="resume_row">
       <a-col :span="spancol">
-        <span title="当前职位">当职: <span class="resume_span">{{ resumeData.positionName }}</span></span>
+        {{ themeLanguage?.email?.label }}: <span class="resume_span">{{ resumeData.email }}</span>
       </a-col>
       <a-col :span="spancol">
-        婚育: <span class="resume_span">{{ resumeData.marriageStatus }}</span>
+        {{ themeLanguage?.weight?.label }}:
+        <span class="resume_span">{{ resumeData.weight }}kg</span>
+      </a-col>
+    </a-row>
+    <a-row :gutter="24" class="resume_row">
+      <a-col :span="spancol">
+        <span title="当前职位"
+          >{{ themeLanguage?.positionName?.label }}:
+          <span class="resume_span">{{ resumeData.positionName }}</span></span
+        >
+      </a-col>
+      <a-col :span="spancol">
+        {{ themeLanguage?.marriageStatus?.label }}:
+        <span class="resume_span">{{ resumeData.marriageStatus }}</span>
       </a-col>
     </a-row>
   </div>
@@ -105,44 +116,45 @@
       </a-col>
       <a-divider :dashed="true" style="background-color: #ccc; margin-top: 0" />
     </a-row>
-    <a-form ref="formRef" :model="formState" @finish="onFinish">
+    <a-form
+      :label-col="{ span: resumeTypeEnglish == '1' ? 10 : 0 }"
+      ref="formRef"
+      :model="formState"
+      @finish="onFinish"
+    >
       <a-row :gutter="24" class="resume_row_update">
         <a-col :span="spancol">
           <a-form-item
-            label="姓名"
+            :label="themeLanguage?.userName?.label"
             name="userName"
-            :rules="[{ required: true, message: '请输入姓名' }]"
+            :rules="[{ required: true, message: themeLanguage?.userName?.message }]"
           >
             <a-input
-            style="width: 100%"
+              style="width: 100%"
               v-model:value="formState.userName"
-              placeholder="请输入姓名"
+              :placeholder="themeLanguage?.userName?.message"
             />
           </a-form-item>
         </a-col>
         <a-col :span="spancol">
           <a-form-item
-            label="手机"
-            :rules="[{ required: true, message: '请输入手机' }]"
+            :label="themeLanguage?.phone?.label"
+            :rules="[{ required: true, message: themeLanguage?.phone?.message }]"
           >
-            <a-input
-            style="width: 100%"
-              :disabled="true"
-              v-model:value="formState.phoneNum"
-            />
+            <a-input style="width: 100%" :disabled="true" v-model:value="formState.phoneNum" />
           </a-form-item>
         </a-col>
       </a-row>
       <a-row :gutter="24" class="resume_row_update" style="position: relative">
         <a-col :span="spancol">
           <a-form-item
-            :rules="[{ required: true, message: '请输入城市' }]"
+            :rules="[{ required: true, message: themeLanguage?.currentCity?.message }]"
             name="currentCity"
-            label="城市"
+            :label="themeLanguage?.currentCity?.label"
           >
             <a-select
               v-model:value="formState.currentCity"
-              placeholder="请输入城市"
+              :placeholder="themeLanguage?.currentCity?.message"
               :allowClear="true"
               :options="optionsCity"
               showSearch
@@ -152,13 +164,13 @@
         <a-col :span="spancol">
           <a-form-item
             name="gender"
-            :rules="[{ required: true, message: '请选择性别' }]"
-            label="性别"
+            :rules="[{ required: true, message: themeLanguage?.gender?.message }]"
+            :label="themeLanguage?.gender?.label"
           >
-            <a-radio-group v-model:value="formState.gender">
-              <a-radio value="M">男士</a-radio>
-              <a-radio value="F">女士</a-radio>
-            </a-radio-group>
+            <a-radio-group
+              v-model:value="formState.gender"
+              :options="genderOptions"
+            ></a-radio-group>
           </a-form-item>
         </a-col>
         <a-col class="resume_photo_col_update">
@@ -208,13 +220,13 @@
         <a-col :span="spancol">
           <a-form-item
             name="nationality"
-            :rules="[{ required: true, message: '请输入国籍' }]"
-            label="国籍"
+            :rules="[{ required: true, message: themeLanguage?.nationality?.message }]"
+            :label="themeLanguage?.nationality?.label"
           >
             <a-select
               ref="select"
               v-model:value="formState.nationality"
-              placeholder="请输入国籍"
+              :placeholder="themeLanguage?.nationality?.message"
               :allowClear="true"
               :options="optionsCountry"
               showSearch
@@ -224,14 +236,14 @@
         <a-col :span="spancol">
           <a-form-item
             name="ageTime"
-            :rules="[{ required: true, message: '请输入年龄' }]"
-            label="年龄"
+            :rules="[{ required: true, message: themeLanguage?.age?.message }]"
+            :label="themeLanguage?.age?.label"
           >
             <a-date-picker
               v-model:value="formState.ageTime"
               value-format="YYYY-MM-DD"
               picker="date"
-              placeholder="请输入年龄"
+              :placeholder="themeLanguage?.age?.message"
             />
           </a-form-item>
         </a-col>
@@ -240,13 +252,13 @@
         <a-col :span="spancol">
           <a-form-item
             name="province"
-            label="户籍"
-            :rules="[{ required: true, message: '请输入户籍' }]"
+            :label="themeLanguage?.huji?.label"
+            :rules="[{ required: true, message: themeLanguage?.huji?.message }]"
           >
             <a-select
               ref="select"
               v-model:value="formState.province"
-              placeholder="请输入户籍"
+              :placeholder="themeLanguage?.huji?.message"
               :allowClear="true"
               :options="optionsCity"
               showSearch
@@ -256,13 +268,13 @@
         <a-col :span="spancol">
           <a-form-item
             name="height"
-            :rules="[{ required: true, message: '请输入身高' }]"
-            label="身高"
+            :rules="[{ required: true, message: themeLanguage?.height?.message }]"
+            :label="themeLanguage?.height?.label"
           >
             <a-input-number
               style="width: 100%"
               v-model:value="formState.height"
-              placeholder="请输入身高"
+              :placeholder="themeLanguage?.height?.message"
             />
           </a-form-item>
         </a-col>
@@ -271,22 +283,22 @@
         <a-col :span="spancol">
           <a-form-item
             name="email"
-            :rules="[{ required: true, message: '请输入邮箱' }]"
-            label="邮箱"
+            :rules="[{ required: true, message: themeLanguage?.email?.message }]"
+            :label="themeLanguage?.email?.label"
           >
-            <a-input v-model:value="formState.email" placeholder="请输入邮箱" />
+            <a-input v-model:value="formState.email" :placeholder="themeLanguage?.email?.message" />
           </a-form-item>
         </a-col>
         <a-col :span="spancol">
           <a-form-item
             name="weight"
-            :rules="[{ required: true, message: '请输入体重' }]"
-            label="体重"
+            :rules="[{ required: true, message: themeLanguage?.weight?.message }]"
+            :label="themeLanguage?.weight?.label"
           >
             <a-input-number
               style="width: 100%"
               v-model:value="formState.weight"
-              placeholder="请输入体重"
+              :placeholder="themeLanguage?.weight?.message"
             />
           </a-form-item>
         </a-col>
@@ -295,8 +307,8 @@
         <a-col :span="spancol">
           <a-form-item
             name="positionName"
-            :rules="[{ required: true, message: '请输入当职' }]"
-            label="当职"
+            :rules="[{ required: true, message: themeLanguage?.positionName?.message }]"
+            :label="themeLanguage?.positionName?.label"
           >
             <a-select
               v-model:value="formState.positionName"
@@ -304,21 +316,21 @@
               :options="optionsPositions"
               showSearch
               :labelInValue="true"
-              placeholder="请输入当职"
+              :placeholder="themeLanguage?.positionName?.message"
             ></a-select>
           </a-form-item>
         </a-col>
         <a-col :span="spancol">
           <a-form-item
             name="marriageStatus"
-            :rules="[{ required: true, message: '请输入婚育' }]"
-            label="婚育"
+            :rules="[{ required: true, message: themeLanguage?.marriageStatus?.message }]"
+            :label="themeLanguage?.marriageStatus?.label"
           >
             <a-select
               v-model:value="formState.marriageStatus"
               :allowClear="true"
               :options="optionsMarriage"
-              placeholder="请输入婚育"
+              :placeholder="themeLanguage?.marriageStatus?.message"
             ></a-select>
           </a-form-item>
         </a-col>
@@ -338,19 +350,21 @@
   import { ref } from 'vue';
   import { storeToRefs } from 'pinia';
   import type { SelectProps } from 'ant-design-vue';
-  import {  FormOutlined } from '@ant-design/icons-vue';
+  import { FormOutlined } from '@ant-design/icons-vue';
   import { message } from 'ant-design-vue';
   import { useCityStoreWithOut } from '/@/store/modules/city';
   import { useResumeListStoreWithOut } from '/@/store/modules/resumeList';
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
-  import { marriageArr } from '/@/store/data/resume';
+  import { marriageArr, marriageEnArr } from '/@/store/data/resume';
   import CropperModal from '/@/components/Upload/CropperModal.vue';
+  import { validateLanguage } from '/@/utils/resumeTypeEn';
   import { dataURLtoBlob, fileToBlob, blobToDataURI } from '/@/utils/base64tofile';
   const resumeDetailStore = useResumeDetailStore();
   const cityStore = useCityStoreWithOut();
   const { country, province } = storeToRefs(cityStore);
   const resumeListStore = useResumeListStoreWithOut();
   const { positionsList } = storeToRefs(resumeListStore);
+  const { resumeTypeEnglish } = storeToRefs(resumeDetailStore);
   const spancol = 8;
   let iconLoading = ref(false);
   const expend = ref(false);
@@ -383,45 +397,80 @@
     showResumeAdd: {
       type: Boolean,
       required: true,
-    }
+    },
   });
+  const themeLanguage = ref(validateLanguage('personInfo', resumeTypeEnglish.value));
   const personWholeFlagTemp = ref(false);
-  if (!props.resumeData.userName || !props.resumeData.phoneNum || !props.resumeData.currentCity || !props.resumeData.province 
-  || !props.resumeData.gender || !props.resumeData.photoPath || !props.resumeData.nationality || !props.resumeData.height || !props.resumeData.birthYear
-  || !props.resumeData.email || !props.resumeData.weight || !props.resumeData.positionName || !props.resumeData.marriageStatus) {
+  if (
+    !props.resumeData.userName ||
+    !props.resumeData.phoneNum ||
+    !props.resumeData.currentCity ||
+    !props.resumeData.province ||
+    !props.resumeData.gender ||
+    !props.resumeData.photoPath ||
+    !props.resumeData.nationality ||
+    !props.resumeData.height ||
+    !props.resumeData.birthYear ||
+    !props.resumeData.email ||
+    !props.resumeData.weight ||
+    !props.resumeData.positionName ||
+    !props.resumeData.marriageStatus
+  ) {
     resumeDetailStore.$patch({
-      personWholeFlag: true
-    })
+      personWholeFlag: true,
+    });
     personWholeFlagTemp.value = true;
   } else {
     resumeDetailStore.$patch({
-      personWholeFlag: false
-    })
+      personWholeFlag: false,
+    });
     personWholeFlagTemp.value = false;
   }
-  watch(()=> props.resumeData,(newProps) => {
-    if (!newProps.userName || !newProps.phoneNum || !newProps.currentCity || !newProps.province 
-  || !newProps.gender || !newProps.photoPath || !newProps.nationality || !newProps.height || !newProps.birthYear
-  || !newProps.email || !newProps.weight || !newProps.positionName || !newProps.marriageStatus) {
-    resumeDetailStore.$patch({
-      personWholeFlag: true
-    })
-    personWholeFlagTemp.value = true;
-  } else {
-    resumeDetailStore.$patch({
-      personWholeFlag: false
-    })
-    personWholeFlagTemp.value = false;
-  }
-  })
-  const ageTimeTemp = !props.resumeData.birthYear ? '' : `(${props.resumeData.birthYear}-${
-        !props.resumeData.bornMonth ? '01' : 
-        (props.resumeData.bornMonth < 10
+  watch(
+    () => props.resumeData,
+    (newProps) => {
+      if (
+        !newProps.userName ||
+        !newProps.phoneNum ||
+        !newProps.currentCity ||
+        !newProps.province ||
+        !newProps.gender ||
+        !newProps.photoPath ||
+        !newProps.nationality ||
+        !newProps.height ||
+        !newProps.birthYear ||
+        !newProps.email ||
+        !newProps.weight ||
+        !newProps.positionName ||
+        !newProps.marriageStatus
+      ) {
+        resumeDetailStore.$patch({
+          personWholeFlag: true,
+        });
+        personWholeFlagTemp.value = true;
+      } else {
+        resumeDetailStore.$patch({
+          personWholeFlag: false,
+        });
+        personWholeFlagTemp.value = false;
+      }
+    },
+  );
+  const ageTimeTemp = !props.resumeData.birthYear
+    ? ''
+    : `(${props.resumeData.birthYear}-${
+        !props.resumeData.bornMonth
+          ? '01'
+          : props.resumeData.bornMonth < 10
           ? '0' + props.resumeData.bornMonth
-          : props.resumeData.bornMonth)
+          : props.resumeData.bornMonth
       }-${
-        !props.resumeData.bornDay ? '01' : (props.resumeData.bornDay < 10 ? '0' + props.resumeData.bornDay : props.resumeData.bornDay)
-})`
+        !props.resumeData.bornDay
+          ? '01'
+          : props.resumeData.bornDay < 10
+          ? '0' + props.resumeData.bornDay
+          : props.resumeData.bornDay
+      })`;
   const coverOptions = {
     autoCrop: true, //是否默认生成截图框
     autoCropWidth: 140, //默认生成截图框宽度
@@ -445,7 +494,7 @@
   const cropperModal = ref<any>();
   const fileList = ref([]);
   const photoPath = ref(null);
-  photoPath.value = props.resumeData.photoPath
+  photoPath.value = props.resumeData.photoPath;
   const handleChangephoto = () => {
     const target = Object.assign({}, coverOptions, {
       img: photoPath.value,
@@ -460,12 +509,12 @@
     resumeDetailStore.fetchResumePhote(props.resumeData.id, files);
   };
   const handleChangephotoUpload = (e) => {
-    blobToDataURI(fileToBlob(e.file),(res) => {
+    blobToDataURI(fileToBlob(e.file), (res) => {
       photoPath.value = res;
       handleChangephoto();
-    })
+    });
   };
- //修改个人信息展开和收起
+  //修改个人信息展开和收起
   const handleUpdatePersonInfo = () => {
     expend.value = !expend.value;
     formState.value = {
@@ -487,48 +536,25 @@
       birthYear: props.resumeData.birthYear,
       bornDay: props.resumeData.bornDay,
       bornMonth: props.resumeData.bornMonth,
-      ageTime: !props.resumeData.birthYear ? '' : `${props.resumeData.birthYear}-${
-        !props.resumeData.bornMonth ? '01' : 
-        (props.resumeData.bornMonth < 10
-          ? '0' + props.resumeData.bornMonth
-          : props.resumeData.bornMonth)
-      }-${
-        !props.resumeData.bornDay ? '01' : (props.resumeData.bornDay < 10 ? '0' + props.resumeData.bornDay : props.resumeData.bornDay)
-      }`,
+      ageTime: !props.resumeData.birthYear
+        ? ''
+        : `${props.resumeData.birthYear}-${
+            !props.resumeData.bornMonth
+              ? '01'
+              : props.resumeData.bornMonth < 10
+              ? '0' + props.resumeData.bornMonth
+              : props.resumeData.bornMonth
+          }-${
+            !props.resumeData.bornDay
+              ? '01'
+              : props.resumeData.bornDay < 10
+              ? '0' + props.resumeData.bornDay
+              : props.resumeData.bornDay
+          }`,
     };
   };
   const optionsCity = ref<SelectProps['options']>([]);
-  optionsCity.value = province.value.reduce((prev, curr) => {
-    //@ts-ignore
-    if (
-      (curr.provinceName == curr.cityName || !curr.cityName) &&
-      !(curr.cityName == '吉林' || curr.cityName == '海南')
-    ) {
-      //@ts-ignore
-      prev.push({
-        //@ts-ignore
-        label: curr.provinceName,
-        //@ts-ignore
-        value: curr.provinceName,
-      });
-    } else {
-      //@ts-ignore
-      prev.push({
-        //@ts-ignore
-        label: `${curr.provinceName}-${curr.cityName}`,
-        //@ts-ignore
-        value: curr.cityName,
-      });
-    }
-    return prev;
-  }, []);
   const optionsCountry = ref<SelectProps['options']>([]);
-  optionsCountry.value = country.value.map((item) => ({
-    //@ts-ignore
-    label: item.country,
-    //@ts-ignore
-    value: item.country,
-  }));
   //婚育数据展示
   const optionsMarriage = ref<SelectProps['options']>(marriageArr);
   const onFinish = () => {
@@ -580,6 +606,90 @@
       return '';
     }
   }
+  //性别
+  const genderOptions = ref([
+    { label: '男士', value: 'M' },
+    { label: '女士', value: 'F' },
+  ]);
+  const loadresumeTypeEnglish = () => {
+    if (resumeTypeEnglish.value == '1') {
+        genderOptions.value = [
+          { label: 'Male', value: 'M' },
+          { label: 'Female', value: 'F' },
+        ];
+        optionsMarriage.value = marriageEnArr;
+        optionsCountry.value = country.value.map((item) => ({
+          label: item.countryEn,
+          value: item.countryEn,
+        }));
+        optionsCity.value = province.value.reduce((prev, curr) => {
+          //@ts-ignore
+          if (
+            (curr.provinceNameEn == curr.cityNameEn || !curr.cityNameEn) &&
+            !(curr.cityNameEn == 'Jilin' || curr.cityNameEn == 'Hainan')
+          ) {
+            //@ts-ignore
+            prev.push({
+              //@ts-ignore
+              label: curr.provinceNameEn,
+              //@ts-ignore
+              value: curr.provinceNameEn,
+            });
+          } else {
+            //@ts-ignore
+            prev.push({
+              //@ts-ignore
+              label: `${curr.provinceNameEn}-${curr.cityNameEn}`,
+              //@ts-ignore
+              value: curr.cityNameEn,
+            });
+          }
+          return prev;
+        }, []);
+      } else {
+        genderOptions.value = [
+          { label: '男士', value: 'M' },
+          { label: '女士', value: 'F' },
+        ];
+        optionsMarriage.value = marriageArr;
+        optionsCountry.value = country.value.map((item) => ({
+          label: item.country,
+          value: item.country,
+        }));
+        optionsCity.value = province.value.reduce((prev, curr) => {
+          //@ts-ignore
+          if (
+            (curr.provinceName == curr.cityName || !curr.cityName) &&
+            !(curr.cityName == '吉林' || curr.cityName == '海南')
+          ) {
+            //@ts-ignore
+            prev.push({
+              //@ts-ignore
+              label: curr.provinceName,
+              //@ts-ignore
+              value: curr.provinceName,
+            });
+          } else {
+            //@ts-ignore
+            prev.push({
+              //@ts-ignore
+              label: `${curr.provinceName}-${curr.cityName}`,
+              //@ts-ignore
+              value: curr.cityName,
+            });
+          }
+          return prev;
+        }, []);
+      }
+  }
+  loadresumeTypeEnglish();
+  watch(
+    () => resumeTypeEnglish.value,
+    () => {
+      themeLanguage.value = validateLanguage('personInfo', resumeTypeEnglish.value);
+      loadresumeTypeEnglish();
+    },
+  );
 </script>
 <style lang="less" scoped>
   .resume_header {

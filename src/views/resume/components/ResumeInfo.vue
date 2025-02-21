@@ -40,6 +40,11 @@
   let iconLoading = ref(false);
   const labelCol = ref({span: 5});
   const {resumeFormState,updatePhotoFlag,resumeTypeEnglish} = storeToRefs(resumeStore);
+  if (resumeTypeEnglish.value == "1") {
+      labelCol.value = {span: 8};
+    } else {
+      labelCol.value = {span: 5};
+    }
   watch(() => resumeTypeEnglish.value,() => {
     if (resumeTypeEnglish.value == "1") {
       labelCol.value = {span: 8};

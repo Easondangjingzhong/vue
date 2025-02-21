@@ -23,6 +23,7 @@ interface ResumeDetailState {
   recommendCandidatePositionSearch: {}; //推荐职位查询条件
   resumeId: string; //简历的ID
   addConsultantId: string; //简历的添加顾问
+  resumeTypeEnglish: string; //简历类型 1 英文 2或其他是中文
   addRecruitId: string; //简历的添加顾问id
   commRecruitId: string; //不为空是正常简历,空是公共库简历
   searchRecommend: string; //企业顾问查看简历
@@ -59,6 +60,7 @@ export const useResumeDetailStore = defineStore({
     addRecruitId: '',
     commRecruitId: '',
     searchRecommend: '',
+    resumeTypeEnglish: '2',
     personWholeFlag: false,
     workWholeFlag: false,
     educationWholeFlag: false,
@@ -322,6 +324,7 @@ export const useResumeDetailStore = defineStore({
         formData.append('recruitId', this.commRecruitId || loginVueUser.loginId);
       }
       formData.append('SystemRecruitId', loginVueUser.loginId);
+      formData.append('isEnglish', this.resumeTypeEnglish);
       const res = await fetchApi.queryResumeReport(formData);
       if (res.code == 1) {
         this.resumeReport = res.info;

@@ -111,7 +111,9 @@
   watch(resumeDetail, () => {
     //@ts-ignore
     resumeDetailTemp.value = { ...resumeDetail.value };
-
+    resumeDetailStore.$patch({
+        resumeTypeEnglish: resumeDetailTemp.value.resume.isEnglish,
+    });
     //如果是公共简历只能看简历详情,客户查重,以及联系记录,并且不能修改
     if (!commRecruitId.value) {
       showResumeAdd.value = false;

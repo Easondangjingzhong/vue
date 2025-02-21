@@ -233,6 +233,7 @@
     plagiarusnForm.companyNames = companyNames;
     plagiarusnForm.schoolNames = schoolNames;
     plagiarusnForm.majorNames = majorNames;
+    plagiarusnForm.isEnglish = resumeTypeEnglish.value;
     plagiarusnResumeAction(plagiarusnForm);
   };
 </script>

@@ -25,7 +25,7 @@
         <span style="margin-top: 15px">
           <a-tag color="green" v-if="!workWholeFlag">完整</a-tag>
           <a-tag color="red" v-if="workWholeFlag">缺失</a-tag>
-        <PlusOutlined v-if="showResumeAdd" @click="handleAddWorkInfo" />
+          <PlusOutlined v-if="showResumeAdd" @click="handleAddWorkInfo" />
         </span>
       </a-col>
       <a-divider :dashed="true" style="background-color: #ccc; margin-top: 0" />
@@ -46,50 +46,86 @@
         <span v-if="resumeData.brandName">-{{ resumeData.brandName }}</span>
         <span v-if="resumeData.workFloor">-{{ resumeData.workFloor }}</span>
       </a-col>
-      <a-col v-if="showResumeAdd" :span="1" style="padding-left: 10px;padding-right: 0px;text-align: right;">
+      <a-col
+        v-if="showResumeAdd"
+        :span="1"
+        style="padding-left: 10px; padding-right: 0px; text-align: right"
+      >
         <form-outlined @click="handleUpdateWorkInfo"></form-outlined>
       </a-col>
-      <a-col v-if="showResumeAdd" :span="1" :class="workWholeFlagTemp ? 'workWholeFlagRed' : 'workWholeFlagGreen'" :title="workWholeFlagTemp ? '缺失' : '完整'">
+      <a-col
+        v-if="showResumeAdd"
+        :span="1"
+        :class="workWholeFlagTemp ? 'workWholeFlagRed' : 'workWholeFlagGreen'"
+        :title="workWholeFlagTemp ? '缺失' : '完整'"
+      >
         <delete-outlined @click="handleDeleteWorkExp"></delete-outlined>
       </a-col>
     </a-row>
     <a-row :gutter="24" class="resume_row">
       <a-col :span="8" class="resume_col">
-        职位名称: <span class="resume_span">{{ resumeData.positionName }}</span></a-col
+        {{ themeLanguage?.positionName?.label }}:
+        <span class="resume_span">{{ resumeData.positionName }}</span></a-col
       >
       <a-col :span="5" class="resume_col">
-        汇报对象: <span class="resume_span">{{ resumeData.reporter }}</span></a-col
+        {{ themeLanguage?.reporter?.label }}:
+        <span class="resume_span">{{ resumeData.reporter }}</span></a-col
       >
       <a-col :span="5" class="resume_col">
-        所在部门: <span class="resume_span">{{ resumeData.department }}</span></a-col
+        {{ themeLanguage?.department?.label }}:
+        <span class="resume_span">{{ resumeData.department }}</span></a-col
       >
-      <a-col :span="4" class="resume_col">
-        综合月薪: <span class="resume_span">{{ resumeData.monthSalary }}</span></a-col
+      <a-col :span="6" class="resume_col">
+        {{ themeLanguage?.monthSalary?.label }}:
+        <span class="resume_span">{{ resumeData.monthSalary }}</span></a-col
       >
     </a-row>
     <a-row :gutter="24" class="resume_row">
-      <a-col :span="8" class="resume_col" style="padding-left: 34px;"> 行业: <span class="resume_span">{{ resumeData.brandRetail }}</span></a-col>
-      <a-col :span="5" class="resume_col" style="padding-left: 34px;"> 品类: <span class="resume_span">{{ resumeData.brandCategory }}</span></a-col>
+      <a-col
+        :span="resumeTypeEnglish == '1' ? 6 : 8"
+        :class="
+          resumeTypeEnglish == '1'
+            ? 'resume_col resume_col_brandRetail_en'
+            : 'resume_col resume_col_brandRetail'
+        "
+      >
+        {{ themeLanguage?.brandRetail?.label }}:
+        <span class="resume_span">{{ resumeData.brandRetail }}</span></a-col
+      >
+      <a-col
+        :span="resumeTypeEnglish == '1' ? 7 : 7"
+        :class="
+          resumeTypeEnglish == '1'
+            ? 'resume_col resume_col_brandCategory_en'
+            : 'resume_col resume_col_brandCategory'
+        "
+      >
+        {{ themeLanguage?.brandCategory?.label }}:
+        <span class="resume_span">{{ resumeData.brandCategory }}</span></a-col
+      >
     </a-row>
     <a-row :gutter="24" class="resume_row" v-if="resumeData.salaryStructure">
       <a-col :span="12" class="resume_col">
-        薪资构架: <span class="resume_span">{{ resumeData.salaryStructure }}</span></a-col
+        {{ themeLanguage?.salaryStructure?.label }}:
+        <span class="resume_span">{{ resumeData.salaryStructure }}</span></a-col
       >
     </a-row>
     <a-row :gutter="24" class="resume_row" v-if="resumeData.personnelStructure">
       <a-col :span="12" class="resume_col">
-        团队构架: <span class="resume_span">{{ resumeData.personnelStructure }}</span></a-col
+        {{ themeLanguage?.personnelStructure?.label }}:
+        <span class="resume_span">{{ resumeData.personnelStructure }}</span></a-col
       >
     </a-row>
     <a-row :gutter="24" class="resume_row" style="margin-bottom: 0">
-      <a-col :span="12"> 工作职责: </a-col>
+      <a-col :span="12"> {{ themeLanguage?.workDuty?.label }}: </a-col>
     </a-row>
     <a-row :gutter="24" class="resume_row">
       <a-col :span="24" v-html="resumeData.workDuty"></a-col>
     </a-row>
   </div>
   <div class="resume_header_update" v-if="expend">
-    <a-form ref="formRef" :model="formState" @finish="onFinish">
+    <a-form ref="formRef"
+    :model="formState" @finish="onFinish">
       <a-row :gutter="24">
         <a-col :span="24" class="resume_detail_title">
           <h4 class="resume_h4">
@@ -119,34 +155,34 @@
         <a-col :span="12">
           <a-form-item
             name="companyName"
-            label="公司名称"
-            :rules="[{ required: true, message: '请输入公司名称' }]"
+            :label="themeLanguage?.companyName?.label"
+            :rules="[{ required: true, message: themeLanguage?.companyName?.message }]"
           >
             <a-select
               v-model:value="formState.companyName"
-              placeholder="请输入公司名称"
+              :placeholder="themeLanguage?.companyName?.message"
               :options="optionsCompanyId"
               optionFilterProp="label"
               showSearch
               @search="handleCompanyName"
               :not-found-content="fetching ? undefined : null"
             >
-          <template v-if="fetching" #notFoundContent>
-                  <a-spin size="small" />
-                </template>
-          </a-select>
+              <template v-if="fetching" #notFoundContent>
+                <a-spin size="small" />
+              </template>
+            </a-select>
           </a-form-item>
         </a-col>
         <a-col :span="spanTitle">
           <a-form-item
-            label="类别"
+            :label="themeLanguage?.category?.label"
             name="category"
             style="padding-left: 21px"
-            :rules="[{ required: true, message: '请选择类别' }]"
+            :rules="[{ required: true, message: themeLanguage?.category?.message }]"
           >
             <a-select
               v-model:value="formState.category"
-              placeholder="请选择类别"
+              :placeholder="themeLanguage?.category?.message"
               optionFilterProp="label"
               showSearch
               @change="handleCategory"
@@ -156,14 +192,14 @@
         </a-col>
         <a-col :span="spanTitle" v-if="categoryFlag">
           <a-form-item
-            label="撤店"
+            :label="themeLanguage?.isRetreat?.label"
             name="isRetreat"
             style="padding-left: 20px"
-            :rules="[{ required: true, message: '请选择撤店' }]"
+            :rules="[{ required: true, message: themeLanguage?.isRetreat?.message }]"
           >
             <a-select
               v-model:value="formState.isRetreat"
-              placeholder="请选择撤店"
+              :placeholder="themeLanguage?.isRetreat?.message"
               optionFilterProp="label"
               showSearch
               :options="optionRetreat"
@@ -175,43 +211,38 @@
         <a-col :span="6">
           <a-form-item
             name="startYear"
-            label="开始年月"
-            :rules="[{ required: true, message: '请选择开始年月' }]"
+            :label="themeLanguage?.startYear?.label"
+            :rules="[{ required: true, message: themeLanguage?.startYear?.message }]"
           >
             <a-date-picker
               v-model:value="formState.startYear"
               value-format="YYYY-MM"
               picker="month"
-              placeholder="请选择开始年月"
+              :placeholder="themeLanguage?.startYear?.message"
             />
           </a-form-item>
         </a-col>
         <a-col :span="6" style="position: relative" v-if="!endYearFlag">
           <a-form-item
             name="endYear"
-            label="结束年月"
-            :rules="[{ required: true, message: '请选择结束年月' }]"
+            :label="themeLanguage?.endYear?.label"
+            :rules="[{ required: true, message: themeLanguage?.endYear?.message }]"
           >
             <a-date-picker
               v-model:value="formState.endYear"
               value-format="YYYY-MM"
               picker="month"
-              placeholder="请选择结束年月"
+              :placeholder="themeLanguage?.endYear?.message"
             />
           </a-form-item>
-          <a-checkbox
-            class="resume_box"
-            v-model:checked="endYearFlag"
-            @change="onChangeEndYearFlag"
+          <a-checkbox class="resume_box" v-model:checked="endYearFlag" @change="onChangeEndYearFlag"
             >目前在职</a-checkbox
           >
         </a-col>
         <a-col :span="spanTitle" v-if="endYearFlag"
-          ><a-form-item label="结束年月" style="padding-left: 9px"
+          ><a-form-item :label="themeLanguage?.endYear?.label" style="padding-left: 9px"
             ><span class="resume_col_padding">至今</span>
-            <a-checkbox
-              v-model:checked="endYearFlag"
-              @change="onChangeEndYearFlag"
+            <a-checkbox v-model:checked="endYearFlag" @change="onChangeEndYearFlag"
               >目前在职</a-checkbox
             >
           </a-form-item></a-col
@@ -219,13 +250,13 @@
         <a-col :span="6"></a-col>
         <a-col :span="6">
           <a-form-item
-            label="最近工作"
+            :label="themeLanguage?.isNewtest?.label"
             name="isNewtest"
-            :rules="[{ required: true, message: '请选择最近工作' }]"
+            :rules="[{ required: true, message: themeLanguage?.isNewtest?.message }]"
           >
             <a-select
               v-model:value="formState.isNewtest"
-              placeholder="请选择最近工作"
+              :placeholder="themeLanguage?.isNewtest?.message"
               optionFilterProp="label"
               showSearch
               :options="optionNewtest"
@@ -236,14 +267,14 @@
       <a-row class="resume_row_update">
         <a-col :span="spanTitle">
           <a-form-item
-            label="城市"
+            :label="themeLanguage?.cityName?.label"
             name="cityName"
             style="padding-left: 21px"
-            :rules="[{ required: true, message: '请选择城市' }]"
+            :rules="[{ required: true, message: themeLanguage?.cityName?.message }]"
           >
             <a-select
               v-model:value="formState.cityName"
-              placeholder="请选择城市"
+              :placeholder="themeLanguage?.cityName?.message"
               :options="optionsCity"
               optionFilterProp="label"
               :labelInValue="true"
@@ -254,34 +285,34 @@
         </a-col>
         <a-col :span="spanTitle" v-if="categoryFlag">
           <a-form-item
-            label="商场"
+            :label="themeLanguage?.marketName?.label"
             name="marketName"
             style="padding-left: 21px"
-            :rules="[{ required: true, message: '请选择商场' }]"
+            :rules="[{ required: true, message: themeLanguage?.marketName?.message }]"
           >
             <a-select
               optionFilterProp="label"
               v-model:value="formState.marketName"
-              placeholder="请选择商场"
+              :placeholder="themeLanguage?.marketName?.message"
               :options="optionsMarkId"
               :labelInValue="true"
               showSearch
               @change="handleMarketBrandFloor"
               @search="handleCityAndMarktName"
             >
-          </a-select>
+            </a-select>
           </a-form-item>
         </a-col>
         <a-col :span="spanTitle">
           <a-form-item
-            label="品牌"
+            :label="themeLanguage?.brandName?.label"
             name="brandName"
             style="padding-left: 21px"
-            :rules="[{ required: true, message: '请选择品牌' }]"
+            :rules="[{ required: true, message: themeLanguage?.brandName?.message }]"
           >
             <a-select
               v-model:value="formState.brandName"
-              placeholder="请选择品牌"
+              :placeholder="themeLanguage?.brandName?.message"
               optionFilterProp="label"
               :labelInValue="true"
               :options="optionsBrand"
@@ -289,24 +320,52 @@
               showSearch
               v-if="!brandFlag"
             ></a-select>
-            <a-input v-if="brandFlag" style="width: 50%" v-model:value="brandNameCn" placeholder="品牌中文"></a-input>
-            <a-input v-if="brandFlag" style="width: 50%" v-model:value="brnadNameEn" placeholder="品牌英文"></a-input>
+            <a-input
+              v-if="brandFlag"
+              style="width: 50%"
+              v-model:value="brandNameCn"
+              placeholder="品牌中文"
+            ></a-input>
+            <a-input
+              v-if="brandFlag"
+              style="width: 50%"
+              v-model:value="brnadNameEn"
+              placeholder="品牌英文"
+            ></a-input>
           </a-form-item>
         </a-col>
         <a-col :span="spanTitle" v-if="!categoryFlag">
-            <a-button style="margin-top: 2%;margin-left: 2%;" @click="handleChangeBrandFlag" size="small" type="primary" title="切换为填写" danger v-if="!brandFlag">切换</a-button>
-            <a-button style="margin-top: 2%;margin-left: 2%;" @click="handleChangeBrandFlag" size="small" type="primary" title="切换为选择" danger v-if="brandFlag">切换</a-button>
+          <a-button
+            style="margin-top: 2%; margin-left: 2%"
+            @click="handleChangeBrandFlag"
+            size="small"
+            type="primary"
+            title="切换为填写"
+            danger
+            v-if="!brandFlag"
+            >切换</a-button
+          >
+          <a-button
+            style="margin-top: 2%; margin-left: 2%"
+            @click="handleChangeBrandFlag"
+            size="small"
+            type="primary"
+            title="切换为选择"
+            danger
+            v-if="brandFlag"
+            >切换</a-button
+          >
         </a-col>
         <a-col :span="spanTitle" v-if="categoryFlag">
           <a-form-item
-            label="楼层"
+            :label="themeLanguage?.workFloor?.label"
             name="workFloor"
             style="padding-left: 21px"
-            :rules="[{ required: true, message: '请选择楼层' }]"
+            :rules="[{ required: true, message: themeLanguage?.workFloor?.message }]"
           >
             <a-select
               v-model:value="formState.workFloor"
-              placeholder="请选择楼层"
+              :placeholder="themeLanguage?.workFloor?.message"
               :options="optionsWorkFloor"
               showSearch
             ></a-select>
@@ -316,13 +375,13 @@
       <a-row class="resume_row_update">
         <a-col :span="spanTitle">
           <a-form-item
-            label="职位名称"
+            :label="themeLanguage?.positionName?.label"
             name="positionsId"
-            :rules="[{ required: true, message: '请选择职位名称' }]"
+            :rules="[{ required: true, message: themeLanguage?.positionName?.message }]"
           >
             <a-select
               v-model:value="formState.positionsId"
-              placeholder="请选择职位名称"
+              :placeholder="themeLanguage?.positionName?.message"
               :options="optionsPositions"
               optionFilterProp="label"
               :labelInValue="true"
@@ -333,34 +392,40 @@
         <a-col :span="spanTitle">
           <a-form-item
             name="reporter"
-            label="汇报对象"
+            :label="themeLanguage?.reporter?.label"
             style="padding-left: 8px"
-            :rules="[{ required: false, message: '请输入汇报对象' }]"
+            :rules="[{ required: false, message: themeLanguage?.reporter?.message }]"
           >
-            <a-input v-model:value="formState.reporter" placeholder="请输入汇报对象"></a-input>
+            <a-input
+              v-model:value="formState.reporter"
+              :placeholder="themeLanguage?.reporter?.message"
+            ></a-input>
           </a-form-item>
         </a-col>
         <a-col :span="spanTitle">
           <a-form-item
             name="department"
-            label="所在部门"
+            :label="themeLanguage?.department?.label"
             style="padding-left: 8px"
-            :rules="[{ required: false, message: '请输入所在部门' }]"
+            :rules="[{ required: false, message: themeLanguage?.department?.message }]"
           >
-            <a-input v-model:value="formState.department" placeholder="请输入所在部门"></a-input>
+            <a-input
+              v-model:value="formState.department"
+              :placeholder="themeLanguage?.department?.message"
+            ></a-input>
           </a-form-item>
         </a-col>
         <a-col :span="spanTitle">
           <a-form-item
             name="monthSalary"
-            label="综合月薪"
+            :label="themeLanguage?.monthSalary?.label"
             style="padding-left: 8px"
-            :rules="[{ required: false, message: '请输入综合月薪' }]"
+            :rules="[{ required: false, message: themeLanguage?.monthSalary?.message }]"
           >
             <a-input-number
               style="width: 100%"
               v-model:value="formState.monthSalary"
-              placeholder="请输入综合月薪"
+              :placeholder="themeLanguage?.monthSalary?.message"
             ></a-input-number>
           </a-form-item>
         </a-col>
@@ -369,13 +434,14 @@
         <a-col :span="24">
           <a-form-item
             name="salaryStructure"
-            label="薪资构架"
+            :label="themeLanguage?.salaryStructure?.label"
             style="padding-left: 8px"
-            :rules="[{ required: false, message: '请输入薪资构架' }]"
+            :label-col="{ span: resumeTypeEnglish == '1' ? 3.6 : 0 }"
+            :rules="[{ required: false, message: themeLanguage?.salaryStructure?.message }]"
           >
             <a-input
               v-model:value="formState.salaryStructure"
-              placeholder="请输入薪资构架"
+              :placeholder="themeLanguage?.salaryStructure?.message"
             ></a-input>
           </a-form-item>
         </a-col>
@@ -384,13 +450,13 @@
         <a-col :span="24">
           <a-form-item
             name="personnelStructure"
-            label="人员架构"
+            :label="themeLanguage?.personnelStructure?.label"
             style="padding-left: 8px"
-            :rules="[{ required: false, message: '请输入人员架构' }]"
+            :rules="[{ required: false, message: themeLanguage?.personnelStructure?.message }]"
           >
             <a-input
               v-model:value="formState.personnelStructure"
-              placeholder="请输入人员架构"
+              :placeholder="themeLanguage?.personnelStructure?.message"
             ></a-input>
           </a-form-item>
         </a-col>
@@ -399,13 +465,13 @@
         <a-col :span="24">
           <a-form-item
             name="workDuty"
-            label="工作职责"
-            :rules="[{ required: true, message: '请输入工作职责' }]"
+            :label="themeLanguage?.workDuty?.label"
+            :rules="[{ required: true, message: themeLanguage?.workDuty?.message }]"
           >
             <a-textarea
               :rows="7"
               v-model:value="formState.workDuty"
-              placeholder="请输入工作职责"
+              :placeholder="themeLanguage?.workDuty?.message"
             ></a-textarea>
           </a-form-item>
         </a-col>
@@ -434,30 +500,22 @@
   import { createVNode } from 'vue';
   import { debounce } from 'lodash-es';
   import { Modal } from 'ant-design-vue';
+  import { validateLanguage } from '/@/utils/resumeTypeEn';
   const cityStore = useCityStoreWithOut();
   const resumeListStore = useResumeListStoreWithOut();
   const { positionsList, brandList, companyList } = storeToRefs(resumeListStore);
   const { province } = storeToRefs(cityStore);
   const spanTitle = 6;
   const resumeDetailStore = useResumeDetailStore();
-  const { workWholeFlag } = storeToRefs(resumeDetailStore);
+  const { workWholeFlag, resumeTypeEnglish } = storeToRefs(resumeDetailStore);
   const expend = ref(false);
   const iconLoading = ref(false);
   const categoryFlag = ref(true);
   const brandFlag = ref(false);
   const formRef = ref(null);
-  const optionCategory = ref([
-    { value: '店铺', label: '店铺' },
-    { value: 'OFFICE', label: 'OFFICE' },
-  ]);
-  const optionRetreat = ref([
-    { value: 1, label: '是' },
-    { value: 0, label: '否' },
-  ]);
-  const optionNewtest = ref([
-    { value: 1, label: '是' },
-    { value: 0, label: '否' },
-  ]);
+  const optionCategory = ref([{ value: '', label: '' }]);
+  const optionRetreat = ref([{ value: 1, label: '' }]);
+  const optionNewtest = ref([{ value: 1, label: '' }]);
   const props = defineProps({
     resumeData: {
       type: Object,
@@ -470,29 +528,61 @@
     showResumeAdd: {
       type: Boolean,
       required: true,
-    }
+    },
   });
   const workWholeFlagTemp = ref(false);
   const handleWorkWholeFlagTemp = () => {
-    if (!props.resumeData.startYear || !props.resumeData.startMonth || !props.resumeData.endYear || (props.resumeData.endYear != "-1" && !props.resumeData.endMonth) || !props.resumeData.category || !props.resumeData.companyName
-  || (props.resumeData.category == "店铺" && (!props.resumeData.marketName || !props.resumeData.workFloor || !(props.resumeData.isRetreat == 0 || props.resumeData.isRetreat == 1))) || !(props.resumeData.isNewtest == 0 || props.resumeData.isNewtest == 1)
-  || !props.resumeData.positionName || !props.resumeData.workDuty || !props.resumeData.cityName || !props.resumeData.brandName) {
-    workWholeFlagTemp.value = true;
-  }
-  }
+    if (
+      !props.resumeData.startYear ||
+      !props.resumeData.startMonth ||
+      !props.resumeData.endYear ||
+      (props.resumeData.endYear != '-1' && !props.resumeData.endMonth) ||
+      !props.resumeData.category ||
+      !props.resumeData.companyName ||
+      (props.resumeData.category == '店铺' &&
+        (!props.resumeData.marketName ||
+          !props.resumeData.workFloor ||
+          !(props.resumeData.isRetreat == 0 || props.resumeData.isRetreat == 1))) ||
+      !(props.resumeData.isNewtest == 0 || props.resumeData.isNewtest == 1) ||
+      !props.resumeData.positionName ||
+      !props.resumeData.workDuty ||
+      !props.resumeData.cityName ||
+      !props.resumeData.brandName
+    ) {
+      workWholeFlagTemp.value = true;
+    }
+  };
   handleWorkWholeFlagTemp();
-  watch(() => props.resumeData,(newProps) => {
-   if (!newProps.startYear || !newProps.startMonth || !newProps.endYear || (newProps.endYear != "-1" && !newProps.endMonth) || !newProps.category || !newProps.companyName
-  || (newProps.category == "店铺" && (!newProps.marketName || !newProps.workFloor || !(newProps.isRetreat == 0 || newProps.isRetreat == 1))) || !(newProps.isNewtest == 0 || newProps.isNewtest == 1)
-  || !newProps.positionName || !newProps.workDuty || !newProps.cityName || !newProps.brandName) {
-    workWholeFlagTemp.value = true;
-  } else {
-    workWholeFlagTemp.value = false;
-  }
-  })
- 
-  
-  const loginVueUser: {loginName: "", loginId: "", loginTocken: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
+  watch(
+    () => props.resumeData,
+    (newProps) => {
+      if (
+        !newProps.startYear ||
+        !newProps.startMonth ||
+        !newProps.endYear ||
+        (newProps.endYear != '-1' && !newProps.endMonth) ||
+        !newProps.category ||
+        !newProps.companyName ||
+        (newProps.category == '店铺' &&
+          (!newProps.marketName ||
+            !newProps.workFloor ||
+            !(newProps.isRetreat == 0 || newProps.isRetreat == 1))) ||
+        !(newProps.isNewtest == 0 || newProps.isNewtest == 1) ||
+        !newProps.positionName ||
+        !newProps.workDuty ||
+        !newProps.cityName ||
+        !newProps.brandName
+      ) {
+        workWholeFlagTemp.value = true;
+      } else {
+        workWholeFlagTemp.value = false;
+      }
+    },
+  );
+  const themeLanguage = ref(validateLanguage('workInfo', resumeTypeEnglish.value));
+  const loginVueUser: { loginName: ''; loginId: ''; loginTocken: '' } = JSON.parse(
+    localStorage.getItem('loginVueUser'),
+  );
   const formState = reactive({
     companyName: '',
     category: '',
@@ -538,10 +628,14 @@
     }
   });
   const endYearTemp =
-    (props.resumeData?.endYear == -1 ? "" : (!props.resumeData?.endYear ? '' :props.resumeData?.endYear +
-    (props.resumeData?.endMonth < 10
-      ? '-0' + props.resumeData?.endMonth
-      : '-' + props.resumeData?.endMonth)));
+    props.resumeData?.endYear == -1
+      ? ''
+      : !props.resumeData?.endYear
+      ? ''
+      : props.resumeData?.endYear +
+        (props.resumeData?.endMonth < 10
+          ? '-0' + props.resumeData?.endMonth
+          : '-' + props.resumeData?.endMonth);
   const onChangeEndYearFlag = () => {
     if (endYearFlag.value) {
       endYearFlag.value = true;
@@ -575,20 +669,21 @@
     formState.department = props.resumeData?.department;
     formState.startYear =
       props.resumeData?.startYear +
-      ((props.resumeData?.startMonth - 0) < 10
+      (props.resumeData?.startMonth - 0 < 10
         ? '-0' + (+props.resumeData?.startMonth == 0 ? 1 : +props.resumeData?.startMonth)
         : '-' + props.resumeData?.startMonth);
     formState.startMonth = props.resumeData?.startMonth;
     if (props.resumeData?.endYear == '-1') {
       formState.endYear = '-1';
     } else {
-      formState.endYear = !props.resumeData?.endYear ? '' :
-      props.resumeData?.endYear +
-      (props.resumeData?.endMonth < 10
-        ? '-0' + (+props.resumeData?.endMonth == 0 ? 1 : +props.resumeData?.endMonth)
-        : '-' + props.resumeData?.endMonth);
+      formState.endYear = !props.resumeData?.endYear
+        ? ''
+        : props.resumeData?.endYear +
+          (props.resumeData?.endMonth < 10
+            ? '-0' + (+props.resumeData?.endMonth == 0 ? 1 : +props.resumeData?.endMonth)
+            : '-' + props.resumeData?.endMonth);
     }
-   
+
     formState.endMonth = props.resumeData?.endMonth;
     formState.positionName = props.resumeData?.positionName;
     formState.positionsId = {
@@ -614,7 +709,7 @@
     formState.brandRetail = props.resumeData?.brandRetail;
     formState.brandCategory = props.resumeData?.brandCategory;
     handleCategory();
-    handleCityName(formState.cityName,formState.marketName.label);
+    handleCityName(formState.cityName, formState.marketName.label);
   };
   //职位数据
   const optionsPositions = ref<SelectProps['options']>([]);
@@ -690,28 +785,15 @@
   }, []);
   //商场数据展示
   const optionsMarkId = ref<SelectProps['options']>([]);
-  // let tempOptionMarkId = [];
-  // markIdList.value.forEach((item) => {
-  //   //@ts-ignore
-  //   let tempObj = {
-  //     //@ts-ignore
-  //     label: item.text,
-  //     //@ts-ignore
-  //     value: item.id,
-  //   };
-  //   //@ts-ignore
-  //   tempOptionMarkId.push(tempObj);
-  // });
-  // optionsMarkId.value = tempOptionMarkId;
-  const handleCityName = (values,marketName) => {
-    let temp = "";
+  const handleCityName = (values, marketName) => {
+    let temp = '';
     if (!(Object.prototype.toString.call(marketName) === '[object Object]')) {
       temp = marketName;
     }
     let tempOptionMarkIdUpdate = [];
     let marktFlag = false;
     //商场数据
-    resumeDetailStore.queryMarkList(values.label,temp).then((res) => {
+    resumeDetailStore.queryMarkList(values.label, temp).then((res) => {
       res.info.forEach((item) => {
         //@ts-ignore
         let tempObj = {
@@ -728,15 +810,15 @@
       });
       optionsMarkId.value = tempOptionMarkIdUpdate;
       if (!marktFlag) {
-        formState.marketName = {value: "", label: ""};
+        formState.marketName = { value: '', label: '' };
       }
     });
-  }
+  };
   const handleCityAndMarktName = (values) => {
     let tempOptionMarkIdUpdate = [];
     let marktFlag = false;
     //商场数据
-    resumeDetailStore.queryMarkList(formState.cityName.value,values).then((res) => {
+    resumeDetailStore.queryMarkList(formState.cityName.value, values).then((res) => {
       res.info.forEach((item) => {
         //@ts-ignore
         let tempObj = {
@@ -753,22 +835,21 @@
       });
       optionsMarkId.value = tempOptionMarkIdUpdate;
       if (!marktFlag) {
-        formState.marketName = {value: "", label: ""};
+        formState.marketName = { value: '', label: '' };
       }
     });
-  }
+  };
   const handleMarketBrandFloor = () => {
     resumeDetailStore
-      .queryMarkBrandFloor(formState.marketName.value, (formState.brandName.value || ""))
+      .queryMarkBrandFloor(formState.marketName.value, formState.brandName.value || '')
       .then((res) => {
         if (res.code == 1) {
           formState.workFloor = res.info[0].floor;
         } else {
-          formState.workFloor = "";
+          formState.workFloor = '';
         }
       });
   };
-
   //公司数据展示
   const optionsCompanyId = ref<SelectProps['options']>([]);
   let tempOptionCompanyId = [];
@@ -809,14 +890,14 @@
   const brandNameCn = ref('');
   const brnadNameEn = ref('');
   const handleChangeBrandFlag = () => {
-    brandFlag.value =!brandFlag.value;
+    brandFlag.value = !brandFlag.value;
     brandNameCn.value = '';
     brnadNameEn.value = '';
-  }
+  };
   const handleCategory = () => {
     brandNameCn.value = '';
     brnadNameEn.value = '';
-    if (formState.category == '店铺') {
+    if (formState.category == '店铺' || formState.category == 'Store') {
       categoryFlag.value = true;
       let tempOptionPositions = [];
       positionsList.value.forEach((item) => {
@@ -837,9 +918,9 @@
       formState.workBrand = '';
       formState.workMark = '';
       formState.isRetreat = '';
-      formState.marketName ={ value: '', label: '' };
+      formState.marketName = { value: '', label: '' };
       if (formState.brandName?.value == '1224') {
-        formState.brandName ={ value: '', label: '' };
+        formState.brandName = { value: '', label: '' };
       }
       //formState.brandName ={ value: '', label: '' };
       resumeDetailStore.queryResumePositions().then((res) => {
@@ -864,12 +945,12 @@
       message.error('请选择品牌');
       return;
     }
-    if (brandFlag.value && (!brandNameCn.value && !brnadNameEn.value)) {
+    if (brandFlag.value && !brandNameCn.value && !brnadNameEn.value) {
       message.error('请填写品牌');
       return;
     }
     if (brandFlag.value && (brandNameCn.value || brnadNameEn.value)) {
-      formState.brandWrite = "1";
+      formState.brandWrite = '1';
       formState.brandNameCn = brandNameCn.value;
       formState.brnadNameEn = brnadNameEn.value;
     }
@@ -881,14 +962,14 @@
           brandNameCn.value = '';
           brnadNameEn.value = '';
           brandFlag.value = false;
-          formState.brandWrite = "";
+          formState.brandWrite = '';
           formState.brandNameCn = '';
           formState.brnadNameEn = '';
           resumeDetailStore.queryResumeDetail().then(() => {
             iconLoading.value = false;
             expend.value = !expend.value;
             brandFlag.value = false;
-            
+
             if (!props.resumeData?.id) {
               resumeDetailStore.$patch({ workFlag: false });
             }
@@ -911,27 +992,63 @@
     // const domWork = document.getElementsByClassName("resume_work_show")[0];
     // console.log(domWork.scrollTop);
   };
- 
   //删除工作经历开始
   const handleDeleteWorkExp = () => {
     Modal.confirm({
-    title: '是否删除工作经历?',
-    icon: createVNode(ExclamationCircleOutlined),
-    content: createVNode('div', { style: 'color:red;' }, props.resumeData.companyName),
-    onOk() {
-      resumeDetailStore.deleteWorkExp(props.resumeData.id).then((res) => {
-        if (res == "Y") {
-          resumeDetailStore.queryResumeDetail().then(() => {
-            message.success('删除成功');
-          });
-        } else {
-          message.error('删除失败');
-        }
-      });
-    },
-  });
+      title: '是否删除工作经历?',
+      icon: createVNode(ExclamationCircleOutlined),
+      content: createVNode('div', { style: 'color:red;' }, props.resumeData.companyName),
+      onOk() {
+        resumeDetailStore.deleteWorkExp(props.resumeData.id).then((res) => {
+          if (res == 'Y') {
+            resumeDetailStore.queryResumeDetail().then(() => {
+              message.success('删除成功');
+            });
+          } else {
+            message.error('删除失败');
+          }
+        });
+      },
+    });
   };
   //删除工作经历结束
+  const loadresumeTypeEnglish = () => {
+    if (resumeTypeEnglish.value == '1') {
+      optionCategory.value = [
+        { value: 'Store', label: 'Store' },
+        { value: 'OFFICE', label: 'OFFICE' },
+      ];
+      optionRetreat.value = [
+        { value: 1, label: 'Yes' },
+        { value: 0, label: 'No' },
+      ];
+      optionNewtest.value = [
+        { value: 1, label: 'Yes' },
+        { value: 0, label: 'No' },
+      ];
+    } else {
+      optionCategory.value = [
+        { value: '店铺', label: '店铺' },
+        { value: 'OFFICE', label: 'OFFICE' },
+      ];
+      optionRetreat.value = [
+        { value: 1, label: '是' },
+        { value: 0, label: '否' },
+      ];
+      optionNewtest.value = [
+        { value: 1, label: '是' },
+        { value: 0, label: '否' },
+      ];
+    }
+  };
+  loadresumeTypeEnglish();
+  watch(
+    () => resumeTypeEnglish.value,
+    () => {
+      themeLanguage.value = validateLanguage('workInfo', resumeTypeEnglish.value);
+      loadresumeTypeEnglish();
+    },
+  );
 </script>
 <style lang="less" scoped>
   .resume_header {
@@ -997,5 +1114,17 @@
   .workWholeFlagGreen {
     padding-left: 10px;
     background: linear-gradient(225deg, green 16%, transparent 0);
+  }
+  .resume_col_brandRetail {
+    padding-left: 34px !important;
+  }
+  .resume_col_brandCategory {
+    padding-left: 34px !important;
+  }
+  .resume_col_brandRetail_en {
+    padding-left: 30px !important;
+  }
+  .resume_col_brandCategory_en {
+    padding-left: 65px !important;
   }
 </style>

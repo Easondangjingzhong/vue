@@ -386,11 +386,8 @@
       props.personInfoData.currentCity = tempCity;
     }
   }
-  watch(
-    () => resumeTypeEnglish.value,
-    () => {
-      themeLanguage.value = validateLanguage('personInfo', resumeTypeEnglish.value);
-      if (resumeTypeEnglish.value == '1') {
+  const uploadResumeTypeEnglish = () => {
+    if (resumeTypeEnglish.value == '1') {
         genderOptions.value = [
           { label: 'Male', value: 'M' },
           { label: 'Female', value: 'F' },
@@ -413,6 +410,13 @@
         }));
         optionsCity.value = tempOptionCity;
       }
+  }
+  uploadResumeTypeEnglish();
+  watch(
+    () => resumeTypeEnglish.value,
+    () => {
+      themeLanguage.value = validateLanguage('personInfo', resumeTypeEnglish.value);
+      uploadResumeTypeEnglish();
     },
   );
 </script>

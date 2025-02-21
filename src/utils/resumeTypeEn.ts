@@ -33,8 +33,8 @@ export function validateLanguage(type,language) {
       weight: {label: "体重", message: "请输入体重kg"},
       huji: {label: "户籍", message: "请输入户籍"},
       currentCity: {label: "城市", message: "请输入城市"},
-      positionName: {label: "当前职位", message: "请输入当前职位"},
-      marriageStatus: {label: "婚育状态", message: "请输入婚育状态"},
+      positionName: {label: "当职", message: "请输入当前职位"},
+      marriageStatus: {label: "婚育", message: "请输入婚育状态"},
     };
   }
   if (type == "workInfo" && language == "1") {
@@ -46,6 +46,18 @@ export function validateLanguage(type,language) {
       positionName: {label: "Position", message: "请选择职位名称"},
       department: {label: "Department", message: "请输入所在部门"},
       workDuty: {label: "Responsibilities", message: "请输入工作职责"},
+      reporter: {label: "Reports To", message: "请输入汇报对象"},
+      monthSalary: {label: "Comprehensive Income", message: "请输入综合月薪"},
+      brandRetail: {label: "Retail", message: "请输入行业"},
+      brandCategory: {label: "Brand Category", message: "请输入品类"},
+      salaryStructure: {label: "Salary Structure", message: "请输入薪资构架"},
+      personnelStructure: {label: "Personnel Structure", message: "请输入团队构架"},
+      isRetreat: {label: "Withdrawal Stores", message: "请选择撤店"},
+      isNewtest: {label: "Recent Work", message: "请选择最近工作"},
+      cityName: {label: "City", message: "请选择城市"},
+      marketName: {label: "Market", message: "请选择商场"},
+      brandName: {label: "Brand", message: "请选择品牌"},
+      workFloor: {label: "Floor", message: "请选择楼层"},
     };
   }
   if (type == "workInfo" && language != "1") {
@@ -57,6 +69,18 @@ export function validateLanguage(type,language) {
       positionName: {label: "职位名称", message: "请选择职位名称"},
       department: {label: "所在部门", message: "请输入所在部门"},
       workDuty: {label: "工作职责", message: "请输入工作职责"},
+      reporter: {label: "汇报对象", message: "请输入汇报对象"},
+      monthSalary: {label: "综合月薪", message: "请输入综合月薪"},
+      brandRetail: {label: "行业", message: "请输入行业"},
+      brandCategory: {label: "品类", message: "请输入品类"},
+      salaryStructure: {label: "薪资构架", message: "请输入薪资构架"},
+      personnelStructure: {label: "团队构架", message: "请输入团队构架"},
+      isRetreat: {label: "撤店", message: "请选择撤店"},
+      isNewtest: {label: "最近工作", message: "请选择最近工作"},
+      cityName: {label: "城市", message: "请选择城市"},
+      marketName: {label: "商场", message: "请选择商场"},
+      brandName: {label: "品牌", message: "请选择品牌"},
+      workFloor: {label: "楼层", message: "请选择楼层"},
     };
   }
   if (type == "educationInfo" && language == "1") {

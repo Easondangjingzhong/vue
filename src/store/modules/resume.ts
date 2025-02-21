@@ -167,6 +167,7 @@ export const useResumeStore = defineStore({
         selfEvaluation: selfEvaluationData.selfEvaluation,
         age: personInfoData.age,
         nationality: personInfoData.nationality,
+        isEnglish: this.resumeTypeEnglish,
          // @ts-ignore
         talentSource: talentSource,
         // @ts-ignore

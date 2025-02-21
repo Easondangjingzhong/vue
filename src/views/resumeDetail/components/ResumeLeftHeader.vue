@@ -17,12 +17,15 @@
         <span class="resume_span_two">{{ item.source }}</span>
         <span class="resume_span_name">{{ item.registTime }}</span>
         <span class="resume_span">
-          <a-tag color="pink" style="cursor: pointer;" @click="handleChangeResume(item.resumeId,item.addConsultantId)">中文</a-tag>
+          <a-tag  v-if="!item.resumeId" style="cursor: not-allowed;">中文</a-tag>
+          <a-tag  v-if="item.resumeId && resumeTypeEnglish == '1'" style="cursor: pointer;" @click="handleChangeResume(item.resumeId,item.addConsultantId,2)">中文</a-tag>
+          <a-tag  v-if="item.resumeId && resumeTypeEnglish != '1'" color="pink" style="cursor: pointer;" @click="handleChangeResume(item.resumeId,item.addConsultantId,2)">中文</a-tag>
         </span>
         <!-- <span class="resume_span" v-if="!item.resumeIdEn">英文</span> -->
         <span class="resume_span_name">
           <a-tag  v-if="!item.resumeIdEn" style="cursor: not-allowed;">英文</a-tag>
-          <a-tag  v-if="item.resumeIdEn" color="pink">英文</a-tag>
+          <a-tag  v-if="item.resumeIdEn && resumeTypeEnglish != '1'" @click="handleChangeResume(item.resumeIdEn,item.addConsultantId,1)">英文</a-tag>
+          <a-tag  v-if="item.resumeIdEn && resumeTypeEnglish == '1'" color="pink" @click="handleChangeResume(item.resumeIdEn,item.addConsultantId,1)">英文</a-tag>
           <LinkOutlined v-if="item.orginalPathEn" @click="handleResumeOrginalPath(item.orginalPath)"/>
           <LinkOutlined v-if="item.orginalPath" @click="handleResumeOrginalPath(item.orginalPath)"/>
         </span>
@@ -136,7 +139,7 @@
 import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
 import OrginalPath from '/@/components/OrginalPath/index.vue'
 const resumeDetailStore = useResumeDetailStore();
-const { resumeReport,resumeId } =storeToRefs(resumeDetailStore);
+const { resumeReport,resumeId,resumeTypeEnglish } =storeToRefs(resumeDetailStore);
 defineProps({
     showResumeAdd: {
       type: Boolean,
@@ -217,7 +220,10 @@ const handleResumeOrginalPath = (path) => {
     orginalPathShow.value = true;
   })
 }
-const handleChangeResume = (resumeIdChange,addConsultantIdChange) =>{
+const handleChangeResume = (resumeIdChange,addConsultantIdChange,resumeTypeEnglish) =>{
+  resumeDetailStore.$patch({
+    resumeTypeEnglish: resumeTypeEnglish
+  })
   resumeDetailStore.queryResumeDetail(resumeIdChange,addConsultantIdChange);
 }
 const personMappingColumns = [

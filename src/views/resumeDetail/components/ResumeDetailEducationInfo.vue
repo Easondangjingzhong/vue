@@ -52,9 +52,9 @@
       </a-col>
     </a-row>
     <a-row :gutter="24" class="resume_row">
-      <a-col :span="8"> 专业: <span class="resume_span">{{ resumeData.majorName }}</span> </a-col>
-      <a-col :span="4"> 学历：<span class="resume_span">{{ resumeData.degree }}</span> </a-col>
-      <a-col :span="8"> 统招：<span class="resume_span">{{ resumeData.isRegular == 'Y' ? '是' : '否' }}</span> </a-col>
+      <a-col :span="8" v-if="degreeFlagTemp"> {{ themeLanguage?.majorName?.label }}: <span class="resume_span">{{ resumeData.majorName }}</span> </a-col>
+      <a-col :span="5"> {{ themeLanguage?.degree?.label }}: <span class="resume_span">{{ resumeData.degree }}</span> </a-col>
+      <a-col :span="8"> {{ themeLanguage?.isRegular?.label }}: <span class="resume_span">{{ resumeData.isRegular == 'Y' ? '是' : '否' }}</span> </a-col>
     </a-row>
   </div>
   <div class="resume_header_update" v-if="expend">
@@ -89,82 +89,59 @@
           <a-form-item
             :label-col="{ span: 4 }"
             name="schoolName"
-            label="学校名称"
-            :rules="[{ required: true, message: '请输入学校名称' }]"
+            :label="themeLanguage?.schoolName?.label"
+            :rules="[{ required: true, message: themeLanguage?.schoolName?.message}]"
           >
             <a-input
               v-model:value="formState.schoolName"
               @change="handleSchoolName"
-              placeholder="请输入学校名称"
+              :placeholder="themeLanguage?.schoolName?.message"
             ></a-input>
           </a-form-item>
         </a-col>
-        <!-- <a-col :span="8">
-          <a-form-item style="padding-left: 75px" name="schoolType" v-if="schoolTypeFlag">
-            <a-checkbox-group v-model:value="formState.schoolType">
-              <a-checkbox class="resume_box_right" value="985">985</a-checkbox>
-              <a-checkbox class="resume_box_left" value="211">211</a-checkbox>
-            </a-checkbox-group>
-          </a-form-item>
-        </a-col> -->
-        <!-- <a-col v-if="indexNum !== 0" :span="spanTitle" class="resume_del">
-          <a-button type="primary" danger size="small" @click="delNewEducationInfoData(indexNum)">删除</a-button>
-        </a-col> -->
       </a-row>
       <a-row class="resume_row_update">
         <a-col :span="spanTitle">
           <a-form-item
             name="startYear"
-            label="开始年月"
-            :rules="[{ required: true, message: '请输入开始年月' }]"
+            :label="themeLanguage?.startYear?.label"
+            :rules="[{ required: true, message: themeLanguage?.startYear?.message}]"
           >
             <a-date-picker
               v-model:value="formState.startYear"
               value-format="YYYY-MM"
               picker="month"
-              placeholder="请选择结束年月"
+              :placeholder="themeLanguage?.startYear?.message"
             />
           </a-form-item>
         </a-col>
         <a-col :span="spanTitle">
           <a-form-item
             name="endYear"
-            label="结束年月"
-            :rules="[{ required: true, message: '请输入结束年月' }]"
+            :label="themeLanguage?.endYear?.label"
+            :rules="[{ required: true, message: themeLanguage?.endYear?.message}]"
           >
             <a-date-picker
               v-model:value="formState.endYear"
               value-format="YYYY-MM"
               picker="month"
-              placeholder="请选择结束年月"
+              :placeholder="themeLanguage?.endYear?.message"
             />
           </a-form-item>
         </a-col>
-        <!-- <a-col :span="spanTitle">
-          <a-form-item
-            name="atSchool"
-            label="在校"
-            :rules="[{ required: true, message: '请选择在校' }]"
-          >
-            <a-radio-group v-model:value="formState.atSchool">
-              <a-radio value="1">是</a-radio>
-              <a-radio value="2">否</a-radio>
-            </a-radio-group>
-          </a-form-item>
-        </a-col> -->
       </a-row>
       <a-row class="resume_row_update">
         <a-col :span="spanTitle">
           <a-form-item
             name="degree"
-            label="学历"
-            :rules="[{ required: true, message: '请输入学历' }]"
+            :label="themeLanguage?.degree?.label"
+            :rules="[{ required: true, message: themeLanguage?.degree?.message}]"
           >
             <a-select
               class="form-select"
               v-model:value="formState.degree"
               :options="degreeOptions"
-              placeholder="请输入学历"
+              :placeholder="themeLanguage?.degree?.message"
               @change="changeDegree"
             ></a-select>
           </a-form-item>
@@ -172,22 +149,19 @@
         <a-col :span="spanTitle" v-if="degreeFlag">
           <a-form-item
             name="majorName"
-            label="专业名称"
-            :rules="[{ required: true, message: '请输入专业名称' }]"
+            :label="themeLanguage?.majorName?.label"
+            :rules="[{ required: true, message: themeLanguage?.majorName?.message}]"
           >
-            <a-input v-model:value="formState.majorName" placeholder="请输入专业名称"></a-input>
+            <a-input v-model:value="formState.majorName" :placeholder="themeLanguage?.majorName?.message"></a-input>
           </a-form-item>
         </a-col>
         <a-col :span="spanTitle" v-if="degreeFlag">
           <a-form-item
             name="isRegular"
-            label="统招"
-            :rules="[{ required: true, message: '请选择统招' }]"
+             :label="themeLanguage?.isRegular?.label"
+            :rules="[{ required: true, message: themeLanguage?.isRegular?.message}]"
           >
-            <a-radio-group v-model:value="formState.isRegular">
-              <a-radio value="Y">是</a-radio>
-              <a-radio value="N">否</a-radio>
-            </a-radio-group>
+            <a-radio-group v-model:value="formState.isRegular" :options="optionsRegular"></a-radio-group>
           </a-form-item>
         </a-col>
       </a-row>
@@ -212,13 +186,14 @@
   import { storeToRefs } from 'pinia';
   import { Modal } from 'ant-design-vue';
   import { FormOutlined,PlusOutlined,DeleteOutlined } from '@ant-design/icons-vue';
-  import { degreeArr } from '/@/store/data/resume';
+  import { degreeArr,degreeEnArr } from '/@/store/data/resume';
   import { message } from 'ant-design-vue';
   import { dateUtil } from '/@/utils/dateUtil';
   import { shcoolType985, shcoolType211 } from '/@/utils/schoolType';
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
+  import { validateLanguage } from '/@/utils/resumeTypeEn';
   const resumeDetailStore = useResumeDetailStore();
-  const { educationWholeFlag } = storeToRefs(resumeDetailStore);
+  const { educationWholeFlag, resumeTypeEnglish } = storeToRefs(resumeDetailStore);
   const props = defineProps({
     resumeData: {
       type: Object,
@@ -233,14 +208,15 @@
       required: true,
     }
   });
+  const themeLanguage = ref(validateLanguage('educationInfo', resumeTypeEnglish.value));
   const educationWholeFlagTemp = ref(false);
   if (!props.resumeData.startYear || !props.resumeData.startMonth || !props.resumeData.endYear || !props.resumeData.endMonth
-  || !props.resumeData.degree || (!(props.resumeData.degree == "初中" || props.resumeData.degree == "高中") && !props.resumeData.majorName) || !props.resumeData.isRegular ) {
+  || !props.resumeData.degree || (!(props.resumeData.degree == "初中" || props.resumeData.degree == "高中" || props.resumeData.degree == 'Junior middle school' || props.resumeData.degree == 'Senior high school') && !props.resumeData.majorName) || !props.resumeData.isRegular ) {
     educationWholeFlagTemp.value = true;
   }
   watch(() => props.resumeData,(newProps) => {
     if (!newProps.startYear || !newProps.startMonth || !newProps.endYear || !newProps.endMonth
-  || !newProps.degree || (!(newProps.degree == "初中" || newProps.degree == "高中") && !newProps.majorName) || !newProps.isRegular ) {
+  || !newProps.degree || (!(newProps.degree == "初中" || newProps.degree == "高中" || newProps.degree == 'Junior middle school' || newProps.degree == 'Senior high school') && !newProps.majorName) || !newProps.isRegular ) {
     educationWholeFlagTemp.value = true;
   } else {
     educationWholeFlagTemp.value = false;
@@ -250,7 +226,10 @@
   if (!props.resumeData?.id) {
     expend.value = !expend.value;
   }
-  
+  const degreeFlagTemp = ref(true);
+  if (props.resumeData.degree == '初中' || props.resumeData.degree == '高中' || props.resumeData.degree == 'Junior middle school' || props.resumeData.degree == 'Senior high school') {
+    degreeFlagTemp.value = false;
+  }
   const spanTitle = 8;
   let iconLoading = ref(false);
   const loginVueUser: {loginName: "", loginId: "", loginTocken: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
@@ -305,7 +284,7 @@
       }
     }
     handleSchoolName();
-    if (props.resumeData?.degree == '初中' || props.resumeData?.degree == '高中') {
+    if (props.resumeData?.degree == '初中' || props.resumeData?.degree == '高中' || props.resumeData.degree == 'Junior middle school' || props.resumeData.degree == 'Senior high school') {
       formState.value.isRegular = 'Y';
       formState.value.majorName = '';
       degreeFlag.value = false;
@@ -319,7 +298,13 @@
       props.resumeData?.degree == '本科+MBA' ||
       props.resumeData?.degree == '硕士+MBA' ||
       props.resumeData?.degree == '博士+MBA' ||
-      props.resumeData?.degree == '大学肄业'
+      props.resumeData?.degree == '大学肄业' ||
+      props.resumeData?.degree == 'Doctorate' ||
+      props.resumeData?.degree == 'MBA/EMBA' ||
+      props.resumeData?.degree == 'Master' ||
+      props.resumeData?.degree == 'Bachelor' ||
+      props.resumeData?.degree == 'Junior College' ||
+      props.resumeData?.degree == 'Special School'
     ) {
       formState.value.schoolType =  (formState.value?.schoolType ? formState.value?.schoolType : []);
       schoolTypeFlag.value = formState.value?.schoolType?.length > 0 ? true : false;
@@ -330,7 +315,7 @@
   };
 
   const changeDegree = (value: string) => {
-    if (value == '初中' || value == '高中') {
+    if (value == '初中' || value == '高中' || value == 'Junior middle school' || value == 'Senior high school') {
       formState.value.isRegular = 'Y';
       formState.value.majorName = '';
       degreeFlag.value = false;
@@ -346,7 +331,13 @@
       value == '本科+MBA' ||
       value == '硕士+MBA' ||
       value == '博士+MBA' ||
-      value == '大学肄业'
+      value == '大学肄业' ||
+      value == 'Doctorate' ||
+      value == 'MBA/EMBA' ||
+      value == 'Master' ||
+      value == 'Bachelor' ||
+      value == 'Junior College' ||
+      value == 'Special School'
     ) {
       schoolTypeFlag.value = true;
     } else {
@@ -426,6 +417,30 @@
   });
   };
   //删除教育经历结束
+  const optionsRegular = ref([{value: '',label: ''}])
+  const loadresumeTypeEnglish = () => {
+    if (resumeTypeEnglish.value == '1') {
+      degreeOptions.value = degreeEnArr.map((item) => ({ value: item, label: item }));
+      optionsRegular.value = [
+      {value: 'Y',label: 'Yes'},
+      {value: 'N',label: 'No'},
+      ]
+    } else {
+      degreeOptions.value = degreeArr.map((item) => ({ value: item, label: item }));
+      optionsRegular.value = [
+      {value: 'Y',label: '是'},
+      {value: 'N',label: '否'},
+      ]
+    }
+  };
+  loadresumeTypeEnglish();
+  watch(
+    () => resumeTypeEnglish.value,
+    () => {
+      themeLanguage.value = validateLanguage('educationInfo', resumeTypeEnglish.value);
+      loadresumeTypeEnglish();
+    },
+  );
 </script>
 <style lang="less" scoped>
   .resume_header {
