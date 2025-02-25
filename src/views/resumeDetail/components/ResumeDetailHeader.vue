@@ -9,13 +9,13 @@
         <a-tag class="resume_tag_checked" v-if="!resumeData.recruitId && resumeData.projectFlag == '过保'" color="red">{{ resumeData.projectFlag }}</a-tag>
         <a-tag class="resume_tag_checked_top" v-if="!resumeData.recruitId" color="orange">公共</a-tag>
         <a-tag class="resume_tag_checked_top" v-if="!resumeData.recruitId && resumeData.twoYearFlag == '两年'" color="green">两年</a-tag>
-        <a-tag style="cursor: pointer;" color="#d8d8d8" class="resume_tag_checked" v-if="showResumeAdd && resumeData.recruitId && resumeData.checkFlag == '待核'"
+        <a-tag :title="checkedTime" style="cursor: pointer;" color="#d8d8d8" class="resume_tag_checked" v-if="showResumeAdd && resumeData.recruitId && resumeData.checkFlag == '待核'"
           >待核</a-tag
         >
         <a-tag style="cursor: pointer;" color="#d8d8d8" class="resume_tag_checked" v-if="showResumeAdd && resumeData.recruitId && resumeData.checkFlag == '待激活'"
           >激活</a-tag
         >
-        <a-tag style="cursor: pointer;" color="green" class="resume_tag_checked" v-if="showResumeAdd && resumeData.recruitId && resumeData.checkFlag == '已激活'"
+        <a-tag :title="newTime" style="cursor: pointer;" color="green" class="resume_tag_checked" v-if="showResumeAdd && resumeData.recruitId && resumeData.checkFlag == '已激活'"
           >最新</a-tag
         >
         <a-tag
@@ -40,7 +40,7 @@
           >首增</a-tag
         >
         <a-tag class="resume_tag_checked_top" v-if="resumeData.recruitId && resumeData.onlyFlag" color="green">{{ resumeData.onlyFlag }}</a-tag>
-        <a-tag class="resume_tag_checked_top" v-if="resumeData.recruitId && resumeData.commonFlag" color="green">{{ resumeData.commonFlag }}</a-tag>
+        <a-tag :title="commonFlagTime" class="resume_tag_checked_top" v-if="resumeData.recruitId && resumeData.commonFlag" color="green">{{ resumeData.commonFlag }}</a-tag>
         <a-tag class="resume_tag_checked_top" v-if="resumeData.recruitId && resumeData.gognGongFlag" color="orange">{{ resumeData.gognGongFlag }}</a-tag>
         <!-- <a-tag
           color="#4bb632"
@@ -53,21 +53,21 @@
           color="orange"
           class="resume_tag_checked_top"
           v-if="resumeData.limitFlag == '限制'"
-          title="OFFER推荐禁止"
+          :title="resumeData.limitRemarkDetail"
           >限制</a-tag
         >
         <a-tag
           color="orange"
           class="resume_tag_checked_top"
           v-if="resumeData.limitFlag == '限制禁推'"
-          title="在保推荐禁止"
+          :title="resumeData.limitRemarkDetail"
           >限制</a-tag
         >
         <a-tag
           color="orange"
           class="resume_tag_checked_top"
           v-if="resumeData.limitFlag == '限制分单'"
-          title="在保推荐分单"
+          :title="resumeData.limitRemarkDetail"
           >限制</a-tag
         >
         <a-tag
@@ -263,17 +263,28 @@
     }
   });
   const newTime = ref(
-    props.resumeData.shouZengStartTime
-      ? `最新: ${formatToDateMinute(props.resumeData.newtestStartTime)} - ${formatToDateMinute(
-          props.resumeData.newtestEndTime,
-        )}`
+    props.resumeData.newtestStartTime
+      ? `${formatToDateMinute(props.resumeData.newtestStartTime)} - ${formatToDateMinute(
+          props.resumeData.newtestEndTime
+        )} 最新数据周期`
       : '',
   );
+  //`首增: ${formatToDateMinute(props.resumeData.shouZengStartTime)} - ${formatToDateMinute( props.resumeData.shouZengEndTime )}`
   const repeatTime = ref(
     props.resumeData.shouZengStartTime
-      ? `首增: ${formatToDateMinute(props.resumeData.shouZengStartTime)} - ${formatToDateMinute(
-          props.resumeData.shouZengEndTime,
-        )}`
+      ? `${formatToDateMinute(props.resumeData.registTime)}  首增日期`
+      : '',
+  );
+  const commonFlagTime = ref(
+    props.resumeData.personBaohuStartTime
+      ? `${formatToDateMinute(props.resumeData.personBaohuStartTime)} - ${formatToDateMinute(
+          props.resumeData.personBaohuEndTime
+        )}  私有保护周期`
+      : '',
+  );
+  const checkedTime = ref(
+    props.resumeData.registTime
+      ? `${formatToDateMinute(props.resumeData.registTime)}  新增日期`
       : '',
   );
   // const personBaohuFlag = ref(

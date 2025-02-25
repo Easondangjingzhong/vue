@@ -100,7 +100,8 @@
   const expend = ref(false);
   const handleUpdateSelfInfo = () => {
     expend.value = !expend.value;
-    formState.value.selfEvaluation = props.resumeData?.selfEvaluation?.replaceAll(/<[^>]+>/g, '');
+    //formState.value.selfEvaluation = props.resumeData?.selfEvaluation?.replaceAll(/<[^>]+>/g, '');
+    formState.value.selfEvaluation = props.resumeData?.selfEvaluation?.replaceAll(/<p>/g, '').replaceAll(/<(\/)?p>/g, '\n');
     formState.value.resumeId = props.resumeData.id;
     formState.value.consultantId = props.resumeData.addConsultantId;
   };

@@ -912,6 +912,7 @@ export const useResumeListStore = defineStore({
       formData.append('viewType', param.viewType || 'T');
       formData.append('isTwoYear', param.isTwoYear || '');
       formData.append('id', param.id || '');
+      formData.append('fullText', param.fullText || '');
       return formData;
     },
     /**

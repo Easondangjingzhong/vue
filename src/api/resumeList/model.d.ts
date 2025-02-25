@@ -48,6 +48,7 @@ export interface SearchResumeList {
   searchName: string; //一键搜搜名称
   sortName: string; //人才分类名称
   isTwoYear: string; // 1 查询两年 空其他的查询全部
+  fullText: string; // 全文搜索关键词
 }
 
 export interface Item {

@@ -148,6 +148,12 @@ export const useResumeDetailStore = defineStore({
       }
       return res;
     },
+    async queryCheckBrandName(cnName,enName) {
+      let formData = new FormData();
+      formData.append('cnName', cnName);
+      formData.append('enName', enName);
+      return await fetchApi.queryCheckBrandName(formData).then(res => res);
+    },
     /**
      * 修改教育经理
      */
@@ -427,7 +433,7 @@ export const useResumeDetailStore = defineStore({
       let formData = new FormData();
       const resumeId = resumeIdTemp || this.resumeDetail.resumeId.toString();
       formData.append('resumeId', resumeId);
-      formData.append('recruitId', loginVueUser.loginId);
+      formData.append('recruitId', this.commRecruitId || loginVueUser.loginId);
       const res = await fetchApi.queryMappingIdByResumeId(formData);
       if (!resumeIdTemp && res.code == 1) {
         this.mappingId = res.info;

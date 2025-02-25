@@ -148,7 +148,7 @@
     } else {
       const workExpeListTemp = resumeDetailTemp.value.resume.workExpeList;
       let wtemp = false;
-      workExpeListTemp.forEach((item: any) => {
+      workExpeListTemp.forEach((item: any,index) => {
         if (
           !item.startYear ||
           !item.startMonth ||
@@ -164,7 +164,7 @@
           !item.positionName ||
           !item.workDuty ||
           !item.cityName ||
-          !item.brandName
+          ((item.category == '店铺' || index < 2)&& !item.brandName)
         ) {
           wtemp = true;
         }

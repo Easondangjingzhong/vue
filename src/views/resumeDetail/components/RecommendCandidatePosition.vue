@@ -207,7 +207,7 @@
               disabled
               class="resume_btn_tui"
               size="small"
-              v-if="record.action == 1"
+              v-if="record.action == 1 || (record.action == 4 && record.checkResult == '审核通过')"
             >
               已推
             </a-button>
@@ -708,7 +708,7 @@ import { tryOnBeforeUnmount } from '@vueuse/core';
           let temp = {} as RecommendPerson;
           temp.index = (res.info.currentPage - 1) * pageSize + (index + 1);
           temp.city = curr.city || '-';
-          temp.brand = curr.brand || '-';
+          temp.brand = curr.secret == "是" ?  curr.secretBrand : curr.brand;
           temp.jobTitle = curr.jobTitle || '-';
           temp.workPlace = curr.workPlace || '-';
           temp.turnoverTime = curr.turnoverTime ? formatToDateTime(curr.turnoverTime) : '-';
@@ -729,8 +729,8 @@ import { tryOnBeforeUnmount } from '@vueuse/core';
             temp.action = '1'; //已推
           } else if (appealTemp.includes(curr.id)) {
             temp.action = '4'; //已推
-            temp.checkResult = apealArr.filter((item) => item.apId)[0]?.checkResult;
-            temp.refuseRemark = apealArr.filter((item) => item.apId)[0]?.refuseRemark;
+            temp.checkResult = apealArr.filter((item) => item.apId == curr.id)[0]?.checkResult;
+            temp.refuseRemark = apealArr.filter((item) => item.apId == curr.id)[0]?.refuseRemark;
           } else {
             if (curr.recruitingNum - curr.offerNum <= 0) {
               temp.action = '2'; //余职为0

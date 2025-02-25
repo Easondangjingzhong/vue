@@ -5,7 +5,7 @@
         <h4 class="resume_h4">
           简历信息
         </h4>
-        <a-button type="primary" danger size="small" @click="handleResumeMapping">M</a-button>
+        <a-button type="primary" style="background-color: #22c428;" size="small" @click="handleResumeMapping">M</a-button>
       </a-col>
       <a-divider :dashed="true" style="background-color: #ccc;margin-top: 0;margin-bottom: 5px;" />
     </a-row>
@@ -26,7 +26,7 @@
           <a-tag  v-if="!item.resumeIdEn" style="cursor: not-allowed;">英文</a-tag>
           <a-tag  v-if="item.resumeIdEn && resumeTypeEnglish != '1'" @click="handleChangeResume(item.resumeIdEn,item.addConsultantId,1)">英文</a-tag>
           <a-tag  v-if="item.resumeIdEn && resumeTypeEnglish == '1'" color="pink" @click="handleChangeResume(item.resumeIdEn,item.addConsultantId,1)">英文</a-tag>
-          <LinkOutlined v-if="item.orginalPathEn" @click="handleResumeOrginalPath(item.orginalPath)"/>
+          <!-- <LinkOutlined v-if="item.orginalPathEn" @click="handleResumeOrginalPath(item.orginalPathEn)"/> -->
           <LinkOutlined v-if="item.orginalPath" @click="handleResumeOrginalPath(item.orginalPath)"/>
         </span>
         <span class="resume_span">
@@ -37,9 +37,7 @@
     </a-row>
     <div v-if="expend">
       <a-row :gutter="24">
-        <a-col :span="24">
-          <div v-html="formState.reportContent"></div>
-        </a-col>
+        <a-col :span="24" v-html="formState.reportContentShow"></a-col>
       </a-row>
       <a-row :gutter="24">
           <a-col :span="24" style="text-align: right;">
@@ -81,6 +79,9 @@
     :headerStyle="{ padding: '5px 18px 5px 12px' }"
     placement="right"
   >
+  <template #extra>
+      <CloseOutlined @click="handleColseCandidatePosition" />
+    </template>
   <a-table
       size="small"
       :dataSource="personMappingList"
@@ -89,22 +90,6 @@
       :columns="personMappingColumns"
       :locale="{ emptyText: '暂无信息' }"
     ></a-table>
-    <div>
-    <a-row :gutter="24" style="margin-top: 5px;">
-        <a-col :span="24">
-          <h4 class="resume_h4">行业信息</h4>
-        </a-col>
-        <a-divider :dashed="true" style="background-color: #0505050f; margin-top: 0" />
-      </a-row>
-    <a-table
-      size="small"
-      :dataSource="workBrandMappingList"
-      rowKey="key"
-      :pagination="false"
-      :columns="workBrandColumns"
-      :locale="{ emptyText: '暂无信息' }"
-    ></a-table>
-  </div>
   <div>
     <a-row :gutter="24" style="margin-top: 5px;">
         <a-col :span="24">
@@ -128,11 +113,70 @@
       </template>
   </a-table>
   </div>
-  <div v-if="mappingJiaGouFlag"></div>
+  <div v-if="mappingJiaGouFlag">
+    <a-row :gutter="24" v-if="mappingJiaGouArr.mappingJiaManage && mappingJiaGouArr.mappingJiaManage.length >0">
+      <a-col :span="24">
+          <h4 class="resume_h4">经理级别</h4>
+        </a-col>
+        <a-divider :dashed="true" style="background-color: #0505050f;margin-top: 0;margin-bottom: 0;" />
+      <a-col :span="24">
+        <span class="mappingJiaGouspan" v-for="item in mappingJiaGouArr.mappingJiaManage" :key="item.key" @click="handleMappingJiaGouToResume(item.id,item.addConsultantId)" :title="`${item.userName}/${item.positionName}/${item.type}(${item.gongSi})`">
+          {{ item.userName }}/{{ item.positionName }}/{{ item.type }}({{ item.gongSi }})
+        </span>
+      </a-col>
+    </a-row>
+    <a-row :gutter="24" v-if="mappingJiaGouArr.mappingJiaCharge && mappingJiaGouArr.mappingJiaCharge.length >0">
+      <a-col :span="24">
+          <h4 class="resume_h4">主管级别</h4>
+        </a-col>
+        <a-divider :dashed="true" style="background-color: #0505050f;margin-top: 0;margin-bottom: 0;" />
+      <a-col :span="24">
+        <span class="mappingJiaGouspan" v-for="item in mappingJiaGouArr.mappingJiaCharge" :key="item.key" @click="handleMappingJiaGouToResume(item.id,item.addConsultantId)" :title="`${item.userName}/${item.positionName}/${item.type}(${item.gongSi})`">
+          {{ item.userName }}/{{ item.positionName }}/{{ item.type }}({{ item.gongSi }})
+        </span>
+      </a-col>
+      
+    </a-row>
+    <a-row :gutter="24" v-if="mappingJiaGouArr.mappingJiaSenior && mappingJiaGouArr.mappingJiaSenior.length >0">
+      <a-col :span="24">
+          <h4 class="resume_h4">资深级别</h4>
+        </a-col>
+        <a-divider :dashed="true" style="background-color: #0505050f;margin-top: 0;margin-bottom: 0;" />
+    </a-row>
+      <a-col :span="24">
+        <span class="mappingJiaGouspan" v-for="item in mappingJiaGouArr.mappingJiaSenior" :key="item.key" @click="handleMappingJiaGouToResume(item.id,item.addConsultantId)" :title="`${item.userName}/${item.positionName}/${item.type}(${item.gongSi})`">
+          {{ item.userName }}/{{ item.positionName }}/{{ item.type }}({{ item.gongSi }})
+        </span>
+      </a-col>
+      
+    <a-row :gutter="24" v-if="mappingJiaGouArr.mappingJiaBase && mappingJiaGouArr.mappingJiaManage.length >0">
+      <a-col :span="24">
+          <h4 class="resume_h4">基础级别</h4>
+        </a-col>
+        <a-divider :dashed="true" style="background-color: #0505050f;margin-top: 0;margin-bottom: 0;" />
+      <a-col :span="24">
+        <span class="mappingJiaGouspan" v-for="item in mappingJiaGouArr.mappingJiaBase" :key="item.key" @click="handleMappingJiaGouToResume(item.id,item.addConsultantId)" :title="`${item.userName}/${item.positionName}/${item.type}(${item.gongSi})`">
+          {{ item.userName }}/{{ item.positionName }}/{{ item.type }}({{ item.gongSi }})
+        </span>
+      </a-col>
+      
+    </a-row>
+    <a-row :gutter="24" v-if="mappingJiaGouArr.mappingJiaStore && mappingJiaGouArr.mappingJiaStore.length >0">
+      <a-col :span="24">
+          <h4 class="resume_h4">门店支持</h4>
+        </a-col> 
+        <a-divider :dashed="true" style="background-color: #0505050f;margin-top: 0;margin-bottom: 0;" />
+      <a-col :span="24">
+        <span class="mappingJiaGouspan" v-for="item in mappingJiaGouArr.mappingJiaStore" :key="item.key" @click="handleMappingJiaGouToResume(item.id,item.addConsultantId)" :title="`${item.userName}/${item.positionName}/${item.type}(${item.gongSi})`">
+          {{ item.userName }}/{{ item.positionName }}/{{ item.type }}({{ item.gongSi }})
+        </span>
+      </a-col>
+    </a-row>
+  </div>
   </a-drawer>
 </template>
 <script setup lang="ts">
- import {  LinkOutlined } from '@ant-design/icons-vue';
+ import {  LinkOutlined,CloseOutlined } from '@ant-design/icons-vue';
  import { storeToRefs } from 'pinia';
  import { message } from 'ant-design-vue';
  import { formatToDate } from '/@/utils/dateUtil';
@@ -181,16 +225,20 @@ watch(resumeReport,()=> {
   }))
 })
 const formState = ref({
-  reportContent: ''
+  reportContent: '',
+  reportContentShow: '',
 })
 const iconLoading = ref(false);
 const handleReportContent = (reportContent) => {
   if (reportContent) {
-    formState.value.reportContent = reportContent?.replaceAll(/<[^>]+>/g, '');
+    //formState.value.reportContent = reportContent?.replaceAll(/<[^>]+>/g, '');
+    formState.value.reportContent = reportContent?.replaceAll(/<p>/g, '').replaceAll(/<(\/)?p>/g, '\n');
+    formState.value.reportContentShow = reportContent;
     expend.value = true;
   } else {
     expendUpdate.value = true;
     formState.value.reportContent = '';
+    formState.value.reportContentShow = '';
   }
   
 }
@@ -262,7 +310,7 @@ const personMappingColumns = [
       width: 750,
     },
   ];
-  const workBrandColumns = [
+  const workExpColumns = [
     {
       title: '周期',
       dataIndex: 'isNewtest',
@@ -305,47 +353,25 @@ const personMappingColumns = [
       width: 50,
     },
     {
-      title: '',
-      dataIndex: 'action',
-      key: 'action',
-      ellipsis: true,
-      width: 640,
-    },
-  ];
-  const workExpColumns = [
-    {
-      title: '周期',
-      dataIndex: 'isNewtest',
-      key: 'isNewtest',
-      width: 50,
-    },
-    {
-      title: '类别',
-      dataIndex: 'category',
-      key: 'category',
-      ellipsis: true,
-      width: 70,
-    },
-    {
       title: '城市',
       dataIndex: 'city',
       key: 'city',
       ellipsis: true,
-      width: 70,
+      width: 50,
     },
     {
       title: '商场',
       dataIndex: 'marketName',
       key: 'marketName',
       ellipsis: true,
-      width: 100,
+      width: 70,
     },
     {
       title: '品牌',
       dataIndex: 'brand',
       key: 'brand',
       ellipsis: true,
-      width: 150,
+      width: 180,
     },
     {
       title: '楼层',
@@ -359,7 +385,7 @@ const personMappingColumns = [
       dataIndex: 'postitonName',
       key: 'postitonName',
       ellipsis: true,
-      width: 250,
+      width: 180,
     },
     {
       title: '年限',
@@ -384,14 +410,13 @@ const personMappingColumns = [
     },
   ];
 const personMappingList = ref([]);
-const workBrandMappingList = ref([]);
 const workExpMappingList = ref([]);
 const resumeMappinglag = ref(false);
 const handleResumeMapping = () => {
   resumeMappinglag.value = true;
   resumeDetailStore.resumeMapping().then(res => {
     if (res.code == 1) {
-        const {personMapping,workBrandList,workExpList} = res.info;
+        const {personMapping,workExpList} = res.info;
         personMappingList.value = personMapping.map(item => {
           return {
             key: item.id,
@@ -399,17 +424,6 @@ const handleResumeMapping = () => {
             sex: item.sex,
             age: item.age,
             jubStatus: item.jubStatus == "1" ? "在职" : "离职",
-          }
-        })
-        workBrandMappingList.value = workBrandList.map((item,index) => {
-          return {
-            key: item.WORK_BRAND  || index,
-            isNewtest: item.IS_NEWTEST == 1 ? "当前" : "过往",
-            retail: item.RETAIL || "",
-            category: item.CATEGORY || "",
-            leiBie: item.LEIBIE || "",
-            pinJi: item.PINJI || "",
-            retailLevel: item.RETAILLEVEL || "",
           }
         })
         workExpMappingList.value = workExpList.map(item => {
@@ -426,18 +440,176 @@ const handleResumeMapping = () => {
             postitonName: item.postitonName || "-",
             workYear: (item.workYear ? (item.workYear < 0 ? "0" : item.workYear.toFixed(2)) : ""),
             siGongNum: (item.siNum ? (item.siNum || "")+"/"+(item.gongNum || "") : "-"),
+            retail: item.RETAIL || "",
+            leiBie: item.LEIBIE || "",
+            pinJi: item.PINJI || "",
+            retailLevel: item.RETAILLEVEL || "",
           }
         })
     }
   });
 }
 const mappingJiaGouFlag = ref(false);
+let mappingJiaGouArr = ref({
+  mappingJiaManage: [],
+  mappingJiaCharge: [],
+  mappingJiaSenior: [],
+  mappingJiaBase: [],
+  mappingJiaStore: [],
+});
+const router = useRouter();
+const handleMappingJiaGouToResume = (resumeId,addConsultantId) => {
+  const loginVueUser: {loginName: "", loginId: "", loginTocken: "",loginType: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
+    let query = {...loginVueUser, resumeId, addConsultantId};
+    // if (loginVueUser.loginType != "A" && (!formState.value.leftType || formState.value.leftType == "1" || formState.value.leftType == "2" || formState.value.leftType == "3" || formState.value.leftType == "4")) {
+    //   query = {...loginVueUser, resumeId, addConsultantId,searchRecommend: "T"};
+    // }
+    const href = router.resolve({
+      path: '/resume/detail',
+      query: query,
+    });
+    window.open(href.href, '_blank')
+}
 const handleMappingJiaGou = (brandId,marketId) =>{
+  mappingJiaGouArr.value = {
+  mappingJiaManage: [],
+  mappingJiaCharge: [],
+  mappingJiaSenior: [],
+  mappingJiaBase: [],
+  mappingJiaStore: [],
+}
+  mappingJiaGouFlag.value = false;
   resumeDetailStore.resumeMappingJiagou(brandId,marketId).then(res => {
     if (res.code == 1) {
         mappingJiaGouFlag.value = true;
+        const tempSiArr = res.info?.markPersonSi;
+        const tempGongArr = res.info?.markPersonGong;
+        if (tempSiArr && tempSiArr.length > 0) {
+          tempSiArr.forEach(item => {
+            if (item.MANAGEMENT2 == '经理级别') {
+              mappingJiaGouArr.value.mappingJiaManage.push({
+                key: item.ID,
+                id: item.ID,
+                addConsultantId: item.ADD_CONSULTANT_ID,
+                userName: item.USER_NAME,
+                management: item.MANAGEMENT2,
+                positionName: item.POSITION_NAME,
+                gongSi: '私',
+                type: '简'
+              });
+            } else if (item.MANAGEMENT2 == '主管级别') {
+              mappingJiaGouArr.value.mappingJiaCharge.push({
+                key: item.ID,
+                id: item.ID,
+                addConsultantId: item.ADD_CONSULTANT_ID,
+                userName: item.USER_NAME,
+                management: item.MANAGEMENT2,
+                positionName: item.POSITION_NAME,
+                gongSi: '私',
+                type: '简'
+              });
+            } else if (item.MANAGEMENT2 == '资深级别') {
+              mappingJiaGouArr.value.mappingJiaSenior.push({
+                key: item.ID,
+                id: item.ID,
+                addConsultantId: item.ADD_CONSULTANT_ID,
+                userName: item.USER_NAME,
+                management: item.MANAGEMENT2,
+                positionName: item.POSITION_NAME,
+                gongSi: '私',
+                type: '简'
+              });
+            } else if (item.MANAGEMENT2 == '基础级别') {
+              mappingJiaGouArr.value.mappingJiaBase.push({
+                key: item.ID,
+                id: item.ID,
+                addConsultantId: item.ADD_CONSULTANT_ID,
+                userName: item.USER_NAME,
+                management: item.MANAGEMENT2,
+                positionName: item.POSITION_NAME,
+                gongSi: '私',
+                type: '简'
+              });
+            } else {
+              mappingJiaGouArr.value.mappingJiaStore.push({
+                key: item.ID,
+                id: item.ID,
+                addConsultantId: item.ADD_CONSULTANT_ID,
+                userName: item.USER_NAME,
+                management: item.MANAGEMENT2,
+                positionName: item.POSITION_NAME,
+                gongSi: '私',
+                type: '简'
+              });
+            }
+          });
+        }
+        if (tempGongArr && tempGongArr.length > 0) {
+          tempGongArr.forEach(item => {
+            if (item.MANAGEMENT2 == '经理级别') {
+              mappingJiaGouArr.value.mappingJiaManage.push({
+                key: item.ID,
+                id: item.ID,
+                addConsultantId: item.ADD_CONSULTANT_ID,
+                userName: item.USER_NAME,
+                management: item.MANAGEMENT2,
+                positionName: item.POSITION_NAME,
+                gongSi: '公',
+                type: '简'
+              });
+            } else if (item.MANAGEMENT2 == '主管级别') {
+              mappingJiaGouArr.value.mappingJiaCharge.push({
+                key: item.ID,
+                id: item.ID,
+                addConsultantId: item.ADD_CONSULTANT_ID,
+                userName: item.USER_NAME,
+                management: item.MANAGEMENT2,
+                positionName: item.POSITION_NAME,
+                gongSi: '公',
+                type: '简'
+              });
+            } else if (item.MANAGEMENT2 == '资深级别') {
+              mappingJiaGouArr.value.mappingJiaSenior.push({
+                key: item.ID,
+                id: item.ID,
+                addConsultantId: item.ADD_CONSULTANT_ID,
+                userName: item.USER_NAME,
+                management: item.MANAGEMENT2,
+                positionName: item.POSITION_NAME,
+                gongSi: '公',
+                type: '简'
+              });
+            } else if (item.MANAGEMENT2 == '基础级别') {
+              mappingJiaGouArr.value.mappingJiaBase.push({
+                key: item.ID,
+                id: item.ID,
+                addConsultantId: item.ADD_CONSULTANT_ID,
+                userName: item.USER_NAME,
+                management: item.MANAGEMENT2,
+                positionName: item.POSITION_NAME,
+                gongSi: '公',
+                type: '简'
+              });
+            } else {
+              mappingJiaGouArr.value.mappingJiaStore.push({
+                key: item.ID,
+                id: item.ID,
+                addConsultantId: item.ADD_CONSULTANT_ID,
+                userName: item.USER_NAME,
+                management: item.MANAGEMENT2,
+                positionName: item.POSITION_NAME,
+                gongSi: '公',
+                type: '简'
+              });
+            }
+          });
+        }
+        console.log(mappingJiaGouArr)
     }
   });
+} 
+const handleColseCandidatePosition = () => {
+  resumeMappinglag.value = false;
 }
 </script>
 <style lang="less" scoped>
@@ -485,5 +657,22 @@ const handleMappingJiaGou = (brandId,marketId) =>{
   }
   .resume_span_two {
     width: 70px;
+  }
+  .mappingJiaGouspan {
+    display: inline-block;
+    max-width: 270px;
+    height: 25px;
+    line-height: 1.6;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    border: 1px solid #ccc;
+    margin-top: 2px;
+    margin-right: 15px;
+    padding: 0 10px;
+    border-radius: 15px;
+    color: #d46b08;
+    background: #fff7e6;
+    border-color: #ffd591;
   }
 </style>

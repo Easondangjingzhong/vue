@@ -3,11 +3,25 @@
     <a-form ref="formRef" :model="formState" @finish="onFinish">
       <SearchContent :expand="expand" :formState="formState" ref="searchContentChild"/>
       <a-row>
-        <a-col :span="9">
-          <a-form-item :label-col="{ span: 3 }" name="keyWords" label="关键字">
+        <a-col :span="9" class="row_col_space_brand">
+          <a-form-item :label-col="{ span: 4}" label="关键字" class="row_col_space_left_keyWords">
+            <a-select
+              optionFilterProp="label"
+              v-model:value="keyWordsAndFullText"
+              :options="optionsKeyWords"
+              :showArrow="false"
+            ></a-select>
+          </a-form-item>
+          <a-form-item v-if="keyWordsAndFullText != '1'" name="keyWords" class="row_col_space_right_brand">
             <a-input
               v-model:value="formState.keyWords"
               placeholder="可搜索姓名,手机,公司,邮箱,用逗号隔开"
+            />
+          </a-form-item>
+          <a-form-item v-if="keyWordsAndFullText == '1'" name="fullText" class="row_col_space_right_brand">
+            <a-input
+              v-model:value="formState.fullText"
+              placeholder="可搜索简历全文关键词"
             />
           </a-form-item>
         </a-col>
@@ -204,6 +218,11 @@
     {value: "1",label: "包含"},
     {value: "2",label: "排除"},
   ]);
+  const optionsKeyWords = ref([
+    {value: "关键字",label: "关键字"},
+    {value: "1",label: "全文"},
+  ]);
+  const keyWordsAndFullText = ref('关键字');
   // 展开/收起状态
   const expand = ref(1);
   const expandArr = [4, 4, 4, 4, 0];
@@ -233,7 +252,6 @@
   };
   };
   const isTwoYearFlag = ref<boolean>(true);
-  console.log(isTwoYearFlagStatus.value);
   watch(() => isTwoYearFlagStatus.value,() => {
     if (!isTwoYearFlagStatus.value) {
       isTwoYearFlag.value = true;
@@ -528,6 +546,25 @@
   :deep(.row_col_space_right_brand .ant-select-selector) {
     border-start-start-radius: 0;
     border-end-start-radius: 0;
+  }
+  :deep(.row_col_space_right_brand .ant-input) {
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+  }
+  :deep(.row_col_space_left_keyWords) {
+    width: 30%;
+    margin-inline-end: -1px;
+  }
+  :deep(.row_col_space_left_keyWords label) {
+    margin-left: 5px;
+  }
+  :deep(.row_col_space_left_keyWords .ant-form-item-row .ant-form-item-label) {
+    display: contents;
+  }
+  :deep(.row_col_space_left_keyWords .ant-select-selector) {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+    height: auto;
   }
   :deep(.row_col_space_left_brand) {
     width: 24%;

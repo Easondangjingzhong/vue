@@ -31,26 +31,26 @@ function getQueryVariable(variable)
     return("");
 }
 export const routerQuery = async () => {
-  //if (getQueryVariable("loginFirst")) {
+  if (getQueryVariable("loginFirst")) {
     localStorage.removeItem("loginVueUser");
     localStorage.setItem("loginVueUser",JSON.stringify({"loginId": getQueryVariable("loginId"),"loginName": getQueryVariable("loginName"),"loginTocken": getQueryVariable("loginTocken"),"loginType": getQueryVariable("loginType")}));
     return true;
-  //}
-  // return await cityStore.resuemCheckLogin(getQueryVariable("loginTocken")).then(res => {
-  //   if (res.code == 1) {
-  //     const loginVueUser: {loginName: "", loginId: "", loginTocken: "",loginType: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
-  //     if (getQueryVariable("loginId") && (!loginVueUser.loginId || (loginVueUser.loginId && loginVueUser.loginId != getQueryVariable("loginId")))) {
-  //       window.open("http://work.wotui.com:8889/WTSM/","_self");
-  //       return false;
-  //     }
-  //     localStorage.removeItem("loginVueUser");
-  //     localStorage.setItem("loginVueUser",JSON.stringify({"loginId": getQueryVariable("loginId"),"loginName": getQueryVariable("loginName"),"loginTocken": getQueryVariable("loginTocken"),"loginType": getQueryVariable("loginType")}));
-  //     return true;
-  //   } else {
-  //     window.open("http://work.wotui.com:8889/WTSM/","_self");
-  //     return false;
-  //  }
-  // })
+  }
+  return await cityStore.resuemCheckLogin(getQueryVariable("loginTocken")).then(res => {
+    if (res.code == 1) {
+      const loginVueUser: {loginName: "", loginId: "", loginTocken: "",loginType: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
+      if (getQueryVariable("loginId") && (!loginVueUser.loginId || (loginVueUser.loginId && loginVueUser.loginId != getQueryVariable("loginId")))) {
+        window.open("http://work.wotui.com:8889/WTSM/","_self");
+        return false;
+      }
+      localStorage.removeItem("loginVueUser");
+      localStorage.setItem("loginVueUser",JSON.stringify({"loginId": getQueryVariable("loginId"),"loginName": getQueryVariable("loginName"),"loginTocken": getQueryVariable("loginTocken"),"loginType": getQueryVariable("loginType")}));
+      return true;
+    } else {
+      window.open("http://work.wotui.com:8889/WTSM/","_self");
+      return false;
+   }
+  })
 
   //console.log(",,,,,7",localStorage.getItem("loginVueUser"))
   //return true;
