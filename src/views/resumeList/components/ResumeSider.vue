@@ -91,7 +91,6 @@
   }
   watch(teamPersonChangeArr,() => {
     if (!optionsLoginNameTeam.value || optionsLoginNameTeam.value.length == 0) {
-      console.log("1111111")
       //@ts-ignore
       optionsLoginNameTeam.value = teamPersonChangeArr.value.map(item => ({value: item.teamId,label: item.teamName}));
     }

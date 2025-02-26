@@ -210,12 +210,12 @@
   });
   const themeLanguage = ref(validateLanguage('educationInfo', resumeTypeEnglish.value));
   const educationWholeFlagTemp = ref(false);
-  if (!props.resumeData.startYear || !props.resumeData.startMonth || !props.resumeData.endYear || !props.resumeData.endMonth
+  if (!props.resumeData?.startYear || !props.resumeData?.startMonth || !props.resumeData?.endYear || !props.resumeData?.endMonth || !(degreeArr.includes(props.resumeData.degree) || degreeEnArr.includes(props.resumeData.degree))
   || !props.resumeData.degree || (!(props.resumeData.degree == "初中" || props.resumeData.degree == "高中" || props.resumeData.degree == 'Junior middle school' || props.resumeData.degree == 'Senior high school') && !props.resumeData.majorName) || !props.resumeData.isRegular ) {
     educationWholeFlagTemp.value = true;
   }
   watch(() => props.resumeData,(newProps) => {
-    if (!newProps.startYear || !newProps.startMonth || !newProps.endYear || !newProps.endMonth
+    if (!newProps.startYear || !newProps.startMonth || !newProps.endYear || !newProps.endMonth || !(degreeArr.includes(newProps.degree) || degreeEnArr.includes(newProps.degree))
   || !newProps.degree || (!(newProps.degree == "初中" || newProps.degree == "高中" || newProps.degree == 'Junior middle school' || newProps.degree == 'Senior high school') && !newProps.majorName) || !newProps.isRegular ) {
     educationWholeFlagTemp.value = true;
   } else {
@@ -230,6 +230,11 @@
   if (props.resumeData.degree == '初中' || props.resumeData.degree == '高中' || props.resumeData.degree == 'Junior middle school' || props.resumeData.degree == 'Senior high school') {
     degreeFlagTemp.value = false;
   }
+  watch(() => props.resumeData.degree, () => {
+    if (props.resumeData.degree == '初中' || props.resumeData.degree == '高中' || props.resumeData.degree == 'Junior middle school' || props.resumeData.degree == 'Senior high school') {
+    degreeFlagTemp.value = false;
+  }
+  })
   const spanTitle = 8;
   let iconLoading = ref(false);
   const loginVueUser: {loginName: "", loginId: "", loginTocken: ""} = JSON.parse(localStorage.getItem("loginVueUser"));

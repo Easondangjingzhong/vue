@@ -4,7 +4,7 @@
       <a-col :span="24" class="resume_info">
         <h2 class="resume_h3">{{ resumeData.userName }}</h2>
         <a-tag class="resume_tag_checked" v-if="!resumeData.recruitId && resumeData.projectFlag == '待保'" color="red">过保</a-tag>
-        <a-tag class="resume_tag_checked" v-if="!resumeData.recruitId && resumeData.projectFlag == '在保'" color="green">{{ resumeData.projectFlag }}</a-tag>
+        <a-tag class="resume_tag_checked" :title="limitRemarkDetail" v-if="!resumeData.recruitId && resumeData.projectFlag == '在保'" color="green">{{ resumeData.projectFlag }}</a-tag>
         <a-tag class="resume_tag_checked" v-if="!resumeData.recruitId && resumeData.projectFlag == '不保'" color="red">过保</a-tag>
         <a-tag class="resume_tag_checked" v-if="!resumeData.recruitId && resumeData.projectFlag == '过保'" color="red">{{ resumeData.projectFlag }}</a-tag>
         <a-tag class="resume_tag_checked_top" v-if="!resumeData.recruitId" color="orange">公共</a-tag>
@@ -37,8 +37,7 @@
           class="resume_tag_checked_top"
           :title="repeatTime"
           v-if="resumeData.recruitId && resumeData.checkFlag != '待核' && resumeData.fristFlag"
-          >首增</a-tag
-        >
+          >首增</a-tag>
         <a-tag class="resume_tag_checked_top" v-if="resumeData.recruitId && resumeData.onlyFlag" color="green">{{ resumeData.onlyFlag }}</a-tag>
         <a-tag :title="commonFlagTime" class="resume_tag_checked_top" v-if="resumeData.recruitId && resumeData.commonFlag" color="green">{{ resumeData.commonFlag }}</a-tag>
         <a-tag class="resume_tag_checked_top" v-if="resumeData.recruitId && resumeData.gognGongFlag" color="orange">{{ resumeData.gognGongFlag }}</a-tag>
@@ -53,30 +52,38 @@
           color="orange"
           class="resume_tag_checked_top"
           v-if="resumeData.limitFlag == '限制'"
-          :title="resumeData.limitRemarkDetail"
+          :title="limitRemarkDetail"
           >限制</a-tag
         >
         <a-tag
           color="orange"
           class="resume_tag_checked_top"
           v-if="resumeData.limitFlag == '限制禁推'"
-          :title="resumeData.limitRemarkDetail"
+          :title="limitRemarkDetail"
           >限制</a-tag
         >
         <a-tag
           color="orange"
           class="resume_tag_checked_top"
           v-if="resumeData.limitFlag == '限制分单'"
-          :title="resumeData.limitRemarkDetail"
+          :title="limitRemarkDetail"
           >限制</a-tag
         >
         <a-tag
           color="orange"
           class="resume_tag_checked_top"
-          v-if="resumeData.limitFlag == 'OFFER'"
+          v-if="resumeData.limitFlag == 'OFFER' && resumeData.resumeStatus != '保证期中'"
+          :title="offerTime"
           >OFFER</a-tag
         > 
-        <a-tag style="cursor: pointer;" color="orange" class="resume_tag_checked" v-if="showResumeAdd && resumeData.recruitId && resumeData.limitFlag == '激活'"
+        <a-tag
+          color="orange"
+          class="resume_tag_checked_top"
+          v-if="resumeData.limitFlag == 'OFFER' && resumeData.resumeStatus == '保证期中'"
+          :title="entryTime"
+          >保证期</a-tag
+        > 
+        <a-tag style="cursor: pointer;" :title="limitRemarkDetail" color="orange" class="resume_tag_checked" v-if="showResumeAdd && resumeData.recruitId && resumeData.limitFlag == '激活'"
           >激活</a-tag
         >
         <a-modal v-model:open="openResumeCopy" title="复制简历" @ok="handleResumeCopy">
@@ -161,7 +168,7 @@
           >复制</a-button>
         <a-button
         style="margin-left: 4px;"
-          v-if="showResumeAdd && (resumeData.recommendLimit == '推荐' || resumeData.zhuCeFlag == '注册顾问') && (resumeData.checkFlag == '最新'|| resumeData.checkFlag == '已激活')"
+          v-if="showResumeAdd && (resumeData.recommendLimit == '推荐' || resumeData.zhuCeFlag == '注册顾问') && (resumeData.checkFlag == '最新'|| resumeData.checkFlag == '已激活') && resumeProgressDetailScore > 90"
           type="primary"
           danger
           size="middle"
@@ -171,12 +178,30 @@
         </a-button>
         <a-button
         style="margin-left: 4px;"
-          v-if="showResumeAdd && resumeData.recommendLimit == '限制分单' && resumeData.checkFlag == '最新'"
+          v-if="showResumeAdd && (resumeData.recommendLimit == '推荐' || resumeData.zhuCeFlag == '注册顾问') && (resumeData.checkFlag == '最新'|| resumeData.checkFlag == '已激活') && resumeProgressDetailScore < 90"
+          type="primary"
+          size="middle"
+          :disabled="true"
+          title="需要完整度90%后才能推荐"
+        >
+          {{ resumeData.recommendLimit }}
+        </a-button>
+        <a-button
+        style="margin-left: 4px;"
+          v-if="showResumeAdd && resumeData.recommendLimit == '限制分单' && resumeData.checkFlag == '最新' && resumeProgressDetailScore > 90"
           type="primary"
           danger
           title="在保推荐分单"
           size="middle"
           @click="handleRecommendCandidatePosition"
+        >推荐</a-button>
+        <a-button
+        style="margin-left: 4px;"
+          v-if="showResumeAdd && resumeData.recommendLimit == '限制分单' && resumeData.checkFlag == '最新' && resumeProgressDetailScore < 90"
+          type="primary"
+          :disabled="true"
+          size="middle"
+          title="需要完整度90%后才能推荐"
         >推荐</a-button>
         <a-button
         style="margin-left: 4px;"
@@ -220,26 +245,6 @@
             </a-col>
           </a-row>
         </a-modal>
-    <!-- <a-row :gutter="24" class="resume_row">
-      <a-col :span="24">
-        当前:
-        <a-tag color="pink">行业</a-tag>
-        <a-tag color="red">职类</a-tag>
-        <a-tag color="green">职级</a-tag>
-        <a-tag color="yellow">品类-类别</a-tag>
-        <a-tag color="orange">品级</a-tag>
-      </a-col>
-    </a-row>
-    <a-row :gutter="24" class="resume_row">
-      <a-col :span="24">
-        过往:
-        <a-tag color="pink">行业</a-tag>
-        <a-tag color="red">职类</a-tag>
-        <a-tag color="green">职级</a-tag>
-        <a-tag color="yellow">品类-类别</a-tag>
-        <a-tag color="orange">品级</a-tag>
-      </a-col>
-    </a-row> -->
   </div>
 </template>
 <script setup lang="ts">
@@ -287,23 +292,20 @@
       ? `${formatToDateMinute(props.resumeData.registTime)}  新增日期`
       : '',
   );
-  // const personBaohuFlag = ref(
-  //   props.resumeData.newtestEndTime && props.resumeData.newtestEndTime > new Date().getTime(),
-  // );
-  // const personBaohuTime = ref(
-  //   props.resumeData.newtestEndTime
-  //     ? `保护: ${formatToDateMinute(props.resumeData.personBaohuStartTime)} - ${formatToDateMinute(
-  //         props.resumeData.personBaohuEndTime,
-  //       )}`
-  //     : '',
-  // );
-  // const resumeProgressDetail = reactive({
-  //   person: personWholeFlag.value,
-  //   work: workWholeFlag.value,
-  //   education: educationWholeFlag.value,
-  //   language: languageWholeFlag.value,
-  //   self: selfWholeFlag.value,
-  // });
+  const limitRemarkDetail = ref(
+    props.resumeData.limitRemarkDetail
+      ? props.resumeData.limitRemarkDetail  : (props.resumeData.resumeStatus == '保证期中' ? `${formatToDateMinute(props.resumeData.shiRuTime)} - ${formatToDateMinute(props.resumeData.guoBaoTime)}  保证期推荐禁止` : ""),
+  )
+  const offerTime = ref(
+    props.resumeData.offerTime
+      ? `${formatToDateMinute(props.resumeData.offerTime)}  OFFER日期`
+      : '',
+  );
+  const entryTime = ref(
+    props.resumeData.limitFlag == 'OFFER' && props.resumeData.resumeStatus == '保证期中'
+      ? `${formatToDateMinute(props.resumeData.shiRuTime)} - ${formatToDateMinute(props.resumeData.guoBaoTime)}  保证期周期`
+      : '',
+  );
   const resumeProgressDetailTitle = ref("");
   const resumeProgressDetailScore = ref(0);
   const resumeProgressDetail = () => {

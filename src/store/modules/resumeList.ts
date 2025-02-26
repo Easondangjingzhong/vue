@@ -822,6 +822,15 @@ export const useResumeListStore = defineStore({
           tempItem.leftType = param.leftType || "2";//参数
           tempItem.projectFlag = item.projectFlag;
           tempItem.twoYearFlag = item.twoYearFlag; //两年
+          tempItem.resumeStatus = item.resumeStatus; //两年
+          tempItem.limitRemarkDetail = (item.limitRemarkDetail ? item.limitRemarkDetail : (item.resumeStatus == '保证期中' ? `${formatToDateMinute(item.shiRuTime)} - ${formatToDateMinute(item.guoBaoTime)}  保证期推荐禁止` : "")); 
+          tempItem.checkedTime = `${formatToDateMinute(item.registTime)}  新增日期`; 
+          tempItem.registTime = `${formatToDateMinute(item.limitRemarkDetail)}  新增日期`; 
+          tempItem.newTime = item.newtestStartTime ? `${formatToDateMinute(item.newtestStartTime)} - ${formatToDateMinute(item.newtestEndTime)} 最新数据周期`: ''; 
+          tempItem.commonFlagTime = item.personBaohuStartTime ? `${formatToDateMinute(item.personBaohuStartTime)} - ${formatToDateMinute(item.personBaohuEndTime)} 私有保护周期`: ''; 
+          tempItem.repeatTime = item.shouZengStartTime ? `${formatToDateMinute(item.registTime)} 首增日期`: ''; 
+          tempItem.offerTime = item.offerTime ? `${formatToDateMinute(item.offerTime)} 首增日期`: ''; 
+          tempItem.entryTime = item.limitFlag == 'OFFER' && item.resumeStatus == '保证期中' ? `${formatToDateMinute(item.shiRuTime)} - ${formatToDateMinute(item.guoBaoTime)}  保证期周期` : ''; 
           // if (item.works) {
           //   let workTemp = "";
           //   item.works.forEach(subItem => {

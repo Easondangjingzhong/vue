@@ -44,7 +44,7 @@
         <span v-if="resumeData.cityName">-{{ resumeData.cityName }}</span>
         <span v-if="resumeData.marketName">-{{ resumeData.marketName }}</span>
         <span v-if="resumeData.brandName">-{{ resumeData.brandName }}</span>
-        <span v-if="resumeData.workFloor">-{{ resumeData.workFloor }}</span>
+        <span v-if="resumeData.category != 'OFFICE' && resumeData.workFloor">-{{ resumeData.workFloor }}</span>
       </a-col>
       <a-col
         v-if="showResumeAdd"
@@ -228,11 +228,13 @@
         <a-divider :dashed="true" style="background-color: #ccc; margin-top: 0" />
       </a-row>
       <a-row class="resume_row_update">
-        <a-col :span="12">
+        <a-col :span="12" class="row_col_space_company">
           <a-form-item
+            v-if="companyTypeFlag" 
             name="companyName"
             :label="themeLanguage?.companyName?.label"
             :rules="[{ required: true, message: themeLanguage?.companyName?.message }]"
+             class="row_col_space_left_company"
           >
             <a-select
               v-model:value="formState.companyName"
@@ -248,6 +250,25 @@
                 <a-spin size="small" />
               </template>
             </a-select>
+          </a-form-item>
+          <a-form-item 
+          v-if="!companyTypeFlag" 
+          name="companyName"
+          :label="themeLanguage?.companyName?.label"
+          :rules="[{ required: true, message: themeLanguage?.companyName?.message }]"
+           class="row_col_space_left_company">
+            <a-input
+              v-model:value="formState.companyName"
+              :placeholder="themeLanguage?.companyName?.message"
+            />
+          </a-form-item>
+          <a-form-item class="row_col_space_right_company">
+            <a-select
+              v-model:value="formState.companyType"
+              :options="optionsCompanyType"
+              :showArrow="false"
+              @change="handleCompanyType"
+            ></a-select>
           </a-form-item>
         </a-col>
         <a-col :span="spanTitle">
@@ -571,6 +592,7 @@
 <script setup lang="ts">
   import { FormOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons-vue';
   import { storeToRefs } from 'pinia';
+  import { h } from 'vue';
   import { message } from 'ant-design-vue';
   import type { SelectProps } from 'ant-design-vue';
   import { useResumeListStoreWithOut } from '/@/store/modules/resumeList';
@@ -598,6 +620,7 @@
   const optionCategory = ref([{ value: '', label: '' }]);
   const optionRetreat = ref([{ value: 1, label: '' }]);
   const optionNewtest = ref([{ value: 1, label: '' }]);
+  const optionsCompanyType = ref([{ value: '', label: '开业' },{ value: '海外', label: '海外' },{ value: '注销', label: '注销' }]);
   const props = defineProps({
     resumeData: {
       type: Object,
@@ -630,6 +653,7 @@
       !props.resumeData.workDuty ||
       !props.resumeData.cityName ||
       ((props.resumeData.category == '店铺' || props.indexNum < 2)&& !props.resumeData.brandName)
+      || (props.resumeData.brandName == 'OFFICE')
     ) {
       workWholeFlagTemp.value = true;
     }
@@ -654,6 +678,7 @@
         !newProps.workDuty ||
         !newProps.cityName ||
         ((newProps.category == '店铺' || props.indexNum < 2)&& !newProps.brandName)
+        || (newProps.brandName == 'OFFICE')
       ) {
         workWholeFlagTemp.value = true;
       } else {
@@ -697,6 +722,7 @@
     brandWrite: '',
     brandNameCn: '',
     brnadNameEn: '',
+    companyType: '',
     recruitId: loginVueUser.loginId,
   });
   if (!props.resumeData?.id) {
@@ -739,6 +765,17 @@
   const handleUpdateWorkInfoCancel = () => {
     expendShow.value = false;
     expend.value = false;
+  }
+  const companyTypeFlag = ref(true);
+  /**
+   * 处理公司类型 海外   注销    开业状态必须选择公司其他的都填写
+   */
+  const handleCompanyType = () => {
+      if (formState.companyType) {
+        companyTypeFlag.value = false;
+      } else {
+        companyTypeFlag.value = true;
+      }
   }
   const handleUpdateWorkInfo = () => {
     expend.value = !expend.value;
@@ -798,9 +835,11 @@
     formState.brandRetailLevel = props.resumeData?.brandRetailLevel;
     formState.brandRetail = props.resumeData?.brandRetail;
     formState.brandCategory = props.resumeData?.brandCategory;
+    formState.companyType = props.resumeData?.companyType || '';
     handleCategory();
     handleCityName(formState.cityName, formState.marketName.label);
     handleMarketBrandFloor();
+    handleCompanyType();
   };
   //职位数据
   const optionsPositions = ref<SelectProps['options']>([]);
@@ -888,6 +927,34 @@
     }
     return prev;
   }, []);
+  watch(province,
+  () => {
+    optionsCity.value = province.value.reduce((prev, curr) => {
+    //@ts-ignore
+    if (
+      (curr.provinceName == curr.cityName || !curr.cityName) &&
+      !(curr.cityName == '吉林' || curr.cityName == '海南')
+    ) {
+      //@ts-ignore
+      prev.push({
+        //@ts-ignore
+        label: curr.provinceName,
+        //@ts-ignore
+        value: curr.id,
+      });
+    } else {
+      //@ts-ignore
+      prev.push({
+        //@ts-ignore
+        label: curr.cityName,
+        //@ts-ignore
+        value: curr.id,
+      });
+    }
+    return prev;
+  }, []);
+  }
+  )
   //商场数据展示
   const optionsMarkId = ref<SelectProps['options']>([]);
   const handleCityName = (values, marketName) => {
@@ -1066,32 +1133,28 @@
     }
   };
   const handleBrandNameCn = (e) => {
-    console.log(e.target.value)
-    const reg = /^[\u4e00-\u9fa5\u3400-\u4DBF\u4E00-\u9FFF]+$/;
-    if(!reg.test(e.target.value)){
-      message.error("请填写中文");
-      brandNameCn.value = '';
+    if (!e.target.value) {
       return;
     }
     resumeDetailStore.queryCheckBrandName(e.target.value,'').then(res => {
       if (res.code != 1) {
         message.error(res.info);
-        brandNameCn.value = '';
       }
     });
   }
   
   const handleBrandNameEn = (e) => {
+    if (!e.target.value) {
+      return;
+    }
     const reg = /^[a-zA-Z][a-zA-Z0-9]*$/;
     if(!reg.test(e.target.value)){
-      message.error("请填写英文");
-      brnadNameEn.value = '';
+      message.error("品牌英文只能填写英文");
       return;
     }
     resumeDetailStore.queryCheckBrandName('',e.target.value).then(res => {
       if (res.code != 1) {
         message.error(res.info);
-        brnadNameEn.value = '';
       }
     });
   }
@@ -1104,15 +1167,19 @@
       message.error('请填写品牌');
       return;
     }
+    //公司是海外或注销填写即可
+    if (formState.companyType) {
+      selcetCompanyNameFlag.value = true;
+    }
     let brandNameFlag = false;
     if (brandFlag.value && (brandNameCn.value || brnadNameEn.value)) {
-      formState.brandWrite = '1';
-      formState.brandNameCn = brandNameCn.value;
-      formState.brnadNameEn = brnadNameEn.value;
       brandNameFlag = true;
       const res = await resumeDetailStore.queryCheckBrandName(brandNameCn.value,brnadNameEn.value);
       if (res.code == 1) {
         brandNameFlag = false;
+        formState.brandWrite = '1';
+        formState.brandNameCn = brandNameCn.value;
+        formState.brnadNameEn = brnadNameEn.value;
       } else {
         message.error(res.info);
       }
@@ -1159,10 +1226,6 @@
   };
   const handleAddWorkInfo = () => {
     resumeDetailStore.$patch({ workFlag: true });
-    // const domindex = document.getElementsByClassName("resume_container_index")[0];
-    // console.log(domindex.scrollTop);
-    // const domWork = document.getElementsByClassName("resume_work_show")[0];
-    // console.log(domWork.scrollTop);
   };
   //删除工作经历开始
   const handleDeleteWorkExp = () => {
@@ -1221,6 +1284,7 @@
       loadresumeTypeEnglish();
     },
   );
+ 
 </script>
 <style lang="less" scoped>
   .resume_header {
@@ -1298,5 +1362,33 @@
   }
   .resume_col_brandCategory_en {
     padding-left: 65px !important;
+  }
+  :deep(.row_col_space_company) {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+  }
+  :deep(.row_col_space_left_company .ant-select-selector) {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+  }
+  :deep(.row_col_space_left_company .ant-input) {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+  }
+  :deep(.row_col_space_left_company) {
+    width: 86%;
+    margin-inline-end: -3px;
+  }
+  :deep(.row_col_space_right_company) {
+    width: 15%;
+  }
+  :deep(.row_col_space_right_company .ant-form-item-row .ant-form-item-label) {
+    display: contents;
+  }
+  :deep(.row_col_space_right_company .ant-select-selector) {
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+    height: auto;
   }
 </style>

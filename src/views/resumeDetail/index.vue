@@ -84,6 +84,7 @@
   import ResumeLeftPositions from './components/ResumeLeftPositions.vue';
   import ResumeLeftContactContent from './components/ResumeLeftContactContent.vue';
   import { storeToRefs } from 'pinia';
+  import { degreeArr,degreeEnArr } from '/@/store/data/resume';
   import { ResumeDetail } from '/@/api/resumeDetail/modal';
   import { useCityStoreWithOut } from '/@/store/modules/city';
   import { useResumeListStoreWithOut } from '/@/store/modules/resumeList';
@@ -165,6 +166,7 @@
           !item.workDuty ||
           !item.cityName ||
           ((item.category == '店铺' || index < 2)&& !item.brandName)
+          || (item.brandName == 'OFFICE')
         ) {
           wtemp = true;
         }
@@ -189,7 +191,7 @@
       let wtemp = false;
       eduExpeListTemp.forEach((item: any) => {
         if (
-          !item.startYear || !item.startMonth || !item.endYear || !item.endMonth
+          !item.startYear || !item.startMonth || !item.endYear || !item.endMonth || !(degreeArr.includes(item.degree) || degreeEnArr.includes(item.degree))
           || !item.degree || (!(item.degree == "初中" || item.degree == "高中") && !item.majorName) || !item.isRegular 
         ) {
           wtemp = true;

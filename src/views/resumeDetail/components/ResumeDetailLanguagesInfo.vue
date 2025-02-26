@@ -313,7 +313,7 @@
     }
   });
   const expandUpdateChinese = ref(true);
-  if (props.resumeData.nationality == "中国") {
+  if (props.resumeData.nationality == "中国" || props.resumeData.nationality == "China" ) {
     expandUpdateChinese.value = false;
   }
   const languageWholeFlagTemp = ref(false);
@@ -334,7 +334,8 @@
   let scoreTOEFL = ref(null);
   let languages = [];
   const lang = props.Languages;
-  languages = props.Languages;
+  const handleLanguages = () => {
+    languages = props.Languages;
   if (lang && lang.length > 0) {
     lang.forEach((element) => {
       if (element.languageName == '英语') {
@@ -458,6 +459,11 @@
           languageWholeFlag: true
         })
   }
+  }
+  handleLanguages();
+  watch(() => props.Languages,() => {
+    handleLanguages();
+  })
   const languageAbility0 = ref(langArr.length > 0 ? langArr : []);
   const languageAbility1 = ref(langArr1.length > 0 ? langArr1 : []);
   const languageAbility2 = ref(langArr2.length > 0 ? langArr2 : []);

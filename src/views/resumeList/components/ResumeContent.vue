@@ -99,29 +99,30 @@
       </template>
       <template v-else-if="column.key === 'projectFlag'">
         <a-tag class="tagspan" v-if="!record.recruitId && record.projectFlag == '待保'" color="red">过保</a-tag>
-        <a-tag class="tagspan" v-if="!record.recruitId && record.projectFlag == '在保'" color="green">{{ record.projectFlag }}</a-tag>
+        <a-tag class="tagspan" :title="record.limitRemarkDetail" v-if="!record.recruitId && record.projectFlag == '在保'" color="green">{{ record.projectFlag }}</a-tag>
         <a-tag class="tagspan" v-if="!record.recruitId && record.projectFlag == '不保'" color="red">过保</a-tag>
         <a-tag class="tagspan" v-if="!record.recruitId && record.projectFlag == '过保'" color="red">{{ record.projectFlag }}</a-tag>
         <a-tag class="tagspan" v-if="!record.recruitId" color="orange">公共</a-tag>
         <a-tag class="tagspan" v-if="!record.recruitId && record.twoYearFlag == '两年'" color="green">两年</a-tag>
-        <a-tag class="tagspan" v-if="record.recruitId && record.checkFlag == '待核'" color="#d8d8d8">{{ record.checkFlag }}</a-tag>
+        <a-tag class="tagspan" :title="record.checkedTime" v-if="record.recruitId && record.checkFlag == '待核'" color="#d8d8d8">{{ record.checkFlag }}</a-tag>
         <a-tag class="tagspan" v-if="record.recruitId && record.checkFlag == '待激活'" color="#d8d8d8">激活</a-tag>
         <!-- <a-tag class="tagspan" v-if="record.recruitId && record.checkFlag == '已激活'" color="green">激活</a-tag> -->
-        <a-tag class="tagspan" v-if="record.recruitId && record.checkFlag && record.checkFlag != '待核' && record.checkFlag != '待激活' && record.checkFlag != '已激活'" color="green">{{ record.checkFlag }}</a-tag>
+        <a-tag class="tagspan" :title="record.newTime" v-if="record.recruitId && record.checkFlag && record.checkFlag != '待核' && record.checkFlag != '待激活' && record.checkFlag != '已激活'" color="green">{{ record.checkFlag }}</a-tag>
 
-        <a-tag class="tagspan" v-if="record.recruitId && record.checkFlag == '待核' && record.fristFlag" color="#d8d8d8">{{ record.fristFlag }}</a-tag>
-        <a-tag class="tagspan" v-if="record.recruitId && record.checkFlag != '待核' && record.fristFlag" color="green">{{ record.fristFlag }}</a-tag>
+        <a-tag class="tagspan" :title="record.repeatTime" v-if="record.recruitId && record.checkFlag == '待核' && record.fristFlag" color="#d8d8d8">{{ record.fristFlag }}</a-tag>
+        <a-tag class="tagspan" :title="record.repeatTime" v-if="record.recruitId && record.checkFlag != '待核' && record.fristFlag" color="green">{{ record.fristFlag }}</a-tag>
 
         <a-tag class="tagspan" v-if="record.recruitId && record.onlyFlag" color="green">{{ record.onlyFlag }}</a-tag>
         
-        <a-tag class="tagspan" v-if="record.recruitId && record.commonFlag" color="green">{{ record.commonFlag }}</a-tag>
+        <a-tag class="tagspan" :title="record.commonFlagTime" v-if="record.recruitId && record.commonFlag" color="green">{{ record.commonFlag }}</a-tag>
         <a-tag class="tagspan" v-if="record.recruitId && record.gognGongFlag" color="orange">{{ record.gognGongFlag }}</a-tag>
 
         <!-- <a-tag class="tagspan" v-if="record.recruitId && record.limitFlag == '保护'" color="green">{{ record.limitFlag }}</a-tag> -->
-        <a-tag class="tagspan" v-if="record.limitFlag == '限制禁推' || record.limitFlag == '限制分单'" color="orange">限制</a-tag>
-        <a-tag class="tagspan" v-if="record.limitFlag == '限制'" color="orange">限制</a-tag>
-        <a-tag class="tagspan" v-if="record.limitFlag == '激活'" color="orange">激活</a-tag>
-        <a-tag class="tagspan" v-if="record.limitFlag == 'OFFER'" color="orange">OFFER</a-tag>
+        <a-tag class="tagspan" :title="record.limitRemarkDetail" v-if="record.limitFlag == '限制禁推' || record.limitFlag == '限制分单'" color="orange">限制</a-tag>
+        <a-tag class="tagspan" :title="record.limitRemarkDetail" v-if="record.limitFlag == '限制'" color="orange">限制</a-tag>
+        <a-tag class="tagspan" :title="record.limitRemarkDetail" v-if="record.limitFlag == '激活'" color="orange">激活</a-tag>
+        <a-tag class="tagspan" :title="record.offerTime" v-if="record.limitFlag == 'OFFER' && record.resumeStatus != '保证期中'" color="orange">OFFER</a-tag>
+        <a-tag class="tagspan" :title="record.entryTime" v-if="record.limitFlag == 'OFFER' && record.resumeStatus == '保证期中'" color="orange">OFFER</a-tag>
 
       </template>
     </template>
@@ -339,21 +340,21 @@
       dataIndex: 'registTimeStr',
       key: 'registTimeStr',
       ellipsis: true,
-      width: 90,
+      width: 95,
     },
     {
       title: '联络日期',
       dataIndex: 'lastUpdateTimeStr',
       key: 'lastUpdateTimeStr',
       ellipsis: true,
-      width: 90,
+      width: 95,
     },
     {
       title: '标签',
       dataIndex: 'projectFlag',
       key: 'projectFlag',
       ellipsis: true,
-      width: 160,
+      width: 180,
     },
     {
       title: '操作',
