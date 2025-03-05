@@ -239,6 +239,11 @@
       :columns="columns"
     >
       <template #bodyCell="{ column, record }">
+        <template v-if="column.key === 'userName'">
+        <a @click="handleToResumeDetailsCurrent(record.phone,record.recommendRecruitId)">
+          {{ record.userName }}
+        </a>
+      </template>
         <template v-if="column.key === 'newRecommendTime'">
           <a-tag
             v-if="record.repeatTime"
@@ -477,6 +482,7 @@
   import type { SelectProps } from 'ant-design-vue';
   import { useCityStoreWithOut } from '/@/store/modules/city';
   import { useResumeListStoreWithOut } from '/@/store/modules/resumeList';
+  import {handleToResumeDetails} from '/@/router/index'
   import type { Dayjs } from 'dayjs';
   type RangeValue = [Dayjs, Dayjs];
   const selectTime = ref<RangeValue>();
@@ -1026,6 +1032,8 @@
     consultantFeedbackTime: string;
     isHuan: string;
     isErro: string;
+    phone: string;
+    recommendRecruitId: string;
   }
   interface ListNumber {
     index: number;
@@ -1208,6 +1216,8 @@
           tempItem.endStatus = item.endStatus == '已OFFER背调问题' ? '背调拒绝' : item.endStatus;
           tempItem.isHuan = item.isHuan;
           tempItem.isErro = item.isErro;
+          tempItem.phone = item.phone;
+          tempItem.recommendRecruitId = item.recommendRecruitId;
           tempItem.recommendStatus = item.recommendStatus;
           tempList.push(tempItem);
         });
@@ -1226,6 +1236,16 @@
     formState.value = { ...formState.value, pageNumber: values };
     onFinish(2);
   };
+  /**
+   * 根据手机号及推荐顾问id跳转简历详情页面
+   * @param phoneNum 手机
+   * @param recruitId 推荐顾问id
+   */
+  const handleToResumeDetailsCurrent = (phoneNum,recruitId) => {
+    resumeListStore.queryQueryResumeNewDetails(phoneNum,recruitId).then(res => {
+        handleToResumeDetails(res.info.id,res.info.addConsultantId);
+    })
+  }
 </script>
 <style lang="less" scoped>
   .resume-content,

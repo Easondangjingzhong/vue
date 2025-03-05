@@ -754,7 +754,9 @@ export const useResumeDetailStore = defineStore({
       let formData = new FormData();
       const resumeId = this.resumeDetail.resumeId.toString();
       formData.append('resumeId', resumeId);
-      formData.append('recruitId', this.commRecruitId);
+      if (this.commRecruitId) {
+        formData.append('recruitId', this.commRecruitId);
+      }
       formData.append('phone', this.resumeDetail.resume.phoneNum);
       formData.append('SystemRecruitId', loginVueUser.loginId);
       const res = await fetchApi.resumeMapping(formData);
@@ -771,6 +773,17 @@ export const useResumeDetailStore = defineStore({
       formData.append('phone', this.resumeDetail.resume.phoneNum);
       formData.append('marketId', marketId);
       const res = await fetchApi.resumeMappingJiagou(formData);
+      return res;
+    },
+     /**
+     * 校验工作经历最近工作
+     * @returns 
+     */
+     async checkWorkNewtest(resumeId,workId) {
+      let formData = new FormData();
+      formData.append('resumeId', resumeId);
+      formData.append('workId', workId);
+      const res = await fetchApi.checkWorkNewtest(formData);
       return res;
     },
   },

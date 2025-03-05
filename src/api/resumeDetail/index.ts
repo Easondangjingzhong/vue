@@ -49,7 +49,10 @@ enum URL {
   resume_mapping = '/candidate/resume-vue-query-mapping-msg.action',
   resume_mapping_jiagou = '/candidate/resume-vue-query-mark-jiagou.action',
   check_brand_name = '/city/resume-vue-check-brand-name.action',
+  check_work_newtest = '/resume/rusume-vue-check-work-newtest.action',
 }
+const checkWorkNewtest = (formData: any) =>
+  post<any>({ url: URL.check_work_newtest, data: formData });
 const queryCheckBrandName = (formData: any) =>
   post<any>({ url: URL.check_brand_name, data: formData });
 const resumeMapping = (formData: any) =>
@@ -148,6 +151,7 @@ const queryMarkBrandFloor = async (data: any) => post<any>({ url: URL.resume_mar
 const queryMarkList = async (data: any) => post<any>({ url: URL.resume_markList, data });
 const resumeMappingJiagou = async (data: any) => post<any>({ url: URL.resume_mapping_jiagou, data });
 export default {
+  checkWorkNewtest,
   queryCheckBrandName,
   resumeMappingJiagou,
   resumeMapping,

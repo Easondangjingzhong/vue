@@ -333,9 +333,11 @@
   let scoreIELTS = ref(null);
   let scoreTOEFL = ref(null);
   let languages = [];
-  const lang = props.Languages;
+  
   const handleLanguages = () => {
+    const lang = props.Languages;
     languages = props.Languages;
+    console.log("222222")
   if (lang && lang.length > 0) {
     lang.forEach((element) => {
       if (element.languageName == '英语') {

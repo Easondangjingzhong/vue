@@ -19,7 +19,7 @@
       @change="handleQueryResumeRecord"
     >
     <template #bodyCell="{ column, record }">
-      <template v-if="column.key === 'action' && (record.currentStatus == '顾问通过' || record.currentStatus == 'HR通过' || record.currentStatus == '简发顾问' || record.currentStatus == '重新推荐' || record.currentStatus == '超时未审'
+      <template v-if="column.key === 'action' && (record.currentStatus == '顾问通过' || record.currentStatus == 'HR通过' || record.currentStatus == '简发顾问' || record.currentStatus == '重新推荐' || record.currentStatus == '超时未审' || record.currentStatus == '初试已排'
 || record.currentStatus == '推荐顾问'  || record.currentStatus == 'OFFER接受' || record.currentStatus == '简发HR' || record.currentStatus == '简发HR')
       ">
       <VerticalAlignBottomOutlined :style="{fontSize: '16px'}" @click="handleOpenResumeUpload(record.city,record.market,record.brand,record.positions,record.pId)"/>

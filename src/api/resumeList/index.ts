@@ -25,7 +25,14 @@ enum URL {
   query_recommend_resume_interview = '/candidateRecommend/resume-vue-query-interview-notice-person-tui.action',
   query_recommend_resume_offer = '/candidateRecommend/resume-vue-query-offer-collect-all-ajax.action',
   query_system_function = '/system/resume-vue-system-function.action',
+  query_resumeNew_details = '/candidate/rusume-vue-query-resumeId-byphone.action',
 }
+/**
+ * 查询顾问权限
+ * @returns 
+ */
+const queryQueryResumeNewDetails = (formData: any) =>
+  post<any>({ url: URL.query_resumeNew_details, data: formData});
 /**
  * 查询顾问权限
  * @returns 
@@ -184,4 +191,4 @@ const queryResumeSerchData = async (data:any) =>
  */
 const queryPersonTalentData = async (data:any) =>
   post<any>({ url: URL.resume_personTalentData, data });
-export default { querySystemFunction,queryRecommendOffer,queryRecommendInterview,queryRecommendResumeButton,queryCompanyCnList,queryEnterpriseConsultant,queryRecommendCounselor,updateResumeSort,querySortById,fetchUpdateSearchResume,queryTeamPersonChangeSystemA,queryTeamPersonChangeSystemTs,queryPersonTalentData,queryResumeSerchData,queryCompanyList,resumeMenu,queryTeamData,queryPersonData,queryBranList,queryResumeList,addSortResumeName,fetchAddSearchResume,queryPositionsList,queryMarkList };
+export default { queryQueryResumeNewDetails,querySystemFunction,queryRecommendOffer,queryRecommendInterview,queryRecommendResumeButton,queryCompanyCnList,queryEnterpriseConsultant,queryRecommendCounselor,updateResumeSort,querySortById,fetchUpdateSearchResume,queryTeamPersonChangeSystemA,queryTeamPersonChangeSystemTs,queryPersonTalentData,queryResumeSerchData,queryCompanyList,resumeMenu,queryTeamData,queryPersonData,queryBranList,queryResumeList,addSortResumeName,fetchAddSearchResume,queryPositionsList,queryMarkList };

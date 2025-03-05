@@ -314,6 +314,7 @@
               v-model:value="formState.positionName"
               :allowClear="true"
               :options="optionsPositions"
+              optionFilterProp="label"
               showSearch
               :labelInValue="true"
               :placeholder="themeLanguage?.positionName?.message"
@@ -595,6 +596,17 @@
   });
 
   optionsPositions.value = tempOptionPositions;
+  watch(positionsList, () => {
+    tempOptionPositions = [];
+    positionsList.value.forEach((item) => {
+      let tempObj = {
+        label: positionsListShow(item.cnPosition, item.usPosition),
+        value: item.positionId,
+      };
+      tempOptionPositions.push(tempObj);
+    });
+    optionsPositions.value = tempOptionPositions;
+  })
   function positionsListShow(cnName, usName) {
     if (cnName && usName) {
       return `${cnName}/${usName}`;
@@ -683,6 +695,12 @@
       }
   }
   loadresumeTypeEnglish();
+  watch(province, () => {
+    loadresumeTypeEnglish();
+  })
+  watch(country, () => {
+    loadresumeTypeEnglish();
+  })
   watch(
     () => resumeTypeEnglish.value,
     () => {

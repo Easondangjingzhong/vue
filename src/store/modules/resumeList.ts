@@ -823,7 +823,7 @@ export const useResumeListStore = defineStore({
           tempItem.projectFlag = item.projectFlag;
           tempItem.twoYearFlag = item.twoYearFlag; //两年
           tempItem.resumeStatus = item.resumeStatus; //两年
-          tempItem.limitRemarkDetail = (item.limitRemarkDetail ? item.limitRemarkDetail : (item.resumeStatus == '保证期中' ? `${formatToDateMinute(item.shiRuTime)} - ${formatToDateMinute(item.guoBaoTime)}  保证期推荐禁止` : "")); 
+          tempItem.limitRemarkDetail = (item.limitRemarkDetail ? item.limitRemarkDetail : (item.resumeStatus == '保证期中' ? `${formatToDateMinute(item.shiRuTime)} - ${formatToDateMinute(item.guoBaoTime)}  保证期推荐禁止` : `${formatToDateMinute(item.offerTime)}  OFFER推荐禁止`)); 
           tempItem.checkedTime = `${formatToDateMinute(item.registTime)}  新增日期`; 
           tempItem.registTime = `${formatToDateMinute(item.limitRemarkDetail)}  新增日期`; 
           tempItem.newTime = item.newtestStartTime ? `${formatToDateMinute(item.newtestStartTime)} - ${formatToDateMinute(item.newtestEndTime)} 最新数据周期`: ''; 
@@ -1059,6 +1059,17 @@ export const useResumeListStore = defineStore({
         let formData = new FormData();
         formData.append('SystemRecruitId', loginVueUser.loginId);
         const res = await fetchApi.querySystemFunction(formData);
+        return res;
+      },
+       /**
+     * 根据手机号及推荐顾问id跳转简历详情页面
+     * @returns
+     */
+       async queryQueryResumeNewDetails(phoneNum,recruitId) {
+        let formData = new FormData();
+        formData.append('phoneNum', phoneNum);
+        formData.append('recruitId', recruitId);
+        const res = await fetchApi.queryQueryResumeNewDetails(formData);
         return res;
       },
   },

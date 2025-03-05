@@ -44,7 +44,9 @@
         <span v-if="resumeData.cityName">-{{ resumeData.cityName }}</span>
         <span v-if="resumeData.marketName">-{{ resumeData.marketName }}</span>
         <span v-if="resumeData.brandName">-{{ resumeData.brandName }}</span>
-        <span v-if="resumeData.category != 'OFFICE' && resumeData.workFloor">-{{ resumeData.workFloor }}</span>
+        <span v-if="resumeData.category != 'OFFICE' && resumeData.workFloor"
+          >-{{ resumeData.workFloor }}</span
+        >
       </a-col>
       <a-col
         v-if="showResumeAdd"
@@ -113,7 +115,8 @@
     <a-row :gutter="24" class="resume_row" v-if="resumeData.personnelStructure">
       <a-col :span="12" class="resume_col">
         {{ themeLanguage?.personnelStructure?.label }}:
-        <span class="resume_span">{{ resumeData.personnelStructure }}</span></a-col>
+        <span class="resume_span">{{ resumeData.personnelStructure }}</span></a-col
+      >
     </a-row>
     <a-row :gutter="24" class="resume_row" style="margin-bottom: 0">
       <a-col :span="12"> {{ themeLanguage?.workDuty?.label }}: </a-col>
@@ -124,54 +127,52 @@
   </div>
   <div class="resume_header_update" v-if="expend">
     <a-row :gutter="24">
-        <a-col :span="24" class="resume_detail_title">
-          <h4 class="resume_h4">
-            <svg
-              t="1735637486491"
-              style="vertical-align: middle"
-              class="icon"
-              viewBox="0 0 1024 1024"
-              version="1.1"
-              xmlns="http://www.w3.org/2000/svg"
-              p-id="8293"
-              width="16"
-              height="16"
-            >
-              <path
-                d="M810.666667 170.666667 632.32 170.666667C614.4 121.173333 567.466667 85.333333 512 85.333333 456.533333 85.333333 409.6 121.173333 391.68 170.666667L213.333333 170.666667C166.4 170.666667 128 209.066667 128 256L128 853.333333C128 900.266667 166.4 938.666667 213.333333 938.666667L810.666667 938.666667C857.6 938.666667 896 900.266667 896 853.333333L896 256C896 209.066667 857.6 170.666667 810.666667 170.666667L810.666667 170.666667ZM512 170.666667C535.466667 170.666667 554.666667 189.866667 554.666667 213.333333 554.666667 236.8 535.466667 256 512 256 488.533333 256 469.333333 236.8 469.333333 213.333333 469.333333 189.866667 488.533333 170.666667 512 170.666667L512 170.666667ZM597.333333 768 298.666667 768 298.666667 682.666667 597.333333 682.666667 597.333333 768 597.333333 768ZM725.333333 597.333333 298.666667 597.333333 298.666667 512 725.333333 512 725.333333 597.333333 725.333333 597.333333ZM725.333333 426.666667 298.666667 426.666667 298.666667 341.333333 725.333333 341.333333 725.333333 426.666667 725.333333 426.666667Z"
-                fill="#000000"
-                p-id="8294"
-              ></path>
-            </svg>
-            工作经历
-          </h4>
-        </a-col>
-        <a-divider :dashed="true" style="background-color: #ccc; margin-top: 0" />
-      </a-row>
+      <a-col :span="24" class="resume_detail_title">
+        <h4 class="resume_h4">
+          <svg
+            t="1735637486491"
+            style="vertical-align: middle"
+            class="icon"
+            viewBox="0 0 1024 1024"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            p-id="8293"
+            width="16"
+            height="16"
+          >
+            <path
+              d="M810.666667 170.666667 632.32 170.666667C614.4 121.173333 567.466667 85.333333 512 85.333333 456.533333 85.333333 409.6 121.173333 391.68 170.666667L213.333333 170.666667C166.4 170.666667 128 209.066667 128 256L128 853.333333C128 900.266667 166.4 938.666667 213.333333 938.666667L810.666667 938.666667C857.6 938.666667 896 900.266667 896 853.333333L896 256C896 209.066667 857.6 170.666667 810.666667 170.666667L810.666667 170.666667ZM512 170.666667C535.466667 170.666667 554.666667 189.866667 554.666667 213.333333 554.666667 236.8 535.466667 256 512 256 488.533333 256 469.333333 236.8 469.333333 213.333333 469.333333 189.866667 488.533333 170.666667 512 170.666667L512 170.666667ZM597.333333 768 298.666667 768 298.666667 682.666667 597.333333 682.666667 597.333333 768 597.333333 768ZM725.333333 597.333333 298.666667 597.333333 298.666667 512 725.333333 512 725.333333 597.333333 725.333333 597.333333ZM725.333333 426.666667 298.666667 426.666667 298.666667 341.333333 725.333333 341.333333 725.333333 426.666667 725.333333 426.666667Z"
+              fill="#000000"
+              p-id="8294"
+            ></path>
+          </svg>
+          工作经历
+        </h4>
+      </a-col>
+      <a-divider :dashed="true" style="background-color: #ccc; margin-top: 0" />
+    </a-row>
+    <a-row :gutter="24" class="resume_row">
+      <a-col :span="24"> 工作经历品牌填写要求 </a-col>
+    </a-row>
     <a-row :gutter="24" class="resume_row">
       <a-col :span="24">
-        工作经历品牌填写要求
+        1、最近2份工作经历中若有 0ffice
+        类别，也必须正确填写品牌，系统中若无该品牌选项，可点击“切换”按钮手动填写;
       </a-col>
     </a-row>
     <a-row :gutter="24" class="resume_row">
       <a-col :span="24">
-        1、最近2份工作经历中若有 0ffice 类别，也必须正确填写品牌，系统中若无该品牌选项，可点击“切换”按钮手动填写;
+        2、非最近2份工作经历为 0ffice
+        类别，则品牌为选填项，可选择填写或不填写，若选择填写，则必须正确填写;
       </a-col>
     </a-row>
     <a-row :gutter="24" class="resume_row">
       <a-col :span="24">
-        2、非最近2份工作经历为 0ffice 类别，则品牌为选填项，可选择填写或不填写，若选择填写，则必须正确填写;
+        3、所有工作经历中只要是“店铺”类别，全部需要正确填写品牌及对应的商场，禁止以“街边店”替代;
       </a-col>
     </a-row>
     <a-row :gutter="24" class="resume_row">
-      <a-col :span="24">
-        3、所有工作经历只要是“店铺”类别，全部需要正确填写品牌;
-      </a-col>
-    </a-row>
-    <a-row :gutter="24" class="resume_row">
-      <a-col :span="24">
-        警告:
-      </a-col>
+      <a-col :span="24"> 警告: </a-col>
     </a-row>
     <a-row :gutter="24" class="resume_row">
       <a-col :span="24">
@@ -179,29 +180,26 @@
       </a-col>
     </a-row>
     <a-row :gutter="24" class="resume_row">
-      <a-col :span="24">
-        手动填写的品牌，将同步至品牌审核系统，公司将一一审核;
-      </a-col>
+      <a-col :span="24"> 手动填写的品牌，将同步至品牌审核系统，公司将一一审核; </a-col>
+    </a-row>
+    <a-row :gutter="24" class="resume_row">
+      <a-col :span="24"> 若该公司名下无对应品牌，则该公司名称中关键字为此公司品牌; </a-col>
     </a-row>
     <a-row :gutter="24" class="resume_row">
       <a-col :span="24">
-        若该公司名下无对应品牌，则该公司名称中关键字为此公司品牌;
+        绝对禁止胡乱选择或填写非该公司对应品牌，绝对禁止错误填写候选人所在的“商场”“楼层”等，若发现违规行为，将按照相关制度处罚。
       </a-col>
     </a-row>
     <a-row :gutter="24" class="resume_row">
-      <a-col :span="24">
-        绝对禁止胡乱选择或填写非该公司对应品牌，若发现违规行为，将按照相关制度处罚。
-      </a-col>
-    </a-row>
-    <a-row :gutter="24" class="resume_row">
-      <a-col :span="24" style="text-align: center;">
-        <a-button @click="handleWorkExpShow" type="primary" danger>仔细阅读并了解品牌填写要求</a-button>
+      <a-col :span="24" style="text-align: center">
+        <a-button @click="handleWorkExpShow" type="primary" danger
+          >仔细阅读并了解品牌填写要求</a-button
+        >
       </a-col>
     </a-row>
   </div>
   <div class="resume_header_update" v-if="expendShow">
-    <a-form ref="formRef"
-    :model="formState" @finish="onFinish">
+    <a-form ref="formRef" :model="formState" @finish="onFinish">
       <a-row :gutter="24">
         <a-col :span="24" class="resume_detail_title">
           <h4 class="resume_h4">
@@ -230,11 +228,11 @@
       <a-row class="resume_row_update">
         <a-col :span="12" class="row_col_space_company">
           <a-form-item
-            v-if="companyTypeFlag" 
+            v-if="companyTypeFlag"
             name="companyName"
             :label="themeLanguage?.companyName?.label"
             :rules="[{ required: true, message: themeLanguage?.companyName?.message }]"
-             class="row_col_space_left_company"
+            class="row_col_space_left_company"
           >
             <a-select
               v-model:value="formState.companyName"
@@ -251,12 +249,13 @@
               </template>
             </a-select>
           </a-form-item>
-          <a-form-item 
-          v-if="!companyTypeFlag" 
-          name="companyName"
-          :label="themeLanguage?.companyName?.label"
-          :rules="[{ required: true, message: themeLanguage?.companyName?.message }]"
-           class="row_col_space_left_company">
+          <a-form-item
+            v-if="!companyTypeFlag"
+            name="companyName"
+            :label="themeLanguage?.companyName?.label"
+            :rules="[{ required: true, message: themeLanguage?.companyName?.message }]"
+            class="row_col_space_left_company"
+          >
             <a-input
               v-model:value="formState.companyName"
               :placeholder="themeLanguage?.companyName?.message"
@@ -266,7 +265,6 @@
             <a-select
               v-model:value="formState.companyType"
               :options="optionsCompanyType"
-              :showArrow="false"
               @change="handleCompanyType"
             ></a-select>
           </a-form-item>
@@ -299,6 +297,7 @@
               v-model:value="formState.isRetreat"
               :placeholder="themeLanguage?.isRetreat?.message"
               optionFilterProp="label"
+              @change="handleMarketBrandFloor"
               showSearch
               :options="optionRetreat"
             ></a-select>
@@ -402,7 +401,7 @@
             </a-select>
           </a-form-item>
         </a-col>
-        <a-col :span="spanTitle">
+        <a-col v-if="!brandCheckBox" :span="spanTitle">
           <a-form-item
             :label="themeLanguage?.brandName?.label"
             name="brandName"
@@ -435,26 +434,37 @@
             ></a-input>
           </a-form-item>
         </a-col>
-        <a-col :span="spanTitle" v-if="!categoryFlag">
+        <a-col :span="11" v-if="!categoryFlag">
           <a-button
-            style="margin-top: 2%; margin-left: 2%"
+            style="margin-top: 1%; margin-left: 2%"
             @click="handleChangeBrandFlag"
             size="small"
             type="primary"
             title="切换为填写"
             danger
-            v-if="!brandFlag"
+            v-if="!brandFlag && !brandCheckBox"
             >切换</a-button
           >
           <a-button
-            style="margin-top: 2%; margin-left: 2%"
+            style="margin-top: 1%; margin-left: 2%"
             @click="handleChangeBrandFlag"
             size="small"
             type="primary"
             title="切换为选择"
             danger
-            v-if="brandFlag"
+            v-if="brandFlag && !brandCheckBox"
             >切换</a-button
+          >
+          <a-checkbox class="brandCheckBox" v-if="brandCheckBoxShow" v-model:checked="brandCheckBox"
+            >品牌不填</a-checkbox
+          >
+          <span style="margin-left: 5px" v-if="!brandCheckBox"
+            >不清楚本公司品牌吗?点我来告诉你吧!<a
+              class="branda"
+              href="https://chat.deepseek.com"
+              target="_blank"
+              >点击</a
+            ></span
           >
         </a-col>
         <a-col :span="spanTitle" v-if="categoryFlag">
@@ -571,7 +581,7 @@
           >
             <a-textarea
               :rows="7"
-              style="white-space: pre-wrap;"
+              style="white-space: pre-wrap"
               v-model:value="formState.workDuty"
               :placeholder="themeLanguage?.workDuty?.message"
             ></a-textarea>
@@ -592,7 +602,6 @@
 <script setup lang="ts">
   import { FormOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons-vue';
   import { storeToRefs } from 'pinia';
-  import { h } from 'vue';
   import { message } from 'ant-design-vue';
   import type { SelectProps } from 'ant-design-vue';
   import { useResumeListStoreWithOut } from '/@/store/modules/resumeList';
@@ -620,7 +629,11 @@
   const optionCategory = ref([{ value: '', label: '' }]);
   const optionRetreat = ref([{ value: 1, label: '' }]);
   const optionNewtest = ref([{ value: 1, label: '' }]);
-  const optionsCompanyType = ref([{ value: '', label: '开业' },{ value: '海外', label: '海外' },{ value: '注销', label: '注销' }]);
+  const optionsCompanyType = ref([
+    { value: '', label: '开业' },
+    { value: '海外', label: '海外' },
+    { value: '注销', label: '注销' },
+  ]);
   const props = defineProps({
     resumeData: {
       type: Object,
@@ -635,6 +648,8 @@
       required: true,
     },
   });
+  const brandCheckBox = ref(false);
+  const brandCheckBoxShow = ref(false);
   const workWholeFlagTemp = ref(false);
   const handleWorkWholeFlagTemp = () => {
     if (
@@ -652,8 +667,9 @@
       !props.resumeData.positionName ||
       !props.resumeData.workDuty ||
       !props.resumeData.cityName ||
-      ((props.resumeData.category == '店铺' || props.indexNum < 2)&& !props.resumeData.brandName)
-      || (props.resumeData.brandName == 'OFFICE')
+      ((props.resumeData.category == '店铺' || props.indexNum < 2) &&
+        !props.resumeData.brandName) ||
+      props.resumeData.brandName == 'OFFICE'
     ) {
       workWholeFlagTemp.value = true;
     }
@@ -677,8 +693,8 @@
         !newProps.positionName ||
         !newProps.workDuty ||
         !newProps.cityName ||
-        ((newProps.category == '店铺' || props.indexNum < 2)&& !newProps.brandName)
-        || (newProps.brandName == 'OFFICE')
+        ((newProps.category == '店铺' || props.indexNum < 2) && !newProps.brandName) ||
+        newProps.brandName == 'OFFICE'
       ) {
         workWholeFlagTemp.value = true;
       } else {
@@ -728,7 +744,7 @@
   if (!props.resumeData?.id) {
     expend.value = !expend.value;
   }
-  
+
   //工作经历结束年月是否为"至今" false 展示日期组件 true 展示至今
   let endYearFlag = ref(false);
   onBeforeMount(() => {
@@ -747,10 +763,17 @@
           : '-' + props.resumeData?.endMonth);
   const onChangeEndYearFlag = () => {
     if (endYearFlag.value) {
-      endYearFlag.value = true;
-      formState.endYear = '-1';
-      //@ts-ignore
-      formState.isNewtest = 1;
+      resumeDetailStore.checkWorkNewtest(formState.resumeId,formState.id).then((res) => {
+        if (res.code == 1) {
+          endYearFlag.value = true;
+          formState.endYear = '-1';
+          //@ts-ignore
+          formState.isNewtest = 1;
+        } else {
+          endYearFlag.value = false;
+          message.error("已存在至今或最近工作经历");
+        }
+      });
     } else {
       endYearFlag.value = false;
       //peops.workExperienceData.endYear = "";
@@ -761,22 +784,22 @@
   const handleWorkExpShow = () => {
     expendShow.value = !expendShow.value;
     expend.value = !expend.value;
-  }
+  };
   const handleUpdateWorkInfoCancel = () => {
     expendShow.value = false;
     expend.value = false;
-  }
+  };
   const companyTypeFlag = ref(true);
   /**
    * 处理公司类型 海外   注销    开业状态必须选择公司其他的都填写
    */
   const handleCompanyType = () => {
-      if (formState.companyType) {
-        companyTypeFlag.value = false;
-      } else {
-        companyTypeFlag.value = true;
-      }
-  }
+    if (formState.companyType) {
+      companyTypeFlag.value = false;
+    } else {
+      companyTypeFlag.value = true;
+    }
+  };
   const handleUpdateWorkInfo = () => {
     expend.value = !expend.value;
     if (!props.resumeData?.id) {
@@ -822,7 +845,9 @@
     formState.salaryStructure = props.resumeData?.salaryStructure;
     formState.personnelStructure = props.resumeData?.personnelStructure;
     //formState.workDuty = props.resumeData?.workDuty?.replaceAll(/<[^>]+>/g, '');
-    formState.workDuty = props.resumeData?.workDuty?.replaceAll(/<p>/g, '').replaceAll(/<(\/)?p>/g, '\n');
+    formState.workDuty = props.resumeData?.workDuty
+      ?.replaceAll(/<p>/g, '')
+      .replaceAll(/<(\/)?p>/g, '\n');
     formState.workFloor = props.resumeData?.workFloor;
     formState.workMark = props.resumeData?.workMark;
     formState.workBrand = props.resumeData?.workBrand?.toString();
@@ -840,6 +865,12 @@
     handleCityName(formState.cityName, formState.marketName.label);
     handleMarketBrandFloor();
     handleCompanyType();
+    if (props.indexNum > 1) {
+      brandCheckBoxShow.value = true;
+      if (!props.resumeData?.brandName && props.resumeData?.category == 'OFFICE') {
+        brandCheckBox.value = true;
+      }
+    }
   };
   //职位数据
   const optionsPositions = ref<SelectProps['options']>([]);
@@ -873,22 +904,20 @@
   //品牌数据展示
   const optionsBrand = ref<SelectProps['options']>([]);
   let tempOptionBrand = [];
-  watch(brandList,
-  () => {
+  watch(brandList, () => {
     brandList.value.forEach((item) => {
-    //@ts-ignore
-    let tempObj = {
       //@ts-ignore
-      label: positionsListShow(item.cnName, item.usName),
+      let tempObj = {
+        //@ts-ignore
+        label: positionsListShow(item.cnName, item.usName),
+        //@ts-ignore
+        value: item.brandId?.toString(),
+      };
       //@ts-ignore
-      value: item.brandId?.toString(),
-    };
-    //@ts-ignore
-    tempOptionBrand.push(tempObj);
+      tempOptionBrand.push(tempObj);
+    });
+    optionsBrand.value = tempOptionBrand;
   });
-  optionsBrand.value = tempOptionBrand;
-  }
-  )
   brandList.value.forEach((item) => {
     //@ts-ignore
     let tempObj = {
@@ -927,34 +956,32 @@
     }
     return prev;
   }, []);
-  watch(province,
-  () => {
+  watch(province, () => {
     optionsCity.value = province.value.reduce((prev, curr) => {
-    //@ts-ignore
-    if (
-      (curr.provinceName == curr.cityName || !curr.cityName) &&
-      !(curr.cityName == '吉林' || curr.cityName == '海南')
-    ) {
       //@ts-ignore
-      prev.push({
+      if (
+        (curr.provinceName == curr.cityName || !curr.cityName) &&
+        !(curr.cityName == '吉林' || curr.cityName == '海南')
+      ) {
         //@ts-ignore
-        label: curr.provinceName,
+        prev.push({
+          //@ts-ignore
+          label: curr.provinceName,
+          //@ts-ignore
+          value: curr.id,
+        });
+      } else {
         //@ts-ignore
-        value: curr.id,
-      });
-    } else {
-      //@ts-ignore
-      prev.push({
-        //@ts-ignore
-        label: curr.cityName,
-        //@ts-ignore
-        value: curr.id,
-      });
-    }
-    return prev;
-  }, []);
-  }
-  )
+        prev.push({
+          //@ts-ignore
+          label: curr.cityName,
+          //@ts-ignore
+          value: curr.id,
+        });
+      }
+      return prev;
+    }, []);
+  });
   //商场数据展示
   const optionsMarkId = ref<SelectProps['options']>([]);
   const handleCityName = (values, marketName) => {
@@ -1012,28 +1039,36 @@
     });
   };
   const handleMarketBrandFloor = () => {
-    
-    if (formState.marketName.label == "街边店"){
-      optionsWorkFloor.value= [{value: '1层',label: '1层'}]
+    if (formState.marketName.label == '街边店') {
+      optionsWorkFloor.value = [{ value: '1层', label: '1层' }];
       formState.workFloor = '1层';
       return;
     }
-    if (formState.category == "OFFICE" || !formState.marketName.value  || !formState.brandName.value) {
+    if (
+      formState.category == 'OFFICE' ||
+      !formState.marketName.value ||
+      !formState.brandName.value
+    ) {
       return;
     }
-    optionsWorkFloor.value= [{value: '',label: ''}];
+    optionsWorkFloor.value = [{ value: '', label: '' }];
     resumeDetailStore
       .queryMarkBrandFloor(formState.marketName.value, formState.brandName.value || '')
       .then((res) => {
         if (res.code == 1) {
-          optionsWorkFloor.value= [{value: res.info[0].floor,label: res.info[0].floor}]
+          optionsWorkFloor.value = [{ value: res.info[0].floor, label: res.info[0].floor }];
           formState.workFloor = res.info[0].floor;
         } else {
-          if (formState.isNewtest == '1' || formState.isRetreat == '1' || formState.isRetreat || formState.isNewtest) {
+          if (
+            formState.isNewtest == '1' ||
+            formState.isRetreat == '1' ||
+            formState.isRetreat ||
+            formState.isNewtest
+          ) {
             formState.workFloor = '';
-            message.error('该商场无此品牌数据，商场信息中添加该楼层信息！')
+            message.error('该商场无此品牌数据，商场信息中添加该楼层信息！');
           } else {
-            optionsWorkFloor.value= workFloorArr.map(item => ({value: item,label: item}));
+            optionsWorkFloor.value = workFloorArr.map((item) => ({ value: item, label: item }));
           }
         }
       });
@@ -1075,10 +1110,10 @@
       fetching.value = false;
     });
   }, 2000);
-  const selcetCompanyNameFlag  = ref(false);
+  const selcetCompanyNameFlag = ref(false);
   const handleSelcetCompanyName = () => {
     selcetCompanyNameFlag.value = true;
-  }
+  };
   const brandNameCn = ref('');
   const brnadNameEn = ref('');
   const handleChangeBrandFlag = () => {
@@ -1105,6 +1140,12 @@
       });
       optionsPositions.value = tempOptionPositions;
     } else {
+      if (props.indexNum > 1) {
+      brandCheckBoxShow.value = true;
+      if (!formState.brandName.label && formState.category == 'OFFICE') {
+        brandCheckBox.value = true;
+      }
+    }
       categoryFlag.value = false;
       formState.workFloor = '';
       formState.workBrand = '';
@@ -1136,34 +1177,43 @@
     if (!e.target.value) {
       return;
     }
-    resumeDetailStore.queryCheckBrandName(e.target.value,'').then(res => {
+    resumeDetailStore.queryCheckBrandName(e.target.value, '').then((res) => {
       if (res.code != 1) {
         message.error(res.info);
       }
     });
-  }
-  
+  };
+
   const handleBrandNameEn = (e) => {
     if (!e.target.value) {
       return;
     }
     const reg = /^[a-zA-Z][a-zA-Z0-9]*$/;
-    if(!reg.test(e.target.value)){
-      message.error("品牌英文只能填写英文");
+    if (!reg.test(e.target.value)) {
+      message.error('品牌英文只能填写英文');
       return;
     }
-    resumeDetailStore.queryCheckBrandName('',e.target.value).then(res => {
+    resumeDetailStore.queryCheckBrandName('', e.target.value).then((res) => {
       if (res.code != 1) {
         message.error(res.info);
       }
     });
-  }
+  };
   const onFinish = async () => {
-    if ((formState.category == '店铺' || props.indexNum < 2) && !brandFlag.value && !formState.brandName.label) {
+    if (
+      (formState.category == '店铺' || props.indexNum < 2) &&
+      !brandFlag.value &&
+      !formState.brandName.label
+    ) {
       message.error('请选择品牌');
       return;
     }
-    if ((formState.category == '店铺' || props.indexNum < 2) && brandFlag.value && !brandNameCn.value && !brnadNameEn.value) {
+    if (
+      (formState.category == '店铺' || props.indexNum < 2) &&
+      brandFlag.value &&
+      !brandNameCn.value &&
+      !brnadNameEn.value
+    ) {
       message.error('请填写品牌');
       return;
     }
@@ -1174,7 +1224,7 @@
     let brandNameFlag = false;
     if (brandFlag.value && (brandNameCn.value || brnadNameEn.value)) {
       brandNameFlag = true;
-      const res = await resumeDetailStore.queryCheckBrandName(brandNameCn.value,brnadNameEn.value);
+      const res = await resumeDetailStore.queryCheckBrandName(brandNameCn.value, brnadNameEn.value);
       if (res.code == 1) {
         brandNameFlag = false;
         formState.brandWrite = '1';
@@ -1189,8 +1239,8 @@
     }
     //没有选择公司 工作经历是缺失的 是前2份工作
     if (!selcetCompanyNameFlag.value && workWholeFlagTemp.value && props.indexNum < 2) {
-    message.warning("请确认后选择公司名称");
-    return;
+      message.warning('请确认后选择公司名称');
+      return;
     }
     iconLoading.value = true;
     resumeDetailStore
@@ -1284,7 +1334,6 @@
       loadresumeTypeEnglish();
     },
   );
- 
 </script>
 <style lang="less" scoped>
   .resume_header {
@@ -1389,6 +1438,25 @@
   :deep(.row_col_space_right_company .ant-select-selector) {
     border-start-start-radius: 0;
     border-end-start-radius: 0;
-    height: auto;
+    height: 32px;
+  }
+  .branda {
+    font-size: 0.07292rem;
+    height: 0.125rem;
+    line-height: 1.9;
+    padding: 0rem 0.03646rem;
+    border-radius: 0.02083rem;
+    background-color: #ff4d4f;
+    box-shadow: 0 0.01042rem 0 rgba(255, 38, 5, 0.06);
+    color: #fff;
+    margin-left: 5px;
+  }
+  .brandCheckBox {
+    margin-left: 5px;
+    height: 0.125rem;
+    line-height: 1.9;
+  }
+  :deep(.brandCheckBox .ant-checkbox) {
+    margin-top: 6px;
   }
 </style>

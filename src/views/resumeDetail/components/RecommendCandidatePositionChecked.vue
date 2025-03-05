@@ -212,7 +212,7 @@
 </template>
 <script setup lang="ts">
   import { storeToRefs } from 'pinia';
-  import { message } from 'ant-design-vue';
+  import { message, Upload} from 'ant-design-vue';
   import { CloseOutlined } from '@ant-design/icons-vue';
   import { formatToDateMinute } from '/@/utils/dateUtil';
   import type { UploadProps } from 'ant-design-vue';
@@ -240,7 +240,13 @@
   const spinning = ref(true);
   const videoFile = ref<UploadProps['fileList']>([]);
   const handleChangeFileUpload = file => {
-    videoFile.value = [...(videoFile.value || []), file];
+    let isSize = (((file.size / 1024 / 1024) - 10) < 0);
+    if (!isSize) {
+      message.error("上传截图不能超过10MB");
+      return Upload.LIST_IGNORE;
+    } else {
+      videoFile.value = [...(videoFile.value || []), file];
+    }
     return false;
   };
   const repeatFlag = ref(0); //查重结果 0 查重中 1查重通过 2查重重复

@@ -31,43 +31,53 @@ function getQueryVariable(variable)
     return("");
 }
 export const routerQuery = async () => {
-  //if (getQueryVariable("loginFirst")) {
+  if (getQueryVariable("loginFirst")) {
     localStorage.removeItem("loginVueUser");
     localStorage.setItem("loginVueUser",JSON.stringify({"loginId": getQueryVariable("loginId"),"loginName": getQueryVariable("loginName"),"loginTocken": getQueryVariable("loginTocken"),"loginType": getQueryVariable("loginType")}));
     return true;
+  }
+  return await cityStore.resuemCheckLogin(getQueryVariable("loginTocken")).then(res => {
+    if (res.code == 1) {
+      const loginVueUser: {loginName: "", loginId: "", loginTocken: "",loginType: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
+      if (getQueryVariable("loginId") && (!loginVueUser.loginId || (loginVueUser.loginId && loginVueUser.loginId != getQueryVariable("loginId")))) {
+        window.open("http://work.wotui.com:8889/WTSM/","_self");
+        return false;
+      }
+      localStorage.removeItem("loginVueUser");
+      localStorage.setItem("loginVueUser",JSON.stringify({"loginId": getQueryVariable("loginId"),"loginName": getQueryVariable("loginName"),"loginTocken": getQueryVariable("loginTocken"),"loginType": getQueryVariable("loginType")}));
+      return true;
+    } else {
+      window.open("http://work.wotui.com:8889/WTSM/","_self");
+      return false;
+   }
+  })
+}
+/**
+ * 跳转简历详情页面
+ * @param resumeId 简历id
+ * @param addConsultantId 添加顾问id
+ */
+export const handleToResumeDetails = (resumeId,addConsultantId) => {
+  const loginVueUser: {loginName: "", loginId: "", loginTocken: "",loginType: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
+  let query = {...loginVueUser, resumeId, addConsultantId};
+  // if (loginVueUser.loginType != "A" && (!formState.value.leftType || formState.value.leftType == "1" || formState.value.leftType == "2" || formState.value.leftType == "3" || formState.value.leftType == "4")) {
+  //   query = {...loginVueUser, resumeId, addConsultantId,searchRecommend: "T"};
   // }
-  // return await cityStore.resuemCheckLogin(getQueryVariable("loginTocken")).then(res => {
-  //   if (res.code == 1) {
-  //     const loginVueUser: {loginName: "", loginId: "", loginTocken: "",loginType: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
-  //     if (getQueryVariable("loginId") && (!loginVueUser.loginId || (loginVueUser.loginId && loginVueUser.loginId != getQueryVariable("loginId")))) {
-  //       window.open("http://work.wotui.com:8889/WTSM/","_self");
-  //       return false;
-  //     }
-  //     localStorage.removeItem("loginVueUser");
-  //     localStorage.setItem("loginVueUser",JSON.stringify({"loginId": getQueryVariable("loginId"),"loginName": getQueryVariable("loginName"),"loginTocken": getQueryVariable("loginTocken"),"loginType": getQueryVariable("loginType")}));
-  //     return true;
-  //   } else {
-  //     window.open("http://work.wotui.com:8889/WTSM/","_self");
-  //     return false;
-  //  }
-  // })
-
-  //console.log(",,,,,7",localStorage.getItem("loginVueUser"))
-  //return true;
-//   window.addEventListener('message', function (e) {
-//    console.log(e.data)
-// }); 
-
-  // const oldLoginUserNameRecruitId = localStorage.getItem("oldLoginUserNameRecruitId");
-  // if (oldLoginUserNameRecruitId != getQueryVariable("loginId")) {
-
-  // } else {
- // @ts-ignore
- // const { searchParams } = new URL(window.location.href);
- // Array.from(searchParams.entries()).reduce((params, [key, value]) => {
- //   params[key] = value;
- //   return params;
- // }, {});
- // }
- 
+  const href = router.resolve({
+    path: '/resume/detail',
+    query: query,
+  });
+  window.open(href.href, '_blank')
+  // 跳转到简历详情页
+  //window.open(`http://work.wotui.com:8889/WTSM/system/consultant-query-resume.html?resumeId=${resumeId}&resumeType=C&addConsultantId=${addConsultantId}`);
+}
+export const handleToAddResumeDetails = () => {
+  const loginVueUser: {loginName: "", loginId: "", loginTocken: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
+  const href = router.resolve({
+    path: '/resume',
+    query: {...loginVueUser},
+  });
+  window.open(href.href, '_blank')
+  // 跳转到简历详情页
+  //window.open(`http://work.wotui.com:8889/WTSM/system/consultant-query-resume.html?resumeId=${resumeId}&resumeType=C&addConsultantId=${addConsultantId}`);
 }

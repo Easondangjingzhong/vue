@@ -52,7 +52,7 @@
           color="orange"
           class="resume_tag_checked_top"
           v-if="resumeData.limitFlag == '限制'"
-          :title="limitRemarkDetail"
+          :title="limitRemarkDetail ? limitRemarkDetail : `${formatToDateMinute(resumeData.offerTime)}  OFFER推荐禁止`"
           >限制</a-tag
         >
         <a-tag
@@ -168,7 +168,7 @@
           >复制</a-button>
         <a-button
         style="margin-left: 4px;"
-          v-if="showResumeAdd && (resumeData.recommendLimit == '推荐' || resumeData.zhuCeFlag == '注册顾问') && (resumeData.checkFlag == '最新'|| resumeData.checkFlag == '已激活') && resumeProgressDetailScore > 90"
+          v-if="showResumeAdd && (resumeData.recommendLimit == '推荐' || resumeData.zhuCeFlag == '注册顾问') && (resumeData.checkFlag == '最新'|| resumeData.checkFlag == '已激活') && resumeProgressDetailScore >= 90"
           type="primary"
           danger
           size="middle"
@@ -188,7 +188,7 @@
         </a-button>
         <a-button
         style="margin-left: 4px;"
-          v-if="showResumeAdd && resumeData.recommendLimit == '限制分单' && resumeData.checkFlag == '最新' && resumeProgressDetailScore > 90"
+          v-if="showResumeAdd && resumeData.recommendLimit == '限制分单' && resumeData.checkFlag == '最新' && resumeProgressDetailScore >= 90"
           type="primary"
           danger
           title="在保推荐分单"

@@ -18,7 +18,7 @@
               v-if="workFlag && showResumeAdd"
               :indexNum="
                 resumeDetailTemp.resume.workExpeList
-                  ? resumeDetailTemp.resume.workExpeList.length + 1
+                  ? resumeDetailTemp.resume.workExpeList.length
                   : 0
               "
               :resumeData="{ resumeId: resumeDetailTemp.resume.id }"
@@ -38,7 +38,7 @@
             <ResumeDetailEducationInfo
               :showResumeAdd="showResumeAdd"
               v-if="eduFlag && showResumeAdd"
-              :indexNum="resumeDetailTemp.resume.eduExpeList.length + 1"
+              :indexNum="resumeDetailTemp.resume.eduExpeList.length"
               :resumeData="{ resumeId: resumeDetailTemp.resume.id }"
             />
             <ResumeDetailLanguagesInfo

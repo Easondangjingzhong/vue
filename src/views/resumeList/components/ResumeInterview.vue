@@ -144,6 +144,11 @@
       :scroll="{ x: 1200 }"
     >
       <template #bodyCell="{ column, record }">
+        <template v-if="column.key === 'userName'">
+        <a @click="handleToResumeDetailsCurrent(record.phone,record.recommendRecruitId)">
+          {{ record.userName }}
+        </a>
+      </template>
         <template v-if="column.key === 'interviewRound'">
           <a-tag v-if="record.interviewProcess == '标准面试'" title="标准面试" color="green">{{ record.interviewRound }}</a-tag>
           <a-tag v-else title="客户自排" color="red">{{ record.interviewRound }}</a-tag>
@@ -277,6 +282,7 @@
   import type { SelectProps } from 'ant-design-vue';
   import { useCityStoreWithOut } from '/@/store/modules/city';
   import { useResumeListStoreWithOut } from '/@/store/modules/resumeList';
+  import {handleToResumeDetails} from '/@/router/index'
   import type { Dayjs } from 'dayjs';
   type RangeValue = [Dayjs, Dayjs];
   const selectTime = ref<RangeValue>();
@@ -662,6 +668,8 @@
     recommendStatus: string;
     offerChoice: string;
     interviewTimeFlag: string;
+    phone: string;
+    recommendRecruitId: string;
   }
   interface ListNumber {
     index: number;
@@ -779,6 +787,8 @@
           tempItem.recommendStatus = item.recommendStatus;
           tempItem.offerChoice = item.offerChoice;
           tempItem.interviewTimeFlag = item.interviewTime && nowTime > interviewTime ? '1' : '2';
+          tempItem.phone = item.phone;
+          tempItem.recommendRecruitId = item.recommendRecruitId;
           tempList.push(tempItem);
         });
         resumeList.value = tempList;
@@ -796,6 +806,16 @@
     formState.value = { ...formState.value, pageNumber: values };
     onFinish();
   };
+   /**
+   * 根据手机号及推荐顾问id跳转简历详情页面
+   * @param phoneNum 手机
+   * @param recruitId 推荐顾问id
+   */
+   const handleToResumeDetailsCurrent = (phoneNum,recruitId) => {
+    resumeListStore.queryQueryResumeNewDetails(phoneNum,recruitId).then(res => {
+        handleToResumeDetails(res.info.id,res.info.addConsultantId);
+    })
+  }
 </script>
 <style lang="less" scoped>
   .resume-content,

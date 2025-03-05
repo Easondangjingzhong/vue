@@ -81,15 +81,15 @@ resumeList.querySystemFunction().then((res) => {
           index: 2,
         })
       }
-      if (item.functionName == "商场") {
-        menuArrTemp.value.push({
-          key: 'market',
-          label: h('a', { href: `http://work.wotui.com:8889/WTSM/${item.functionUrl}`, target: '_blank' }, item.functionName),
-          title: item.functionName,
-          showFlag: false,
-          index: 3,
-        })
-      }
+      // if (item.functionName == "商场") {
+      //   menuArrTemp.value.push({
+      //     key: 'market',
+      //     label: h('a', { href: `http://work.wotui.com:8889/WTSM/${item.functionUrl}`, target: '_blank' }, item.functionName),
+      //     title: item.functionName,
+      //     showFlag: false,
+      //     index: 3,
+      //   })
+      // }
       if (item.functionName == "企业" && (roleId != 11 && roleId != 8)) {
         let temp = menuArrTemp.value.filter(subItem => subItem.key === 'online');
         if (temp.length > 0) {
@@ -190,6 +190,39 @@ resumeList.querySystemFunction().then((res) => {
         }
       }
       if (item.functionName == "BD" && (roleId != 11 && roleId != 8)) {
+        let temp = menuArrTemp.value.filter(subItem => subItem.key === 'online');
+        if (temp.length > 0) {
+          menuArrTemp.value.forEach(subItem => {
+            if (subItem.key === 'online') {
+              subItem.children?.push({
+                key: 'BD',
+                label: h('a', { href: `http://work.wotui.com:8889/WTSM/${item.functionUrl}`, target: '_blank' }, item.functionName),
+                title: item.functionName,
+                showFlag: false,
+                index: 2,
+              })
+            }
+          })
+        } else {
+          menuArrTemp.value.push({
+            key: 'online',
+            label: '线上',
+            title: '线上',
+            showFlag: false,
+            index: 4,
+            children: [
+              {
+                key: 'BD',
+                label: h('a', { href: `http://work.wotui.com:8889/WTSM/${item.functionUrl}`, target: '_blank' }, item.functionName),
+                title: item.functionName,
+                showFlag: false,
+                index: 2,
+              }
+            ]
+          })
+        }
+      }
+      if (item.functionName == "商场" && (roleId != 11 && roleId != 8)) {
         let temp = menuArrTemp.value.filter(subItem => subItem.key === 'online');
         if (temp.length > 0) {
           menuArrTemp.value.forEach(subItem => {
@@ -1210,6 +1243,13 @@ resumeList.querySystemFunction().then((res) => {
           })
       }
     })
+    menuArrTemp.value.push({
+            key: 'AI',
+            label: h('a', { href: `https://chat.deepseek.com`, target: '_blank' }, 'AI'),
+            title: 'AI',
+            showFlag: false,
+            index: 16,
+          })
     menuArrTemp.value.forEach(item => {
       if (item.key === 'finance' || item.key === 'report') {
         item.children?.sort((a,b)=>{ return a.index-b.index});

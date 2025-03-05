@@ -207,7 +207,7 @@
   import SearchContent from './resumeContent/SearchContent.vue';
   import { useResumeListStoreWithOut } from '/@/store/modules/resumeList';
   import type { SelectProps } from 'ant-design-vue';
-  const router = useRouter();
+  import {handleToResumeDetails, handleToAddResumeDetails} from '/@/router/index'
   const resumeListStore = useResumeListStoreWithOut();
   const { expandedRowKeys,isTwoYearFlagStatus,searchWorkExp, resumeList, brandList, pagination, formState,serchResumeListNum,serchResumeUpdate,serchResumeUpdateData,tableLoading } = storeToRefs(resumeListStore);
   const optionsNp = ref([
@@ -390,30 +390,6 @@
         expandedRowKeysArr.value = expandedRowKeysArr.value.filter(item => item != record.key);
       }
     }
-  const handleToResumeDetails = (resumeId,addConsultantId) => {
-    const loginVueUser: {loginName: "", loginId: "", loginTocken: "",loginType: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
-    let query = {...loginVueUser, resumeId, addConsultantId};
-    // if (loginVueUser.loginType != "A" && (!formState.value.leftType || formState.value.leftType == "1" || formState.value.leftType == "2" || formState.value.leftType == "3" || formState.value.leftType == "4")) {
-    //   query = {...loginVueUser, resumeId, addConsultantId,searchRecommend: "T"};
-    // }
-    const href = router.resolve({
-      path: '/resume/detail',
-      query: query,
-    });
-    window.open(href.href, '_blank')
-    // 跳转到简历详情页
-    //window.open(`http://work.wotui.com:8889/WTSM/system/consultant-query-resume.html?resumeId=${resumeId}&resumeType=C&addConsultantId=${addConsultantId}`);
-  }
-  const handleToAddResumeDetails = () => {
-    const loginVueUser: {loginName: "", loginId: "", loginTocken: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
-    const href = router.resolve({
-      path: '/resume',
-      query: {...loginVueUser},
-    });
-    window.open(href.href, '_blank')
-    // 跳转到简历详情页
-    //window.open(`http://work.wotui.com:8889/WTSM/system/consultant-query-resume.html?resumeId=${resumeId}&resumeType=C&addConsultantId=${addConsultantId}`);
-  }
   const handleResumeListData = (current) => {
     pagination.value = { ...pagination.value, current };
     onFinish(1);
