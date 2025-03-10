@@ -823,7 +823,7 @@ export const useResumeListStore = defineStore({
           tempItem.projectFlag = item.projectFlag;
           tempItem.twoYearFlag = item.twoYearFlag; //两年
           tempItem.resumeStatus = item.resumeStatus; //两年
-          tempItem.limitRemarkDetail = (item.limitRemarkDetail ? item.limitRemarkDetail : (item.resumeStatus == '保证期中' ? `${formatToDateMinute(item.shiRuTime)} - ${formatToDateMinute(item.guoBaoTime)}  保证期推荐禁止` : `${formatToDateMinute(item.offerTime)}  OFFER推荐禁止`)); 
+          tempItem.limitRemarkDetail = (item.limitRemarkDetail ? item.limitRemarkDetail : (item.resumeStatus == '保证期中' ? `${formatToDateMinute(item.shiRuTime)} - ${formatToDateMinute(item.guoBaoTime)}  保证期推荐禁止` : (item.offerTime ? `${formatToDateMinute(item.offerTime)}  OFFER推荐禁止`: ""))); 
           tempItem.checkedTime = `${formatToDateMinute(item.registTime)}  新增日期`; 
           tempItem.registTime = `${formatToDateMinute(item.limitRemarkDetail)}  新增日期`; 
           tempItem.newTime = item.newtestStartTime ? `${formatToDateMinute(item.newtestStartTime)} - ${formatToDateMinute(item.newtestEndTime)} 最新数据周期`: ''; 

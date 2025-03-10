@@ -165,7 +165,7 @@
           !item.positionName ||
           !item.workDuty ||
           !item.cityName ||
-          ((item.category == '店铺' || index < 2)&& !item.brandName)
+          ((item.category == '店铺' || index < 1)&& !item.brandName)
           || (item.brandName == 'OFFICE')
         ) {
           wtemp = true;

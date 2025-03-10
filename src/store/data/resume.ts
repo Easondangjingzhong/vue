@@ -37,29 +37,29 @@ export const brandArrDetail = [
 ];
 export const brandCategoryArr = [
   {
-      category: '服装服饰',
-      leibie: [
-          '全品类',
-          '皮具',
-          '服装',
-          '男品类',
-          '女品类',
-          '配饰眼镜',
-          '鞋履',
-          '集合店',
-          '内衣',
-          '箱包',
-          '运动户外',
-          '典当寄售',
-          '生活方式',
-          '电子商务',
-      ],
+    category: '服装服饰',
+    leibie: [
+      '全品类',
+      '皮具',
+      '服装',
+      '男品类',
+      '女品类',
+      '配饰眼镜',
+      '鞋履',
+      '集合店',
+      '内衣',
+      '箱包',
+      '运动户外',
+      '典当寄售',
+      '生活方式',
+      '电子商务',
+    ],
   },
   { category: '珠宝腕表', leibie: ['黄金', '珠宝', '腕表', '饰品', '集合店'] },
   { category: '儿童', leibie: ['童装', '婴童', '玩具'] },
   { category: '化妆品', leibie: ['化妆品', '洗护', '集合店'] },
   { category: '食品茶品', leibie: ['食品', '茶叶'] },
-  { category: '电子电器', leibie: ['美容仪器','家用电器','手机数码'] },
+  { category: '电子电器', leibie: ['美容仪器', '家用电器', '手机数码'] },
   { category: '家具家居', leibie: ['家具', '家居', '家具卖场'] },
   { category: '酒类', leibie: ['洋酒', '红酒', '白酒', '啤酒', '集合店'] },
   { category: '商超', leibie: ['购物中心', '仓储式会员店', '超市', '便利店'] },
@@ -68,9 +68,13 @@ export const brandCategoryArr = [
   { category: '服务', leibie: ['酒店', '餐饮酒吧', '咖啡茶饮', '烘焙'], title: '酒店' },
   { category: '服务', leibie: ['航空', '邮轮', '高铁', '旅行服务'], title: '出行' },
   { category: '服务', leibie: ['美容美发', '医美'], title: '美容' },
-  { category: '服务', leibie: ['银行证券', '保险'], title: '金融' },
-  { category: '服务', leibie: ['改衣', '摄影', '健身', '物业', '教培', '医疗', '亲子游乐','洗衣护理','艺术空间'], title: '生活' },
-  { category: '其他', leibie: ['其他', '新媒体'], title: '其他' },
+  { category: '服务', leibie: ['银行证券', '保险', '金融服务'], title: '金融' },
+  {
+    category: '服务',
+    leibie: ['改衣', '摄影', '健身', '物业', '教培', '医疗', '亲子游乐', '洗衣护理', '艺术空间'],
+    title: '生活',
+  },
+  { category: '其他', leibie: ['其他', '新媒体', '电子商务'], title: '其他' },
 ];
 export const positionsUpArrTitle = [
   {
@@ -157,6 +161,13 @@ export const positionsUpArrTitle = [
     content: [
       { jobCategory: '客户服务', management: ['基础级别', '管理级别'] },
       { jobCategory: '客户营销', management: ['基础级别', '管理级别'] },
+    ],
+  },
+  {
+    industry: '职能岗位',
+    content: [
+      { jobCategory: '技术岗', management: ['基础级别', '管理级别'] },
+      { jobCategory: '其他职位', management: ['基础级别', '管理级别'] },
     ],
   },
 ];
@@ -345,5 +356,20 @@ export const languageArr = [
     ],
   },
 ];
-export const resumeTypeArr = [{ value: 'C', label: '中文' }, { value: 'E', label: '英文' }];
-export const workFloorArr = ['1层', '2层', '3层', '4层', '5层', '6层', '7层', '8层', 'B1', 'B2', 'OFFICE'];
+export const resumeTypeArr = [
+  { value: 'C', label: '中文' },
+  { value: 'E', label: '英文' },
+];
+export const workFloorArr = [
+  '1层',
+  '2层',
+  '3层',
+  '4层',
+  '5层',
+  '6层',
+  '7层',
+  '8层',
+  'B1',
+  'B2',
+  'OFFICE',
+];

@@ -951,7 +951,6 @@
   .activceResume::after {
     content: '';
     background-image: url("/@/assets/images/3.png");
-    //background-position: -150px -160px;
     position: absolute;
     width: 14px;
     height: 12px;

@@ -10,7 +10,7 @@
             <a-select-option value="原始简历">原始简历</a-select-option>
           </a-select>
         </a-col>
-        <a-col :span="1.4" class="resume_type">
+        <a-col :span="1.5" class="resume_type">
           <a-select v-model:value="resumeTypeEnglish" :options="resumeTypePotion" @change="handleResumeTypeEnglish"></a-select>
         </a-col>
         <a-col :span="1.5" class="resume_source">
@@ -62,11 +62,11 @@
   const resumeTypePotion = ref<SelectProps['options']>([
     {
       value: '2',
-      label: '中文',
+      label: '中文简历',
     },
     {
       value: '1',
-      label: '英文',
+      label: '英文简历',
     }
   ])
   const handleResumeTypeEnglish = (value: string) => {
@@ -263,7 +263,7 @@
     }
     .resume_type {
       margin-right: 10px;
-      width: 72px;
+      width: 100px;
     }
     .resume_source {
       margin-right: 10px;

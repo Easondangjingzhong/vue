@@ -412,6 +412,8 @@
     !props.resumeData.nationality ||
     !props.resumeData.height ||
     !props.resumeData.birthYear ||
+    !props.resumeData.bornMonth ||
+    !props.resumeData.bornDay ||
     !props.resumeData.email ||
     !props.resumeData.weight ||
     !props.resumeData.positionName ||
@@ -440,6 +442,8 @@
         !newProps.nationality ||
         !newProps.height ||
         !newProps.birthYear ||
+        !newProps.bornMonth ||
+        !newProps.bornDay ||
         !newProps.email ||
         !newProps.weight ||
         !newProps.positionName ||
@@ -457,7 +461,7 @@
       }
     },
   );
-  const ageTimeTemp = !props.resumeData.birthYear
+  const ageTimeTemp = (!props.resumeData.birthYear || !props.resumeData.bornMonth || !props.resumeData.bornDay)
     ? ''
     : `(${props.resumeData.birthYear}-${
         !props.resumeData.bornMonth
@@ -537,7 +541,7 @@
       birthYear: props.resumeData.birthYear,
       bornDay: props.resumeData.bornDay,
       bornMonth: props.resumeData.bornMonth,
-      ageTime: !props.resumeData.birthYear
+      ageTime: (!props.resumeData.birthYear || !props.resumeData.bornMonth || !props.resumeData.bornDay)
         ? ''
         : `${props.resumeData.birthYear}-${
             !props.resumeData.bornMonth

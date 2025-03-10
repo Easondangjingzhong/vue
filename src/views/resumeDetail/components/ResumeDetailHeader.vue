@@ -129,8 +129,9 @@
         <a-tag class="tagspan" color="#a2c9fd" v-if="positionsLabelDetail">
           {{positionsLabelDetail}}
         </a-tag>
-        <a-tag class="tagspan" color="#a2c9fd" v-if="language">{{ language }}</a-tag>
+        <!-- <a-tag class="tagspan" color="#a2c9fd" v-if="language">{{ language }}</a-tag> -->
         <a-tag class="tagspan" color="#a2c9fd" v-if="personLabel">{{ personLabel }}</a-tag>
+        <a-tag class="tagspan" color="#a2c9fd" v-if="manageLabel">{{ manageLabel }}</a-tag>
         <PlusSquareFilled v-if="!tagFlag && showResumeAdd" @click="handleShowAddTag"/>
         <span v-if="tagFlag">
         <a-input v-if="!tagType" size="small" style="width: 80px;margin-right: 5px;" v-model:value="tagValue"/>
@@ -369,6 +370,7 @@
   const gradeLabel = ref(''); //品级
   //const gradeLabelTitle = ref(''); //品级
   const language = ref(''); //语言
+  const manageLabel = ref(''); //管理
   //const languageTitle = ref(''); //语言
   //const pastLabel = ref(props.resumeData.pastLabel);
   const currentLabel = ref(props.resumeData.currentLabel);
@@ -395,6 +397,7 @@
   gradeLabel.value = currentArr[2];
   positionsLabel.value = currentArr[3];
   rankLabel.value = currentArr[4];
+  manageLabel.value = currentArr.length > 6 ? `${currentArr[6]}${currentArr[7]}` : "";
   language.value = resumeArr[5];
   const industryLabelDetail = ref("");
   if (industryLabel.value) {

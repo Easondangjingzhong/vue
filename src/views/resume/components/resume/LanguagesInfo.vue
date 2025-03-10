@@ -34,15 +34,15 @@
           <a-col :span="24">
             <a-form-item
               name="languageAbility0"
-              label="英语"
+              :label="themeLanguage?.English?.label"
               :label-col="{ span: 1 }"
               :wrapper-col="{ span: 23 }"
               @change="onChangeLanguageAbility"
               :rules="[{ required: false, message: '请输入语言能力' }]"
             >
               <a-checkbox-group v-model:value="languageAbility0">
-                <a-checkbox value="1">听说流利</a-checkbox>
-                <a-checkbox value="2">读写流利</a-checkbox>
+                <a-checkbox value="1">{{ themeLanguage?.English?.language1 }}</a-checkbox>
+                <a-checkbox value="2">{{ themeLanguage?.English?.language2 }}</a-checkbox>
                 <a-checkbox value="CET-4">CET-4</a-checkbox>
                 <a-checkbox value="CET-6">CET-6</a-checkbox>
                 <a-checkbox value="TEM-4">TEM-4</a-checkbox>
@@ -71,7 +71,7 @@
                     </template>
                   </a-popover>
                 </a-checkbox>
-                <a-checkbox value="3">英语不佳</a-checkbox>
+                <a-checkbox value="3">{{ themeLanguage?.English?.language3 }}</a-checkbox>
               </a-checkbox-group>
               <a style="font-size: 12px" @click="expand = !expand">
                 <template v-if="expand">
@@ -89,15 +89,15 @@
           <a-col :span="24">
             <a-form-item
               name="languageAbility1"
-              label="法语"
+              :label="themeLanguage?.French?.label"
               :label-col="{ span: 1 }"
               :wrapper-col="{ span: 23 }"
               @change="onChangeLanguageAbility"
               :rules="[{ required: false, message: '请输入语言能力' }]"
             >
               <a-checkbox-group v-model:value="languageAbility1">
-                <a-checkbox value="1">听说流利</a-checkbox>
-                <a-checkbox value="2">读写流利</a-checkbox>
+                <a-checkbox value="1">{{ themeLanguage?.French?.language1 }}</a-checkbox>
+                <a-checkbox value="2">{{ themeLanguage?.French?.language2 }}</a-checkbox>
                 <a-checkbox value="TFU-4">TFU-4</a-checkbox>
                 <a-checkbox value="TFS-4">TFS-4</a-checkbox>
                 <a-checkbox value="TFS-8">TFS-8</a-checkbox>
@@ -107,7 +107,7 @@
                 <a-checkbox value="DELF-A2">DELF-A2</a-checkbox>
                 <a-checkbox value="DELF-A3">DELF-A3</a-checkbox>
                 <a-checkbox value="DELF-A4">DELF-A4</a-checkbox>
-                <a-checkbox value="3">法语不佳</a-checkbox>
+                <a-checkbox value="3">{{ themeLanguage?.French?.language3 }}</a-checkbox>
               </a-checkbox-group>
             </a-form-item>
           </a-col>
@@ -116,21 +116,21 @@
           <a-col :span="24">
             <a-form-item
               name="languageAbility2"
-              label="日语"
+              :label="themeLanguage?.Japanese?.label"
               :label-col="{ span: 1 }"
               :wrapper-col="{ span: 23 }"
               @change="onChangeLanguageAbility"
               :rules="[{ required: false, message: '请输入语言能力' }]"
             >
               <a-checkbox-group v-model:value="languageAbility2">
-                <a-checkbox value="1">听说流利</a-checkbox>
-                <a-checkbox value="2">读写流利</a-checkbox>
+                <a-checkbox value="1">{{ themeLanguage?.Japanese?.language1 }}</a-checkbox>
+                <a-checkbox value="2">{{ themeLanguage?.Japanese?.language2 }}</a-checkbox>
                 <a-checkbox value="JLPT-N1">JLPT-N1</a-checkbox>
                 <a-checkbox value="JLPT-N2">JLPT-N2</a-checkbox>
                 <a-checkbox value="JLPT-N3">JLPT-N3</a-checkbox>
                 <a-checkbox value="JLPT-N4">JLPT-N4</a-checkbox>
                 <a-checkbox value="JLPT-N5">JLPT-N5</a-checkbox>
-                <a-checkbox value="3">日语不佳</a-checkbox>
+                <a-checkbox value="3">{{ themeLanguage?.Japanese?.language3 }}</a-checkbox>
               </a-checkbox-group>
             </a-form-item>
           </a-col>
@@ -139,22 +139,22 @@
           <a-col :span="24">
             <a-form-item
               name="languageAbility3"
-              label="德语"
+              :label="themeLanguage?.German?.label"
               :label-col="{ span: 1 }"
               :wrapper-col="{ span: 23 }"
               @change="onChangeLanguageAbility"
               :rules="[{ required: false, message: '请输入语言能力' }]"
             >
               <a-checkbox-group v-model:value="languageAbility3">
-                <a-checkbox value="1">听说流利</a-checkbox>
-                <a-checkbox value="2">读写流利</a-checkbox>
+                <a-checkbox value="1">{{ themeLanguage?.German?.language1 }}</a-checkbox>
+                <a-checkbox value="2">{{ themeLanguage?.German?.language2 }}</a-checkbox>
                 <a-checkbox value="CEFR-A1">CEFR-A1</a-checkbox>
                 <a-checkbox value="CEFR-A2">CEFR-A2</a-checkbox>
                 <a-checkbox value="CEFR-B1">CEFR-B1</a-checkbox>
                 <a-checkbox value="CEFR-B2">CEFR-B2</a-checkbox>
                 <a-checkbox value="CEFR-C1">CEFR-C1</a-checkbox>
                 <a-checkbox value="CEFR-C2">CEFR-C2</a-checkbox>
-                <a-checkbox value="3">德语不佳</a-checkbox>
+                <a-checkbox value="3">{{ themeLanguage?.German?.language3 }}</a-checkbox>
               </a-checkbox-group>
             </a-form-item>
           </a-col>
@@ -163,18 +163,18 @@
           <a-col :span="24">
             <a-form-item
               name="languageAbility6"
-              label="韩语"
+               :label="themeLanguage?.Korean?.label"
               :label-col="{ span: 1 }"
               :wrapper-col="{ span: 23 }"
               @change="onChangeLanguageAbility"
               :rules="[{ required: false, message: '请输入语言能力' }]"
             >
               <a-checkbox-group v-model:value="languageAbility6">
-                <a-checkbox value="1">听说流利</a-checkbox>
-                <a-checkbox value="2">读写流利</a-checkbox>
+                <a-checkbox value="1">{{ themeLanguage?.Korean?.language1 }}</a-checkbox>
+                <a-checkbox value="2">{{ themeLanguage?.Korean?.language2 }}</a-checkbox>
                 <a-checkbox value="TOPIK I">TOPIK I</a-checkbox>
                 <a-checkbox value="TOPIK II">TOPIK II</a-checkbox>
-                <a-checkbox value="3">韩语不佳</a-checkbox>
+                <a-checkbox value="3">{{ themeLanguage?.Korean?.language3 }}</a-checkbox>
               </a-checkbox-group>
             </a-form-item>
           </a-col>
@@ -183,16 +183,16 @@
           <a-col :span="24">
             <a-form-item
               name="languageAbility4"
-              label="粤语"
+              :label="themeLanguage?.Cantonese?.label"
               :label-col="{ span: 1 }"
               :wrapper-col="{ span: 23 }"
               @change="onChangeLanguageAbility"
               :rules="[{ required: false, message: '请输入语言能力' }]"
             >
               <a-checkbox-group v-model:value="languageAbility4">
-                <a-checkbox value="1">听说流利</a-checkbox>
-                <a-checkbox value="2">读写流利</a-checkbox>
-                <a-checkbox value="3">粤语不佳</a-checkbox>
+                <a-checkbox value="1">{{ themeLanguage?.Cantonese?.language1 }}</a-checkbox>
+                <a-checkbox value="2">{{ themeLanguage?.Cantonese?.language2 }}</a-checkbox>
+                <a-checkbox value="3">{{ themeLanguage?.Cantonese?.language3 }}</a-checkbox>
               </a-checkbox-group>
             </a-form-item>
           </a-col>
@@ -201,22 +201,22 @@
           <a-col :span="24">
             <a-form-item
               name="languageAbility5"
-              label="中文"
+              :label="themeLanguage?.Chinese?.label"
               :label-col="{ span: 1 }"
               :wrapper-col="{ span: 23 }"
               @change="onChangeLanguageAbility"
               :rules="[{ required: false, message: '请输入语言能力' }]"
             >
               <a-checkbox-group v-model:value="languageAbility5">
-                <a-checkbox value="1">听说流利</a-checkbox>
-                <a-checkbox value="2">读写流利</a-checkbox>
+                <a-checkbox value="1">{{ themeLanguage?.Chinese?.language1 }}</a-checkbox>
+                <a-checkbox value="2">{{ themeLanguage?.Chinese?.language2 }}</a-checkbox>
                 <a-checkbox value="HSK一级">HSK一级</a-checkbox>
                 <a-checkbox value="HSF二级">HSF二级</a-checkbox>
                 <a-checkbox value="HSK三级">HSK三级</a-checkbox>
                 <a-checkbox value="HSK四级">HSK四级</a-checkbox>
                 <a-checkbox value="HSK五级">HSK五级</a-checkbox>
                 <a-checkbox value="HSK六级">HSK六级</a-checkbox>
-                <a-checkbox value="3">中文不佳</a-checkbox>
+                <a-checkbox value="3">{{ themeLanguage?.Chinese?.language3 }}</a-checkbox>
               </a-checkbox-group>
             </a-form-item>
           </a-col>
@@ -226,14 +226,19 @@
   </div>
 </template>
 <script lang="ts" setup>
+import { storeToRefs } from 'pinia';
   import { DownOutlined, UpOutlined } from '@ant-design/icons-vue';
   import { useResumeStoreWithOut } from '/@/store/modules/resume';
+  import { validateLanguage } from '/@/utils/resumeTypeEn';
   const props = defineProps({
     resumeLanguageList: {
       type: Object,
       required: true,
     },
   });
+  const resumeStore = useResumeStoreWithOut();
+  const { resumeTypeEnglish } = storeToRefs(resumeStore);
+  const themeLanguage = ref(validateLanguage('englishInfo', resumeTypeEnglish.value));
   const expand = ref(false);
   let langArr = [];
   const lang = props.resumeLanguageList.languageAbility;
@@ -251,17 +256,6 @@
   const languageAbility4 = ref([]);
   const languageAbility5 = ref([]);
   const languageAbility6 = ref([]);
-  //   const state = reactive({
-  //   languageAbility0: [],
-  //   languageAbility1: [],
-  //   languageAbility2: [],
-  //   languageAbility3: [],
-  //   languageAbility4: [],
-  //   languageAbility5: [],
-  // });
-  // onMounted(() => {
-
-  // })
   interface Language {
     languageName: string;
     tinshuoLiuli: string;
@@ -273,7 +267,8 @@
   let visibleTOEFL = ref(false);
   let scoreIELTS = ref(null);
   let scoreTOEFL = ref(null);
-  const resumeStore = useResumeStoreWithOut();
+
+ 
   const onChangeLanguageAbility = (e) => {
     let languageAbility00 = languageAbility0.value.map((item) => item);
     let languageAbility11 = languageAbility1.value.map((item) => item);

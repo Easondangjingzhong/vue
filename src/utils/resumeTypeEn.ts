@@ -105,4 +105,26 @@ export function validateLanguage(type,language) {
       isRegular: {label: "统招", message: "请选择统招"},
     };
   }
+  if (type == "englishInfo" && language == "1") {
+    return {
+      English: {label: "English",language1:'‌Listen and speak fluently',language2:'Read and write fluently',language3: 'Poor English', message: "请输入语言能力"},
+      French: {label: "French",language1:'‌Listen and speak fluently',language2:'Read and write fluently',language3: 'Poor French', message: "请输入语言能力"},
+      Japanese: {label: "Japanese",language1:'‌Listen and speak fluently',language2:'Read and write fluently',language3: 'Poor Japanese', message: "请输入语言能力"},
+      German: {label: "German",language1:'‌Listen and speak fluently',language2:'Read and write fluently',language3: 'Poor German', message: "请输入语言能力"},
+      Korean: {label: "Korean",language1:'‌Listen and speak fluently',language2:'Read and write fluently',language3: 'Poor Korean', message: "请输入语言能力"},
+      Cantonese: {label: "Cantonese",language1:'‌Listen and speak fluently',language2:'Read and write fluently',language3: 'Poor Cantonese', message: "请输入语言能力"},
+      Chinese: {label: "Chinese",language1:'‌Listen and speak fluently',language2:'Read and write fluently',language3: 'Poor Chinese', message: "请输入语言能力"},
+    };
+  }
+  if (type == "englishInfo" && language != "1") {
+    return {
+      English: {label: "英语",language1:'听说流利',language2: '读写流利',language3: '英语不佳', message: "请输入语言能力"},
+      French: {label: "法语",language1:'听说流利',language2: '读写流利',language3: '法语不佳', message: "请输入语言能力"},
+      Japanese: {label: "日语",language1:'听说流利',language2: '读写流利',language3: '日语不佳', message: "请输入语言能力"},
+      German: {label: "德语",language1:'听说流利',language2: '读写流利',language3: '德语不佳', message: "请输入语言能力"},
+      Korean: {label: "韩语",language1:'听说流利',language2: '读写流利',language3: '韩语不佳', message: "请输入语言能力"},
+      Cantonese: {label: "粤语",language1:'听说流利',language2: '读写流利',language3: '粤语不佳', message: "请输入语言能力"},
+      Chinese: {label: "中文",language1:'听说流利',language2: '读写流利',language3: '中文不佳', message: "请输入语言能力"},
+    };
+  }
 }

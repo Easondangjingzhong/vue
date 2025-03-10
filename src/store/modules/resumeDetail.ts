@@ -215,11 +215,12 @@ export const useResumeDetailStore = defineStore({
     /**
      * 查询职位排除门店销售和门店支持
      */
-    async queryResumePositions() {
+    async queryResumePositions(jobCategory='店铺') {
       let formData = new FormData();
       formData.append('industry', '');
       formData.append('jobCategory2', '');
       formData.append('management2', '');
+      formData.append('jobCategory', jobCategory);
       const res = await fetchApi.queryResumePositions(formData);
       return res;
     },

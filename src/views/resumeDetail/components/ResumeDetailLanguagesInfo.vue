@@ -37,13 +37,21 @@
       </a-col>
       <a-divider :dashed="true" style="background-color: #ccc; margin-top: 0" />
     </a-row>
-    <a-row :gutter="24" class="resume_row" v-for="item in Languages">
-      <a-col :span="24">
+    <a-row :gutter="24" class="resume_row" v-for="item in LanguagesTemplates">
+      <a-col :span="24" v-if="resumeTypeEnglish != '1'">
         {{ item.languageName }}:<span class="resume_span">
         <span v-if="item.tinshuoLiuli == 1">听说流利;</span>
         <span v-if="item.duxieLiuli == 2">读写流利;</span>
         <span v-if="item.languageLevel">{{ item.languageLevel }}</span>
         <span v-if="item.bujia == 3">{{ item.languageName }}不佳;</span>
+      </span>
+      </a-col>
+      <a-col :span="24" v-if="resumeTypeEnglish == '1'">
+        {{ item.languageName }}:<span class="resume_span">
+        <span v-if="item.tinshuoLiuli == 1">‌Listen and speak fluently;</span>
+        <span v-if="item.duxieLiuli == 2">Read and write fluently;</span>
+        <span v-if="item.languageLevel">{{ item.languageLevel }}</span>
+        <span v-if="item.bujia">{{ item.bujia }};</span>
       </span>
       </a-col>
     </a-row>
@@ -86,15 +94,15 @@
         <a-col :span="24">
           <a-form-item
             name="languageAbility0"
-            label="英语"
+            :label="themeLanguage?.English?.label"
             :label-col="{ span: 1 }"
             :wrapper-col="{ span: 23 }"
             @change="onChangeLanguageAbility"
             :rules="[{ required: false, message: '请输入语言能力' }]"
           >
             <a-checkbox-group v-model:value="languageAbility0">
-              <a-checkbox value="1">听说流利</a-checkbox>
-              <a-checkbox value="2">读写流利</a-checkbox>
+              <a-checkbox value="1">{{ themeLanguage?.English?.language1 }}</a-checkbox>
+              <a-checkbox value="2">{{ themeLanguage?.English?.language2 }}</a-checkbox>
               <a-checkbox value="CET-4">CET-4</a-checkbox>
               <a-checkbox value="CET-6">CET-6</a-checkbox>
               <a-checkbox value="TEM-4">TEM-4</a-checkbox>
@@ -123,7 +131,7 @@
                   </template>
                 </a-popover>
               </a-checkbox>
-              <a-checkbox value="3">英语不佳</a-checkbox>
+              <a-checkbox value="3">{{ themeLanguage?.English?.language3 }}</a-checkbox>
             </a-checkbox-group>
             <a style="font-size: 12px" @click="expand = !expand">
               <template v-if="expand">
@@ -141,15 +149,15 @@
         <a-col :span="24">
           <a-form-item
             name="languageAbility1"
-            label="法语"
+            :label="themeLanguage?.French?.label"
             :label-col="{ span: 1 }"
             :wrapper-col="{ span: 23 }"
             @change="onChangeLanguageAbility"
             :rules="[{ required: false, message: '请输入语言能力' }]"
           >
             <a-checkbox-group v-model:value="languageAbility1">
-              <a-checkbox value="1">听说流利</a-checkbox>
-              <a-checkbox value="2">读写流利</a-checkbox>
+              <a-checkbox value="1">{{ themeLanguage?.French?.language1 }}</a-checkbox>
+              <a-checkbox value="2">{{ themeLanguage?.French?.language2 }}</a-checkbox>
               <a-checkbox value="TFU-4">TFU-4</a-checkbox>
               <a-checkbox value="TFS-4">TFS-4</a-checkbox>
               <a-checkbox value="TFS-8">TFS-8</a-checkbox>
@@ -159,7 +167,7 @@
               <a-checkbox value="DELF-A2">DELF-A2</a-checkbox> -->
               <a-checkbox value="DELF-A3">DELF-A3</a-checkbox>
               <a-checkbox value="DELF-A4">DELF-A4</a-checkbox>
-              <a-checkbox value="3">法语不佳</a-checkbox>
+              <a-checkbox value="3">{{ themeLanguage?.French?.language3 }}</a-checkbox>
             </a-checkbox-group>
           </a-form-item>
         </a-col>
@@ -168,21 +176,21 @@
         <a-col :span="24">
           <a-form-item
             name="languageAbility2"
-            label="日语"
+            :label="themeLanguage?.Japanese?.label"
             :label-col="{ span: 1 }"
             :wrapper-col="{ span: 23 }"
             @change="onChangeLanguageAbility"
             :rules="[{ required: false, message: '请输入语言能力' }]"
           >
             <a-checkbox-group v-model:value="languageAbility2">
-              <a-checkbox value="1">听说流利</a-checkbox>
-              <a-checkbox value="2">读写流利</a-checkbox>
+              <a-checkbox value="1">{{ themeLanguage?.Japanese?.language1 }}</a-checkbox>
+              <a-checkbox value="2">{{ themeLanguage?.Japanese?.language2 }}</a-checkbox>
               <a-checkbox value="JLPT-N1">JLPT-N1</a-checkbox>
               <a-checkbox value="JLPT-N2">JLPT-N2</a-checkbox>
               <a-checkbox value="JLPT-N3">JLPT-N3</a-checkbox>
               <a-checkbox value="JLPT-N4">JLPT-N4</a-checkbox>
               <a-checkbox value="JLPT-N5">JLPT-N5</a-checkbox>
-              <a-checkbox value="3">日语不佳</a-checkbox>
+              <a-checkbox value="3">{{ themeLanguage?.Japanese?.language3 }}</a-checkbox>
             </a-checkbox-group>
           </a-form-item>
         </a-col>
@@ -191,22 +199,22 @@
         <a-col :span="24">
           <a-form-item
             name="languageAbility3"
-            label="德语"
+            :label="themeLanguage?.German?.label"
             :label-col="{ span: 1 }"
             :wrapper-col="{ span: 23 }"
             @change="onChangeLanguageAbility"
             :rules="[{ required: false, message: '请输入语言能力' }]"
           >
             <a-checkbox-group v-model:value="languageAbility3">
-              <a-checkbox value="1">听说流利</a-checkbox>
-              <a-checkbox value="2">读写流利</a-checkbox>
+              <a-checkbox value="1">{{ themeLanguage?.German?.language1 }}</a-checkbox>
+              <a-checkbox value="2">{{ themeLanguage?.German?.language2 }}</a-checkbox>
               <a-checkbox value="CEFR-A1">CEFR-A1</a-checkbox>
               <a-checkbox value="CEFR-A2">CEFR-A2</a-checkbox>
               <a-checkbox value="CEFR-B1">CEFR-B1</a-checkbox>
               <a-checkbox value="CEFR-B2">CEFR-B2</a-checkbox>
               <a-checkbox value="CEFR-C1">CEFR-C1</a-checkbox>
               <a-checkbox value="CEFR-C2">CEFR-C2</a-checkbox>
-              <a-checkbox value="3">德语不佳</a-checkbox>
+              <a-checkbox value="3">{{ themeLanguage?.German?.language3 }}</a-checkbox>
             </a-checkbox-group>
           </a-form-item>
         </a-col>
@@ -215,18 +223,18 @@
         <a-col :span="24">
           <a-form-item
             name="languageAbility6"
-            label="韩语"
+            :label="themeLanguage?.Korean?.label"
             :label-col="{ span: 1 }"
             :wrapper-col="{ span: 23 }"
             @change="onChangeLanguageAbility"
             :rules="[{ required: false, message: '请输入语言能力' }]"
           >
             <a-checkbox-group v-model:value="languageAbility6">
-              <a-checkbox value="1">听说流利</a-checkbox>
-              <a-checkbox value="2">读写流利</a-checkbox>
+              <a-checkbox value="1">{{ themeLanguage?.Korean?.language1 }}</a-checkbox>
+              <a-checkbox value="2">{{ themeLanguage?.Korean?.language2 }}</a-checkbox>
               <a-checkbox value="TOPIK I">TOPIK I</a-checkbox>
               <a-checkbox value="TOPIK II">TOPIK II</a-checkbox>
-              <a-checkbox value="3">韩语不佳</a-checkbox>
+              <a-checkbox value="3">{{ themeLanguage?.Korean?.language3 }}</a-checkbox>
             </a-checkbox-group>
           </a-form-item>
         </a-col>
@@ -235,16 +243,16 @@
         <a-col :span="24">
           <a-form-item
             name="languageAbility4"
-            label="粤语"
+            :label="themeLanguage?.Cantonese?.label"
             :label-col="{ span: 1 }"
             :wrapper-col="{ span: 23 }"
             @change="onChangeLanguageAbility"
             :rules="[{ required: false, message: '请输入语言能力' }]"
           >
             <a-checkbox-group v-model:value="languageAbility4">
-              <a-checkbox value="1">听说流利</a-checkbox>
-              <a-checkbox value="2">读写流利</a-checkbox>
-              <a-checkbox value="3">粤语不佳</a-checkbox>
+              <a-checkbox value="1">{{ themeLanguage?.Cantonese?.language1 }}</a-checkbox>
+              <a-checkbox value="2">{{ themeLanguage?.Cantonese?.language2 }}</a-checkbox>
+              <a-checkbox value="3">{{ themeLanguage?.Cantonese?.language3 }}</a-checkbox>
             </a-checkbox-group>
           </a-form-item>
         </a-col>
@@ -253,22 +261,22 @@
         <a-col :span="24">
           <a-form-item
             name="languageAbility5"
-            label="中文"
+            :label="themeLanguage?.Chinese?.label"
             :label-col="{ span: 1 }"
             :wrapper-col="{ span: 23 }"
             @change="onChangeLanguageAbility"
             :rules="[{ required: false, message: '请输入语言能力' }]"
           >
             <a-checkbox-group v-model:value="languageAbility5">
-              <a-checkbox value="1">听说流利</a-checkbox>
-              <a-checkbox value="2">读写流利</a-checkbox>
+              <a-checkbox value="1">{{ themeLanguage?.Chinese?.language1 }}</a-checkbox>
+              <a-checkbox value="2">{{ themeLanguage?.Chinese?.language2 }}</a-checkbox>
               <a-checkbox value="HSK一级">HSK一级</a-checkbox>
               <a-checkbox value="HSF二级">HSF二级</a-checkbox>
               <a-checkbox value="HSK三级">HSK三级</a-checkbox>
               <a-checkbox value="HSK四级">HSK四级</a-checkbox>
               <a-checkbox value="HSK五级">HSK五级</a-checkbox>
               <a-checkbox value="HSK六级">HSK六级</a-checkbox>
-              <a-checkbox value="3">中文不佳</a-checkbox>
+              <a-checkbox value="3">{{ themeLanguage?.Chinese?.language3 }}</a-checkbox>
             </a-checkbox-group>
           </a-form-item>
         </a-col>
@@ -285,15 +293,20 @@
   </div>
 </template>
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
   import { FormOutlined, DownOutlined, UpOutlined } from '@ant-design/icons-vue';
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
+  import { validateLanguage } from '/@/utils/resumeTypeEn';
   import { message } from 'ant-design-vue';
+  const resumeDetailStore = useResumeDetailStore();
+  const { resumeTypeEnglish } = storeToRefs(resumeDetailStore);
+  const themeLanguage = ref(validateLanguage('englishInfo', resumeTypeEnglish.value));
   message.config({
   duration: 2, // 提示时常单位为s
   top: '50%', // 距离顶部的位置
   maxCount: 3 // 最多显示提示信息条数(后面的会替换前面的提示)
 })
-  const resumeDetailStore = useResumeDetailStore();
+ 
   const props = defineProps({
     Languages: {
       type: Object,
@@ -312,6 +325,8 @@
       required: true,
     }
   });
+  const LanguagesTemplates = ref([]);
+
   const expandUpdateChinese = ref(true);
   if (props.resumeData.nationality == "中国" || props.resumeData.nationality == "China" ) {
     expandUpdateChinese.value = false;
@@ -335,9 +350,62 @@
   let languages = [];
   
   const handleLanguages = () => {
+  langArr = [];
+  langArr1 = [];
+  langArr2 = [];
+  langArr3 = [];
+  langArr4 = [];
+  langArr5 = [];
+  langArr6 = [];
+  scoreIELTS = ref(null);
+  scoreTOEFL = ref(null);
+  languages = [];
     const lang = props.Languages;
     languages = props.Languages;
-    console.log("222222")
+    if (resumeTypeEnglish.value == "1") {
+      languages.forEach(item => {
+        let template = {};
+        if(item.languageName == '英语') {
+          template = {...item,languageName: 'English'};
+          if (item.bujia == 3) {
+            template = {...template,bujia: themeLanguage?.value?.English?.language3};
+          }
+        } else if(item.languageName == '法语') {
+          template = {...item,languageName: 'French'};
+          if (item.bujia == 3) {
+            template = {...template,bujia: themeLanguage?.value?.French?.language3};
+          }
+        } else if(item.languageName == '日语') {
+          template = {...item,languageName: 'Japanese'};
+          if (item.bujia == 3) {
+            template = {...template,bujia: themeLanguage?.value?.Japanese?.language3};
+          }
+        } else if(item.languageName == '德语') {
+          template = {...item,languageName: 'German'};
+          if (item.bujia == 3) {
+            template = {...template,bujia: themeLanguage?.value?.German?.language3};
+          }
+        } else if(item.languageName == '韩语') {
+          template = {...item,languageName: 'Korean'};
+          if (item.bujia == 3) {
+            template = {...template,bujia: themeLanguage?.value?.Korean?.language3};
+          }
+        } else if(item.languageName == '粤语') {
+          template = {...item,languageName: 'Cantonese'};
+          if (item.bujia == 3) {
+            template = {...template,bujia: themeLanguage?.value?.Cantonese?.language3};
+          }
+        } else if(item.languageName == '中文') {
+          template = {...item,languageName: 'Chinese'};
+          if (item.bujia == 3) {
+            template = {...template,bujia: themeLanguage?.value?.Chinese?.language3};
+          }
+        }
+        LanguagesTemplates.value.push(template)
+      })
+    } else {
+      LanguagesTemplates.value = props.Languages;
+    }
   if (lang && lang.length > 0) {
     lang.forEach((element) => {
       if (element.languageName == '英语') {
@@ -463,7 +531,7 @@
   }
   }
   handleLanguages();
-  watch(() => props.Languages,() => {
+  watch(props,() => {
     handleLanguages();
   })
   const languageAbility0 = ref(langArr.length > 0 ? langArr : []);

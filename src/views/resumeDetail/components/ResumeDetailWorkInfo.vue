@@ -667,7 +667,7 @@
       !props.resumeData.positionName ||
       !props.resumeData.workDuty ||
       !props.resumeData.cityName ||
-      ((props.resumeData.category == '店铺' || props.indexNum < 2) &&
+      ((props.resumeData.category == '店铺' || props.indexNum < 1) &&
         !props.resumeData.brandName) ||
       props.resumeData.brandName == 'OFFICE'
     ) {
@@ -693,7 +693,7 @@
         !newProps.positionName ||
         !newProps.workDuty ||
         !newProps.cityName ||
-        ((newProps.category == '店铺' || props.indexNum < 2) && !newProps.brandName) ||
+        ((newProps.category == '店铺' || props.indexNum < 1) && !newProps.brandName) ||
         newProps.brandName == 'OFFICE'
       ) {
         workWholeFlagTemp.value = true;
@@ -743,6 +743,10 @@
   });
   if (!props.resumeData?.id) {
     expend.value = !expend.value;
+    if (props.indexNum > 0) {
+      brandCheckBox.value = true;
+      categoryFlag.value = false;
+    }
   }
 
   //工作经历结束年月是否为"至今" false 展示日期组件 true 展示至今
@@ -865,7 +869,7 @@
     handleCityName(formState.cityName, formState.marketName.label);
     handleMarketBrandFloor();
     handleCompanyType();
-    if (props.indexNum > 1) {
+    if (props.indexNum > 0) {
       brandCheckBoxShow.value = true;
       if (!props.resumeData?.brandName && props.resumeData?.category == 'OFFICE') {
         brandCheckBox.value = true;
@@ -1126,6 +1130,7 @@
     brnadNameEn.value = '';
     if (formState.category == '店铺' || formState.category == 'Store') {
       categoryFlag.value = true;
+      brandCheckBox.value = false;
       let tempOptionPositions = [];
       positionsList.value.forEach((item) => {
         //@ts-ignore
@@ -1140,7 +1145,7 @@
       });
       optionsPositions.value = tempOptionPositions;
     } else {
-      if (props.indexNum > 1) {
+      if (props.indexNum > 0) {
       brandCheckBoxShow.value = true;
       if (!formState.brandName.label && formState.category == 'OFFICE') {
         brandCheckBox.value = true;
@@ -1156,7 +1161,7 @@
         formState.brandName = { value: '', label: '' };
       }
       //formState.brandName ={ value: '', label: '' };
-      resumeDetailStore.queryResumePositions().then((res) => {
+      resumeDetailStore.queryResumePositions(formState.category).then((res) => {
         let tempOption = [];
         res.info.postList.forEach((item) => {
           //@ts-ignore
@@ -1201,7 +1206,7 @@
   };
   const onFinish = async () => {
     if (
-      (formState.category == '店铺' || props.indexNum < 2) &&
+      (formState.category == '店铺' || props.indexNum < 1) &&
       !brandFlag.value &&
       !formState.brandName.label
     ) {
@@ -1209,7 +1214,7 @@
       return;
     }
     if (
-      (formState.category == '店铺' || props.indexNum < 2) &&
+      (formState.category == '店铺' || props.indexNum < 1) &&
       brandFlag.value &&
       !brandNameCn.value &&
       !brnadNameEn.value

@@ -99,10 +99,9 @@
     e.stopPropagation();
     openSortResume.value = true;
   }
-  watch(
-    resumeMenu,
-    () => {
-      let resumeMenuTemp = [];
+  
+  const resumeMenuChange = () => {
+    let resumeMenuTemp = [];
       resumeMenu.value.map((item) => {
         //@ts-ignore
         if (item.key == '6') {
@@ -116,7 +115,7 @@
             title: `${item.title} ${item.label}`,
             children: item.children?.map((subItem) => ({
               key: subItem.key,
-              label: h('div', { class: 'resume-menu-title' }, [
+              label: h('div', { class: state.selectedKeys.includes(subItem.key) ? 'resume-menu-title resume-menu-title-active' : 'resume-menu-title' }, [
                 h('span', { class: 'resume-menu-title-content' }, subItem.title),
                 h('span', { class: 'resume-menu-title-sort-content-svg',onClick: (e) => {
                   e.stopPropagation();
@@ -130,7 +129,7 @@
               type: subItem.type,
               children: subItem.children?.map((tempItem) => ({
                 key: tempItem.key,
-                label: h('div', { class: 'resume-menu-title' }, [
+                label: h('div', { class: state.selectedKeys.includes(tempItem.key) ? 'resume-menu-title resume-menu-title-active' : 'resume-menu-title' }, [
                   h('span', { class: 'resume-menu-title-content' }, tempItem.title),
                   h('span', { class: 'resume-menu-title-content-num' }, tempItem.label),
                 ]),
@@ -138,7 +137,7 @@
                 type: tempItem.type,
                 children: tempItem.children?.map((tempSubItem) => ({
                   key: tempSubItem.key,
-                  label: h('div', { class: 'resume-menu-title' }, [
+                  label: h('div', { class: state.selectedKeys.includes(tempSubItem.key) ? 'resume-menu-title resume-menu-title-active' : 'resume-menu-title' }, [
                     h('span', { class: 'resume-menu-title-content' }, tempSubItem.title),
                     h('span', { class: 'resume-menu-title-content-num' }, tempSubItem.label),
                   ]),
@@ -160,7 +159,7 @@
             title: `${item.title} ${item.label}`,
             children: item.children?.map((subItem) => ({
               key: subItem.key,
-              label: h('div', { class: 'resume-menu-title' }, [
+              label: h('div', { class: state.selectedKeys.includes(subItem.key) ? 'resume-menu-title resume-menu-title-active' : 'resume-menu-title' }, [
                 h('span', { class: 'resume-menu-title-content' }, subItem.title),
                 h('span', { class: 'resume-menu-title-content-svg',onClick: (e) => {
                   e.stopPropagation();
@@ -171,7 +170,7 @@
               type: subItem.type,
               children: subItem.children?.map((tempItem) => ({
                 key: tempItem.key,
-                label: h('div', { class: 'resume-menu-title' }, [
+                label: h('div', { class: state.selectedKeys.includes(tempItem.key) ? 'resume-menu-title resume-menu-title-active' : 'resume-menu-title' }, [
                   h('span', { class: 'resume-menu-title-content' }, tempItem.title),
                   h('span', { class: 'resume-menu-title-content-num' }, tempItem.label),
                 ]),
@@ -179,7 +178,7 @@
                 type: tempItem.type,
                 children: tempItem.children?.map((tempSubItem) => ({
                   key: tempSubItem.key,
-                  label: h('div', { class: 'resume-menu-title' }, [
+                  label: h('div', { class: state.selectedKeys.includes(tempSubItem.key) ? 'resume-menu-title resume-menu-title-active' : 'resume-menu-title' }, [
                     h('span', { class: 'resume-menu-title-content' }, tempSubItem.title),
                     h('span', { class: 'resume-menu-title-content-num' }, tempSubItem.label),
                   ]),
@@ -202,7 +201,7 @@
             title: `${item.title} ${item.label}`,
             children: item.children?.map((subItem) => ({
               key: subItem.key,
-              label: h('div', { class: 'resume-menu-title' }, [
+              label: h('div', { class: state.selectedKeys.includes(subItem.key) ? 'resume-menu-title resume-menu-title-active' : 'resume-menu-title' }, [
                 h('span', { class: 'resume-menu-title-content' }, subItem.title),
                 h('span', { class: 'resume-menu-title-content-num' }, subItem.label),
               ]),
@@ -210,7 +209,7 @@
               type: subItem.type,
               children: subItem.children?.map((tempItem) => ({
                 key: tempItem.key,
-                label: h('div', { class: 'resume-menu-title' }, [
+                label: h('div', { class: state.selectedKeys.includes(tempItem.key) ? 'resume-menu-title resume-menu-title-active' : 'resume-menu-title' }, [
                   h('span', { class: 'resume-menu-title-content' }, tempItem.title),
                   h('span', { class: 'resume-menu-title-content-num' }, tempItem.label),
                 ]),
@@ -218,7 +217,7 @@
                 type: tempItem.type,
                 children: tempItem.children?.map((tempSubItem) => ({
                   key: tempSubItem.key,
-                  label: h('div', { class: 'resume-menu-title' }, [
+                  label: h('div', { class: state.selectedKeys.includes(tempSubItem.key) ? 'resume-menu-title resume-menu-title-active' : 'resume-menu-title' }, [
                     h('span', { class: 'resume-menu-title-content' }, tempSubItem.title),
                     h('span', { class: 'resume-menu-title-content-num' }, tempSubItem.label),
                   ]),
@@ -237,11 +236,12 @@
             title: `${item.title} ${item.label}`,
             children: item.children?.map((subItem) => ({
               key: subItem.key,
-              label: h('div', { class: 'resume-menu-title' }, [
+              label: h('div', { class: state.selectedKeys.includes(subItem.key) ? 'resume-menu-title resume-menu-title-active' : 'resume-menu-title' }, [
               (subItem.key == "teamData" ? h('span', { class: 'resume-menu-title-content-team',onClick: (e) => {
                   e.stopPropagation();
                   state.selectedKeys = [subItem.key]
-                    resumeList.fetchTeamData('teamLevel1_9999',"1");
+                  console.log(state.selectedKeys)
+                  resumeList.fetchTeamData('teamLevel1_9999',"1");
                 }, }, subItem.title) : h('span', { class: 'resume-menu-title-content' }, subItem.title)),
                 h('span', { class: 'resume-menu-title-content-num' }, subItem.label),
               ]),
@@ -249,11 +249,11 @@
               type: subItem.type,
               children: subItem.children?.map((tempItem) => ({
                 key: tempItem.key,
-                label: h('div', { class: 'resume-menu-title' }, [
+                label: h('div', { class: state.selectedKeys.includes(tempItem.key) ? 'resume-menu-title resume-menu-title-active' : 'resume-menu-title' }, [
                 (subItem.key == "teamData" ? h('span', { class: 'resume-menu-title-content-team',onClick: (e) => {
                   e.stopPropagation();
                   state.selectedKeys = [tempItem.key]
-                    resumeList.fetchTeamData(tempItem.key,"1");
+                  resumeList.fetchTeamData(tempItem.key,"1");
                 }, }, tempItem.title) : h('span', { class: 'resume-menu-title-content' }, tempItem.title)),
                   h('span', { class: 'resume-menu-title-content-num' }, tempItem.label),
                 ]),
@@ -261,7 +261,7 @@
                 type: tempItem.type,
                 children: tempItem.children?.map((tempSubItem) => ({
                   key: tempSubItem.key,
-                  label: h('div', { class: 'resume-menu-title' }, [
+                  label: h('div', { class: state.selectedKeys.includes(tempSubItem.key) ? 'resume-menu-title resume-menu-title-active' : 'resume-menu-title' }, [
                     h('span', { class: 'resume-menu-title-content' }, tempSubItem.title),
                     h('span', { class: 'resume-menu-title-content-num' }, tempSubItem.label),
                   ]),
@@ -275,6 +275,11 @@
         }
       });
       items.value = resumeMenuTemp;
+  }
+  watch(
+    resumeMenu,
+    () => {
+      resumeMenuChange();
     },
     { deep: true, immediate: true },
   );
@@ -343,9 +348,11 @@
         })
       }
    //@ts-ignore
-    state.selectedKeys = key.keyPath;
+    state.selectedKeys = [key.key];
+    console.log(state.selectedKeys)
     //@ts-ignore
     resumeList.fetchTeamData(key.key);
+    resumeMenuChange();
   };
   
   const resumeLoginNameFlag = ref(false);
@@ -384,8 +391,8 @@
     });
   }
 </script>
-<style lang="css">
-  .resume-menu {
+<style lang="css" scoped>
+   :deep(.resume-menu) {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -402,7 +409,7 @@
     padding: 5px;
     transition: width 0.3s cubic-bezier(0.2, 0, 0, 1) 0s;
   }
-  .resume-menu-item {
+  :deep(.resume-menu-item) {
     height: 40px;
     line-height: 40px;
     padding-inline: 16px;
@@ -420,34 +427,34 @@
     transition: border-color 0.3s, background 0.3s,
       padding 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
   }
-  .resume-menu-item:hover {
+  :deep(.resume-menu-item:hover) {
     background-color: rgba(0, 0, 0, 0.06);
   }
-  .resume-menu-title-one {
+  :deep(.resume-menu-title-one) {
     display: flex;
     justify-content: space-between;
     transition: border-color 0.3s, background 0.3s, padding 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
     font-weight: 600;
   }
-  .resume-menu-item:hover .resume-menu-title-content-num,
-  .resume-menu-item:hover .resume-menu-title-content {
+  :deep(.resume-menu-item:hover .resume-menu-title-content-num),
+  :deep(.resume-menu-item:hover .resume-menu-title-content) {
     background: none;
   }
-  .resume-menu-item:hover .active .resume-menu-title-content-num {
+  :deep(.resume-menu-item:hover .active .resume-menu-title-content-num) {
     color: #fff;
   }
-  .resume-menu .active {
+  :deep(.resume-menu .active) {
     background-color: #4285f4;
     border-radius: 8px;
   }
-  .resume-menu .active .resume-menu-title-content {
+  :deep(.resume-menu .active .resume-menu-title-content) {
     color: #fff;
   }
-  .resume-menu .level {
+  :deep(.resume-menu .level) {
     font-weight: 700;
     padding-left: 4px;
   }
-  .resume-menu-title {
+  :deep(.resume-menu-title) {
     display: flex;
     justify-content: space-between;
     transition: border-color 0.3s, background 0.3s, padding 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
@@ -457,8 +464,8 @@
     line-height: 40px;
     align-items: center;
   }
-  .resume-menu-title-content-team,
-  .resume-menu-title-content {
+  :deep(.resume-menu-title-content-team),
+  :deep(.resume-menu-title-content) {
     min-width: 0;
     overflow: hidden;
     height: 40px;
@@ -467,10 +474,10 @@
     opacity: 1;
     transition: opacity 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), margin 0.3s, color 0.3s;
   }
-  .resume-menu-title-content-team {
+  :deep(.resume-menu-title-content-team) {
     min-width: 160px;
   }
-  .resume-menu-title-content-num {
+  :deep(.resume-menu-title-content-num) {
     background-color: #f1f0f0;
     padding: 0rem 0.03646rem;
     text-shadow: none;
@@ -478,10 +485,10 @@
     display: inline-block;
     line-height: 1.5;
   }
-  .resume-menu-item-only-child {
+  :deep(.resume-menu-item-only-child) {
     padding-left: 48px;
   }
-  .resume-menu .resume-menu-item-divider {
+  :deep(.resume-menu .resume-menu-item-divider) {
     overflow: hidden;
     line-height: 0;
     border-color: rgba(5, 5, 5, 0.06);
@@ -491,20 +498,83 @@
     margin-block: 1px;
     padding: 0;
   }
-  .resume-menu-title-content-login-name {
+  :deep(.resume-menu-title-content-login-name) {
     width: 17px;
   }
-  .resume-menu-title-content-svg {
+  :deep( .resume-menu-title-content-svg) {
     width: 17px;
   }
-  .resume-menu-title-sort-content-svg {
+  :deep(.resume-menu-title-sort-content-svg) {
     width: 32px;
   }
-  .resume-menu-title-sort-content-svg svg,
-  .resume-menu-title-content-login-name svg,
-  .resume-menu-title-content-svg svg{
+  :deep(.resume-menu-title-sort-content-svg svg),
+  :deep(.resume-menu-title-content-login-name svg),
+  :deep(.resume-menu-title-content-svg svg){
     width: 15px;
     height: 15px;
     margin-top: 10px;
   }
+  :deep(.ant-menu-light .ant-menu-item-selected) {
+    background-color: inherit;
+  }
+  /* :deep(.resume-menu-title-active) {
+    position: relative;
+    transition: border-color 0.3s, background 0.3s, padding 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
+  } */
+  /* :deep(.resume-menu-title-active::after) {
+    content: '';
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 230px;
+    height: 30px;
+    border: 2px solid #0052cb;
+  } */
+  :deep(.ant-menu-submenu-title:has(.resume-menu-title-active)) {
+    position: relative;
+    transition: border-color 0.3s, background 0.3s, padding 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+  :deep(.ant-menu-submenu-title:has(.resume-menu-title-active)::after) {
+    content: '';
+    position: absolute;
+    top: 0px;
+    right: 2px;
+    width: 280px;
+    height: 40px;
+    border: 2px solid #0052cb;
+  }
+  :deep(.ant-menu-submenu-title:has(.resume-menu-title-active)::before) {
+    content: '';
+    background-image: url("/@/assets/images/2.png");
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    bottom: 1px;
+    right: 3px;
+    background-size: cover;
+  }
+  :deep(.ant-menu-item:has(.resume-menu-title-active)) {
+    position: relative;
+    transition: border-color 0.3s, background 0.3s, padding 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+  :deep(.ant-menu-item:has(.resume-menu-title-active)::after) {
+    content: '';
+    position: absolute;
+    top: 0px;
+    right: 2px;
+    width: 280px;
+    height: 40px;
+    border: 2px solid #0052cb;
+  }
+  :deep(.ant-menu-item:has(.resume-menu-title-active)::before) {
+    content: '';
+    background-image: url("/@/assets/images/2.png");
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    bottom: 1px;
+    right: 3px;
+    background-size: cover;
+  }
+  
 </style>
