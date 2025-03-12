@@ -52,6 +52,7 @@ export const routerQuery = async () => {
    }
   })
 }
+
 /**
  * 跳转简历详情页面
  * @param resumeId 简历id

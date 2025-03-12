@@ -342,6 +342,11 @@
     } else {
       resumeProgressDetailTitle.value += "自我评价完整10分"
     }
+    setTimeout(() => {
+      if (resumeProgressDetailScore.value != props.resumeData.resumeProgress) {
+        resumeDetailStore.updateResumeProgressDetailScore(resumeProgressDetailScore.value);
+      }
+    },500)
   }
   resumeProgressDetail();
   watch(() => personWholeFlag.value, () => {

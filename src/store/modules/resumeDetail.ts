@@ -32,6 +32,7 @@ interface ResumeDetailState {
   educationWholeFlag: boolean; //简历教育信息完整 true false 20 
   languageWholeFlag: boolean; //简历语言信息完整 false true 10 
   selfWholeFlag: boolean; //简历自我评价信息完整 true false 10 
+  workWholeFlagAtShcool:boolean;//是否应届毕业生 true 是 false 
 }
 const loginVueUser: {loginName: "", loginId: "", loginTocken: "",loginType: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
 export const useResumeDetailStore = defineStore({
@@ -66,6 +67,7 @@ export const useResumeDetailStore = defineStore({
     educationWholeFlag: false,
     languageWholeFlag: true,
     selfWholeFlag: false,
+    workWholeFlagAtShcool: false,
   }),
   actions: {
     /**
@@ -785,6 +787,18 @@ export const useResumeDetailStore = defineStore({
       formData.append('resumeId', resumeId);
       formData.append('workId', workId);
       const res = await fetchApi.checkWorkNewtest(formData);
+      return res;
+    },
+    /**
+     * 根据简历详情同步简历分数
+     * @returns 
+     */
+    async updateResumeProgressDetailScore(resumeProgress) {
+      let formData = new FormData();
+      const resumeId = this.resumeDetail.resumeId.toString();
+      formData.append('id', resumeId);
+      formData.append('resumeProgress', resumeProgress);
+      const res = await fetchApi.updateResumeProgressDetailScore(formData);
       return res;
     },
   },

@@ -58,6 +58,7 @@ export function validateLanguage(type,language) {
       marketName: {label: "Market", message: "请选择商场"},
       brandName: {label: "Brand", message: "请选择品牌"},
       workFloor: {label: "Floor", message: "请选择楼层"},
+      workRetail: {label: "WorkRetail", message: "请选择行业"},
     };
   }
   if (type == "workInfo" && language != "1") {
@@ -81,6 +82,7 @@ export function validateLanguage(type,language) {
       marketName: {label: "商场", message: "请选择商场"},
       brandName: {label: "品牌", message: "请选择品牌"},
       workFloor: {label: "楼层", message: "请选择楼层"},
+      workRetail: {label: "行业", message: "请选择行业"},
     };
   }
   if (type == "educationInfo" && language == "1") {
@@ -88,7 +90,7 @@ export function validateLanguage(type,language) {
       schoolName: {label: "School Name", message: "请输入学校名称"},
       startYear: {label: "Start Time", message: "请输入开始年月"},
       endYear: {label: "Expiry Time", message: "请输入结束年月"},
-      atSchool: {label: "At School", message: "请选择在校"},
+      atSchool: {label: "Fresh Graduates", message: "请选择应届毕业生"},
       degree: {label: "Degree", message: "请输入学历"},
       majorName: {label: "Major", message: "请输入专业名称"},
       isRegular: {label: "Regular", message: "请选择统招"},
@@ -99,7 +101,7 @@ export function validateLanguage(type,language) {
       schoolName: {label: "学校名称", message: "请输入学校名称"},
       startYear: {label: "开始年月", message: "请输入开始年月"},
       endYear: {label: "结束年月", message: "请输入结束年月"},
-      atSchool: {label: "在校", message: "请选择在校"},
+      atSchool: {label: "应届毕业生", message: "请选择应届毕业生"},
       degree: {label: "学历", message: "请输入学历"},
       majorName: {label: "专业名称", message: "请输入专业名称"},
       isRegular: {label: "统招", message: "请选择统招"},

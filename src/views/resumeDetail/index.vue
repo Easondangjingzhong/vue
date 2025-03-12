@@ -196,6 +196,12 @@
         ) {
           wtemp = true;
         }
+        if (item.atSchool == "1" && !resumeDetailTemp.value.resume.workExpeList) {
+          resumeDetailStore.$patch({
+            workWholeFlag: false,
+            workWholeFlagAtShcool: true,
+          });
+        }
       });
       resumeDetailStore.$patch({
         educationWholeFlag: wtemp,

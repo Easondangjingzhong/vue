@@ -34,12 +34,17 @@
       <a-col :span="8">
         {{ resumeData.schoolName }}
       </a-col>
-      <a-col :span="4">
+      <a-col :span="5">
         {{ resumeData.startYear }}.{{ resumeData.startMonth }} - {{ resumeData.endYear }}.{{
           resumeData.endMonth
         }}
       </a-col>
-      <a-col :span="10">
+      <a-col :span="4">
+        <span v-if="resumeData.atSchool == '1'">
+          {{ themeLanguage?.atSchool?.label }}
+        </span>
+      </a-col>
+      <a-col :span="5">
         <span v-if="resumeData.schoolType?.length">
           {{ resumeData.schoolType }}
         </span>
@@ -47,7 +52,7 @@
       <a-col v-if="showResumeAdd" :span="1" style="padding-left: 10px;padding-right: 0px;text-align: right;">
         <form-outlined @click="handleEduInfo"></form-outlined>
       </a-col>
-      <a-col v-if="showResumeAdd" :span="1" :class="educationWholeFlagTemp ? 'educationWholeFlagRed' : 'educationWholeFlagGreen'" :title="educationWholeFlagTemp ? '缺失' : '完整'">
+      <a-col v-if="showResumeAdd" :span="1" style="padding-left: 10px !important;text-align: right;" :class="educationWholeFlagTemp ? 'educationWholeFlagRed' : 'educationWholeFlagGreen'" :title="educationWholeFlagTemp ? '缺失' : '完整'">
         <delete-outlined @click="handleDeleteEducationExp"></delete-outlined>
       </a-col>
     </a-row>
@@ -99,6 +104,17 @@
             ></a-input>
           </a-form-item>
         </a-col>
+        <a-col v-if="schoolFlagShow" :span="spanTitle">
+      <a-form-item
+        name="atSchool"
+        style="margin-left: 56px;"
+        :rules="[{ required: false, message: themeLanguage?.atSchool?.message }]"
+      >
+      <a-checkbox class="resume_box" v-model:checked="schoolFlag" @change="onChangeAtSchool"
+            >{{themeLanguage?.atSchool?.label}}</a-checkbox
+          >
+      </a-form-item>
+    </a-col>
       </a-row>
       <a-row class="resume_row_update">
         <a-col :span="spanTitle">
@@ -126,6 +142,7 @@
               value-format="YYYY-MM"
               picker="month"
               :placeholder="themeLanguage?.endYear?.message"
+              @change="handleChangeEndYear"
             />
           </a-form-item>
         </a-col>
@@ -208,6 +225,8 @@
       required: true,
     }
   });
+  const schoolFlagShow = ref(false);
+  const schoolFlag = ref(false);
   const themeLanguage = ref(validateLanguage('educationInfo', resumeTypeEnglish.value));
   const educationWholeFlagTemp = ref(false);
   if (!props.resumeData?.startYear || !props.resumeData?.startMonth || !props.resumeData?.endYear || !props.resumeData?.endMonth || !(degreeArr.includes(props.resumeData.degree) || degreeEnArr.includes(props.resumeData.degree))
@@ -256,6 +275,27 @@
   const degreeOptions = ref(degreeArr.map((item) => ({ value: item, label: item })));
   const degreeFlag = ref(true);
   const schoolTypeFlag = ref(true);
+  const handleChangeEndYear = () => {
+    if (formState.value.endYear) {
+      const yearNow = dateUtil().year();
+      const [endYear] = formState.value.endYear.split('-');
+      // @ts-ignore
+      if (endYear - yearNow >= 0) {
+        schoolFlagShow.value = true;
+        formState.value.atSchool = '1';
+      } else {
+        formState.value.atSchool = '2';
+        schoolFlagShow.value = false;
+      }
+  }
+}
+const onChangeAtSchool = () => {
+  if (schoolFlag.value) {
+    formState.value.atSchool = '1';
+  } else {
+    formState.value.atSchool = '2';
+  }
+}
   const handleEduInfo = () => {
     expend.value = !expend.value;
     if (!props.resumeData?.id) {
@@ -279,14 +319,18 @@
     formState.value.id = props.resumeData?.id;
     if (formState.value.endYear) {
       const yearNow = dateUtil().year();
-      const monthNow = dateUtil().month();
-      const [endYear, endMonth] = formState.value.endYear.split('-');
+      const [endYear] = formState.value.endYear.split('-');
+      schoolFlagShow.value = false;
       // @ts-ignore
-      if (endYear - yearNow > 0 || (endYear - yearNow <= 0 && endMonth - monthNow > 0)) {
+      if (endYear - yearNow >= 0 ) {
+        schoolFlagShow.value = true;
         formState.value.atSchool = '1';
-      } else {
-        formState.value.atSchool = '2';
       }
+    if (props.resumeData?.atSchool == '1') {
+      schoolFlagShow.value = true;
+      schoolFlag.value = true;
+      }
+      
     }
     handleSchoolName();
     if (props.resumeData?.degree == '初中' || props.resumeData?.degree == '高中' || props.resumeData.degree == 'Junior middle school' || props.resumeData.degree == 'Senior high school') {

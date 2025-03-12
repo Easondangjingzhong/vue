@@ -93,7 +93,7 @@
     >
     <template #bodyCell="{ column, record }">
       <template v-if="column.key === 'userName'">
-        <a @click="handleToResumeDetails(record.key,record.addConsultantId)">
+        <a :class="resumeDetailsArr.includes(record.key) ? 'resumeDetails' : ''" @click="handleToResumeDetailsCurrent(record.key,record.addConsultantId)">
           {{ record.userName }}
         </a>
       </template>
@@ -271,7 +271,13 @@
     }
     onFinish(2);
   };
+  const resumeDetailsArr = ref<String[]>([]);
+  const handleToResumeDetailsCurrent = (resumeId,addConsultantId) => {
+    resumeDetailsArr.value.push(resumeId);
+    handleToResumeDetails(resumeId,addConsultantId);
+  }
   const onFinish = (e) => {
+    resumeDetailsArr.value = [];
     if (e !== 1) {
       pagination.value = { ...pagination.value, current: 1 };
     }
@@ -365,9 +371,8 @@
     },
   ];
   //const expandedRowKeys = ref(['']);
-  console.log("expandedRowKeys", expandedRowKeys.value);
   const expandedRowKeysFlag = ref(false);
-  const expandedRowKeysArr = ref([]);
+  const expandedRowKeysArr = ref<string[]>([]);
  
   watch(() => expandedRowKeys.value,() => {
     if (expandedRowKeysFlag.value) {
@@ -487,6 +492,7 @@
     })
     onFinish(2);
   }
+  
 </script>
 <style lang="less" scoped>
   .resume-content,
@@ -566,4 +572,8 @@
     border-end-end-radius: 0;
     height: auto;
   }
+  .resumeDetails {
+    color: #333;
+  }
+  
 </style>

@@ -306,7 +306,9 @@ import { storeToRefs } from 'pinia';
   top: '50%', // 距离顶部的位置
   maxCount: 3 // 最多显示提示信息条数(后面的会替换前面的提示)
 })
- 
+ watch(resumeTypeEnglish,() => {
+  themeLanguage.value = validateLanguage('englishInfo', resumeTypeEnglish.value);
+ })
   const props = defineProps({
     Languages: {
       type: Object,
@@ -348,7 +350,13 @@ import { storeToRefs } from 'pinia';
   let scoreIELTS = ref(null);
   let scoreTOEFL = ref(null);
   let languages = [];
-  
+  const languageAbility0 = ref(langArr.length > 0 ? langArr : []);
+  const languageAbility1 = ref(langArr1.length > 0 ? langArr1 : []);
+  const languageAbility2 = ref(langArr2.length > 0 ? langArr2 : []);
+  const languageAbility3 = ref(langArr3.length > 0 ? langArr3 : []);
+  const languageAbility4 = ref(langArr4.length > 0 ? langArr4 : []);
+  const languageAbility5 = ref(langArr5.length > 0 ? langArr5 : []);
+  const languageAbility6 = ref(langArr6.length > 0 ? langArr6 : []);
   const handleLanguages = () => {
   langArr = [];
   langArr1 = [];
@@ -360,6 +368,14 @@ import { storeToRefs } from 'pinia';
   scoreIELTS = ref(null);
   scoreTOEFL = ref(null);
   languages = [];
+  languageAbility0.value = [];
+  languageAbility1.value = [];
+  languageAbility2.value = [];
+  languageAbility3.value = [];
+  languageAbility4.value = [];
+  languageAbility5.value = [];
+  languageAbility6.value = [];
+  LanguagesTemplates.value = [];
     const lang = props.Languages;
     languages = props.Languages;
     if (resumeTypeEnglish.value == "1") {
@@ -534,13 +550,7 @@ import { storeToRefs } from 'pinia';
   watch(props,() => {
     handleLanguages();
   })
-  const languageAbility0 = ref(langArr.length > 0 ? langArr : []);
-  const languageAbility1 = ref(langArr1.length > 0 ? langArr1 : []);
-  const languageAbility2 = ref(langArr2.length > 0 ? langArr2 : []);
-  const languageAbility3 = ref(langArr3.length > 0 ? langArr3 : []);
-  const languageAbility4 = ref(langArr4.length > 0 ? langArr4 : []);
-  const languageAbility5 = ref(langArr5.length > 0 ? langArr5 : []);
-  const languageAbility6 = ref(langArr6.length > 0 ? langArr6 : []);
+ 
   interface Language {
     languageName: string;
     tinshuoLiuli: string;

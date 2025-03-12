@@ -1,4 +1,36 @@
 <template>
+  <div class="resume_header"  v-if="workWholeFlagAtShcool">
+    <a-row :gutter="24" v-if="indexNum === 0">
+      <a-col :span="24" class="resume_detail_title">
+        <h4 class="resume_h4">
+          <svg
+            t="1735637486491"
+            style="vertical-align: middle"
+            class="icon"
+            viewBox="0 0 1024 1024"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            p-id="8293"
+            width="16"
+            height="16"
+          >
+            <path
+              d="M810.666667 170.666667 632.32 170.666667C614.4 121.173333 567.466667 85.333333 512 85.333333 456.533333 85.333333 409.6 121.173333 391.68 170.666667L213.333333 170.666667C166.4 170.666667 128 209.066667 128 256L128 853.333333C128 900.266667 166.4 938.666667 213.333333 938.666667L810.666667 938.666667C857.6 938.666667 896 900.266667 896 853.333333L896 256C896 209.066667 857.6 170.666667 810.666667 170.666667L810.666667 170.666667ZM512 170.666667C535.466667 170.666667 554.666667 189.866667 554.666667 213.333333 554.666667 236.8 535.466667 256 512 256 488.533333 256 469.333333 236.8 469.333333 213.333333 469.333333 189.866667 488.533333 170.666667 512 170.666667L512 170.666667ZM597.333333 768 298.666667 768 298.666667 682.666667 597.333333 682.666667 597.333333 768 597.333333 768ZM725.333333 597.333333 298.666667 597.333333 298.666667 512 725.333333 512 725.333333 597.333333 725.333333 597.333333ZM725.333333 426.666667 298.666667 426.666667 298.666667 341.333333 725.333333 341.333333 725.333333 426.666667 725.333333 426.666667Z"
+              fill="#000000"
+              p-id="8294"
+            ></path>
+          </svg>
+          工作经历
+        </h4>
+        <span style="margin-top: 15px">
+          <a-tag color="green" v-if="!workWholeFlag">完整</a-tag>
+          <a-tag color="red" v-if="workWholeFlag">缺失</a-tag>
+          <PlusOutlined v-if="showResumeAdd" @click="handleAddWorkInfo" />
+        </span>
+      </a-col>
+      <a-divider :dashed="true" style="background-color: #ccc; margin-top: 0" />
+    </a-row>
+  </div>
   <div class="resume_header" v-if="!expend && !expendShow">
     <a-row :gutter="24" v-if="indexNum === 0">
       <a-col :span="24" class="resume_detail_title">
@@ -56,6 +88,7 @@
         <form-outlined @click="handleUpdateWorkInfo"></form-outlined>
       </a-col>
       <a-col
+        style="padding-left: 10px !important;"
         v-if="showResumeAdd"
         :span="1"
         :class="workWholeFlagTemp ? 'workWholeFlagRed' : 'workWholeFlagGreen'"
@@ -125,7 +158,7 @@
       <a-col :span="24" v-html="resumeData.workDuty"></a-col>
     </a-row>
   </div>
-  <div class="resume_header_update" v-if="expend">
+  <div class="resume_header_update" v-if="expend && !workWholeFlagAtShcool">
     <a-row :gutter="24">
       <a-col :span="24" class="resume_detail_title">
         <h4 class="resume_h4">
@@ -148,6 +181,11 @@
           </svg>
           工作经历
         </h4>
+        <span style="margin-top: 15px">
+          <a-tag color="green" v-if="!workWholeFlag">完整</a-tag>
+          <a-tag color="red" v-if="workWholeFlag">缺失</a-tag>
+          <PlusOutlined v-if="showResumeAdd" @click="handleAddWorkInfo" />
+        </span>
       </a-col>
       <a-divider :dashed="true" style="background-color: #ccc; margin-top: 0" />
     </a-row>
@@ -156,13 +194,13 @@
     </a-row>
     <a-row :gutter="24" class="resume_row">
       <a-col :span="24">
-        1、最近2份工作经历中若有 0ffice
+        1、最近1份工作经历中若有 Office
         类别，也必须正确填写品牌，系统中若无该品牌选项，可点击“切换”按钮手动填写;
       </a-col>
     </a-row>
     <a-row :gutter="24" class="resume_row">
       <a-col :span="24">
-        2、非最近2份工作经历为 0ffice
+        2、非最近1份工作经历为 Office
         类别，则品牌为选填项，可选择填写或不填写，若选择填写，则必须正确填写;
       </a-col>
     </a-row>
@@ -300,6 +338,23 @@
               @change="handleMarketBrandFloor"
               showSearch
               :options="optionRetreat"
+            ></a-select>
+          </a-form-item>
+        </a-col>
+        <a-col :span="spanTitle" v-if="!categoryFlag && indexNum > 0">
+          <a-form-item
+            :label="themeLanguage?.workRetail?.label"
+            name="retail"
+            style="padding-left: 20px"
+            :rules="[{ required: true, message: themeLanguage?.workRetail?.message }]"
+          >
+            <a-select
+              v-model:value="formState.retail"
+              :placeholder="themeLanguage?.workRetail?.message"
+              optionFilterProp="label"
+              @change="handleWorkRetail"
+              showSearch
+              :options="optionWorkRetail"
             ></a-select>
           </a-form-item>
         </a-col>
@@ -455,7 +510,7 @@
             v-if="brandFlag && !brandCheckBox"
             >切换</a-button
           >
-          <a-checkbox class="brandCheckBox" v-if="brandCheckBoxShow" v-model:checked="brandCheckBox"
+          <a-checkbox class="brandCheckBox" v-if="brandCheckBoxShow" v-model:checked="brandCheckBox"  @change="onChangeBrandCheckBox"
             >品牌不填</a-checkbox
           >
           <span style="margin-left: 5px" v-if="!brandCheckBox"
@@ -619,7 +674,7 @@
   const { province } = storeToRefs(cityStore);
   const spanTitle = 6;
   const resumeDetailStore = useResumeDetailStore();
-  const { workWholeFlag, resumeTypeEnglish } = storeToRefs(resumeDetailStore);
+  const { workWholeFlag, resumeTypeEnglish,workWholeFlagAtShcool } = storeToRefs(resumeDetailStore);
   const expend = ref(false);
   const expendShow = ref(false);
   const iconLoading = ref(false);
@@ -633,6 +688,11 @@
     { value: '', label: '开业' },
     { value: '海外', label: '海外' },
     { value: '注销', label: '注销' },
+  ]);
+  const optionWorkRetail = ref([
+    { value: '', label: '' },
+    { value: '1', label: '零售业' },
+    { value: '2', label: '非零售' },
   ]);
   const props = defineProps({
     resumeData: {
@@ -739,13 +799,22 @@
     brandNameCn: '',
     brnadNameEn: '',
     companyType: '',
+    retail: '',
     recruitId: loginVueUser.loginId,
   });
+  const onChangeBrandCheckBox = () => {
+    if (brandCheckBox.value) {
+      formState.brandName = { value: '', label: '' };
+      formState.brandNameCn = '';
+      formState.brnadNameEn = '';
+    } 
+  }
   if (!props.resumeData?.id) {
     expend.value = !expend.value;
     if (props.indexNum > 0) {
       brandCheckBox.value = true;
       categoryFlag.value = false;
+      onChangeBrandCheckBox();
     }
   }
 
@@ -778,6 +847,9 @@
           message.error("已存在至今或最近工作经历");
         }
       });
+      brandCheckBox.value = false;
+      categoryFlag.value = false;
+      formState.retail = '';
     } else {
       endYearFlag.value = false;
       //peops.workExperienceData.endYear = "";
@@ -792,12 +864,14 @@
   const handleUpdateWorkInfoCancel = () => {
     expendShow.value = false;
     expend.value = false;
+    resumeDetailStore.$patch({ workFlag: false });
   };
   const companyTypeFlag = ref(true);
   /**
    * 处理公司类型 海外   注销    开业状态必须选择公司其他的都填写
    */
   const handleCompanyType = () => {
+    selcetCompanyNameFlag.value = false;
     if (formState.companyType) {
       companyTypeFlag.value = false;
     } else {
@@ -865,17 +939,30 @@
     formState.brandRetail = props.resumeData?.brandRetail;
     formState.brandCategory = props.resumeData?.brandCategory;
     formState.companyType = props.resumeData?.companyType || '';
+    formState.retail = props.resumeData?.retail || '';
     handleCategory();
     handleCityName(formState.cityName, formState.marketName.label);
     handleMarketBrandFloor();
     handleCompanyType();
     if (props.indexNum > 0) {
       brandCheckBoxShow.value = true;
-      if (!props.resumeData?.brandName && props.resumeData?.category == 'OFFICE') {
+      if (!props.resumeData?.brandName && props.resumeData?.category == 'OFFICE' && props.resumeData?.retail != '1') {
         brandCheckBox.value = true;
+        onChangeBrandCheckBox();
       }
     }
   };
+  const handleWorkRetail = () => {
+    if (formState.retail == '1' && formState.isNewtest != '1') {
+      brandCheckBoxShow.value = true;
+    } else {
+      brandCheckBox.value = true;
+      brandCheckBoxShow.value = false;
+      formState.brandName = { value: '', label: '' };
+      formState.brandNameCn = '';
+      formState.brnadNameEn = '';
+    }
+  }
   //职位数据
   const optionsPositions = ref<SelectProps['options']>([]);
   let tempOptionPositions = [];
@@ -1043,6 +1130,17 @@
     });
   };
   const handleMarketBrandFloor = () => {
+    if (props.indexNum > 0 && formState.category =="OFFICE" && formState.isNewtest == '1') {
+      brandCheckBox.value = false;
+      categoryFlag.value = false;
+    }
+    if (props.indexNum > 0 && formState.category =="OFFICE" && formState.retail != '1' && formState.isNewtest != '1') {
+      brandCheckBox.value = true;
+      brandCheckBoxShow.value = false;
+      formState.brandName = { value: '', label: '' };
+      formState.brandNameCn = '';
+      formState.brnadNameEn = '';
+    }
     if (formState.marketName.label == '街边店') {
       optionsWorkFloor.value = [{ value: '1层', label: '1层' }];
       formState.workFloor = '1层';
@@ -1129,6 +1227,7 @@
     brandNameCn.value = '';
     brnadNameEn.value = '';
     if (formState.category == '店铺' || formState.category == 'Store') {
+      formState.retail = '';
       categoryFlag.value = true;
       brandCheckBox.value = false;
       let tempOptionPositions = [];
@@ -1147,8 +1246,10 @@
     } else {
       if (props.indexNum > 0) {
       brandCheckBoxShow.value = true;
+      handleWorkRetail();
       if (!formState.brandName.label && formState.category == 'OFFICE') {
         brandCheckBox.value = true;
+        onChangeBrandCheckBox();
       }
     }
       categoryFlag.value = false;
@@ -1280,7 +1381,7 @@
       });
   };
   const handleAddWorkInfo = () => {
-    resumeDetailStore.$patch({ workFlag: true });
+    resumeDetailStore.$patch({ workFlag: true,workWholeFlagAtShcool: false });
   };
   //删除工作经历开始
   const handleDeleteWorkExp = () => {

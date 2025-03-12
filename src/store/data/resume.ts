@@ -34,6 +34,7 @@ export const brandArrDetail = [
   { retail: '金融服务', categoryArr: ['服务'], title: '金融' },
   { retail: '生活服务', categoryArr: ['服务'], title: '生活' },
   { retail: '其他服务', categoryArr: ['服务'], title: '其他' },
+  { retail: '职能岗位', categoryArr: []},
 ];
 export const brandCategoryArr = [
   {
@@ -166,6 +167,16 @@ export const positionsUpArrTitle = [
   {
     industry: '职能岗位',
     content: [
+      { jobCategory: 'OFFICE销售', management: ['基础级别', '主管级别', '经理级别', '总监级别'] },
+      { jobCategory: '高级管理', management: ['管理级别'] },
+      { jobCategory: '人事行政', management: ['基础级别', '管理级别'] },
+      { jobCategory: '财务岗', management: ['基础级别', '管理级别'] },
+      { jobCategory: 'OFFICE支持', management: ['基础级别', '主管级别', '经理级别', '总监级别'] },
+      { jobCategory: '市场运营', management: ['基础级别', '管理级别'] },
+      { jobCategory: '法务岗', management: ['基础级别', '管理级别'] },
+      { jobCategory: '采购买手', management: ['基础级别', '管理级别'] },
+      { jobCategory: '营销岗', management: ['基础级别', '管理级别'] },
+      { jobCategory: '咨询翻译', management: ['基础级别', '管理级别'] },
       { jobCategory: '技术岗', management: ['基础级别', '管理级别'] },
       { jobCategory: '其他职位', management: ['基础级别', '管理级别'] },
     ],
