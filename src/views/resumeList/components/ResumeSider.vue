@@ -90,7 +90,7 @@
     resumeLoginNameFlag.value = true;
   }
   watch(teamPersonChangeArr,() => {
-    if (!optionsLoginNameTeam.value || optionsLoginNameTeam.value.length == 0) {
+    if (teamPersonChangeArr.value && teamPersonChangeArr.value.length > 0 && (!optionsLoginNameTeam.value || optionsLoginNameTeam.value.length == 0)) {
       //@ts-ignore
       optionsLoginNameTeam.value = teamPersonChangeArr.value.map(item => ({value: item.teamId,label: item.teamName}));
     }

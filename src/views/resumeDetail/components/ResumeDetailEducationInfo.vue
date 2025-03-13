@@ -104,17 +104,7 @@
             ></a-input>
           </a-form-item>
         </a-col>
-        <a-col v-if="schoolFlagShow" :span="spanTitle">
-      <a-form-item
-        name="atSchool"
-        style="margin-left: 56px;"
-        :rules="[{ required: false, message: themeLanguage?.atSchool?.message }]"
-      >
-      <a-checkbox class="resume_box" v-model:checked="schoolFlag" @change="onChangeAtSchool"
-            >{{themeLanguage?.atSchool?.label}}</a-checkbox
-          >
-      </a-form-item>
-    </a-col>
+        
       </a-row>
       <a-row class="resume_row_update">
         <a-col :span="spanTitle">
@@ -146,6 +136,17 @@
             />
           </a-form-item>
         </a-col>
+        <a-col v-if="schoolFlagShow" :span="spanTitle">
+      <a-form-item
+        name="atSchool"
+        style="margin-left: 56px;"
+        :rules="[{ required: false, message: themeLanguage?.atSchool?.message }]"
+      >
+      <a-checkbox class="resume_box" v-model:checked="schoolFlag" @change="onChangeAtSchool"
+            >{{themeLanguage?.atSchool?.label}}</a-checkbox
+          >
+      </a-form-item>
+    </a-col>
       </a-row>
       <a-row class="resume_row_update">
         <a-col :span="spanTitle">

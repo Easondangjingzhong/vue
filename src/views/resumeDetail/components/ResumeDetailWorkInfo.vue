@@ -668,6 +668,7 @@
   import { debounce } from 'lodash-es';
   import { Modal } from 'ant-design-vue';
   import { validateLanguage } from '/@/utils/resumeTypeEn';
+import { format } from 'path';
   const cityStore = useCityStoreWithOut();
   const resumeListStore = useResumeListStoreWithOut();
   const { positionsList, brandList, companyList } = storeToRefs(resumeListStore);
@@ -847,9 +848,12 @@
           message.error("已存在至今或最近工作经历");
         }
       });
-      brandCheckBox.value = false;
-      categoryFlag.value = false;
-      formState.retail = '';
+      if (formState.category == "OFFICE") {
+        brandCheckBox.value = false;
+        categoryFlag.value = false;
+      } else {
+        formState.retail = '';
+      }
     } else {
       endYearFlag.value = false;
       //peops.workExperienceData.endYear = "";
@@ -953,7 +957,7 @@
     }
   };
   const handleWorkRetail = () => {
-    if (formState.retail == '1' && formState.isNewtest != '1') {
+    if (formState.retail == '1' || (formState.retail == '2' && formState.isNewtest == '1')) {
       brandCheckBoxShow.value = true;
     } else {
       brandCheckBox.value = true;

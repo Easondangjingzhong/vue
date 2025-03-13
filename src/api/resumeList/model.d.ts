@@ -49,6 +49,9 @@ export interface SearchResumeList {
   sortName: string; //人才分类名称
   isTwoYear: string; // 1 查询两年 空其他的查询全部
   fullText: string; // 全文搜索关键词
+  startTime: string; // 录入开始时间
+  endTime: string; // 录入结束时间
+  serchRecruitId: string; // 添加顾问
 }
 
 export interface Item {

@@ -922,6 +922,9 @@ export const useResumeListStore = defineStore({
       formData.append('isTwoYear', param.isTwoYear || '');
       formData.append('id', param.id || '');
       formData.append('fullText', param.fullText || '');
+      formData.append('startTime', param.startTime || '');
+      formData.append('endTime', param.endTime || '');
+      formData.append('serchRecruitId', param.serchRecruitId || '');
       return formData;
     },
     /**

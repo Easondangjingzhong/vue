@@ -61,7 +61,7 @@ import { storeToRefs } from 'pinia';
 import { formatToDateMinute } from '/@/utils/dateUtil';
 import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
 const resumeDetailStore = useResumeDetailStore();
-const { resumeId,resumeRecord,resumeDetail } =storeToRefs(resumeDetailStore);
+const { resumeId,resumeRecord,resumeDetail,resumeTypeEnglish } =storeToRefs(resumeDetailStore);
 const resumeList = ref([])
 const pagination = ref({
   pageSize: 10,
@@ -151,6 +151,12 @@ watch(resumeRecord,() => {
   const description = ref("");
   const management = ref("");
   const systemUser = ref(true);
+  const resumeType = ref("");
+  if (resumeTypeEnglish.value == '1') {
+    resumeType.value = 'E';
+  } else {
+    resumeType.value = 'C';
+  }
   const handleOpenResumeUpload = (recommendCity,recommendMarket,recommendBrand,recommendPosition,pId) => {
     openResumeUpload.value = true;
     let tempObj = {
@@ -191,7 +197,7 @@ watch(resumeRecord,() => {
     const realNameEn = resumeDetail.value.realNameEn;
     const systemUserTemp = systemUser.value ? "1" : "2";
     //location.href = "http://work.wotui.com:8889/WTSM/" + "DownloadResumeServlet?resumeId=${resume.id }&resumeType=C&systemUser=" + resumeTypeFlag + "&template=" + valTemp + "&realEnName=" + realNameEn+"&screenWidth="+screenWidth;
-    location.href = `http://work.wotui.com:8889/WTSM/DownloadResumeServlet?resumeId=${resumeId.value}&resumeType=C&systemUser=${systemUserTemp}&template=${templateType.value}&realEnName=${realNameEn}&screenWidth=${screenWidth}`
+    location.href = `http://work.wotui.com:8889/WTSM/DownloadResumeServlet?resumeId=${resumeId.value}&resumeType=${resumeType.value}&systemUser=${systemUserTemp}&template=${templateType.value}&realEnName=${realNameEn}&screenWidth=${screenWidth}`
     handleCloseResumeUpload();
   }
 </script>
