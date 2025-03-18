@@ -1,8 +1,12 @@
 import { defineStore } from 'pinia';
 import { store } from '/@/store';
+import { isProxy } from 'vue';
+import { storeToRefs } from 'pinia';
 import fetchApi from '/@/api/resume';
 import { dateUtil } from '/@/utils/dateUtil';
 import {dataURLtoBlob} from '/@/utils/base64tofile'
+import { useCityStoreWithOut } from '/@/store/modules/city';
+ import { marriageEnArr,degreeEnAndCnArr } from '/@/store/data/resume';
 import {
   Resume,
   Position,
@@ -19,25 +23,30 @@ interface ResumeState {
   positionStore: Position[]; // 职位数据-店铺
   positionOffice: Position[];//职位数据-office
   endYearFlag: boolean;//是否有最近工作 true 有 false 无
+  resumeLanguageNationality: string;//国籍改变
   resumeId: string;//简历ID
   resumeTypeEnglish: string;//简历类型 1 英文 2或其他是中文
   closeBtn: boolean;//上传完成提示 true 展开 false 关闭
   updatePhotoFlag: Number;//简历照片状态 0 是无照片  1 是有照片  2 是有照片已修改 
 }
-
-const diffBirthday = (birthday, age) => {
-  if (birthday) {
-    return {birthYear: (birthday.indexOf(".") != -1 ? birthday.split('.')[0] : +birthday.split('-')[0]),
-      bornMonth: (birthday.indexOf(".") != -1 ? birthday.split('.')[1] : birthday.split('-')[1])
-    }
-  } {
-    if (age) {
-      const yearNow = dateUtil().year();
-      return {birthYear: (yearNow - age),bornMonth: 1}
-    } else {
-      return {birthYear: 0,bornMonth:0}
+const cityStore = useCityStoreWithOut();
+const { country, province } = storeToRefs(cityStore);
+const diffBirthday = (birthday, age, talentSource) => {
+  if (talentSource != '复制') {
+    if (birthday) {
+      return {birthYear: (birthday.indexOf(".") != -1 ? birthday.split('.')[0] : +birthday.split('-')[0]),
+        bornMonth: (birthday.indexOf(".") != -1 ? birthday.split('.')[1] : birthday.split('-')[1])
+      }
+    } {
+      if (age) {
+        const yearNow = dateUtil().year();
+        return {birthYear: (yearNow - age),bornMonth: 1}
+      } else {
+        return {birthYear: 0,bornMonth:0}
+      }
     }
   }
+  
 }
 
 export const useResumeStore = defineStore({
@@ -49,6 +58,7 @@ export const useResumeStore = defineStore({
     positionStore: [],
     positionOffice: [],
     endYearFlag: false,
+    resumeLanguageNationality: "",
     resumeId: "",
     resumeTypeEnglish: "2",
     closeBtn: false,
@@ -120,6 +130,35 @@ export const useResumeStore = defineStore({
             work.endYear = (p.endYear ? (p.endYear.indexOf(".") != -1 ?  p.endYear.split('.')[0] : p.endYear.split('-')[0]): '');
             work.endMonth = (p.endYear ? (p.endYear.indexOf(".") != -1 ?  p.endYear.split('.')[1] : p.endYear.split('-')[1]): '01');
           }
+          if (p.positionsId) {
+            if (isProxy(p.positionsId)) {
+              work.positionsId = p.positionsId.value;
+              work.positionName = p.positionsId.label;
+            } else {
+              work.positionsId = p.positionsId;
+            }
+          }
+          if (p.workBrand) {
+            if (isProxy(p.workBrand)) {
+              work.workBrand = p.workBrand.value;
+            } else {
+              work.workBrand = p.workBrand;
+            }
+          }
+          if (p.workCity) {
+            if (isProxy(p.workCity)) {
+              work.workCity = p.workCity.value;
+            } else {
+              work.workCity = p.workCity;
+            }
+          }
+          if (p.workMark) {
+            if (isProxy(p.workMark)) {
+              work.workMark = p.workMark.value;
+            } else {
+              work.workMark = p.workMark;
+            }
+          }
           workData.push(work);
         }
       }
@@ -148,6 +187,7 @@ export const useResumeStore = defineStore({
       const resume: Resume = {
         resumeType: 'C',
         realNameEn: loginVueUser.loginName,
+        photoPath: personInfoData.photoPath ? personInfoData.photoPath : "",
         recruitId: loginVueUser.loginId,
         userName: personInfoData.userName,
         gender: personInfoData.gender,
@@ -157,8 +197,9 @@ export const useResumeStore = defineStore({
         positionStatus: personInfoData.positionStatus,
         marriageStatus: personInfoData.marriageStatus,
         positionName: personInfoData.positionName,
-        birthYear: diffBirthday(personInfoData.birthday,personInfoData.age)?.birthYear,
-        bornMonth: diffBirthday(personInfoData.birthday,personInfoData.age)?.bornMonth,
+        birthYear: personInfoData.birthYear || diffBirthday(personInfoData.birthday,personInfoData.age,talentSource)?.birthYear,
+        bornMonth: personInfoData.bornMonth || diffBirthday(personInfoData.birthday,personInfoData.age,talentSource)?.bornMonth,
+        bornDay: personInfoData.bornDay,
         height: personInfoData.height,
         weight: personInfoData.weight,
         email: personInfoData.email,
@@ -199,6 +240,134 @@ export const useResumeStore = defineStore({
       const files = new window.File([blob], 'avatar.png', {type: 'application/png'})
       this.resumeFormState.resumePhoto = files;
       this.updatePhotoFlag = 2;
+    },
+    /**
+     * @description: 上传原始简历进行解析
+     */
+    async queryResumeById(resumeId,addConsultantId) {
+      this.resumeTypeEnglish = '1';
+      // @ts-ignore
+      const loginVueUser: {loginName: "", loginId: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
+      let formData = new FormData();
+      formData.append('resumeId', resumeId); // resumeId
+      formData.append('resumeType', 'C'); // resumeType C
+      formData.append('addConsultantId', addConsultantId); // 简历中的添加人Id
+      formData.append('recruitId', loginVueUser.loginId); //当前账号的id
+      const res = await fetchApi.queryResumeById(formData);
+      if (res.code == 1) {
+        const result = res.info.resume;
+        let obj = {} as ResumeFormState;
+        let personInfoData = {} as PersonInfo;
+        let workExperienceList: WorkExperience[] = [];
+        let educationInfoList: educationInfoData[] = [];
+        let resumeLanguageList = {} as resumeLanguageList;
+        let selfEvaluationData = {} as selfEvaluationData;
+        if (result) {
+          personInfoData.photoPath = result.photoPath;
+          personInfoData.userName = result.userName;
+          personInfoData.gender = result.gender;
+          personInfoData.phone = result.phoneNum;
+          personInfoData.age = result.age ? result.age : "";
+          let city = province.value.filter(item => item.cityName == result.currentCity);
+          personInfoData.city = city.length > 0 ? city[0].provinceNameEn + (city[0].cityNameEn ? '-' + city[0].cityNameEn : '') : '';
+          personInfoData.email = result.email;
+          personInfoData.height = result.height;
+          let province2 = province.value.filter(item => item.cityName == result.province);
+          personInfoData.huji = province2.length > 0 ? province2[0].provinceNameEn + (province2[0].cityNameEn ? '-' + province2[0].cityNameEn : '') : '';
+          personInfoData.weight = result.weight;
+          personInfoData.birthYear = result.birthYear;
+          personInfoData.bornMonth = result.bornMonth;
+          personInfoData.bornDay = result.bornDay;
+          personInfoData.nationality = country.value.filter(item => item.nationality == result.nationality)[0]?.cityNameEn;
+          personInfoData.currentCity = city.length > 0 ? city[0].provinceNameEn + (city[0].cityNameEn ? '-' + city[0].cityNameEn : '') : '';
+          personInfoData.positionName = result.positionName;
+          personInfoData.positionStatus = result.positionStatus;
+          personInfoData.marriageStatus = marriageEnArr.filter(item => item.cn == result.marriageStatus)[0]?.value;
+          const jobArr = result.workExpeList;
+          if (jobArr?.length > 0) {
+            jobArr.forEach((item) => {
+              let workExperienceObj = {} as WorkExperience;
+              workExperienceObj.companyName = item.companyName;
+              workExperienceObj.category = item.category == "店铺" ? "Store" : "OFFICE";
+              if (item.endYear && item.endYear == '-1') {
+                this.endYearFlag = true;
+                workExperienceObj.endYear = item.endYear;
+                workExperienceObj.endMonth = item.endMonth;
+              } else {
+                workExperienceObj.endYear = `${item.endYear}-${item.endMonth < 10 ? "0"+(+item.endMonth) : item.endMonth}`;
+                workExperienceObj.endMonth = item.endMonth;
+              }
+              workExperienceObj.isNewtest = item.isNewtest?.toString();
+              workExperienceObj.isRetreat = item.isRetreat?.toString();
+              workExperienceObj.workFloor = item.workFloor ? item.workFloor.replace("层","F") : "";
+              workExperienceObj.startYear = `${item.startYear}-${item.startMonth < 10 ? "0"+(+item.startMonth) : item.startMonth}`;
+              workExperienceObj.startMonth = item.startMonth;
+              
+              workExperienceObj.positionName = item.positionName;
+              workExperienceObj.positionsId = item.positionsId;
+              workExperienceObj.reporter = item.reporter;
+              workExperienceObj.cityName = item.cityName;
+              workExperienceObj.department = item.department;
+              workExperienceObj.salaryStructure = item.salaryStructure;
+              workExperienceObj.personnelStructure = item.personnelStructure;
+              workExperienceObj.workDuty = item.workDuty
+              ?.replaceAll(/<p>/g, '')
+              .replaceAll(/<(\/)?p>/g, '\n');
+              workExperienceObj.workCity = item.workCity?.toString();
+              workExperienceObj.workBrand = item.workBrand;
+              workExperienceObj.workMark = item.workMark?.toString();
+              workExperienceList.push(workExperienceObj);
+            });
+          }
+          const educationArr = result.eduExpeList;
+          if (educationArr?.length > 0) {
+            educationArr.forEach((item) => {
+              let educationInfoObj = {} as educationInfoData;
+              educationInfoObj.schoolName = item.schoolName;
+              educationInfoObj.isRegular = item.isRegular;
+              let schoolTypeTemp: String[] = [];
+              if (item.edu_college) {
+                // @ts-ignore
+                let t985 = shcoolType985.filter((items) => items === item.schoolName.replace(/[\u200B-\u200F]+/g, ''));
+                if (t985.length > 0) {
+                  schoolTypeTemp.push('985');
+                }
+                // @ts-ignore
+                let t211 = shcoolType211.filter((items) => items === item.schoolName.replace(/[\u200B-\u200F]+/g, ''));
+                if (t211.length > 0) {
+                  schoolTypeTemp.push('211');
+                } 
+              }
+              educationInfoObj.schoolType = schoolTypeTemp;
+              educationInfoObj.atSchool = item.atSchool;
+              educationInfoObj.majorName = item.majorName;
+              educationInfoObj.degree = degreeEnAndCnArr.filter(subItem => subItem.cn == item.degree)[0]?.en;
+              educationInfoObj.startYear = `${item.startYear}-${item.startMonth < 10 ? "0"+(+item.startMonth) : item.startMonth}`;
+              educationInfoObj.endYear = `${item.endYear}-${item.endMonth < 10 ? "0"+(+item.endMonth) : item.endMonth}`;
+              educationInfoList.push(educationInfoObj);
+            });
+          }
+          if (result.resumeLanguageList) {
+            //@ts-ignore
+            resumeLanguageList.languageAbility = result.resumeLanguageList;
+          }
+          if (result.selfEvaluation) {
+            selfEvaluationData.selfEvaluation = result.selfEvaluation
+            ?.replaceAll(/<p>/g, '')
+            .replaceAll(/<(\/)?p>/g, '\n');
+          }
+        }
+        obj.personInfoData = personInfoData;
+        obj.workExperienceList = workExperienceList;
+        obj.educationInfoList = educationInfoList;
+        obj.resumeLanguageList = resumeLanguageList;
+        obj.selfEvaluationData = selfEvaluationData;
+        obj.talentSource = '复制';
+        obj.resumeFile = null;
+        // save token
+        this.setInfo(obj);
+      }
+      return res;
     },
     /**
      * @description: 上传原始简历进行解析

@@ -14,7 +14,7 @@
     <PersonInfo name="PersonInfo" :personInfoData="resumeFormState.personInfoData"/>
     <WorkExperience :workExperienceList="resumeFormState.workExperienceList"/>
     <EducationInfo  :educationInfoList="resumeFormState.educationInfoList"/>
-    <LanguagesInfo :resumeLanguageList="resumeFormState.resumeLanguageList"/>
+    <LanguagesInfo :resumeLanguageList="resumeFormState.resumeLanguageList" :personInfoData="resumeFormState.personInfoData"/>
     <SelfEvaluation :selfEvaluationData="resumeFormState.selfEvaluationData"/>
     <a-card class="resume_card" style="position: sticky;bottom: 0;padding: 10px; ">
     <a-form-item class="resume_item">

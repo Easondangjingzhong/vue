@@ -236,6 +236,7 @@
     plagiarusnForm.isEnglish = resumeTypeEnglish.value;
     plagiarusnResumeAction(plagiarusnForm);
   };
+ 
 </script>
 <style lang="less">
   .upload_container {

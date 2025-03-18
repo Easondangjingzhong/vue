@@ -7,7 +7,10 @@ enum URL {
   resume_photo = '/resume/upload-resume-head-vue.action',
   resume_position = '/candidate/query-position.action',
   query_mapping_resumeId = '/candidateRecommend/resume-vue-query-cId-byResumeId.action',
+  query_resume_resumeId =  '/candidate/rusume-vue-query-resume-by-consultant.action',
 }
+const queryResumeById = async (resume: any) =>
+  post<any>({ url: URL.query_resume_resumeId, data: resume});
 const addResumeInfo = async (resume: any) =>
   post<any>({ url: URL.resume_add, data: resume});
 const info = async (formData: any) =>
@@ -21,4 +24,4 @@ const fetchResumePosition = async (data: any) =>
 
 const queryMappingIdByResumeId = (formData: any) =>
   post<any>({ url: URL.query_mapping_resumeId, data: formData });
-export default { queryMappingIdByResumeId, info, addResumeInfo,fetchResumeFile,fetchResumePhote,fetchResumePosition };
+export default { queryResumeById, queryMappingIdByResumeId, info, addResumeInfo,fetchResumeFile,fetchResumePhote,fetchResumePosition };

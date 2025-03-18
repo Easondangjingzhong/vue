@@ -25,7 +25,10 @@
             :label="themeLanguage?.gender?.label"
             :rules="[{ required: true, message: themeLanguage?.gender?.message }]"
           >
-            <a-radio-group v-model:value="personInfoData.gender" :options="genderOptions"></a-radio-group>
+            <a-radio-group
+              v-model:value="personInfoData.gender"
+              :options="genderOptions"
+            ></a-radio-group>
           </a-form-item>
         </a-col>
         <a-col :span="spanTitle" class="resume_photo_col">
@@ -129,6 +132,7 @@
               v-model:value="personInfoData.nationality"
               :placeholder="themeLanguage?.nationality?.message"
               :options="optionsCountry"
+              @change="handleNationality"
               showSearch
             ></a-select>
           </a-form-item>
@@ -299,28 +303,9 @@
       value: item.country,
     })),
   );
-  let tempOptionCity = [];
-  let tempOptionCityEn = [];
+
   //@ts-ignore
-  tempOptionCity.push({ label: '', value: '' });
-  province.value.forEach((item) => {
-    //@ts-ignore
-    let tempObj = {
-      label: item.provinceName + (item.cityName ? '-' + item.cityName : ''),
-      value: item.provinceName + (item.cityName ? '-' + item.cityName : ''),
-    };
-    //@ts-ignore
-    tempOptionCity.push(tempObj);
-    //@ts-ignore
-    let tempObjEn = {
-      label: item.provinceNameEn + (item.cityNameEn ? '-' + item.cityNameEn : ''),
-      value: item.provinceNameEn + (item.cityNameEn ? '-' + item.cityNameEn : ''),
-    };
-    //@ts-ignore
-    tempOptionCityEn.push(tempObjEn);
-  });
-  //@ts-ignore
-  const optionsCity = ref<SelectProps['options']>(tempOptionCity);
+  const optionsCity = ref<SelectProps['options']>([]);
   //判断国籍
   const handleHuji = () => {
     if (props.personInfoData.huji) {
@@ -335,7 +320,11 @@
         return false;
       });
       if (cityArr.length > 0) {
-        props.personInfoData.nationality = '中国';
+        if (resumeTypeEnglish.value == '1') {
+          props.personInfoData.nationality = 'China';
+        } else {
+          props.personInfoData.nationality = '中国';
+        }
         return;
       }
       if (props.personInfoData.huji.includes('香港')) {
@@ -388,29 +377,54 @@
   }
   const uploadResumeTypeEnglish = () => {
     if (resumeTypeEnglish.value == '1') {
-        genderOptions.value = [
-          { label: 'Male', value: 'M' },
-          { label: 'Female', value: 'F' },
-        ];
-        optionsMarriageStatus.value = marriageEnArr;
-        optionsCountry.value = country.value.map((item) => ({
-          label: item.countryEn,
-          value: item.countryEn,
-        }));
-        optionsCity.value = tempOptionCityEn;
-      } else {
-        genderOptions.value = [
-          { label: '男士', value: 'M' },
-          { label: '女士', value: 'F' },
-        ];
-        optionsMarriageStatus.value = marriageArr;
-        optionsCountry.value = country.value.map((item) => ({
-          label: item.country,
-          value: item.country,
-        }));
-        optionsCity.value = tempOptionCity;
-      }
-  }
+      genderOptions.value = [
+        { label: 'Male', value: 'M' },
+        { label: 'Female', value: 'F' },
+      ];
+      optionsMarriageStatus.value = marriageEnArr;
+      optionsCountry.value = country.value.map((item) => ({
+        label: item.countryEn,
+        value: item.countryEn,
+      }));
+
+      let tempOptionCityEn = [];
+      //@ts-ignore
+      tempOptionCityEn.push({ label: '', value: '' });
+      province.value.forEach((item) => {
+        //@ts-ignore
+        let tempObjEn = {
+          label: item.provinceNameEn + (item.cityNameEn ? '-' + item.cityNameEn : ''),
+          value: item.provinceNameEn + (item.cityNameEn ? '-' + item.cityNameEn : ''),
+        };
+        //@ts-ignore
+        tempOptionCityEn.push(tempObjEn);
+      });
+      optionsCity.value = tempOptionCityEn;
+    } else {
+      genderOptions.value = [
+        { label: '男士', value: 'M' },
+        { label: '女士', value: 'F' },
+      ];
+      optionsMarriageStatus.value = marriageArr;
+      optionsCountry.value = country.value.map((item) => ({
+        label: item.country,
+        value: item.country,
+      }));
+      let tempOptionCity = [];
+      //@ts-ignore
+      tempOptionCity.push({ label: '', value: '' });
+      province.value.forEach((item) => {
+        //@ts-ignore
+        let tempObj = {
+          label: item.provinceName + (item.cityName ? '-' + item.cityName : ''),
+          value: item.provinceName + (item.cityName ? '-' + item.cityName : ''),
+        };
+        //@ts-ignore
+        tempOptionCity.push(tempObj);
+      });
+      optionsCity.value = tempOptionCity;
+    }
+  };
   uploadResumeTypeEnglish();
   watch(
     () => resumeTypeEnglish.value,
@@ -419,6 +433,12 @@
       uploadResumeTypeEnglish();
     },
   );
+  const handleNationality = (values) => {
+    //resumeStore.
+    resumeStore.$patch({
+      resumeLanguageNationality: values
+    })
+  }
 </script>
 <style scoped>
   .resume_photo_col {

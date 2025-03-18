@@ -9,6 +9,7 @@
               optionFilterProp="label"
               v-model:value="keyWordsAndFullText"
               :options="optionsKeyWords"
+              @change="handleOptionsKeyWords"
               :showArrow="false"
             ></a-select>
           </a-form-item>
@@ -86,11 +87,20 @@
           >新增人才</a-button
         >
         <a-switch
+          v-if="formState.leftType != '4'"
           style="margin-bottom: 3px; margin-left: 4px"
           @click="handleChangeTwoYearFlag"
           v-model:checked="isTwoYearFlag"
           checked-children="全部"
           un-checked-children="两年"
+        />
+        <a-switch
+          v-if="formState.leftType == '4'"
+          style="margin-bottom: 3px; margin-left: 4px"
+          @click="handleChangeCommonOtherFlag"
+          v-model:checked="isCommonOtherFlag"
+          checked-children="全部"
+          un-checked-children="排除"
         />
       </div>
       <div>
@@ -99,9 +109,10 @@
           :options="optionsRecruitId"
           @change="handleSelectedRecruitIdValue"
           size="small"
+          style="width: 100px"
         />
         <a-range-picker
-          style="width: 175px;margin-left: 10px;"
+          style="width: 165px;margin-left: 10px;"
           :presets="rangePresetsResume"
           @change="onRangeChangeResume"
           v-model:value="dateRange"
@@ -132,6 +143,12 @@
           >
             {{ record.userName }}
           </a>
+        </template>
+        <template v-else-if="column.key === 'registTimeStr'">
+          <span :title="record.registTimeStr">{{ record.registTimeDetails }}</span>
+        </template>
+        <template v-else-if="column.key === 'lastUpdateTimeStr'">
+          <span :title="record.lastUpdateTimeStr">{{ record.lastUpdateTime }}</span>
         </template>
         <template v-else-if="column.key === 'projectFlag'">
           <a-tag
@@ -371,6 +388,7 @@
   const resumeListStore = useResumeListStoreWithOut();
   const {
     expandedRowKeys,
+    isCommonOtherStatus,
     isTwoYearFlagStatus,
     searchWorkExp,
     resumeList,
@@ -397,6 +415,19 @@
     { value: '1', label: '全文' },
   ]);
   const keyWordsAndFullText = ref('关键字');
+  const handleOptionsKeyWords = (values) => {
+    if (values === '关键字') {
+      if (formState.value.fullText) {
+        formState.value.keyWords = formState.value.fullText;
+        formState.value.fullText = '';
+      }
+    } else {
+      if (formState.value.keyWords) {
+        formState.value.fullText = formState.value.keyWords;
+        formState.value.keyWords = '';
+      }
+    }
+  }
   // 展开/收起状态
   const expand = ref(1);
   const expandArr = [4, 4, 4, 4, 0];
@@ -428,6 +459,7 @@
       marketNp: '1',
       positionNp: '1',
       isTwoYear: '',
+      notSelf: '',
     };
   };
   const isTwoYearFlag = ref<boolean>(true);
@@ -445,6 +477,24 @@
       formState.value = { ...formState.value, isTwoYear: '' };
     } else {
       formState.value = { ...formState.value, isTwoYear: '1' };
+    }
+    onFinish(2);
+  };
+  const isCommonOtherFlag = ref<boolean>(true);
+  watch(
+    () => isCommonOtherStatus.value,
+    () => {
+      if (!isCommonOtherStatus.value) {
+        isCommonOtherStatus.value = true;
+      }
+    },
+  );
+
+  const handleChangeCommonOtherFlag = () => {
+    if (isCommonOtherFlag.value) {
+      formState.value = { ...formState.value, notSelf: '' };
+    } else {
+      formState.value = { ...formState.value, notSelf: '1' };
     }
     onFinish(2);
   };
@@ -481,7 +531,7 @@
       dataIndex: 'userName',
       ellipsis: true,
       key: 'userName',
-      width: 70,
+      width: 75,
     },
     {
       title: '性别',
@@ -502,14 +552,14 @@
       dataIndex: 'currentCity',
       key: 'currentCity',
       ellipsis: true,
-      width: 40,
+      width: 70,
     },
     {
       title: '当前职位',
       dataIndex: 'positionName',
       key: 'positionName',
       ellipsis: true,
-      width: 110,
+      width: 135,
     },
     {
       title: '顾问',
@@ -523,28 +573,28 @@
       dataIndex: 'registTimeStr',
       key: 'registTimeStr',
       ellipsis: true,
-      width: 95,
+      width: 75,
     },
     {
       title: '联络日期',
       dataIndex: 'lastUpdateTimeStr',
       key: 'lastUpdateTimeStr',
       ellipsis: true,
-      width: 95,
+      width: 75,
     },
     {
       title: '标签',
       dataIndex: 'projectFlag',
       key: 'projectFlag',
       ellipsis: true,
-      width: 180,
+      width: 160,
     },
     {
       title: '操作',
       dataIndex: 'options',
       key: 'options',
       ellipsis: true,
-      width: 40,
+      width: 35,
     },
   ];
   //const expandedRowKeys = ref(['']);
@@ -676,6 +726,7 @@
     if (dates) {
       formState.value.startTime = dateStrings[0];
       formState.value.endTime = dateStrings[1];
+      onFinish(2);
     } else {
       formState.value.startTime = '';
       formState.value.endTime = '';
@@ -713,7 +764,6 @@ optionsRecruitId.value = teamPersonChangeArr.value.map(item => ({value: item.tea
   //   return labels[labels.length - 1];
   // }
   const handleSelectedRecruitIdValue = (value) => {
-    console.log(value)
     if (value && value.length > 0) {
       formState.value.serchRecruitId = value[value.length - 1]; // 仅保留末级值
       optionsRecruitId.value.forEach(item => {
@@ -721,6 +771,7 @@ optionsRecruitId.value = teamPersonChangeArr.value.map(item => ({value: item.tea
           selectedRecruitIdValue.value = [item.children.find(subItem => subItem.value === value[value.length - 1])?.label];
         }
       })
+      onFinish(2);
     } else {
       formState.value.serchRecruitId = '';
       selectedRecruitIdValue.value = [];

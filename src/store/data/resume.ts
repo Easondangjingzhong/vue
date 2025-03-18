@@ -6,11 +6,11 @@ export const marriageArr = [
   { label: '保密', value: '保密' },
 ];
 export const marriageEnArr = [
-  { label: 'Secret', value: 'Secret' },
-  { label: 'Single', value: 'Single' },
-  { label: 'Married Without Children', value: 'Married Without Children' },
-  { label: 'Married With Children', value: 'Married With Children' },
-  { label: 'Divorce', value: 'Divorce' },
+  { label: 'Secret', value: 'Secret', cn: '保密'},
+  { label: 'Single', value: 'Single' , cn: '未婚'},
+  { label: 'Married Without Children', value: 'Married Without Children' , cn: '已婚未育'},
+  { label: 'Married With Children', value: 'Married With Children', cn: '已婚已育' },
+  { label: 'Divorce', value: 'Divorce', cn: '离异' },
 ];
 export const brandArrDetail = [
   {
@@ -253,6 +253,16 @@ export const degreeArr = [
   '博士+MBA',
   '大学肄业',
 ];
+export const degreeEnAndCnArr = [
+  {en: 'Doctorate', cn: '博士'},
+  {en: 'MBA/EMBA', cn: 'MBA'},
+  {en: 'Master', cn: '硕士'},
+  {en: 'Bachelor', cn: '本科'},
+  {en: 'Junior College', cn: '大专'},
+  {en: 'Special School', cn: '职高'},
+  {en: 'Senior high school', cn: '中专'},
+  {en: 'Junior middle school', cn: '初中'},
+];
 export const degreeEnArr = [
   'Doctorate',
   'MBA/EMBA',
@@ -367,9 +377,13 @@ export const languageArr = [
     ],
   },
 ];
+// export const resumeTypeArr = [
+//   { value: 'C', label: '中文' },
+//   { value: 'E', label: '英文' },
+// ];
 export const resumeTypeArr = [
-  { value: 'C', label: '中文' },
-  { value: 'E', label: '英文' },
+  { value: '2', label: '中文' },
+  { value: '1', label: '英文' },
 ];
 export const workFloorArr = [
   '1层',
@@ -380,6 +394,19 @@ export const workFloorArr = [
   '6层',
   '7层',
   '8层',
+  'B1',
+  'B2',
+  'OFFICE',
+];
+export const workFloorEnArr = [
+  '1F',
+  '2F',
+  '3F',
+  '4F',
+  '5F',
+  '6F',
+  '7F',
+  '8F',
   'B1',
   'B2',
   'OFFICE',

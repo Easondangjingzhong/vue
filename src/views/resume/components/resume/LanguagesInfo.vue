@@ -197,7 +197,7 @@
             </a-form-item>
           </a-col>
         </a-row>
-        <a-row v-if="expand">
+        <a-row v-if="expand && expandUpdateChinese">
           <a-col :span="24">
             <a-form-item
               name="languageAbility5"
@@ -230,14 +230,30 @@ import { storeToRefs } from 'pinia';
   import { DownOutlined, UpOutlined } from '@ant-design/icons-vue';
   import { useResumeStoreWithOut } from '/@/store/modules/resume';
   import { validateLanguage } from '/@/utils/resumeTypeEn';
+  const resumeStore = useResumeStoreWithOut();
+  const { resumeTypeEnglish,resumeLanguageNationality } = storeToRefs(resumeStore);
   const props = defineProps({
     resumeLanguageList: {
       type: Object,
       required: true,
     },
+    personInfoData: {
+      type: Object,
+      required: true,
+    }
   });
-  const resumeStore = useResumeStoreWithOut();
-  const { resumeTypeEnglish } = storeToRefs(resumeStore);
+  const expandUpdateChinese = ref(true);
+  if (props.personInfoData.nationality == "中国" || props.personInfoData.nationality == "China" ) {
+    expandUpdateChinese.value = false;
+  }
+  watch(resumeLanguageNationality,() =>{
+    if (resumeLanguageNationality.value == "中国" || resumeLanguageNationality.value  == "China" ) {
+    expandUpdateChinese.value = false;
+  } else {
+    expandUpdateChinese.value = true;
+  }
+  })
+  
   const themeLanguage = ref(validateLanguage('englishInfo', resumeTypeEnglish.value));
   const expand = ref(false);
   let langArr = [];
@@ -246,6 +262,17 @@ import { storeToRefs } from 'pinia';
     lang.forEach((element) => {
       if (element.languageName == '英语') {
         langArr = element.languageLevel.split(',');
+        if (resumeTypeEnglish.value == '1') {
+          if (element.tinshuoLiuli) {
+            langArr.push(element.tinshuoLiuli)
+          }
+          if (element.duxieLiuli) {
+            langArr.push(element.duxieLiuli)
+          }
+          if (element.bujia) {
+            langArr.push(element.bujia)
+          }
+        }
       }
     });
   }

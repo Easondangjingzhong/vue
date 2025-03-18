@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia';
 import { store } from '/@/store';
 import fetchApi from '/@/api/resumeList';
-import { formatToDateMinute } from '/@/utils/dateUtil';
+import { formatToDateMinute,formatToDate } from '/@/utils/dateUtil';
 import { SearchResumeList, Item } from '/@/api/resumeList/model';
-import {stringifyToFormData} from '/@/utils/formatDataUntils';
+import { stringifyToFormData } from '/@/utils/formatDataUntils';
 interface PaginationItem {
   current: Number;
   pageSize: Number;
@@ -20,6 +20,7 @@ interface ResumeListState {
   pagination: {}; //分页
   formState: {}; //搜索条件
   isTwoYearFlagStatus: boolean; //搜索条件 控制两年搜索
+  isCommonOtherStatus: boolean; //搜索条件 团队搜索 排除自己
   systemType: string; //返回的权限 A T V S
   loginNameChangeRecruitId: string; //切换后我的人才id
   loginNameChangeRecruitName: string; //切换后我的人才姓名
@@ -55,6 +56,7 @@ export const useResumeListStore = defineStore({
       isTwoYear: '',
     },
     isTwoYearFlagStatus: true,
+    isCommonOtherStatus: true,
     brandList: [],
     resumeList: [],
     positionsList: [],
@@ -373,7 +375,7 @@ export const useResumeListStore = defineStore({
      * @param param teamId
      * @returns
      */
-    async fetchTeamData(param: string,type= '') {
+    async fetchTeamData(param: string, type = '') {
       console.log(param);
       if (param == '52') {
         this.searchResumeType = '1';
@@ -406,7 +408,7 @@ export const useResumeListStore = defineStore({
           //@ts-ignore
           this.queryResumeList(this.formState);
         }
-        if (param.split('_')[1] != "0903") {
+        if (param.split('_')[1] != '0903') {
           const res = await fetchApi.queryTeamData(formData);
           if (res.info) {
             this.resumeMenu.forEach((item) => {
@@ -437,7 +439,7 @@ export const useResumeListStore = defineStore({
           return res;
         }
       }
-      if (param.includes('teamLevel2') ) {
+      if (param.includes('teamLevel2')) {
         let formData = new FormData();
         formData.append('recruitId', loginVueUser.loginId);
         formData.append('teamId', param.split('_')[1]);
@@ -578,7 +580,7 @@ export const useResumeListStore = defineStore({
         this.queryMyPersonData(res, param);
       }
       if (param.includes('sortResume')) {
-        this.formState = { ...this.formState,leftType: "6", sortId: param.split('-')[1] };
+        this.formState = { ...this.formState, leftType: '6', sortId: param.split('-')[1] };
         //@ts-ignore
         this.queryResumeList(this.formState);
       }
@@ -589,20 +591,19 @@ export const useResumeListStore = defineStore({
      * @param viewType T 部门视角 （非Leader 此参数不生效 T也不影响） V 团队L视角  S个人视角
      */
     async resumeLoginNameChange(recruitId: string, viewType: string) {
-    
       let formData = new FormData();
-      if ( viewType == "T") {
+      if (viewType == 'T') {
         this.loginNameChangeRecruitId = recruitId.split('-')[0];
         this.loginNameChangeRecruitName = recruitId.split('-')[1];
         formData.append('recruitId', recruitId.split('-')[0] || loginVueUser.loginId);
         formData.append('viewType', viewType);
-        this.formState = { ...this.formState, viewType: "T" };
+        this.formState = { ...this.formState, viewType: 'T' };
       } else {
         this.loginNameChangeRecruitId = loginVueUser.loginId;
         this.loginNameChangeRecruitName = loginVueUser.loginName;
         formData.append('recruitId', loginVueUser.loginId);
-        formData.append('viewType', "S");
-        this.formState = { ...this.formState, viewType: "S" };
+        formData.append('viewType', 'S');
+        this.formState = { ...this.formState, viewType: 'S' };
       }
       const res = await fetchApi.queryPersonTalentData(formData);
       this.queryMyPersonData(res, '51');
@@ -727,6 +728,18 @@ export const useResumeListStore = defineStore({
         this.positionsList = res.info.postList;
       }
     },
+     /**
+         * 查询职位排除门店销售和门店支持
+         */
+        async queryResumeListPositions(jobCategory='店铺') {
+          let formData = new FormData();
+          formData.append('industry', '');
+          formData.append('jobCategory2', '');
+          formData.append('management2', '');
+          formData.append('jobCategory', jobCategory);
+          const res = await fetchApi.queryResumeListPositions(formData);
+          return res;
+        },
     /**
      * 根据城市商场数据类型参数查询
      * @param param 城市商场
@@ -744,15 +757,16 @@ export const useResumeListStore = defineStore({
         this.markIdList = res.info;
       }
     },
-    async queryMarkListSearch(city="",marketName="") {
+    async queryMarkListSearch(city = '', marketName = '') {
       let formData = new FormData();
-      formData.append('city',city);
+      formData.append('city', city);
       formData.append('marketName', marketName || '');
       formData.append('curPage', '1');
       const res = await fetchApi.queryMarkList(formData);
       if (res.info) {
         this.markIdList = res.info;
       }
+      return res;
     },
     /**
      * 根据公司数据类型参数查询
@@ -809,28 +823,55 @@ export const useResumeListStore = defineStore({
           tempItem.currentCity = item.currentCity;
           tempItem.positionName = item.positionName;
           tempItem.customerServiceName = item.customerServiceName || '公共库';
-          tempItem.registTimeStr = item.registTimeStr;
+          tempItem.registTimeStr = formatToDateMinute(item.registTimeStr);
+          tempItem.registTimeDetails = formatToDate(item.registTimeStr);
           tempItem.lastUpdateTimeStr = formatToDateMinute(item.lastUpdateTimeStr);
-          tempItem.checkFlag = item.checkFlag || ""; //待核 最新 过期
-          tempItem.fristFlag = item.fristFlag || ""; //首增
-          tempItem.commonFlag = item.commonFlag || ""; //私有
-          tempItem.onlyFlag = item.onlyFlag || ""; //唯一
-          tempItem.gognGongFlag = item.gognGongFlag || ""; //公共
-          tempItem.limitFlag = item.limitFlag || ""; //限制 保护
+          tempItem.lastUpdateTime = formatToDate(item.lastUpdateTimeStr);
+          tempItem.checkFlag = item.checkFlag || ''; //待核 最新 过期
+          tempItem.fristFlag = item.fristFlag || ''; //首增
+          tempItem.commonFlag = item.commonFlag || ''; //私有
+          tempItem.onlyFlag = item.onlyFlag || ''; //唯一
+          tempItem.gognGongFlag = item.gognGongFlag || ''; //公共
+          tempItem.limitFlag = item.limitFlag || ''; //限制 保护
           tempItem.options = item.options;
           tempItem.recruitId = item.recruitId;
-          tempItem.leftType = param.leftType || "2";//参数
+          tempItem.leftType = param.leftType || '2'; //参数
           tempItem.projectFlag = item.projectFlag;
           tempItem.twoYearFlag = item.twoYearFlag; //两年
           tempItem.resumeStatus = item.resumeStatus; //两年
-          tempItem.limitRemarkDetail = (item.limitRemarkDetail ? item.limitRemarkDetail : (item.resumeStatus == '保证期中' ? `${formatToDateMinute(item.shiRuTime)} - ${formatToDateMinute(item.guoBaoTime)}  保证期推荐禁止` : (item.offerTime ? `${formatToDateMinute(item.offerTime)}  OFFER推荐禁止`: ""))); 
-          tempItem.checkedTime = `${formatToDateMinute(item.registTime)}  新增日期`; 
-          tempItem.registTime = `${formatToDateMinute(item.limitRemarkDetail)}  新增日期`; 
-          tempItem.newTime = item.newtestStartTime ? `${formatToDateMinute(item.newtestStartTime)} - ${formatToDateMinute(item.newtestEndTime)} 最新数据周期`: ''; 
-          tempItem.commonFlagTime = item.personBaohuStartTime ? `${formatToDateMinute(item.personBaohuStartTime)} - ${formatToDateMinute(item.personBaohuEndTime)} 私有保护周期`: ''; 
-          tempItem.repeatTime = item.shouZengStartTime ? `${formatToDateMinute(item.registTime)} 首增日期`: ''; 
-          tempItem.offerTime = item.offerTime ? `${formatToDateMinute(item.offerTime)} 首增日期`: ''; 
-          tempItem.entryTime = item.limitFlag == 'OFFER' && item.resumeStatus == '保证期中' ? `${formatToDateMinute(item.shiRuTime)} - ${formatToDateMinute(item.guoBaoTime)}  保证期周期` : ''; 
+          tempItem.limitRemarkDetail = item.limitRemarkDetail
+            ? item.limitRemarkDetail
+            : item.resumeStatus == '保证期中'
+            ? `${formatToDateMinute(item.shiRuTime)} - ${formatToDateMinute(
+                item.guoBaoTime,
+              )}  保证期推荐禁止`
+            : item.offerTime
+            ? `${formatToDateMinute(item.offerTime)}  OFFER推荐禁止`
+            : '';
+          tempItem.checkedTime = `${formatToDateMinute(item.registTime)}  新增日期`;
+          tempItem.registTime = `${formatToDateMinute(item.limitRemarkDetail)}  新增日期`;
+          tempItem.newTime = item.newtestStartTime
+            ? `${formatToDateMinute(item.newtestStartTime)} - ${formatToDateMinute(
+                item.newtestEndTime,
+              )} 最新数据周期`
+            : '';
+          tempItem.commonFlagTime = item.personBaohuStartTime
+            ? `${formatToDateMinute(item.personBaohuStartTime)} - ${formatToDateMinute(
+                item.personBaohuEndTime,
+              )} 私有保护周期`
+            : '';
+          tempItem.repeatTime = item.shouZengStartTime
+            ? `${formatToDateMinute(item.registTime)} 首增日期`
+            : '';
+          tempItem.offerTime = item.offerTime
+            ? `${formatToDateMinute(item.offerTime)} 首增日期`
+            : '';
+          tempItem.entryTime =
+            item.limitFlag == 'OFFER' && item.resumeStatus == '保证期中'
+              ? `${formatToDateMinute(item.shiRuTime)} - ${formatToDateMinute(
+                  item.guoBaoTime,
+                )}  保证期周期`
+              : '';
           // if (item.works) {
           //   let workTemp = "";
           //   item.works.forEach(subItem => {
@@ -925,6 +966,8 @@ export const useResumeListStore = defineStore({
       formData.append('startTime', param.startTime || '');
       formData.append('endTime', param.endTime || '');
       formData.append('serchRecruitId', param.serchRecruitId || '');
+      formData.append('notSelf', param.notSelf || '');
+      formData.append('isEnglish', param.isEnglish || '');
       return formData;
     },
     /**
@@ -1014,67 +1057,70 @@ export const useResumeListStore = defineStore({
       }
       return res;
     },
-     /**
+    /**
      * 查询顾问推荐记录
      * @returns
      */
-     async queryRecommendResumeButton(params) {
-      params = {...params,
-        SystemRecruitId: this.loginNameChangeRecruitId ||loginVueUser.loginId,
-        recommendRecruitId: params.recommendRecruitId || this.loginNameChangeRecruitId || loginVueUser.loginId,
-        pageNumber: params.pageNumber || "1"
-      }
+    async queryRecommendResumeButton(params) {
+      params = {
+        ...params,
+        SystemRecruitId: this.loginNameChangeRecruitId || loginVueUser.loginId,
+        recommendRecruitId:
+          params.recommendRecruitId || this.loginNameChangeRecruitId || loginVueUser.loginId,
+        pageNumber: params.pageNumber || '1',
+      };
       let temp = stringifyToFormData(params);
       const res = await fetchApi.queryRecommendResumeButton(temp);
       return res;
     },
-     /**
+    /**
      * 查询顾问面试跟踪记录
      * @returns
      */
-     async queryRecommendInterview(params) {
-      params = {...params,
+    async queryRecommendInterview(params) {
+      params = {
+        ...params,
         realRecruitId: this.loginNameChangeRecruitId || loginVueUser.loginId,
         SystemRecruitId: this.loginNameChangeRecruitId || loginVueUser.loginId,
         recruitId: params.recruitId || this.loginNameChangeRecruitId || loginVueUser.loginId,
-        pageNumber: params.pageNumber || "1",
-        typeNumber: params.typeNumber || "3"}
+        pageNumber: params.pageNumber || '1',
+        typeNumber: params.typeNumber || '3',
+      };
       let temp = stringifyToFormData(params);
       const res = await fetchApi.queryRecommendInterview(temp);
       return res;
     },
-      /**
+    /**
      * 查询顾问offer记录
      * @returns
      */
-      async queryRecommendOffer(params) {
-        params = {...params,
-          SystemRecruitId: loginVueUser.loginId}
-        let temp = stringifyToFormData(params);
-        const res = await fetchApi.queryRecommendOffer(temp);
-        return res;
-      },
-      /**
+    async queryRecommendOffer(params) {
+      params = { ...params, SystemRecruitId: loginVueUser.loginId };
+      let temp = stringifyToFormData(params);
+      const res = await fetchApi.queryRecommendOffer(temp);
+      return res;
+    },
+    /**
      * 查询顾问offer记录
      * @returns
      */
-      async querySystemFunction() {
-        let formData = new FormData();
-        formData.append('SystemRecruitId', loginVueUser.loginId);
-        const res = await fetchApi.querySystemFunction(formData);
-        return res;
-      },
-       /**
+    async querySystemFunction() {
+      let formData = new FormData();
+      formData.append('SystemRecruitId', loginVueUser.loginId);
+      const res = await fetchApi.querySystemFunction(formData);
+      return res;
+    },
+    /**
      * 根据手机号及推荐顾问id跳转简历详情页面
      * @returns
      */
-       async queryQueryResumeNewDetails(phoneNum,recruitId) {
-        let formData = new FormData();
-        formData.append('phoneNum', phoneNum);
-        formData.append('recruitId', recruitId);
-        const res = await fetchApi.queryQueryResumeNewDetails(formData);
-        return res;
-      },
+    async queryQueryResumeNewDetails(phoneNum, recruitId) {
+      let formData = new FormData();
+      formData.append('phoneNum', phoneNum);
+      formData.append('recruitId', recruitId);
+      const res = await fetchApi.queryQueryResumeNewDetails(formData);
+      return res;
+    },
   },
 });
 

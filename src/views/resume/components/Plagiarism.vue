@@ -100,8 +100,6 @@
 
 <script lang="ts" setup>
 import { usePlagiarusnStoreWithOut } from '/@/store/modules/plagiarusn';
-  import {useCityStoreWithOut} from '/@/store/modules/city'
-  import { useResumeStoreWithOut } from '/@/store/modules/resume';
   import { storeToRefs } from 'pinia';
   const plagiarusnStore = usePlagiarusnStoreWithOut();
   const {plagiarusnRseult, plagiarusnInfoFlag, plagiarusnInfo} = storeToRefs(plagiarusnStore);
@@ -174,15 +172,8 @@ import { usePlagiarusnStoreWithOut } from '/@/store/modules/plagiarusn';
       key: 'realNameEn',
     },
   ];
-  const resumeStore= useResumeStoreWithOut();
-  const cityStore = useCityStoreWithOut();
-  onBeforeMount(() => {
-    resumeStore.fetchPosition("店铺");
-    resumeStore.fetchPosition("OFFICE");
-    cityStore.fetchInfo();
-    cityStore.fetchCountryInfo();
-    cityStore.fetchCheieseCityInfo();
-  })
+  
+ 
 </script>
 <style lang="less">
   .resume_card {

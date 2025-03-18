@@ -8,7 +8,7 @@ export function validateLanguage(type,language) {
   if (type == "personInfo" && language == "1") {
     return {
       userName: {label: "Name", message: "请输入名字"},
-      gender: {label: "Sex", message: "请选择性别"},
+      gender: {label: "Gender", message: "请选择性别"},
       phone: {label: "Mobile", message: "请输入手机号"},
       age: {label: "Age", message: "请输入年龄"},
       email: {label: "Email", message: "请输入邮箱"},

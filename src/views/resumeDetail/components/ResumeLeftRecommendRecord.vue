@@ -5,6 +5,7 @@
         <h4 class="resume_h4">
           推荐记录
         </h4>
+        <CloudUploadOutlined v-if="expendMapping" @click="handleToMappingDetails" />
       </a-col>
       <a-divider :dashed="true" style="background-color: #ccc;margin-top: 0;margin-bottom: 5px;" />
     </a-row>
@@ -19,7 +20,7 @@
       @change="handleQueryResumeRecord"
     >
     <template #bodyCell="{ column, record }">
-      <template v-if="column.key === 'action' && (record.currentStatus == '顾问通过' || record.currentStatus == 'HR通过' || record.currentStatus == '简发顾问' || record.currentStatus == '重新推荐' || record.currentStatus == '超时未审' || record.currentStatus == '初试已排' || record.currentStatus.includes('试通过')
+      <template v-if="column.key === 'action' && (record.currentStatus == '顾问通过' || record.currentStatus == 'HR通过' || record.currentStatus == '简发顾问' || record.currentStatus == '重新推荐' || record.currentStatus == '超时未审' || record.currentStatus == '初试已排' || record.currentStatus.includes('试通过') || record.currentStatus.includes('试确认')
 || record.currentStatus == '推荐顾问'  || record.currentStatus == 'OFFER接受' || record.currentStatus == '简发HR' || record.currentStatus == '简发HR')
       ">
       <VerticalAlignBottomOutlined :style="{fontSize: '16px'}" @click="handleOpenResumeUpload(record.city,record.market,record.brand,record.positions,record.pId)"/>
@@ -51,10 +52,10 @@
               <a-button size="small" style="margin-left: 5px;" @click="handleTemplateType" type="primary">下载</a-button>
             </a-col>
           </a-row>
-        </a-modal>
+  </a-modal>
 </template>
 <script setup lang="ts">
- import { VerticalAlignBottomOutlined } from '@ant-design/icons-vue';
+ import { VerticalAlignBottomOutlined,CloudUploadOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import { storeToRefs } from 'pinia';
 //import type { SelectProps } from 'ant-design-vue';
@@ -70,6 +71,9 @@ const pagination = ref({
   hideOnSinglePage: true,
   size:'small',
 })
+const loginVueUser: {loginName: "", loginId: "", loginTocken: "",loginType: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
+  const expendMapping = ref(false);
+ 
 watch(resumeRecord,() => {
   resumeList.value = resumeRecord.value.list.map((item,index) => ({
     key: item.id.toString(),
@@ -84,6 +88,9 @@ watch(resumeRecord,() => {
     currentStatus: item.status,
   }));
   pagination.value = { pageSize: resumeRecord.value.pageSize, current: resumeRecord.value.pageNumber, total: resumeRecord.value.totalCount,hideOnSinglePage: true,size: 'small' };
+  if (resumeRecord.value?.list?.length > 0 && (loginVueUser.loginType == "A" || loginVueUser.loginType == "T" || loginVueUser.loginType == "V" || loginVueUser.loginId == resumeDetail.value.resume.recruitId)) {
+    expendMapping.value = true;
+  }
 })
   
   const columns = [
@@ -200,11 +207,19 @@ watch(resumeRecord,() => {
     location.href = `http://work.wotui.com:8889/WTSM/DownloadResumeServlet?resumeId=${resumeId.value}&resumeType=${resumeType.value}&systemUser=${systemUserTemp}&template=${templateType.value}&realEnName=${realNameEn}&screenWidth=${screenWidth}`
     handleCloseResumeUpload();
   }
+  
+  const handleToMappingDetails = () => {
+    window.open(`http://work.wotui.com:8889/WTSM/candidateRecommend/query-search-recommend-list-pager.html?phone=${resumeDetail.value.resume.phoneNum}`,"_blank")
+  }
 </script>
 <style lang="less" scoped>
  .resume_header {
   margin: 10px 20px;
  }
+ .resume_detail_title {
+    display: flex;
+    justify-content: space-between;
+  }
  .resume_h4 {
     margin: 5px 0;
     font-size: 16px;

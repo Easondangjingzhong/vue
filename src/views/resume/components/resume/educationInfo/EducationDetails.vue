@@ -206,11 +206,19 @@
       cheieseCity.value.filter((item) => {
         //@ts-ignore
         if (props.educationInfoData.schoolName.includes(item.cityName)) {
-          resumeStore.updateNationality('中国');
+          if (resumeTypeEnglish.value == '1') {
+            resumeStore.updateNationality('China');
+          } else {
+            resumeStore.updateNationality('中国');
+          }
         }
         //@ts-ignore
         if (props.educationInfoData.schoolName.includes(item.provinceName)) {
-          resumeStore.updateNationality('中国');
+          if (resumeTypeEnglish.value == '1') {
+            resumeStore.updateNationality('China');
+          } else {
+            resumeStore.updateNationality('中国');
+          }
         }
       });
     }

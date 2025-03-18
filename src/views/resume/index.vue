@@ -15,6 +15,7 @@
 <script setup lang="ts">
   import Upload from './components/Upload.vue';
   import ResumeInfo from './components/ResumeInfo.vue';
+  import {useCityStoreWithOut} from '/@/store/modules/city'
   import { useResumeStoreWithOut } from '/@/store/modules/resume';
   import { usePlagiarusnStoreWithOut } from '/@/store/modules/plagiarusn';
   import {ResumeFormState} from '/@/api/resume/model';
@@ -24,6 +25,12 @@
   const { resumeFormState,resumeId,closeBtn} = storeToRefs(resumeStore);
   const plagiarusnStore = usePlagiarusnStoreWithOut();
   const { resumeInfoFlag } = storeToRefs(plagiarusnStore);
+  const cityStore = useCityStoreWithOut();
+  resumeStore.fetchPosition("店铺");
+    resumeStore.fetchPosition("OFFICE");
+    cityStore.fetchInfo();
+    cityStore.fetchCountryInfo();
+    cityStore.fetchCheieseCityInfo();
   const router = useRouter();
   const handleCloseBtn = () => {
     closeBtn.value = false;
@@ -39,6 +46,17 @@
     });
     window.open(href.href, '_blank')
     //window.open(`http://work.wotui.com:8889/WTSM/system/consultant-query-resume.html?resumeId=${resumeId.value}&resumeType=C`);
+  }
+  const route = useRoute();
+  if (route.query?.addEnglish == '1') {
+    resumeStore.queryResumeById(route.query?.resumeId,route.query?.addConsultantId).then(res => {
+      if (res.code == 1) {
+        plagiarusnStore.resumeInfoShow(true);
+        plagiarusnStore.plagiarusnRseultShow(0);
+        plagiarusnStore.plagiarusnInfoFlagShow(false);
+        resumeInfoFlag.value = true
+      }
+    });
   }
   //const scaleKey = ref(1);
   /** 获取css 属性值 */

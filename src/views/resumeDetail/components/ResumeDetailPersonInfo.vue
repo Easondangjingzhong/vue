@@ -36,7 +36,8 @@
       </a-col>
       <a-col :span="spancol">
         {{ themeLanguage?.gender?.label }}:
-        <span class="resume_span">{{ resumeData.gender == 'M' ? '男' : '女' }}</span>
+        <span v-if="resumeTypeEnglish == '1'" class="resume_span">{{ resumeData.gender == 'M' ? 'Male' : 'Female' }}</span>
+        <span v-else class="resume_span">{{ resumeData.gender == 'M' ? '男' : '女' }}</span>
       </a-col>
       <a-col class="resume_photo_col">
         <a-image
@@ -57,7 +58,8 @@
       </a-col>
       <a-col :span="spancol">
         {{ themeLanguage?.age?.label }}:
-        <span class="resume_span">{{ resumeData.age }}岁 {{ ageTimeTemp }}</span>
+        <span v-if="resumeTypeEnglish == '1'" class="resume_span">{{ resumeData.age }} {{ ageTimeTemp }}</span>
+        <span v-else class="resume_span">{{ resumeData.age }}岁 {{ ageTimeTemp }}</span>
       </a-col>
     </a-row>
     <a-row :gutter="24" class="resume_row">

@@ -31,14 +31,14 @@
           <a-tag
             v-if="item.resumeId && resumeTypeEnglish == '1'"
             style="cursor: pointer"
-            :class="resumeId == item.resumeId ? 'activceResume':''"
+            :class="resumeId == item.resumeId ? 'activceResume' : ''"
             color="pink"
             @click="handleChangeResume(item.resumeId, item.addConsultantId, 2)"
             >中文</a-tag
           >
           <a-tag
             v-if="item.resumeId && resumeTypeEnglish != '1'"
-            :class="resumeId == item.resumeId ? 'activceResume':''"
+            :class="resumeId == item.resumeId ? 'activceResume' : ''"
             color="pink"
             style="cursor: pointer"
             @click="handleChangeResume(item.resumeId, item.addConsultantId, 2)"
@@ -47,10 +47,15 @@
         </span>
         <!-- <span class="resume_span" v-if="!item.resumeIdEn">英文</span> -->
         <span class="resume_span_name">
-          <a-tag v-if="!item.resumeIdEn" style="cursor: not-allowed">英文</a-tag>
+          <a-tag
+            v-if="!item.resumeIdEn"
+            style="cursor: pointer"
+            @click="handleChangeResumeToAddEnglish(item.resumeId, item.addConsultantId)"
+            >英文</a-tag
+          >
           <a-tag
             v-if="item.resumeIdEn && resumeTypeEnglish != '1'"
-            :class="resumeId == item.resumeIdEn ? 'activceResume':''"
+            :class="resumeId == item.resumeIdEn ? 'activceResume' : ''"
             color="pink"
             style="cursor: pointer"
             @click="handleChangeResume(item.resumeIdEn, item.addConsultantId, 1)"
@@ -58,7 +63,7 @@
           >
           <a-tag
             v-if="item.resumeIdEn && resumeTypeEnglish == '1'"
-            :class="resumeId == item.resumeIdEn ? 'activceResume':''"
+            :class="resumeId == item.resumeIdEn ? 'activceResume' : ''"
             color="pink"
             style="cursor: pointer"
             @click="handleChangeResume(item.resumeIdEn, item.addConsultantId, 1)"
@@ -75,7 +80,7 @@
           />
           <LinkOutlined
             v-if="item.orginalPath && item.orginalPathEn"
-            @click="handleResumeOrginalPathChoose(item.orginalPath,item.orginalPathEn)"
+            @click="handleResumeOrginalPathChoose(item.orginalPath, item.orginalPathEn)"
           />
         </span>
         <span class="resume_span">
@@ -144,23 +149,17 @@
         </a-row>
       </a-form>
     </div>
-    </div>
-    <a-modal :footer="null" v-model:open="openOrginalPatChoose" title="简历预览">
-      <p>
-        <a-tag
-            color="pink"
-            style="cursor: pointer;"
-            @click="handleResumeOrginalPathChooseDetail(1)"
-            >中文</a-tag
-          >
-          <a-tag
-            color="pink"
-            style="cursor: pointer;"
-            @click="handleResumeOrginalPathChooseDetail(2)"
-            >英文</a-tag
-          >
-      </p>
-    </a-modal>
+  </div>
+  <a-modal :footer="null" v-model:open="openOrginalPatChoose" title="简历预览">
+    <p>
+      <a-tag color="pink" style="cursor: pointer" @click="handleResumeOrginalPathChooseDetail(1)"
+        >中文</a-tag
+      >
+      <a-tag color="pink" style="cursor: pointer" @click="handleResumeOrginalPathChooseDetail(2)"
+        >英文</a-tag
+      >
+    </p>
+  </a-modal>
   <a-drawer
     v-model:open="orginalPathShow"
     title="文件预览"
@@ -173,11 +172,11 @@
     placement="right"
   >
     <template #extra>
-    <CloseOutlined @click="handleOrginalPathClose"/>
-  </template>
-   <div>
-    <OrginalPath :orginalPathBlobPath="orginalPathBlobPath" />
-   </div>
+      <CloseOutlined @click="handleOrginalPathClose" />
+    </template>
+    <div>
+      <OrginalPath :orginalPathBlobPath="orginalPathBlobPath" />
+    </div>
   </a-drawer>
   <a-drawer
     v-model:open="resumeMappinglag"
@@ -190,8 +189,8 @@
     placement="right"
   >
     <template #extra>
-    <CloseOutlined @click="handleColseCandidatePosition" />
-  </template>
+      <CloseOutlined @click="handleColseCandidatePosition" />
+    </template>
     <a-table
       size="small"
       :dataSource="personMappingList"
@@ -218,7 +217,10 @@
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'siGongNum'">
             <a
-              :class="['siGongNum', mappingJiaGouId == `${record.brandId}/${record.marketId}` ? 'siGongNumActive' : '']"
+              :class="[
+                'siGongNum',
+                mappingJiaGouId == `${record.brandId}/${record.marketId}` ? 'siGongNumActive' : '',
+              ]"
               v-if="record.siGongNum"
               @click="handleMappingJiaGou(record.brandId, record.marketId)"
               >{{ record.siGongNum }}</a
@@ -236,24 +238,25 @@
         <a-col :span="24">
           <h4 class="resume_h4">经理级别({{ mappingJiaGouArr.mappingJiaManage.length }})</h4>
         </a-col>
-        <a-divider
-          :dashed="true"
-          class="mappingJiaGouspandivider"
-        />
+        <a-divider :dashed="true" class="mappingJiaGouspandivider" />
         <a-col :span="24">
-          <span 
+          <span
             class="mappingJiaGouspanWidth"
             v-for="item in mappingJiaGouArr.mappingJiaManage"
             :key="item.key"
           >
-          <span
-          :class="['mappingJiaGouspan', item.jobStatus == 1 ? 'mappingJiaGouspanZaizhi' : 'mappingJiaGouspanLizhi', mappingJiaGouToResumeId == item.id ? 'mappingJiaGouspanActive' : '']"
-            @click="handleMappingJiaGouToResume(item.id, item.addConsultantId)"
-            :title="`${item.userName}/${item.positionName}/${item.type}(${item.gongSi})`"
-          >
-            {{ item.userName }}/{{ item.positionName }}/{{ item.type }}({{ item.gongSi }})
+            <span
+              :class="[
+                'mappingJiaGouspan',
+                item.jobStatus == 1 ? 'mappingJiaGouspanZaizhi' : 'mappingJiaGouspanLizhi',
+                mappingJiaGouToResumeId == item.id ? 'mappingJiaGouspanActive' : '',
+              ]"
+              @click="handleMappingJiaGouToResume(item.id, item.addConsultantId)"
+              :title="`${item.userName}/${item.positionName}/${item.type}(${item.gongSi})`"
+            >
+              {{ item.userName }}/{{ item.positionName }}/{{ item.type }}({{ item.gongSi }})
+            </span>
           </span>
-        </span>
         </a-col>
       </a-row>
       <a-row
@@ -263,24 +266,25 @@
         <a-col :span="24">
           <h4 class="resume_h4">主管级别({{ mappingJiaGouArr.mappingJiaCharge.length }})</h4>
         </a-col>
-        <a-divider
-          :dashed="true"
-          class="mappingJiaGouspandivider"
-        />
+        <a-divider :dashed="true" class="mappingJiaGouspandivider" />
         <a-col :span="24">
-          <span 
+          <span
             class="mappingJiaGouspanWidth"
             v-for="item in mappingJiaGouArr.mappingJiaCharge"
             :key="item.key"
           >
-          <span
-          :class="['mappingJiaGouspan', item.jobStatus == 1 ? 'mappingJiaGouspanZaizhi' : 'mappingJiaGouspanLizhi', mappingJiaGouToResumeId == item.id ? 'mappingJiaGouspanActive' : '']"
-            @click="handleMappingJiaGouToResume(item.id, item.addConsultantId)"
-            :title="`${item.userName}/${item.positionName}/${item.type}(${item.gongSi})`"
-          >
-            {{ item.userName }}/{{ item.positionName }}/{{ item.type }}({{ item.gongSi }})
+            <span
+              :class="[
+                'mappingJiaGouspan',
+                item.jobStatus == 1 ? 'mappingJiaGouspanZaizhi' : 'mappingJiaGouspanLizhi',
+                mappingJiaGouToResumeId == item.id ? 'mappingJiaGouspanActive' : '',
+              ]"
+              @click="handleMappingJiaGouToResume(item.id, item.addConsultantId)"
+              :title="`${item.userName}/${item.positionName}/${item.type}(${item.gongSi})`"
+            >
+              {{ item.userName }}/{{ item.positionName }}/{{ item.type }}({{ item.gongSi }})
+            </span>
           </span>
-        </span>
         </a-col>
       </a-row>
       <a-row
@@ -290,23 +294,24 @@
         <a-col :span="24">
           <h4 class="resume_h4">资深级别({{ mappingJiaGouArr.mappingJiaSenior.length }})</h4>
         </a-col>
-        <a-divider
-          :dashed="true"
-          class="mappingJiaGouspandivider"
-        />
+        <a-divider :dashed="true" class="mappingJiaGouspandivider" />
         <a-col :span="24">
-          <span 
+          <span
             class="mappingJiaGouspanWidth"
             v-for="item in mappingJiaGouArr.mappingJiaSenior"
             :key="item.key"
           >
-          <span
-            :class="['mappingJiaGouspan', item.jobStatus == 1 ? 'mappingJiaGouspanZaizhi' : 'mappingJiaGouspanLizhi', mappingJiaGouToResumeId == item.id ? 'mappingJiaGouspanActive' : '']"
-            @click="handleMappingJiaGouToResume(item.id, item.addConsultantId)"
-            :title="`${item.userName}/${item.positionName}/${item.type}(${item.gongSi})`"
-          >
-            {{ item.userName }}/{{ item.positionName }}/{{ item.type }}({{ item.gongSi }})
-          </span>
+            <span
+              :class="[
+                'mappingJiaGouspan',
+                item.jobStatus == 1 ? 'mappingJiaGouspanZaizhi' : 'mappingJiaGouspanLizhi',
+                mappingJiaGouToResumeId == item.id ? 'mappingJiaGouspanActive' : '',
+              ]"
+              @click="handleMappingJiaGouToResume(item.id, item.addConsultantId)"
+              :title="`${item.userName}/${item.positionName}/${item.type}(${item.gongSi})`"
+            >
+              {{ item.userName }}/{{ item.positionName }}/{{ item.type }}({{ item.gongSi }})
+            </span>
           </span>
         </a-col>
       </a-row>
@@ -317,23 +322,24 @@
         <a-col :span="24">
           <h4 class="resume_h4">基础级别({{ mappingJiaGouArr.mappingJiaBase.length }})</h4>
         </a-col>
-        <a-divider
-          :dashed="true"
-          class="mappingJiaGouspandivider"
-        />
+        <a-divider :dashed="true" class="mappingJiaGouspandivider" />
         <a-col :span="24">
-          <span 
+          <span
             class="mappingJiaGouspanWidth"
             v-for="item in mappingJiaGouArr.mappingJiaBase"
             :key="item.key"
           >
-          <span
-            :class="['mappingJiaGouspan', item.jobStatus == 1 ? 'mappingJiaGouspanZaizhi' : 'mappingJiaGouspanLizhi', mappingJiaGouToResumeId == item.id ? 'mappingJiaGouspanActive' : '']"
-            @click="handleMappingJiaGouToResume(item.id, item.addConsultantId)"
-            :title="`${item.userName}/${item.positionName}/${item.type}(${item.gongSi})`"
-          >
-            {{ item.userName }}/{{ item.positionName }}/{{ item.type }}({{ item.gongSi }})
-          </span>
+            <span
+              :class="[
+                'mappingJiaGouspan',
+                item.jobStatus == 1 ? 'mappingJiaGouspanZaizhi' : 'mappingJiaGouspanLizhi',
+                mappingJiaGouToResumeId == item.id ? 'mappingJiaGouspanActive' : '',
+              ]"
+              @click="handleMappingJiaGouToResume(item.id, item.addConsultantId)"
+              :title="`${item.userName}/${item.positionName}/${item.type}(${item.gongSi})`"
+            >
+              {{ item.userName }}/{{ item.positionName }}/{{ item.type }}({{ item.gongSi }})
+            </span>
           </span>
         </a-col>
       </a-row>
@@ -344,23 +350,24 @@
         <a-col :span="24">
           <h4 class="resume_h4">门店支持({{ mappingJiaGouArr.mappingJiaStore.length }})</h4>
         </a-col>
-        <a-divider
-          :dashed="true"
-          class="mappingJiaGouspandivider"
-        />
+        <a-divider :dashed="true" class="mappingJiaGouspandivider" />
         <a-col :span="24">
-          <span 
+          <span
             class="mappingJiaGouspanWidth"
             v-for="item in mappingJiaGouArr.mappingJiaStore"
             :key="item.key"
           >
-          <span
-            :class="['mappingJiaGouspan', item.jobStatus == 1 ? 'mappingJiaGouspanZaizhi' : 'mappingJiaGouspanLizhi', mappingJiaGouToResumeId == item.id ? 'mappingJiaGouspanActive' : '']"
-            @click="handleMappingJiaGouToResume(item.id, item.addConsultantId)"
-            :title="`${item.userName}/${item.positionName}/${item.type}(${item.gongSi})`"
-          >
-            {{ item.userName }}/{{ item.positionName }}/{{ item.type }}({{ item.gongSi }})
-          </span>
+            <span
+              :class="[
+                'mappingJiaGouspan',
+                item.jobStatus == 1 ? 'mappingJiaGouspanZaizhi' : 'mappingJiaGouspanLizhi',
+                mappingJiaGouToResumeId == item.id ? 'mappingJiaGouspanActive' : '',
+              ]"
+              @click="handleMappingJiaGouToResume(item.id, item.addConsultantId)"
+              :title="`${item.userName}/${item.positionName}/${item.type}(${item.gongSi})`"
+            >
+              {{ item.userName }}/{{ item.positionName }}/{{ item.type }}({{ item.gongSi }})
+            </span>
           </span>
         </a-col>
       </a-row>
@@ -370,7 +377,7 @@
 <script setup lang="ts">
   import { LinkOutlined, CloseOutlined } from '@ant-design/icons-vue';
   import { storeToRefs } from 'pinia';
-  import { message } from 'ant-design-vue';
+  import { message, Modal } from 'ant-design-vue';
   import { formatToDate } from '/@/utils/dateUtil';
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   import OrginalPath from '/@/components/OrginalPath/index.vue';
@@ -383,7 +390,7 @@
     },
   });
   const resumeIdCurrent = ref('');
-  watch(resumeId,() => {
+  watch(resumeId, () => {
     resumeIdCurrent.value = resumeId.value;
   });
   const expend = ref(false);
@@ -468,15 +475,15 @@
   };
   const handleOrginalPathClose = () => {
     orginalPathShow.value = false;
-  }
+  };
   const openOrginalPatChoose = ref(false);
-  const openOrginalPatChooseOrginalPath = ref('')
-  const openOrginalPatChooseOrginalPathEn = ref('')
-  const handleResumeOrginalPathChoose = (orginalPath,orginalPathEn) => {
+  const openOrginalPatChooseOrginalPath = ref('');
+  const openOrginalPatChooseOrginalPathEn = ref('');
+  const handleResumeOrginalPathChoose = (orginalPath, orginalPathEn) => {
     openOrginalPatChoose.value = true;
     openOrginalPatChooseOrginalPath.value = orginalPath;
     openOrginalPatChooseOrginalPathEn.value = orginalPathEn;
-  }
+  };
   const handleResumeOrginalPathChooseDetail = (type) => {
     openOrginalPatChoose.value = false;
     if (type == 1) {
@@ -484,7 +491,7 @@
     } else {
       handleResumeOrginalPath(openOrginalPatChooseOrginalPathEn.value);
     }
-  }
+  };
   //原始简历预览结束
   const handleChangeResume = (resumeIdChange, addConsultantIdChange, resumeTypeEnglish) => {
     resumeDetailStore.$patch({
@@ -771,7 +778,7 @@
               });
             }
           });
-           }
+        }
         if (tempGongArr && tempGongArr.length > 0) {
           tempGongArr.forEach((item) => {
             if (item.MANAGEMENT2 == '经理级别') {
@@ -837,12 +844,39 @@
             }
           });
         }
-        mappingJiaGouArr.value.mappingJiaManage = mappingJiaGouArr.value.mappingJiaManage?.sort((a, b) => a.jobStatus - b.jobStatus);
-          mappingJiaGouArr.value.mappingJiaCharge = mappingJiaGouArr.value.mappingJiaCharge?.sort((a, b) => a.jobStatus - b.jobStatus);
-          mappingJiaGouArr.value.mappingJiaSenior = mappingJiaGouArr.value.mappingJiaSenior?.sort((a, b) => a.jobStatus - b.jobStatus);
-          mappingJiaGouArr.value.mappingJiaBase = mappingJiaGouArr.value.mappingJiaBase?.sort((a, b) => a.jobStatus - b.jobStatus);
-          mappingJiaGouArr.value.mappingJiaStore = mappingJiaGouArr.value.mappingJiaStore?.sort((a, b) => a.jobStatus - b.jobStatus);
+        mappingJiaGouArr.value.mappingJiaManage = mappingJiaGouArr.value.mappingJiaManage?.sort(
+          (a, b) => a.jobStatus - b.jobStatus,
+        );
+        mappingJiaGouArr.value.mappingJiaCharge = mappingJiaGouArr.value.mappingJiaCharge?.sort(
+          (a, b) => a.jobStatus - b.jobStatus,
+        );
+        mappingJiaGouArr.value.mappingJiaSenior = mappingJiaGouArr.value.mappingJiaSenior?.sort(
+          (a, b) => a.jobStatus - b.jobStatus,
+        );
+        mappingJiaGouArr.value.mappingJiaBase = mappingJiaGouArr.value.mappingJiaBase?.sort(
+          (a, b) => a.jobStatus - b.jobStatus,
+        );
+        mappingJiaGouArr.value.mappingJiaStore = mappingJiaGouArr.value.mappingJiaStore?.sort(
+          (a, b) => a.jobStatus - b.jobStatus,
+        );
       }
+    });
+  };
+  //跳转到英文简历添加页面根据中文简历ID
+  const handleChangeResumeToAddEnglish = (resumeId, addConsultantId) => {
+    Modal.confirm({
+      title: '添加英文简历',
+      content: '是否添加该简历的英文简历',
+      onOk() {
+        const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: '' } =
+          JSON.parse(localStorage.getItem('loginVueUser'));
+        let query = { ...loginVueUser, addEnglish: '1', resumeId, addConsultantId };
+        const href = router.resolve({
+          path: '/resume',
+          query: query,
+        });
+        window.open(href.href, '_blank');
+      },
     });
   };
 </script>
@@ -892,7 +926,7 @@
   .resume_span_two {
     width: 70px;
   }
-  
+
   .mappingJiaGouspan {
     display: inline-block;
     max-width: 270px;
@@ -950,7 +984,7 @@
   }
   .activceResume::after {
     content: '';
-    background-image: url("/@/assets/images/3.png");
+    background-image: url('/@/assets/images/3.png');
     position: absolute;
     width: 14px;
     height: 12px;

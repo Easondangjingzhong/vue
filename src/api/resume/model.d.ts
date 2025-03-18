@@ -22,6 +22,9 @@ export interface PersonInfo {
   phone: string;
   age: string;
   birthday: string;
+  birthYear: string;
+  bornMonth: string;
+  bornDay: string;
   photoPath: string;
   city: string;
   email: string;
@@ -39,9 +42,10 @@ export interface WorkExperience {
   category: string;
   isNewtest: string;//是否最近工作经历
   isRetreat: string;//是否撤店
-  //workCity: string;//工作城市
-  //workMark: string;//工作商场
-  //workBrand: string;//工作品牌
+  cityName: string;//工作城市
+  workCity: string;//工作城市
+  workMark: string;//工作商场
+  workBrand: string;//工作品牌
   workFloor: string;//工作楼层
   startYear: string;//开始年份
   startMonth: string;//开始月份

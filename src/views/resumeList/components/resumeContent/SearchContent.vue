@@ -199,9 +199,9 @@
         </a-form-item>
       </a-col>
       <a-col :span="spanCol">
-        <a-form-item name="resumeType" title="简历语言" label="简语">
+        <a-form-item name="isEnglish" title="简历语言" label="简语">
           <a-select
-            v-model:value="formState.resumeType"
+            v-model:value="formState.isEnglish"
             :allowClear="true"
             :options="optionsResumeType"
           ></a-select>
