@@ -789,6 +789,9 @@
     border-start-start-radius: 0;
     border-end-start-radius: 0;
   }
+  :deep(.row_col_space_right_mark .ant-select-selection-overflow-item-rest) {
+    display: none;
+  }
   :deep(.row_col_space_left_mark) {
     width: 45%;
     margin-inline-end: -1px;
@@ -808,6 +811,9 @@
   :deep(.row_col_space_right_company .ant-select-selector) {
     border-start-start-radius: 0;
     border-end-start-radius: 0;
+  }
+  :deep(.row_col_space_right_company  .ant-select-selection-overflow-item-rest) {
+    display: none;
   }
   :deep(.row_col_space_left_company) {
     width: 80%;

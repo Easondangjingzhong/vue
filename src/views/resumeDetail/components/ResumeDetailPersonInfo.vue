@@ -575,6 +575,10 @@
         birthYear: ageTime[0],
         bornMonth: ageTime[1],
         bornDay: ageTime[2],
+        marriageStatusOther: callbackOther().marriageStatusOther,
+        currentCityOther: callbackOther().currentCityOther,
+        provinceOther: callbackOther().provinceOther,
+        nationalityOther: callbackOther().nationalityOther,
       })
       .then(() => {
         resumeDetailStore.queryResumeDetail().then(() => {
@@ -587,6 +591,26 @@
         message.error('保存失败');
       });
   };
+  const callbackOther = () => {
+    let temp = {
+      marriageStatusOther: "",
+      currentCityOther: "",
+      provinceOther: "",
+      nationalityOther: "",
+    };
+    if (resumeTypeEnglish.value == '1') {
+      temp.marriageStatusOther = marriageEnArr.filter(item => item.value == formState.value.marriageStatus)[0]?.cn;
+      temp.currentCityOther = province.value.filter(item => item.cityNameEn == formState.value.currentCity)[0]?.cityName;
+      temp.provinceOther = province.value.filter(item => item.cityNameEn == formState.value.province)[0]?.cityName;
+      temp.nationalityOther = country.value.filter(item => item.countryEn == formState.value.nationality)[0]?.country;
+    } else {
+      temp.marriageStatusOther = marriageEnArr.filter(item => item.cn == formState.value.marriageStatus)[0]?.value;
+      temp.currentCityOther = province.value.filter(item => item.cityName == formState.value.currentCity)[0]?.cityNameEn;
+      temp.provinceOther = province.value.filter(item => item.cityName == formState.value.province)[0]?.cityNameEn;
+      temp.nationalityOther = country.value.filter(item => item.country == formState.value.nationality)[0]?.countryEn;
+    }
+    return temp;
+  }
   const optionsPositions = ref<SelectProps['options']>([]);
   let tempOptionPositions = [];
   positionsList.value.forEach((item) => {

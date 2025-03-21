@@ -375,6 +375,7 @@
       props.personInfoData.currentCity = tempCity;
     }
   }
+ 
   const uploadResumeTypeEnglish = () => {
     if (resumeTypeEnglish.value == '1') {
       genderOptions.value = [
@@ -430,6 +431,12 @@
     () => resumeTypeEnglish.value,
     () => {
       themeLanguage.value = validateLanguage('personInfo', resumeTypeEnglish.value);
+      uploadResumeTypeEnglish();
+    },
+  );
+  watch(
+    province,
+    () => {
       uploadResumeTypeEnglish();
     },
   );

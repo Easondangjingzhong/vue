@@ -187,7 +187,7 @@ export const useResumeStore = defineStore({
       const resume: Resume = {
         resumeType: 'C',
         realNameEn: loginVueUser.loginName,
-        photoPath: personInfoData.photoPath ? personInfoData.photoPath : "",
+        photoPath: personInfoData.photoPath && personInfoData.photoPath.includes("http://101.201.142.39") ? personInfoData.photoPath : "",
         recruitId: loginVueUser.loginId,
         userName: personInfoData.userName,
         gender: personInfoData.gender,
@@ -268,7 +268,7 @@ export const useResumeStore = defineStore({
           personInfoData.gender = result.gender;
           personInfoData.phone = result.phoneNum;
           personInfoData.age = result.age ? result.age : "";
-          let city = province.value.filter(item => item.cityName == result.currentCity);
+          let city = province.value.filter(item => item.cityName == result.currentCity?.replace(/\s/g, ""));
           personInfoData.city = city.length > 0 ? city[0].provinceNameEn + (city[0].cityNameEn ? '-' + city[0].cityNameEn : '') : '';
           personInfoData.email = result.email;
           personInfoData.height = result.height;
@@ -278,7 +278,7 @@ export const useResumeStore = defineStore({
           personInfoData.birthYear = result.birthYear;
           personInfoData.bornMonth = result.bornMonth;
           personInfoData.bornDay = result.bornDay;
-          personInfoData.nationality = country.value.filter(item => item.nationality == result.nationality)[0]?.cityNameEn;
+          personInfoData.nationality = country.value.filter(item => item.country == result.nationality)[0]?.countryEn;
           personInfoData.currentCity = city.length > 0 ? city[0].provinceNameEn + (city[0].cityNameEn ? '-' + city[0].cityNameEn : '') : '';
           personInfoData.positionName = result.positionName;
           personInfoData.positionStatus = result.positionStatus;

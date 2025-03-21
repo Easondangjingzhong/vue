@@ -801,6 +801,17 @@ export const useResumeDetailStore = defineStore({
       const res = await fetchApi.updateResumeProgressDetailScore(formData);
       return res;
     },
+    /**
+     * 根据手机号查询mapping最近工作
+     * @returns 
+     */
+    async queryResumeMappingWork() {
+      let formData = new FormData();
+      const phone = this.resumeDetail.resume.phoneNum;
+      formData.append('phone', phone);
+      const res = await fetchApi.queryResumeMappingWork(formData);
+      return res;
+    },
   },
 });
 export function useResumeStoreWithOut() {

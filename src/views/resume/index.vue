@@ -49,7 +49,8 @@
   }
   const route = useRoute();
   if (route.query?.addEnglish == '1') {
-    resumeStore.queryResumeById(route.query?.resumeId,route.query?.addConsultantId).then(res => {
+    setTimeout(() =>{
+      resumeStore.queryResumeById(route.query?.resumeId,route.query?.addConsultantId).then(res => {
       if (res.code == 1) {
         plagiarusnStore.resumeInfoShow(true);
         plagiarusnStore.plagiarusnRseultShow(0);
@@ -57,6 +58,7 @@
         resumeInfoFlag.value = true
       }
     });
+    },1000)
   }
   //const scaleKey = ref(1);
   /** 获取css 属性值 */

@@ -947,7 +947,7 @@
     formState.workFloor = props.resumeData?.workFloor;
     formState.workMark = props.resumeData?.workMark;
     formState.workBrand = props.resumeData?.workBrand?.toString();
-    formState.workCity = props.resumeData?.workCity;
+    formState.workCity = props.resumeData?.workCity?.toString();
     formState.monthSalary = props.resumeData?.monthSalary;
     formState.department = props.resumeData?.department;
     formState.reporter = props.resumeData?.reporter;
@@ -1130,7 +1130,7 @@
             //@ts-ignore
             label: curr.provinceNameEn,
             //@ts-ignore
-            value: curr.id,
+            value: curr.id?.toString(),
           });
         } else {
           //@ts-ignore
@@ -1138,7 +1138,7 @@
             //@ts-ignore
             label: curr.cityNameEn,
             //@ts-ignore
-            value: curr.id,
+            value: curr.id?.toString(),
           });
         }
         return prev;
@@ -1155,7 +1155,7 @@
             //@ts-ignore
             label: curr.provinceName,
             //@ts-ignore
-            value: curr.id,
+            value: curr.id?.toString(),
           });
         } else {
           //@ts-ignore
@@ -1163,7 +1163,7 @@
             //@ts-ignore
             label: curr.cityName,
             //@ts-ignore
-            value: curr.id,
+            value: curr.id?.toString(),
           });
         }
         return prev;
@@ -1376,6 +1376,11 @@
   };
   const handleBrandNameCn = (e) => {
     if (!e.target.value) {
+      return;
+    }
+    if (e.target.value.length > 8) {
+      message.error('品牌中文最多8个字');
+      brandNameCn.value = '';
       return;
     }
     resumeDetailStore.queryCheckBrandName(e.target.value, '').then((res) => {

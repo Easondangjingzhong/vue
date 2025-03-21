@@ -5,7 +5,9 @@
         <h4 class="resume_h4">
           推荐记录
         </h4>
-        <CloudUploadOutlined v-if="expendMapping" @click="handleToMappingDetails" />
+        <a v-if="expendMapping" @click="handleToMappingDetails">
+          <svg style="vertical-align: -webkit-baseline-middle;" t="1742461890138" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4775" width="12" height="12"><path d="M590.665387 86.129778v178.119111c-390.144 0-713.386667 129.649778-544.995556 703.260444-26.396444-358.570667 147.456-471.096889 544.995556-471.096889v174.762667a30.606222 30.606222 0 0 0 52.451555 21.959111l371.768889-291.783111a31.232 31.232 0 0 0 0-44.032l-371.768889-293.205333a30.606222 30.606222 0 1 0-52.451555 22.016z" fill="#666666" p-id="4776"></path></svg>
+        </a>
       </a-col>
       <a-divider :dashed="true" style="background-color: #ccc;margin-top: 0;margin-bottom: 5px;" />
     </a-row>
@@ -21,7 +23,7 @@
     >
     <template #bodyCell="{ column, record }">
       <template v-if="column.key === 'action' && (record.currentStatus == '顾问通过' || record.currentStatus == 'HR通过' || record.currentStatus == '简发顾问' || record.currentStatus == '重新推荐' || record.currentStatus == '超时未审' || record.currentStatus == '初试已排' || record.currentStatus.includes('试通过') || record.currentStatus.includes('试确认')
-|| record.currentStatus == '推荐顾问'  || record.currentStatus == 'OFFER接受' || record.currentStatus == '简发HR' || record.currentStatus == '简发HR')
+|| record.currentStatus == '推荐顾问'  || record.currentStatus == 'OFFER接受' || record.currentStatus == '简发HR' || record.currentStatus == '简发HR' || record.currentStatus == '顾问拒绝')
       ">
       <VerticalAlignBottomOutlined :style="{fontSize: '16px'}" @click="handleOpenResumeUpload(record.city,record.market,record.brand,record.positions,record.pId)"/>
       </template>
@@ -55,7 +57,7 @@
   </a-modal>
 </template>
 <script setup lang="ts">
- import { VerticalAlignBottomOutlined,CloudUploadOutlined } from '@ant-design/icons-vue';
+ import { VerticalAlignBottomOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import { storeToRefs } from 'pinia';
 //import type { SelectProps } from 'ant-design-vue';
@@ -164,6 +166,13 @@ watch(resumeRecord,() => {
   } else {
     resumeType.value = 'C';
   }
+  watch(resumeTypeEnglish, () => {
+    if (resumeTypeEnglish.value == '1') {
+    resumeType.value = 'E';
+  } else {
+    resumeType.value = 'C';
+  }
+  })
   const handleOpenResumeUpload = (recommendCity,recommendMarket,recommendBrand,recommendPosition,pId) => {
     openResumeUpload.value = true;
     let tempObj = {

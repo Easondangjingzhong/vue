@@ -821,12 +821,12 @@ export const useResumeListStore = defineStore({
           tempItem.gender = item.gender == 'F' ? '女' : '男';
           tempItem.age = item.age;
           tempItem.currentCity = item.currentCity;
-          tempItem.positionName = item.positionName;
+          tempItem.positionName = item.positionName?.replace(/^\s+|\s+$/g, '').replace(/^\/+|\/+$/g, '');
           tempItem.customerServiceName = item.customerServiceName || '公共库';
           tempItem.registTimeStr = formatToDateMinute(item.registTimeStr);
           tempItem.registTimeDetails = formatToDate(item.registTimeStr);
-          tempItem.lastUpdateTimeStr = formatToDateMinute(item.lastUpdateTimeStr);
-          tempItem.lastUpdateTime = formatToDate(item.lastUpdateTimeStr);
+          tempItem.lastUpdateTimeStr = item.lastContactTime ? formatToDateMinute(item.lastContactTime) : "";
+          tempItem.lastUpdateTime = item.lastContactTime ? formatToDate(item.lastContactTime) : "";
           tempItem.checkFlag = item.checkFlag || ''; //待核 最新 过期
           tempItem.fristFlag = item.fristFlag || ''; //首增
           tempItem.commonFlag = item.commonFlag || ''; //私有

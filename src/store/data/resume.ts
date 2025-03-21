@@ -125,7 +125,7 @@ export const positionsUpArrTitle = [
   {
     industry: '酒店餐饮',
     content: [
-      { jobCategory: '前台营运', management: ['基础级别', '主管级别', '经理级别', '总监级别'] },
+      { jobCategory: '前厅营运', management: ['基础级别', '主管级别', '经理级别', '总监级别'] },
       { jobCategory: '餐饮后厨', management: ['基础级别', '管理级别'] },
     ],
   },

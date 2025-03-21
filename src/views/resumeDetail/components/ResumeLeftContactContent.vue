@@ -8,6 +8,7 @@
       </a-col>
       <a-divider :dashed="true" style="background-color: #ccc; margin-top: 0; margin-bottom: 5px" />
     </a-row>
+    <div class="resume_mapping_work"  :title="mappingWorkTime" v-if="mappingWork">最新工作：{{ mappingWork.split("%")[0] }}</div>
     <div v-if="expend">
       <a-form ref="formRef" :model="formState" @finish="onFinish">
         <a-row :gutter="24">
@@ -234,15 +235,41 @@
   const handlePagination = (current) => {
     resumeDetailStore.queryResumeContactContent(current);
   };
+  const mappingWork = ref<string>("");
+  const mappingWorkTime = ref<string>("");
+    resumeDetailStore.queryResumeMappingWork().then((res) => {
+      if (res.code == 1) {
+        mappingWork.value = res.info.workLatest;
+        mappingWorkTime.value = res.info.updateTime;
+      }
+    })
 </script>
 <style lang="less" scoped>
   .resume_header {
     margin: 10px 20px;
   }
+  .resume_mapping_work,
   .resume_detail_title {
     display: flex;
     justify-content: space-between;
   }
+  .resume_mapping_work {
+    color: #000;
+    background: #d9d9d9;
+    border-color: #d9d9d9;
+    color: #d46b08;
+    background: #fff7e6;
+    border-color: #ffd591;
+    border: 1px solid #d9d9d9;
+    margin-bottom: 4px;
+    padding: 4px;
+    border-radius: 4px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    word-break: keep-all;
+  }
+  
   .resume_h4 {
     margin: 5px 0;
     font-size: 16px;

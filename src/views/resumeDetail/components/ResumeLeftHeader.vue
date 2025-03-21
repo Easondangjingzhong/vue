@@ -48,9 +48,14 @@
         <!-- <span class="resume_span" v-if="!item.resumeIdEn">英文</span> -->
         <span class="resume_span_name">
           <a-tag
-            v-if="!item.resumeIdEn"
+            v-if="!item.resumeIdEn && item.addConsultantId != '28'"
             style="cursor: pointer"
             @click="handleChangeResumeToAddEnglish(item.resumeId, item.addConsultantId)"
+            >英文</a-tag
+          >
+          <a-tag
+            v-if="!item.resumeIdEn && item.addConsultantId == '28'"
+            style="cursor: not-allowed"
             >英文</a-tag
           >
           <a-tag
@@ -92,7 +97,12 @@
             >报告</a-tag
           >
           <a-tag
-            v-if="!item.reportContent"
+            v-if="!item.reportContent && item.addConsultantId == '28'"
+            style="cursor: not-allowed"
+            >报告</a-tag
+          >
+          <a-tag
+            v-if="!item.reportContent && item.addConsultantId != '28'"
             style="cursor: pointer"
             @click="handleReportContent(item.reportContent)"
             >报告</a-tag
@@ -865,8 +875,9 @@
   //跳转到英文简历添加页面根据中文简历ID
   const handleChangeResumeToAddEnglish = (resumeId, addConsultantId) => {
     Modal.confirm({
-      title: '添加英文简历',
-      content: '是否添加该简历的英文简历',
+      title: '英文简历',
+      content: '您是想要新增此候选人英文简历吗？系统支持“手动填写”或“英文简历上传”2种方式新增哦，请确认是否继续？',
+      okText: '继续新增',
       onOk() {
         const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: '' } =
           JSON.parse(localStorage.getItem('loginVueUser'));
