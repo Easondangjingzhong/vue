@@ -268,11 +268,17 @@ export const useResumeStore = defineStore({
           personInfoData.gender = result.gender;
           personInfoData.phone = result.phoneNum;
           personInfoData.age = result.age ? result.age : "";
-          let city = province.value.filter(item => item.cityName == result.currentCity?.replace(/\s/g, ""));
+          let city = [];
+          if (result.currentCity) {
+            city = province.value.filter(item => item.cityName == result.currentCity?.replace(/\s/g, ""));
+          }
           personInfoData.city = city.length > 0 ? city[0].provinceNameEn + (city[0].cityNameEn ? '-' + city[0].cityNameEn : '') : '';
           personInfoData.email = result.email;
           personInfoData.height = result.height;
-          let province2 = province.value.filter(item => item.cityName == result.province);
+          let province2 = [];
+          if (result.province) {
+            province2 = province.value.filter(item => item.cityName == result.province);
+          }
           personInfoData.huji = province2.length > 0 ? province2[0].provinceNameEn + (province2[0].cityNameEn ? '-' + province2[0].cityNameEn : '') : '';
           personInfoData.weight = result.weight;
           personInfoData.birthYear = result.birthYear;
@@ -401,14 +407,23 @@ export const useResumeStore = defineStore({
             : 'F';
           personInfoData.phone = result.phone;
           personInfoData.age = result.age ? result.age : result.age_inf;
-          personInfoData.city = result.city;
+          let city1 = province.value.filter(item => item.cityName == result.city?.replace(/\s/g, ""));
+          personInfoData.city = city1.length > 0 ? city1[0].provinceName + (city1[0].cityName ? '-' + city1[0].cityName : '') : '';
           personInfoData.email = result.email;
           personInfoData.height = (result.height ? result.height.replace("cm",""): "");
-          personInfoData.huji = result.hukou_address;
+          let city = [];
+          if (result.living_address) {
+            city = province.value.filter(item => item.cityName == result.living_address?.replace(/\s/g, ""));
+          }
+          let province2 = [];
+          if (result.hukou_address) {
+            province2 = province.value.filter(item => item.cityName == result.hukou_address?.replace(/\s/g, ""));
+          }
+          personInfoData.huji = province2.length > 0 ? province2[0].provinceName + (province2[0].cityName ? '-' + province2[0].cityName : '') : '';
           personInfoData.weight = (result.weight ? result.weight.replace("kg",""): "");
           personInfoData.birthday = result.birthday;
           personInfoData.nationality = result.nationality;
-          personInfoData.currentCity = result.living_address;
+          personInfoData.currentCity = city.length > 0 ? city[0].provinceName + (city[0].cityName ? '-' + city[0].cityName : '') : '';
           personInfoData.positionName = result.work_position;
           personInfoData.positionStatus = result.work_status;
           personInfoData.marriageStatus = result.marital_status;

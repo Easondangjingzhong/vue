@@ -23,7 +23,7 @@
     >
     <template #bodyCell="{ column, record }">
       <template v-if="column.key === 'action' && (record.currentStatus == '顾问通过' || record.currentStatus == 'HR通过' || record.currentStatus == '简发顾问' || record.currentStatus == '重新推荐' || record.currentStatus == '超时未审' || record.currentStatus == '初试已排' || record.currentStatus.includes('试通过') || record.currentStatus.includes('试确认')
-|| record.currentStatus == '推荐顾问'  || record.currentStatus == 'OFFER接受' || record.currentStatus == '简发HR' || record.currentStatus == '简发HR' || record.currentStatus == '顾问拒绝')
+|| record.currentStatus == '推荐顾问'  || record.currentStatus == 'OFFER接受' || record.currentStatus == '简发HR' || record.currentStatus == '简发HR' || record.currentStatus == '顾问拒绝' || record.currentStatus == '顾问待定')
       ">
       <VerticalAlignBottomOutlined :style="{fontSize: '16px'}" @click="handleOpenResumeUpload(record.city,record.market,record.brand,record.positions,record.pId)"/>
       </template>
@@ -51,6 +51,10 @@
               <a-radio value="wotui">我推模板</a-radio>
               </a-radio-group>
               <a-switch style="margin-bottom: 3px;" v-model:checked="systemUser" checked-children="联系方式已展示" un-checked-children="联系方式已隐藏" />
+              <a-radio-group style="margin-left: 5px;" v-model:value="resumeType">
+              <a-radio value="C">中文</a-radio>
+              <a-radio value="E">英文</a-radio>
+              </a-radio-group>
               <a-button size="small" style="margin-left: 5px;" @click="handleTemplateType" type="primary">下载</a-button>
             </a-col>
           </a-row>

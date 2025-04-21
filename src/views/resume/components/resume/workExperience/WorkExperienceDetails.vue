@@ -156,6 +156,7 @@
           v-model:value="workExperienceData.positionName"
           :placeholder="themeLanguage?.positionName?.message"
           labelInValue
+          optionFilterProp="label"
           :options="optionsPosition"
           @change="handlePositionName"
           showSearch

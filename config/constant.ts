@@ -13,7 +13,7 @@ export const VITE_PORT = 3000;
 
 // 其他项目prefix
 export const API_OTHER_PREFIX = '/WTSM';
-export const API_OTHER_TARGET_URL = 'http://192.168.19.21:8080/';
+export const API_OTHER_TARGET_URL = 'http://192.168.19.26:8080/';
 
 //线上项目
 export const API_SERVE_PREFIX = '/api/WTSM';

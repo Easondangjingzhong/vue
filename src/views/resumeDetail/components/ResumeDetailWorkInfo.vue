@@ -140,13 +140,13 @@
       >
     </a-row>
     <a-row :gutter="24" class="resume_row" v-if="resumeData.salaryStructure">
-      <a-col :span="12" class="resume_col">
+      <a-col :span="22" class="resume_col">
         {{ themeLanguage?.salaryStructure?.label }}:
         <span class="resume_span">{{ resumeData.salaryStructure }}</span></a-col
       >
     </a-row>
     <a-row :gutter="24" class="resume_row" v-if="resumeData.personnelStructure">
-      <a-col :span="12" class="resume_col">
+      <a-col :span="22" class="resume_col">
         {{ themeLanguage?.personnelStructure?.label }}:
         <span class="resume_span">{{ resumeData.personnelStructure }}</span></a-col
       >
@@ -480,7 +480,7 @@
               optionFilterProp="label"
               :labelInValue="true"
               :options="optionsBrand"
-              @change="handleMarketBrandFloor"
+              @change="handleMarketBrandFloor(1)"
               showSearch
               v-if="!brandFlag"
             ></a-select>
@@ -1105,7 +1105,7 @@
         //@ts-ignore
         let tempObj = {
           //@ts-ignore
-          label: positionsListShow(item.cnName, item.usName),
+          label: `${positionsListShow(item.cnName, item.usName)}(${item.category})`,
           //@ts-ignore
           value: item.brandId?.toString(),
         };
@@ -1235,12 +1235,12 @@
       }
     });
   };
-  const handleMarketBrandFloor = () => {
-    if (props.indexNum > 0 && formState.category == 'OFFICE' && formState.isNewtest == '1') {
+  const handleMarketBrandFloor = (type='') => {
+    if (type != 1 && props.indexNum > 0 && formState.category == 'OFFICE' && formState.isNewtest == '1') {
       brandCheckBox.value = false;
       categoryFlag.value = false;
     }
-    if (props.indexNum > 0 && formState.category == 'OFFICE' && formState.isNewtest != '1') {
+    if (type != 1 && props.indexNum > 0 && formState.category == 'OFFICE' && formState.isNewtest != '1') {
       brandCheckBox.value = true;
       brandCheckBoxShow.value = true;
       formState.brandName = { value: '', label: '' };
@@ -1347,6 +1347,7 @@
   const handleCategory = () => {
     brandNameCn.value = '';
     brnadNameEn.value = '';
+    formState.brandName = { value: '', label: '' };
     if (formState.category == '店铺' || formState.category == 'Store') {
       formState.retail = '';
       categoryFlag.value = true;

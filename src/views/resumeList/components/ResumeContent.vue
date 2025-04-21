@@ -98,6 +98,7 @@
           v-if="formState.leftType == '4'"
           style="margin-bottom: 3px; margin-left: 4px"
           @click="handleChangeCommonOtherFlag"
+          :title="isCommonOtherFlag ? '全部：可查看所在大团队开放的全部简历' : '排除：排除顾问本人简历，查看所在大团队其他开放简历'"
           v-model:checked="isCommonOtherFlag"
           checked-children="全部"
           un-checked-children="排除"
@@ -192,7 +193,7 @@
           >
           <a-tag
             class="tagspan"
-            v-if="record.recruitId && record.checkFlag == '待激活'"
+            v-if="record.recruitId && record.checkFlag == '待激活' && record.resumeStatus != '外包保护期中'"
             color="#d8d8d8"
             >激活</a-tag
           >
@@ -245,21 +246,21 @@
           <a-tag
             class="tagspan"
             :title="record.limitRemarkDetail"
-            v-if="record.limitFlag == '限制禁推' || record.limitFlag == '限制分单'"
+            v-if="(record.limitFlag == '限制禁推' || record.limitFlag == '限制分单') && record.resumeStatus != '外包保护期中'"
             color="orange"
             >限制</a-tag
           >
           <a-tag
             class="tagspan"
             :title="record.limitRemarkDetail"
-            v-if="record.limitFlag == '限制'"
+            v-if="record.limitFlag == '限制' && record.resumeStatus != '外包保护期中'"
             color="orange"
             >限制</a-tag
           >
           <a-tag
             class="tagspan"
             :title="record.limitRemarkDetail"
-            v-if="record.limitFlag == '激活'"
+            v-if="record.limitFlag == '激活' && record.resumeStatus != '外包保护期中'"
             color="orange"
             >激活</a-tag
           >
@@ -275,7 +276,14 @@
             :title="record.entryTime"
             v-if="record.limitFlag == 'OFFER' && record.resumeStatus == '保证期中'"
             color="orange"
-            >OFFER</a-tag
+            >保证期</a-tag
+          >
+          <a-tag
+            class="tagspan"
+            title="外包保护期中"
+            v-if="record.resumeStatus == '外包保护期中'"
+            color="orange"
+            >保证期</a-tag
           >
         </template>
       </template>
@@ -507,6 +515,8 @@
     resumeDetailsArr.value = [];
     if (e !== 1) {
       pagination.value = { ...pagination.value, current: 1 };
+    } else {
+      formState.value.totalCount = pagination.value.total;
     }
     //@ts-ignore
     resumeListStore.queryResumeList(formState.value);
@@ -627,6 +637,7 @@
   const handleResumeListData = (current) => {
     pagination.value = { ...pagination.value, current };
     onFinish(1);
+    
   };
   //@ts-ignore
   resumeListStore.queryBranList(formState.value);
@@ -638,7 +649,7 @@
       //@ts-ignore
       let tempObj = {
         //@ts-ignore
-        label: brandListShow(item.cnName, item.usName),
+        label: `${brandListShow(item.cnName, item.usName)}(${item.category})`,
         //@ts-ignore
         value: item.brandId,
       };

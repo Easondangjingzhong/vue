@@ -52,7 +52,10 @@ enum URL {
   check_work_newtest = '/resume/rusume-vue-check-work-newtest.action',
   update_resume_progress = '/candidate/rusume-vue-update-resumeprogress.action',
   query_resume_mapping_work = '/resume/getMappingAndResumeWorkLatest.action',
+  query_nr_position_id = '/candidate/rusume-vue-get-currentPosition.action',
 }
+const queryNrPositionId = (formData: any) =>
+  post<any>({ url: URL.query_nr_position_id, data: formData });
 const queryResumeMappingWork = (formData: any) =>
   post<any>({ url: URL.query_resume_mapping_work, data: formData });
 const updateResumeProgressDetailScore = (formData: any) =>
@@ -157,6 +160,7 @@ const queryMarkBrandFloor = async (data: any) => post<any>({ url: URL.resume_mar
 const queryMarkList = async (data: any) => post<any>({ url: URL.resume_markList, data });
 const resumeMappingJiagou = async (data: any) => post<any>({ url: URL.resume_mapping_jiagou, data });
 export default {
+  queryNrPositionId,
   queryResumeMappingWork,
   updateResumeProgressDetailScore,
   checkWorkNewtest,

@@ -129,10 +129,13 @@
       showResumeAdd.value = false;
       showResumePositionsAndRecommendRecord.value = false;
     }
+    if ((route.query?.loginType == 'T' || route.query?.loginType == 'V')&& route.query?.loginId != commRecruitId.value) {
+      showResumeAdd.value = false;
+    }
     //企顾查看推荐简历只能看不能修改
     if (route.query?.searchRecommend == 'Q') {
       showResumeAdd.value = false;
-      showResumeRightContact.value = false;
+      showResumeRightContact.value = true;
       showResumePositionsAndRecommendRecord.value = false;
     }
     // if (route.query?.searchRecommend == "T") {

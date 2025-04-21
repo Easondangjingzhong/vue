@@ -328,15 +328,15 @@
         return;
       }
       if (props.personInfoData.huji.includes('香港')) {
-        props.personInfoData.nationality = '香港';
+        props.personInfoData.nationality = '中国香港';
         return;
       }
       if (props.personInfoData.huji.includes('澳门')) {
-        props.personInfoData.nationality = '澳门';
+        props.personInfoData.nationality = '中国澳门';
         return;
       }
       if (props.personInfoData.huji.includes('台湾')) {
-        props.personInfoData.nationality = '台湾';
+        props.personInfoData.nationality = '中国台湾';
         return;
       }
 

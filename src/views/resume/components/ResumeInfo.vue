@@ -81,9 +81,9 @@
       message.warning("请输入手机");
       return;
     }
-    let reg = /^(1[3-9])\d{9}$|^([0][0][8][5][2|3])\d{8}$/;
+    let reg = /^(1[3-9])\d{9}$|^([0][0][8][5][2|3])\d{8}$|^([0][0][6][5])\d{8}$|^([0][8][8][6][0|9])\d{8}$|^([6][0])\d{9}$/;
     if (!reg.test(resumeFormState.value.personInfoData.phone)) {
-      message.warning("请输入正确的手机号");
+      message.warning("您填写的手机号码错误！请注意，中国大陆手机为11位号码，中国香港，中国澳门，中国台湾及其他国家需要以国家代码+手机号码，例如：新加坡，0065xxxxxxxx。");
       return;
     }
     let regx = /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,6}$/;

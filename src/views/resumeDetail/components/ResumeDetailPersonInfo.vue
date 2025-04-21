@@ -138,13 +138,37 @@
             />
           </a-form-item>
         </a-col>
-        <a-col :span="spancol">
+        <a-col :span="spancol" :class="phoneNumOtherFlag ? 'row_col_space' : ''"  style="position: relative">
           <a-form-item
+          :class="phoneNumOtherFlag ? 'row_col_space_left_phoneNum' : ''"
             :label="themeLanguage?.phone?.label"
             :rules="[{ required: true, message: themeLanguage?.phone?.message }]"
           >
-            <a-input style="width: 100%" :disabled="true" v-model:value="formState.phoneNum" />
+            <a-input :disabled="true" v-model:value="formState.phoneNum" />
           </a-form-item>
+          <a-form-item
+          v-if="phoneNumOtherFlag"
+          :class="phoneNumOtherFlag ? 'row_col_space_right_phoneNum' : ''"
+          name="phoneNumOther"
+          >
+            <a-input :disabled="phoneNumOtherFlag && formState.phoneNumOther" v-model:value="formState.phoneNumOther" />
+          </a-form-item>
+          <a-button
+          v-if="!phoneNumOtherFlag"
+              size="small"
+              title="添加副手机号"
+              @click="handlePhoneNumOtherFlag"
+              style="
+                position: absolute;
+                top: 4px;
+                right: -30px;
+                background-color: #f0ad4e;
+                border-color: #eea236;
+                color: #fff;
+                margin-left: 25px;
+              "
+              >副号</a-button
+            >
         </a-col>
       </a-row>
       <a-row :gutter="24" class="resume_row_update" style="position: relative">
@@ -375,6 +399,7 @@
     id: '',
     userName: '',
     phoneNum: '',
+    phoneNumOther: '',
     currentCity: '',
     gender: '',
     nationality: '',
@@ -521,14 +546,22 @@
       handleChangephoto();
     });
   };
+  const phoneNumOtherFlag = ref(false);
+  const handlePhoneNumOtherFlag = () =>{
+    phoneNumOtherFlag.value =!phoneNumOtherFlag.value;
+  }
   //修改个人信息展开和收起
   const handleUpdatePersonInfo = () => {
     expend.value = !expend.value;
+    if (props.resumeData.phoneNumOther) {
+      phoneNumOtherFlag.value = true;
+    }
     formState.value = {
       id: props.resumeData.id,
       currentCity: props.resumeData.currentCity,
       userName: props.resumeData.userName,
       phoneNum: props.resumeData.phoneNum,
+      phoneNumOther: props.resumeData.phoneNumOther,
       gender: props.resumeData.gender,
       nationality: props.resumeData.nationality,
       age: props.resumeData.age,
@@ -828,5 +861,29 @@
   }
   .resume_span {
     padding-left: 15px;
+  }
+  :deep(.row_col_space) {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+  }
+  :deep(.row_col_space_right_phoneNum) {
+    width: 80%;
+  }
+  :deep(.row_col_space_right_phoneNum .ant-input) {
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+  }
+  :deep(.row_col_space_left_phoneNum) {
+    width: 105%;
+    margin-inline-end: -1px;
+  }
+  :deep(.row_col_space_left_phoneNum .ant-form-item-row .ant-form-item-label) {
+    display: contents;
+  }
+  :deep(.row_col_space_left_phoneNum .ant-input) {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+    height: auto;
   }
 </style>

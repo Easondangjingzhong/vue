@@ -54,6 +54,7 @@ export interface SearchResumeList {
   endTime: string; // 录入结束时间
   serchRecruitId: string; // 添加顾问
   isEnglish: string; // 添加顾问
+  totalCount: string; // 页码是1返回的总数,其他的都默认
 }
 
 export interface Item {

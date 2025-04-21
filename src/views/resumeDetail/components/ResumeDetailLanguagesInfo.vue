@@ -452,6 +452,7 @@ import { storeToRefs } from 'pinia';
         if (element.bujia) {
           langArr.push(element.bujia);
         }
+        languageAbility0.value = langArr;
       } else {
         if (element.languageName == '法语') {
           if (element.languageLevel) {
@@ -466,6 +467,7 @@ import { storeToRefs } from 'pinia';
           if (element.bujia) {
             langArr1.push(element.bujia);
           }
+          languageAbility1.value = langArr1;
         }
         if (element.languageName == '日语') {
           if (element.languageLevel) {
@@ -480,6 +482,7 @@ import { storeToRefs } from 'pinia';
           if (element.bujia) {
             langArr2.push(element.bujia);
           }
+          languageAbility2.value = langArr2;
         }
         if (element.languageName == '德语') {
           if (element.languageLevel) {
@@ -494,6 +497,7 @@ import { storeToRefs } from 'pinia';
           if (element.bujia) {
             langArr3.push(element.bujia);
           }
+          languageAbility3.value = langArr3;
         }
         if (element.languageName == '韩语') {
           if (element.languageLevel) {
@@ -508,6 +512,7 @@ import { storeToRefs } from 'pinia';
           if (element.bujia) {
             langArr6.push(element.bujia);
           }
+          languageAbility6.value = langArr6;
         }
         if (element.languageName == '粤语') {
           if (element.languageLevel) {
@@ -522,6 +527,7 @@ import { storeToRefs } from 'pinia';
           if (element.bujia) {
             langArr4.push(element.bujia);
           }
+          languageAbility4.value = langArr4;
         }
         if (element.languageName == '中文') {
           if (element.languageLevel) {
@@ -536,6 +542,7 @@ import { storeToRefs } from 'pinia';
           if (element.bujia) {
             langArr5.push(element.bujia);
           }
+          languageAbility5.value = langArr5;
         }
       }
     });

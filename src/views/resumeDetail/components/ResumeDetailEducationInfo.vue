@@ -289,7 +289,7 @@
         formState.value.atSchool = '1';
       } else {
         formState.value.atSchool = '2';
-        schoolFlagShow.value = false;
+        schoolFlagShow.value = true;
       }
   }
 }
@@ -324,7 +324,7 @@ const onChangeAtSchool = () => {
     if (formState.value.endYear) {
       const yearNow = dateUtil().year();
       const [endYear] = formState.value.endYear.split('-');
-      schoolFlagShow.value = false;
+      schoolFlagShow.value = true;
       // @ts-ignore
       if (endYear - yearNow >= 0 ) {
         schoolFlagShow.value = true;

@@ -36,6 +36,7 @@ interface ResumeListState {
   searchWorkExp: string; //搜索查询内容 1 展示工作经历  2 不展示工作经历
   recommendCounselorArr: []; //查询推荐顾问
   enterpriseConsultantArr: []; //查询企业顾问
+  violationFlag: boolean; //违规上报modal展示 true 展示 false 隐藏
 }
 const loginVueUser: { loginName: ''; loginId: ''; loginTocken: '' } = JSON.parse(
   localStorage.getItem('loginVueUser'),
@@ -78,6 +79,7 @@ export const useResumeListStore = defineStore({
     teamPersonChangeArr: [],
     recommendCounselorArr: [],
     enterpriseConsultantArr: [],
+    violationFlag: false,
     pagination: {
       current: 1,
       pageSize: 15,
@@ -968,6 +970,7 @@ export const useResumeListStore = defineStore({
       formData.append('serchRecruitId', param.serchRecruitId || '');
       formData.append('notSelf', param.notSelf || '');
       formData.append('isEnglish', param.isEnglish || '');
+      formData.append('totalCount', param.totalCount || '');
       return formData;
     },
     /**
@@ -1066,7 +1069,7 @@ export const useResumeListStore = defineStore({
         ...params,
         SystemRecruitId: this.loginNameChangeRecruitId || loginVueUser.loginId,
         recommendRecruitId:
-          params.recommendRecruitId || this.loginNameChangeRecruitId || loginVueUser.loginId,
+          params.recommendRecruitId ? params.recommendRecruitId.join(",") : this.loginNameChangeRecruitId || loginVueUser.loginId,
         pageNumber: params.pageNumber || '1',
       };
       let temp = stringifyToFormData(params);

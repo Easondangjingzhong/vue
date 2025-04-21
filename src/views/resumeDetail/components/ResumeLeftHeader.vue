@@ -25,7 +25,9 @@
         <span class="resume_span_name">{{ item.realNameEn }}</span>
         <span class="resume_span_name">{{ item.teamName }}</span>
         <span class="resume_span_two">{{ item.source }}</span>
-        <span class="resume_span_name">{{ item.registTime }}</span>
+        <span class="resume_span_name"  v-if="!item.resumeId && item.resumeIdEn" :title="`英文: ${item.registTime}`">{{ item.registTime }}</span>
+        <span class="resume_span_name"  v-if="item.resumeId && !item.resumeIdEn" :title="`中文: ${item.registTime}`">{{ item.registTime }}</span>
+        <span class="resume_span_name"  v-if="item.resumeId && item.resumeIdEn" :title="`中文: ${item.registTime}&#13;英文: ${item.registTimeOther}`">{{ item.registTime }}</span>
         <span class="resume_span">
           <a-tag v-if="!item.resumeId" style="cursor: not-allowed">中文</a-tag>
           <a-tag
@@ -90,21 +92,39 @@
         </span>
         <span class="resume_span">
           <a-tag
-            v-if="item.reportContent"
+            v-if="item.reportContent && resumeTypeEnglish != '1'"
             color="#ffa500"
             style="cursor: pointer"
             @click="handleReportContent(item.reportContent)"
             >报告</a-tag
           >
           <a-tag
-            v-if="!item.reportContent && item.addConsultantId == '28'"
+            v-if="!item.reportContent && item.addConsultantId == '28' && resumeTypeEnglish != '1'"
             style="cursor: not-allowed"
             >报告</a-tag
           >
           <a-tag
-            v-if="!item.reportContent && item.addConsultantId != '28'"
+            v-if="!item.reportContent && item.addConsultantId != '28' && resumeTypeEnglish != '1'"
             style="cursor: pointer"
             @click="handleReportContent(item.reportContent)"
+            >报告</a-tag
+          >
+          <a-tag
+            v-if="item.reportContentEn && resumeTypeEnglish == '1'"
+            color="#ffa500"
+            style="cursor: pointer"
+            @click="handleReportContent(item.reportContentEn)"
+            >报告</a-tag
+          >
+          <a-tag
+            v-if="!item.reportContentEn && item.addConsultantId == '28' && resumeTypeEnglish == '1'"
+            style="cursor: not-allowed"
+            >报告</a-tag
+          >
+          <a-tag
+            v-if="!item.reportContentEn && item.addConsultantId != '28' && resumeTypeEnglish == '1'"
+            style="cursor: pointer"
+            @click="handleReportContent(item.reportContentEn)"
             >报告</a-tag
           >
         </span>
@@ -232,16 +252,22 @@
                 mappingJiaGouId == `${record.brandId}/${record.marketId}` ? 'siGongNumActive' : '',
               ]"
               v-if="record.siGongNum"
-              @click="handleMappingJiaGou(record.brandId, record.marketId)"
-              >{{ record.siGongNum }}</a
+              @click="handleMappingJiaGou(record.brandId, record.marketId,record.siGongNum,record.siGongLeaveNum)"
+              >{{ record.siGongNum }}/{{record.siGongLeaveNum}}</a
             >
-            <a v-else>{{ record.siGongNum }}</a>
+            <a v-else>{{ record.siGongNum }}/{{record.siGongLeaveNum}}</a>
           </template>
         </template>
       </a-table>
     </div>
-    <div v-if="mappingJiaGouFlag">
-      <a-row
+    <div style="position: relative;" v-if="mappingJiaGouFlag">
+       <a-switch style="position: absolute;top: 14px;right: 4px;z-index: 6;" v-model:checked="mappingJiaGouFlagDetail" @change="mappingJiaGouFlagDetailChange" :checked-children="siGongNumTitle" :un-checked-children="siGongLeaveNumTitle" />
+      <MappingJiaGou v-if="mappingJiaGouArrDetail.mappingJiaManage && mappingJiaGouArrDetail.mappingJiaManage.length > 0" :mappingArr="mappingJiaGouArrDetail.mappingJiaManage" :mappingType="'经理级别'" :flag="mappingJiaGouFlagDetail"/>
+      <MappingJiaGou v-if="mappingJiaGouArrDetail.mappingJiaCharge && mappingJiaGouArrDetail.mappingJiaCharge.length > 0" :mappingArr="mappingJiaGouArrDetail.mappingJiaCharge" :mappingType="'主管级别'" :flag="mappingJiaGouFlagDetail"/>
+      <MappingJiaGou v-if="mappingJiaGouArrDetail.mappingJiaSenior && mappingJiaGouArrDetail.mappingJiaSenior.length > 0" :mappingArr="mappingJiaGouArrDetail.mappingJiaSenior" :mappingType="'资深级别'" :flag="mappingJiaGouFlagDetail"/>
+      <MappingJiaGou v-if="mappingJiaGouArrDetail.mappingJiaBase && mappingJiaGouArrDetail.mappingJiaBase.length > 0" :mappingArr="mappingJiaGouArrDetail.mappingJiaBase" :mappingType="'基础级别'" :flag="mappingJiaGouFlagDetail"/>
+      <MappingJiaGou v-if="mappingJiaGouArrDetail.mappingJiaStore && mappingJiaGouArrDetail.mappingJiaStore.length > 0" :mappingArr="mappingJiaGouArrDetail.mappingJiaStore" :mappingType="'门店支持'" :flag="mappingJiaGouFlagDetail"/>
+      <!-- <a-row
         :gutter="24"
         v-if="mappingJiaGouArr.mappingJiaManage && mappingJiaGouArr.mappingJiaManage.length > 0"
       >
@@ -262,7 +288,7 @@
                 mappingJiaGouToResumeId == item.id ? 'mappingJiaGouspanActive' : '',
               ]"
               @click="handleMappingJiaGouToResume(item.id, item.addConsultantId)"
-              :title="`${item.userName}/${item.positionName}/${item.type}(${item.gongSi})`"
+              :title="`${item.userName}/${item.positionName}/${item.type}(${item.gongSi})&#13;${item.worksOne}&#13;${item.worksTwo}`"
             >
               {{ item.userName }}/{{ item.positionName }}/{{ item.type }}({{ item.gongSi }})
             </span>
@@ -290,7 +316,7 @@
                 mappingJiaGouToResumeId == item.id ? 'mappingJiaGouspanActive' : '',
               ]"
               @click="handleMappingJiaGouToResume(item.id, item.addConsultantId)"
-              :title="`${item.userName}/${item.positionName}/${item.type}(${item.gongSi})`"
+              :title="`${item.userName}/${item.positionName}/${item.type}(${item.gongSi})&#13;${item.worksOne}&#13;${item.worksTwo}`"
             >
               {{ item.userName }}/{{ item.positionName }}/{{ item.type }}({{ item.gongSi }})
             </span>
@@ -318,7 +344,7 @@
                 mappingJiaGouToResumeId == item.id ? 'mappingJiaGouspanActive' : '',
               ]"
               @click="handleMappingJiaGouToResume(item.id, item.addConsultantId)"
-              :title="`${item.userName}/${item.positionName}/${item.type}(${item.gongSi})`"
+              :title="`${item.userName}/${item.positionName}/${item.type}(${item.gongSi})&#13;${item.worksOne}&#13;${item.worksTwo}`"
             >
               {{ item.userName }}/{{ item.positionName }}/{{ item.type }}({{ item.gongSi }})
             </span>
@@ -346,7 +372,7 @@
                 mappingJiaGouToResumeId == item.id ? 'mappingJiaGouspanActive' : '',
               ]"
               @click="handleMappingJiaGouToResume(item.id, item.addConsultantId)"
-              :title="`${item.userName}/${item.positionName}/${item.type}(${item.gongSi})`"
+              :title="`${item.userName}/${item.positionName}/${item.type}(${item.gongSi})&#13;${item.worksOne}&#13;${item.worksTwo}`"
             >
               {{ item.userName }}/{{ item.positionName }}/{{ item.type }}({{ item.gongSi }})
             </span>
@@ -374,13 +400,13 @@
                 mappingJiaGouToResumeId == item.id ? 'mappingJiaGouspanActive' : '',
               ]"
               @click="handleMappingJiaGouToResume(item.id, item.addConsultantId)"
-              :title="`${item.userName}/${item.positionName}/${item.type}(${item.gongSi})`"
+              :title="`${item.userName}/${item.positionName}/${item.type}(${item.gongSi})&#13;${item.worksOne}&#13;${item.worksTwo}`"
             >
               {{ item.userName }}/{{ item.positionName }}/{{ item.type }}({{ item.gongSi }})
             </span>
           </span>
         </a-col>
-      </a-row>
+      </a-row> -->
     </div>
   </a-drawer>
 </template>
@@ -391,6 +417,7 @@
   import { formatToDate } from '/@/utils/dateUtil';
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   import OrginalPath from '/@/components/OrginalPath/index.vue';
+  import MappingJiaGou from './MappingJiaGou.vue';
   const resumeDetailStore = useResumeDetailStore();
   const { resumeReport, resumeId, resumeTypeEnglish } = storeToRefs(resumeDetailStore);
   defineProps({
@@ -415,6 +442,7 @@
       resumeId: '',
       realNameEn: '',
       reportContent: '',
+      reportContentEn: '',
       orginalPathEn: '',
       resumeIdEn: '',
       orginalPath: '',
@@ -430,12 +458,14 @@
       resumeId: item.resumeId,
       realNameEn: item.realNameEn,
       reportContent: item.reportContent,
+      reportContentEn: item.reportContentEn,
       orginalPathEn: item.orginalPathEn,
       resumeIdEn: item.resumeIdEn,
       orginalPath: item.orginalPath,
       teamName: item.teamName || '',
       source: item.source || '',
       registTime: item.registTime ? formatToDate(item.registTime) : '',
+      registTimeOther: item.registTimeOther ? formatToDate(item.registTimeOther) : '',
       addConsultantId: item.addConsultantId,
     }));
   });
@@ -484,6 +514,7 @@
     orginalPathShow.value = true;
   };
   const handleOrginalPathClose = () => {
+    mappingJiaGouId.value = "";
     orginalPathShow.value = false;
   };
   const openOrginalPatChoose = ref(false);
@@ -634,7 +665,7 @@
       dataIndex: 'siGongNum',
       key: 'siGongNum',
       ellipsis: true,
-      width: 50,
+      width: 60,
     },
   ];
   const personMappingList = ref([]);
@@ -667,7 +698,8 @@
             workFloor: item.workFloor || '-',
             postitonName: item.postitonName || '-',
             workYear: item.workYear ? (item.workYear < 0 ? '0' : item.workYear.toFixed(2)) : '',
-            siGongNum: item.siNum ? (item.siNum || '') + '/' + (item.gongNum || '0') : '-',
+            siGongNum: ((item.noresumeMappingNum || 0)+(item.resumeNum || 0)),
+            siGongLeaveNum: ((item.noresumeMappingLeaveNum || 0)+(item.resumeLeaveNum || 0)) ,
             retail: item.RETAIL || '',
             leiBie: item.LEIBIE || '',
             pinJi: item.PINJI || '',
@@ -678,6 +710,13 @@
     });
   };
   const mappingJiaGouFlag = ref(false);
+  let mappingJiaGouArrDetail = ref({
+    mappingJiaManage: [],
+    mappingJiaCharge: [],
+    mappingJiaSenior: [],
+    mappingJiaBase: [],
+    mappingJiaStore: [],
+  });
   let mappingJiaGouArr = ref({
     mappingJiaManage: [],
     mappingJiaCharge: [],
@@ -685,32 +724,88 @@
     mappingJiaBase: [],
     mappingJiaStore: [],
   });
-  const router = useRouter();
-  const mappingJiaGouId = ref('');
-  const mappingJiaGouToResumeId = ref('');
-  const handleMappingJiaGouToResume = (resumeId, addConsultantId) => {
-    mappingJiaGouToResumeId.value = resumeId;
-    const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: '' } = JSON.parse(
-      localStorage.getItem('loginVueUser'),
-    );
-    let query = { ...loginVueUser, resumeId, addConsultantId };
-    // if (loginVueUser.loginType != "A" && (!formState.value.leftType || formState.value.leftType == "1" || formState.value.leftType == "2" || formState.value.leftType == "3" || formState.value.leftType == "4")) {
-    //   query = {...loginVueUser, resumeId, addConsultantId,searchRecommend: "T"};
-    // }
-    const href = router.resolve({
-      path: '/resume/detail',
-      query: query,
-    });
-    window.open(href.href, '_blank');
-  };
+ 
   const handleColseCandidatePosition = () => {
-    mappingJiaGouToResumeId.value = '';
-    mappingJiaGouId.value = '';
     resumeMappinglag.value = false;
   };
-  const handleMappingJiaGou = (brandId, marketId) => {
-    mappingJiaGouToResumeId.value = '';
-    mappingJiaGouId.value = `${brandId}/${marketId}`;
+  const handleWorks = (item) => {
+    let html = "";
+    if (item.END_YEAR == '-1') {
+       html += `${item.START_YEAR}.${handleMonth(item.START_MONTH)} - 至今`;
+    } else {
+      html += `${item.START_YEAR}.${handleMonth(item.START_MONTH)} - ${item.END_YEAR}.${handleMonth(item.END_MONTH)}`;
+    }
+    if (item.COMPANY_NAME) {
+      html += ` ${item.COMPANY_NAME}`;
+    }
+    if (item.CITY_NAME) {
+      html += `-${item.CITY_NAME}`;
+    }
+    if (item.MARKET_NAME) {
+      html += `-${item.MARKET_NAME}`;
+    }
+    if (item.BRAND_NAME) {
+      html += `-${item.BRAND_NAME}`;
+    }
+    if (item.POSITION_NAME) {
+      html += `-${item.POSITION_NAME}`;
+    }
+    return html;
+  }
+  const handleMonth = (month) => {
+    return month < 10 ? `0${(+month)}` :  `${month}`;
+  }
+  const handleMappingJia = (item,type) => {
+	return {
+		key: item.ID,
+		id: item.ID,
+		addConsultantId: item.ADD_CONSULTANT_ID,
+		userName: ((item.USER_NAME && item.USER_NAME != undefined) ? item.USER_NAME : ""),
+		brand: ((item.BRAND_NAME && item.BRAND_NAME != undefined) ? item.BRAND_NAME : ""),
+		city: ((item.isOpen == 1 && item.CITY_NAME && item.CITY_NAME != undefined) ? item.CITY_NAME : ""),
+		age: ((item.isOpen == 1 && item.AGE && item.AGE != undefined) ? item.AGE : ""),
+		sex: ((item.isOpen == 1 && item.SEX && item.SEX != undefined) ? item.SEX : ""),
+		phoneNum: item.PHONE_NUM,
+		management: item.MANAGEMENT2,
+		marketName: ((item.MARKET_NAME && item.MARKET_NAME != undefined) ? item.MARKET_NAME : ""),
+		groupName: ((item.isOpen == 1 && item.GROUP_NAME && item.GROUP_NAME != undefined) ? item.GROUP_NAME : ""),
+		realNameEn: ((item.isOpen == 1 && item.REAL_NAME_EN && item.REAL_NAME_EN != undefined) ? item.REAL_NAME_EN : ""),
+		positionName: ((item.POSITION_NAME && item.POSITION_NAME != undefined) ? item.POSITION_NAME : ""),
+		jobStatus: item.JOB_STATUS == '在职' ? 1 : 2,
+		type: type == 1 ? '简': 'M',
+		isOpen: item.isOpen,
+		updateTime: ((item.isOpen == 1 && item.UPDATE_TIME && item.UPDATE_TIME != undefined) ? formatToDate(item.UPDATE_TIME) : ""),
+		worksOne: (item.isOpen == 1 && item.works && item.works.length > 0 ? handleWorks(item.works[0]) : ""),
+		worksTwo: (item.isOpen == 1 && item.works && item.works.length > 1 ? handleWorks(item.works[1]) : ""),
+	}
+}
+const mappingJiaGouFlagDetail = ref(true);
+const mappingJiaGouFlagDetailChange = () => {
+  if (mappingJiaGouFlagDetail.value) {
+    mappingJiaGouArrDetail.value = {
+      mappingJiaManage: mappingJiaGouArr.value.mappingJiaManage.filter(item => item.jobStatus == 1),
+      mappingJiaCharge: mappingJiaGouArr.value.mappingJiaCharge.filter(item => item.jobStatus == 1),
+      mappingJiaSenior: mappingJiaGouArr.value.mappingJiaSenior.filter(item => item.jobStatus == 1),
+      mappingJiaBase: mappingJiaGouArr.value.mappingJiaBase.filter(item => item.jobStatus == 1),
+      mappingJiaStore: mappingJiaGouArr.value.mappingJiaStore.filter(item => item.jobStatus == 1),
+    }
+  } else {
+    mappingJiaGouArrDetail.value = {
+      mappingJiaManage: mappingJiaGouArr.value.mappingJiaManage.filter(item => item.jobStatus == 2),
+      mappingJiaCharge: mappingJiaGouArr.value.mappingJiaCharge.filter(item => item.jobStatus == 2),
+      mappingJiaSenior: mappingJiaGouArr.value.mappingJiaSenior.filter(item => item.jobStatus == 2),
+      mappingJiaBase: mappingJiaGouArr.value.mappingJiaBase.filter(item => item.jobStatus == 2),
+      mappingJiaStore: mappingJiaGouArr.value.mappingJiaStore.filter(item => item.jobStatus == 2),
+    }
+  }
+}
+const siGongNumTitle = ref("在职");
+const siGongLeaveNumTitle = ref("离职");
+const mappingJiaGouId = ref("")
+  const handleMappingJiaGou = (brandId, marketId, siGongNum, siGongLeaveNum) => {
+    siGongNumTitle.value = `在职${siGongNum}`;
+    siGongLeaveNumTitle.value = `离职${siGongLeaveNum}`;
+    mappingJiaGouId.value = "";
     mappingJiaGouArr.value = {
       mappingJiaManage: [],
       mappingJiaCharge: [],
@@ -719,159 +814,48 @@
       mappingJiaStore: [],
     };
     mappingJiaGouFlag.value = false;
+    mappingJiaGouId.value = `${brandId}/${marketId}`;
     resumeDetailStore.resumeMappingJiagou(brandId, marketId).then((res) => {
       if (res.code == 1) {
         mappingJiaGouFlag.value = true;
-        const tempSiArr = res.info?.markPersonSi;
-        const tempGongArr = res.info?.markPersonGong;
+        const tempSiArr = res.info?.resume;
+        const tempGongArr = res.info?.noResumeMapping;
         if (tempSiArr && tempSiArr.length > 0) {
           tempSiArr.forEach((item) => {
             if (item.MANAGEMENT2 == '经理级别') {
-              mappingJiaGouArr.value.mappingJiaManage.push({
-                key: item.ID,
-                id: item.ID,
-                addConsultantId: item.ADD_CONSULTANT_ID,
-                userName: item.USER_NAME,
-                management: item.MANAGEMENT2,
-                positionName: item.POSITION_NAME,
-                gongSi: '私',
-                jobStatus: item.JOB_STATUS == '在职' ? 1 : 2,
-                type: item.JM,
-              });
+              mappingJiaGouArr.value.mappingJiaManage.push(handleMappingJia(item,1));
             } else if (item.MANAGEMENT2 == '主管级别') {
-              mappingJiaGouArr.value.mappingJiaCharge.push({
-                key: item.ID,
-                id: item.ID,
-                addConsultantId: item.ADD_CONSULTANT_ID,
-                userName: item.USER_NAME,
-                management: item.MANAGEMENT2,
-                positionName: item.POSITION_NAME,
-                gongSi: '私',
-                jobStatus: item.JOB_STATUS == '在职' ? 1 : 2,
-                type: item.JM,
-              });
+              mappingJiaGouArr.value.mappingJiaCharge.push(handleMappingJia(item,1));
             } else if (item.MANAGEMENT2 == '资深级别') {
-              mappingJiaGouArr.value.mappingJiaSenior.push({
-                key: item.ID,
-                id: item.ID,
-                addConsultantId: item.ADD_CONSULTANT_ID,
-                userName: item.USER_NAME,
-                management: item.MANAGEMENT2,
-                positionName: item.POSITION_NAME,
-                gongSi: '私',
-                jobStatus: item.JOB_STATUS == '在职' ? 1 : 2,
-                type: item.JM,
-              });
+              mappingJiaGouArr.value.mappingJiaSenior.push(handleMappingJia(item,1));
             } else if (item.MANAGEMENT2 == '基础级别') {
-              mappingJiaGouArr.value.mappingJiaBase.push({
-                key: item.ID,
-                id: item.ID,
-                addConsultantId: item.ADD_CONSULTANT_ID,
-                userName: item.USER_NAME,
-                management: item.MANAGEMENT2,
-                positionName: item.POSITION_NAME,
-                gongSi: '私',
-                jobStatus: item.JOB_STATUS == '在职' ? 1 : 2,
-                type: item.JM,
-              });
+              mappingJiaGouArr.value.mappingJiaBase.push(handleMappingJia(item,1));
             } else {
-              mappingJiaGouArr.value.mappingJiaStore.push({
-                key: item.ID,
-                id: item.ID,
-                addConsultantId: item.ADD_CONSULTANT_ID,
-                userName: item.USER_NAME,
-                management: item.MANAGEMENT2,
-                positionName: item.POSITION_NAME,
-                gongSi: '私',
-                jobStatus: item.JOB_STATUS == '在职' ? 1 : 2,
-                type: item.JM,
-              });
+              mappingJiaGouArr.value.mappingJiaStore.push(handleMappingJia(item,1));
             }
           });
         }
         if (tempGongArr && tempGongArr.length > 0) {
           tempGongArr.forEach((item) => {
             if (item.MANAGEMENT2 == '经理级别') {
-              mappingJiaGouArr.value.mappingJiaManage.push({
-                key: item.ID,
-                id: item.ID,
-                addConsultantId: item.ADD_CONSULTANT_ID,
-                userName: item.USER_NAME,
-                management: item.MANAGEMENT2,
-                positionName: item.POSITION_NAME,
-                gongSi: '公',
-                jobStatus: item.JOB_STATUS == '在职' ? 1 : 2,
-                type: item.JM,
-              });
+              mappingJiaGouArr.value.mappingJiaManage.push(handleMappingJia(item,2));
             } else if (item.MANAGEMENT2 == '主管级别') {
-              mappingJiaGouArr.value.mappingJiaCharge.push({
-                key: item.ID,
-                id: item.ID,
-                addConsultantId: item.ADD_CONSULTANT_ID,
-                userName: item.USER_NAME,
-                management: item.MANAGEMENT2,
-                positionName: item.POSITION_NAME,
-                gongSi: '公',
-                jobStatus: item.JOB_STATUS == '在职' ? 1 : 2,
-                type: item.JM,
-              });
+              mappingJiaGouArr.value.mappingJiaCharge.push(handleMappingJia(item,2));
             } else if (item.MANAGEMENT2 == '资深级别') {
-              mappingJiaGouArr.value.mappingJiaSenior.push({
-                key: item.ID,
-                id: item.ID,
-                addConsultantId: item.ADD_CONSULTANT_ID,
-                userName: item.USER_NAME,
-                management: item.MANAGEMENT2,
-                positionName: item.POSITION_NAME,
-                gongSi: '公',
-                jobStatus: item.JOB_STATUS == '在职' ? 1 : 2,
-                type: item.JM,
-              });
+              mappingJiaGouArr.value.mappingJiaSenior.push(handleMappingJia(item,2));
             } else if (item.MANAGEMENT2 == '基础级别') {
-              mappingJiaGouArr.value.mappingJiaBase.push({
-                key: item.ID,
-                id: item.ID,
-                addConsultantId: item.ADD_CONSULTANT_ID,
-                userName: item.USER_NAME,
-                management: item.MANAGEMENT2,
-                positionName: item.POSITION_NAME,
-                gongSi: '公',
-                jobStatus: item.JOB_STATUS == '在职' ? 1 : 2,
-                type: item.JM,
-              });
+              mappingJiaGouArr.value.mappingJiaBase.push(handleMappingJia(item,2));
             } else {
-              mappingJiaGouArr.value.mappingJiaStore.push({
-                key: item.ID,
-                id: item.ID,
-                addConsultantId: item.ADD_CONSULTANT_ID,
-                userName: item.USER_NAME,
-                management: item.MANAGEMENT2,
-                positionName: item.POSITION_NAME,
-                gongSi: '公',
-                jobStatus: item.JOB_STATUS == '在职' ? 1 : 2,
-                type: item.JM,
-              });
+              mappingJiaGouArr.value.mappingJiaStore.push(handleMappingJia(item,2));
             }
           });
         }
-        mappingJiaGouArr.value.mappingJiaManage = mappingJiaGouArr.value.mappingJiaManage?.sort(
-          (a, b) => a.jobStatus - b.jobStatus,
-        );
-        mappingJiaGouArr.value.mappingJiaCharge = mappingJiaGouArr.value.mappingJiaCharge?.sort(
-          (a, b) => a.jobStatus - b.jobStatus,
-        );
-        mappingJiaGouArr.value.mappingJiaSenior = mappingJiaGouArr.value.mappingJiaSenior?.sort(
-          (a, b) => a.jobStatus - b.jobStatus,
-        );
-        mappingJiaGouArr.value.mappingJiaBase = mappingJiaGouArr.value.mappingJiaBase?.sort(
-          (a, b) => a.jobStatus - b.jobStatus,
-        );
-        mappingJiaGouArr.value.mappingJiaStore = mappingJiaGouArr.value.mappingJiaStore?.sort(
-          (a, b) => a.jobStatus - b.jobStatus,
-        );
+        mappingJiaGouFlagDetail.value = true;
+        mappingJiaGouFlagDetailChange();
       }
     });
   };
+  const router = useRouter();
   //跳转到英文简历添加页面根据中文简历ID
   const handleChangeResumeToAddEnglish = (resumeId, addConsultantId) => {
     Modal.confirm({
@@ -1002,5 +986,8 @@
     bottom: 0px;
     right: 0px;
     background-size: cover;
+  }
+  :deep(.ant-drawer-content-wrapper .docx) {
+    zoom: 0.6;
   }
 </style>

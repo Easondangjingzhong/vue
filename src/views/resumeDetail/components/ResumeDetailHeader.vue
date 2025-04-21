@@ -83,7 +83,15 @@
           :title="entryTime"
           >保证期</a-tag
         > 
-        <a-tag style="cursor: pointer;" :title="limitRemarkDetail" color="orange" class="resume_tag_checked" v-if="showResumeAdd && resumeData.recruitId && resumeData.limitFlag == '激活'"
+        <a-tag
+          color="orange"
+          class="resume_tag_checked_top"
+          title="外包保护期中"
+          v-if="resumeData.resumeStatus == '外包保护期中'"
+          :title="entryTime"
+          >保证期</a-tag
+        > 
+        <a-tag style="cursor: pointer;" :title="limitRemarkDetail" color="orange" class="resume_tag_checked" v-if="showResumeAdd && resumeData.recruitId && resumeData.limitFlag == '激活'&& resumeData.resumeStatus != '外包保护期中'"
           >激活</a-tag
         >
         <a-modal v-model:open="openResumeCopy" title="复制简历" @ok="handleResumeCopy">
@@ -156,7 +164,7 @@
           @click="handleAddChecked"
           >核对</a-button>
           <a-button
-          v-if="showResumeAdd && resumeData.recruitId && resumeData.checkFlag == '待激活'"
+          v-if="showResumeAdd && resumeData.recruitId && resumeData.checkFlag == '待激活' && resumeData.resumeStatus != '外包保护期中'"
           style="margin-left: 4px;background-color: orange;color: #fff;"
            size="middle"
           @click="handleAddCheckedTwoYear"
@@ -169,7 +177,7 @@
           >复制</a-button>
         <a-button
         style="margin-left: 4px;"
-          v-if="showResumeAdd && (resumeData.recommendLimit == '推荐' || resumeData.zhuCeFlag == '注册顾问') && (resumeData.checkFlag == '最新'|| resumeData.checkFlag == '已激活') && resumeProgressDetailScore >= 90"
+          v-if="!isNR38 && showResumeAdd && (resumeData.recommendLimit == '推荐' || resumeData.zhuCeFlag == '注册顾问') && (resumeData.checkFlag == '最新'|| resumeData.checkFlag == '已激活') && resumeProgressDetailScore >= 90 && resumeData.resumeStatus != '外包保护期中'"
           type="primary"
           danger
           size="middle"
@@ -179,7 +187,7 @@
         </a-button>
         <a-button
         style="margin-left: 4px;"
-          v-if="showResumeAdd && (resumeData.recommendLimit == '推荐' || resumeData.zhuCeFlag == '注册顾问') && (resumeData.checkFlag == '最新'|| resumeData.checkFlag == '已激活') && resumeProgressDetailScore < 90"
+          v-if="!isNR38 && showResumeAdd && (resumeData.recommendLimit == '推荐' || resumeData.zhuCeFlag == '注册顾问') && (resumeData.checkFlag == '最新'|| resumeData.checkFlag == '已激活') && resumeProgressDetailScore < 90"
           type="primary"
           size="middle"
           :disabled="true"
@@ -189,7 +197,7 @@
         </a-button>
         <a-button
         style="margin-left: 4px;"
-          v-if="showResumeAdd && resumeData.recommendLimit == '限制分单' && resumeData.checkFlag == '最新' && resumeProgressDetailScore >= 90"
+          v-if="!isNR38 && showResumeAdd && resumeData.recommendLimit == '限制分单' && resumeData.checkFlag == '最新' && resumeProgressDetailScore >= 90"
           type="primary"
           danger
           title="在保推荐分单"
@@ -198,7 +206,7 @@
         >推荐</a-button>
         <a-button
         style="margin-left: 4px;"
-          v-if="showResumeAdd && resumeData.recommendLimit == '限制分单' && resumeData.checkFlag == '最新' && resumeProgressDetailScore < 90"
+          v-if="!isNR38 && showResumeAdd && resumeData.recommendLimit == '限制分单' && resumeData.checkFlag == '最新' && resumeProgressDetailScore < 90"
           type="primary"
           :disabled="true"
           size="middle"
@@ -206,7 +214,7 @@
         >推荐</a-button>
         <a-button
         style="margin-left: 4px;"
-          v-if="showResumeAdd && resumeData.checkFlag == '待核'"
+          v-if="!isNR38 && showResumeAdd && resumeData.checkFlag == '待核'"
           size="middle"
           :disabled="true"
           title="需要核对后才能推荐"
@@ -215,7 +223,7 @@
         </a-button>
         <a-button
         style="margin-left: 4px;"
-          v-if="showResumeAdd && resumeData.recommendLimit == '限制推荐' && resumeData.checkFlag != '待核'"
+          v-if="!isNR38 && showResumeAdd && resumeData.recommendLimit == '限制推荐' && resumeData.checkFlag != '待核'"
           size="middle"
           :disabled="true"
           title="OFFER推荐禁止"
@@ -224,7 +232,7 @@
         </a-button>
         <a-button
         style="margin-left: 4px;"
-          v-if="showResumeAdd && resumeData.recommendLimit == '限制禁推' && resumeData.checkFlag != '待核'"
+          v-if="!isNR38 && showResumeAdd && resumeData.recommendLimit == '限制禁推' && resumeData.checkFlag != '待核'"
           size="middle"
           :disabled="true"
           title="在保推荐禁止"
@@ -295,7 +303,9 @@
   );
   const limitRemarkDetail = ref(
     props.resumeData.limitRemarkDetail
-      ? props.resumeData.limitRemarkDetail  : (props.resumeData.resumeStatus == '保证期中' ? `${formatToDateMinute(props.resumeData.shiRuTime)} - ${formatToDateMinute(props.resumeData.guoBaoTime)}  保证期推荐禁止` : ""),
+      ? props.resumeData.limitRemarkDetail  : (props.resumeData.resumeStatus == '保证期中'
+       ? `${formatToDateMinute(props.resumeData.shiRuTime)} - ${formatToDateMinute(props.resumeData.guoBaoTime)}  保证期推荐禁止`
+        : props.resumeData.resumeStatus == '保证期中'? "外包保护期中" :""),
   )
   const offerTime = ref(
     props.resumeData.offerTime
@@ -595,6 +605,19 @@
     location.href = `http://work.wotui.com:8889/WTSM/DownloadResumeServlet?resumeId=${resumeId.value}&resumeType=C&systemUser=${systemUserTemp}&template=${templatTypeeManage.value}&realEnName=&screenWidth=${screenWidth}`
     handleCloseResumeUploadeManage();
   }
+  //根据登录人的ID判断是否是NR38不能推荐
+  const isNR38 = ref(true);
+  const queryNrPositionId = () => {
+    resumeDetailStore.queryNrPositionId().then(res => {
+      if(res.code === 1){
+        const resd = res.info[0];
+        if (!resd || (resd.currentPositionId != 38 && resd.currentPositionId != 'NR/寻访员')) {
+          isNR38.value = false;
+        }
+      }
+    })
+  }
+  queryNrPositionId();
 </script>
 <style lang="less" scoped>
   .resume_header {

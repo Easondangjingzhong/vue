@@ -135,7 +135,7 @@ export const useResumeDetailStore = defineStore({
         startMonth: data.startYear.split('-')[1],
         positionName: data.positionsId.label,
         positionsId: data.positionsId.value,
-        brandName: data.brandName.label,
+        brandName: data.brandName.label ? data.brandName.label.split('(')[0] : "",
         workBrand: data.brandName.value,
         cityName: data.cityName.label,
         workCity: data.cityName.value,
@@ -236,7 +236,9 @@ export const useResumeDetailStore = defineStore({
     async queryResumeRecord(PageNumber) {
       let formData = new FormData();
       const phone = this.resumeDetail.resume.phoneNum;
+      const phoneOther = this.resumeDetail.resume.phoneNumOther;
       formData.append('phone', phone);
+      formData.append('phoneOther', phoneOther);
       formData.append('PageNumber', PageNumber);
       formData.append('recruitId', loginVueUser.loginId);
       const res = await fetchApi.queryResumeRecord(formData);
@@ -297,7 +299,7 @@ export const useResumeDetailStore = defineStore({
       return res;
     },
     /**
-     * 查询简历查重记录
+     * 查询简历联系记录
      * @param PageNumber 当前页
      * @returns
      */
@@ -315,7 +317,11 @@ export const useResumeDetailStore = defineStore({
         return res;
       } else {
         const res = await fetchApi.queryResumeContactContentComment(formData);
-        this.resumeContactContent = res.pager;
+        if (res.code == 1) {
+          this.resumeContactContent = res.info;
+        }
+        //const res = await fetchApi.queryResumeContactContentComment(formData);
+        //this.resumeContactContent = res.pager;
         return res;
       }
     },
@@ -772,7 +778,8 @@ export const useResumeDetailStore = defineStore({
     async resumeMappingJiagou(brandId,marketId) {
       let formData = new FormData();
       formData.append('brandId', brandId);
-      formData.append('recruitId', this.commRecruitId);
+      formData.append('recruitId', this.commRecruitId || loginVueUser.loginId);
+      formData.append('SystemRecruitId', loginVueUser.loginId);
       formData.append('phone', this.resumeDetail.resume.phoneNum);
       formData.append('marketId', marketId);
       const res = await fetchApi.resumeMappingJiagou(formData);
@@ -810,6 +817,16 @@ export const useResumeDetailStore = defineStore({
       const phone = this.resumeDetail.resume.phoneNum;
       formData.append('phone', phone);
       const res = await fetchApi.queryResumeMappingWork(formData);
+      return res;
+    },
+     /**
+     * 根据手机号查询mapping最近工作
+     * @returns 
+     */
+     async queryNrPositionId() {
+      let formData = new FormData();
+      formData.append('recruitId', loginVueUser.loginId);
+      const res = await fetchApi.queryNrPositionId(formData);
       return res;
     },
   },

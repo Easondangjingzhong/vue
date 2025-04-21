@@ -61,6 +61,9 @@
             <a-select
               optionFilterProp="label"
               v-model:value="formState.recommendRecruitId"
+              mode="multiple"
+              :max-tag-text-length="1"
+              :max-tag-count="1"
               show-search
               :allowClear="true"
               :options="optionsRecommendCounselor"
@@ -101,9 +104,9 @@
           </a-form-item>
         </a-col>
       </a-row>
-      <a-row :gutter="24" v-if="expand > 2" style="display: none;">
+      <a-row :gutter="24" v-if="expand > 2" style="display: none">
         <a-col :span="spanCol">
-          <a-form-item name="interviewResult" label="面试状态" style="display: none;">
+          <a-form-item name="interviewResult" label="面试状态" style="display: none">
             <a-select
               optionFilterProp="label"
               v-model:value="formState.interviewResult"
@@ -113,7 +116,7 @@
             ></a-select>
           </a-form-item>
         </a-col>
-        <a-col :span="spanCol" style="display: none;">
+        <a-col :span="spanCol" style="display: none">
           <a-form-item name="offerChoice" label="OFFER">
             <a-select
               optionFilterProp="label"
@@ -124,8 +127,8 @@
             ></a-select>
           </a-form-item>
         </a-col>
-       
-        <a-col :span="spanCol" style="display: none;">
+
+        <a-col :span="spanCol" style="display: none">
           <a-form-item name="endStatus" label="最终">
             <a-select
               optionFilterProp="label"
@@ -209,7 +212,7 @@
             ></a-select>
           </a-form-item>
         </a-col>
-        <a-col :span="spanCol"  style="padding-left: 60px">
+        <a-col :span="spanCol" style="padding-left: 60px">
           <a-button style="margin: 0 0 0 8px" type="primary" html-type="submit">搜索</a-button>
           <a-button style="margin: 0 8px" @click="clearFromState">清空</a-button>
           <a @click="handleExpand">
@@ -227,8 +230,13 @@
     </a-form>
   </div>
   <div class="resume-content">
-    <a-row style="margin-bottom: 5px;justify-content: end;">
-      <a-tag v-for="item in listNumber" :class="item.classNum" @click="handleListNumber(item.btnNum)">{{ item.name }}{{ item.num }}</a-tag>
+    <a-row style="margin-bottom: 5px; justify-content: end">
+      <a-tag
+        v-for="item in listNumber"
+        :class="item.classNum"
+        @click="handleListNumber(item.btnNum)"
+        >{{ item.name }}{{ item.num }}</a-tag
+      >
     </a-row>
     <a-table
       size="small"
@@ -240,10 +248,10 @@
     >
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'userName'">
-        <a @click="handleToResumeDetailsCurrent(record.phone,record.recommendRecruitId)">
-          {{ record.userName }}
-        </a>
-      </template>
+          <a @click="handleToResumeDetailsCurrent(record.phone, record.recommendRecruitId)">
+            {{ record.userName }}
+          </a>
+        </template>
         <template v-if="column.key === 'newRecommendTime'">
           <a-tag
             v-if="record.repeatTime"
@@ -452,6 +460,26 @@
           <a-tag v-else-if="record.recommendStatus == '流程重启'" color="#00b050">职关重启</a-tag>
           <a-tag v-else>{{ record.recommendStatus }}</a-tag>
         </template>
+        <template v-if="column.key === 'action'">
+          <a-dropdown>
+            <span class="ant-dropdown-link" style="cursor: pointer;" @click.prevent>
+              <MenuUnfoldOutlined style="font-size: 15px;"/>
+            </span>
+            <template #overlay>
+              <a-menu>
+                <a-menu-item>
+                  <a href="javascript:;" >流程管理</a>
+                </a-menu-item>
+                <a-menu-item>
+                  <a href="javascript:;" @click="addNewViolation(record)">违规上报</a>
+                </a-menu-item>
+                <a-menu-item v-if="loginVueUser.loginType == 'A'">
+                  <a href="javascript:;">推顾转移</a>
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+        </template>
       </template>
     </a-table>
     <a-row style="justify-content: end; margin-top: 10px">
@@ -474,22 +502,25 @@
       </a-pagination>
     </a-row>
   </div>
+  <violationModel v-if="violationFlag"  :violationRecord="violationRecord"/>
 </template>
 <script setup lang="ts">
-  import { DoubleRightOutlined, DoubleLeftOutlined } from '@ant-design/icons-vue';
+  import { DoubleRightOutlined, DoubleLeftOutlined,MenuUnfoldOutlined } from '@ant-design/icons-vue';
   import { storeToRefs } from 'pinia';
   import { formatToDateTime, formatToDate } from '/@/utils/dateUtil';
   import type { SelectProps } from 'ant-design-vue';
   import { useCityStoreWithOut } from '/@/store/modules/city';
   import { useResumeListStoreWithOut } from '/@/store/modules/resumeList';
-  import {handleToResumeDetails} from '/@/router/index'
+  import { handleToResumeDetails } from '/@/router/index';
   import type { Dayjs } from 'dayjs';
+  import violationModel from './RecommendOperation/violationModel.vue';
   type RangeValue = [Dayjs, Dayjs];
   const selectTime = ref<RangeValue>();
   const cityStore = useCityStoreWithOut();
   const resumeListStore = useResumeListStoreWithOut();
   const { province } = storeToRefs(cityStore);
   const {
+    violationFlag,
     companyCnList,
     teamPersonChangeArr,
     positionsList,
@@ -497,6 +528,9 @@
     recommendCounselorArr,
     enterpriseConsultantArr,
   } = storeToRefs(resumeListStore);
+  const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: '' } = JSON.parse(
+  localStorage.getItem('loginVueUser'),
+);
   const optionsCity = ref<SelectProps['options']>([]);
   optionsCity.value = province.value.reduce((prev, curr) => {
     //@ts-ignore
@@ -764,12 +798,13 @@
     isErro: string;
     id: string;
     collectId: string;
-    recommendRecruitId: string;
+    recommendRecruitId: string[];
     recommendChangeCounselor: string;
     timeType: string;
     vueType: string;
   }
-  const formState = ref<SearchForm>({
+  const formState = ref<SearchForm>(
+    {
     pageNumber: '1',
     pageSize: '12',
     number: '',
@@ -808,7 +843,7 @@
     isErro: '',
     id: '',
     collectId: '',
-    recommendRecruitId: '',
+    recommendRecruitId: [],
     recommendChangeCounselor: '',
     timeType: '',
     vueType: '1',
@@ -817,60 +852,59 @@
   const clearFromState = () => {
     // ��空搜索条件
     formState.value = {
-    pageNumber: '1',
-    pageSize: '12',
-    number: '',
-    city: '',
-    brand: '',
-    counselor: '',
-    recommendCounselor: '',
-    sex: '',
-    positions: '',
-    positionsId: '',
-    market: '',
-    recommendTimeStart: '',
-    recommendTimeEnd: '',
-    interviewTimeStart: '',
-    interviewTimeEnd: '',
-    recommendStatus: '',
-    hrFeedback: '',
-    consultantFeedback: '',
-    userName: '',
-    phone: '',
-    guaranteePeriodTimeStart: '',
-    guaranteePeriodTimeEnd: '',
-    predictEntryTimeStart: '',
-    predictEntryTimeEnd: '',
-    practicalEntryTimeStart: '',
-    practicalEntryTimeEnd: '',
-    interviewResult: '',
-    offerChoice: '',
-    endStatus: '',
-    recruitId: '',
-    isQuit: '',
-    teamId: '',
-    quality: '',
-    companyName: '',
-    zhiLei: '',
-    isErro: '',
-    id: '',
-    collectId: '',
-    recommendRecruitId: '',
-    recommendChangeCounselor: '',
-    timeType: '',
-    vueType: '1',
-  };
-    listNumber.value = listNumber.value.reduce((prev,curr) => {
+      pageNumber: '1',
+      pageSize: '12',
+      number: '',
+      city: '',
+      brand: '',
+      counselor: '',
+      recommendCounselor: '',
+      sex: '',
+      positions: '',
+      positionsId: '',
+      market: '',
+      recommendTimeStart: '',
+      recommendTimeEnd: '',
+      interviewTimeStart: '',
+      interviewTimeEnd: '',
+      recommendStatus: '',
+      hrFeedback: '',
+      consultantFeedback: '',
+      userName: '',
+      phone: '',
+      guaranteePeriodTimeStart: '',
+      guaranteePeriodTimeEnd: '',
+      predictEntryTimeStart: '',
+      predictEntryTimeEnd: '',
+      practicalEntryTimeStart: '',
+      practicalEntryTimeEnd: '',
+      interviewResult: '',
+      offerChoice: '',
+      endStatus: '',
+      recruitId: '',
+      isQuit: '',
+      teamId: '',
+      quality: '',
+      companyName: '',
+      zhiLei: '',
+      isErro: '',
+      id: '',
+      collectId: '',
+      recommendRecruitId: [],
+      recommendChangeCounselor: '',
+      timeType: '',
+      vueType: '1',
+    };
+    listNumber.value = listNumber.value.reduce((prev, curr) => {
       if (curr.btnNum === currentListNum.value) {
         if (currentListNum.value == 4) {
-          return [...prev, {...curr,classNum: 'classNumRed'}];
+          return [...prev, { ...curr, classNum: 'classNumRed' }];
         } else {
-          return [...prev, {...curr,classNum: 'classNum'}];
+          return [...prev, { ...curr, classNum: 'classNum' }];
         }
-        
       }
       return [...prev, curr];
-    },[]);
+    }, []);
     currentListNum.value = 0;
   };
   const expandArr = [1, 2, 3, 2];
@@ -985,7 +1019,6 @@
       key: 'recommendStatus',
       ellipsis: true,
       width: 70,
-      
     },
     {
       title: '操作',
@@ -1051,42 +1084,42 @@
       btnNum: 1,
       name: '待审',
       num: listNum.consultantFeedbackPendingSum,
-      classNum: currentListNum.value == 1 ? 'classNumActivce' : 'classNum'
+      classNum: currentListNum.value == 1 ? 'classNumActivce' : 'classNum',
     });
     listNumber.value.push({
       index: 1,
       btnNum: 3,
       name: '顾待',
       num: listNum.consultantFeedbackRejectSum,
-      classNum: currentListNum.value == 3 ? 'classNumActivce' : 'classNum'
+      classNum: currentListNum.value == 3 ? 'classNumActivce' : 'classNum',
     });
     listNumber.value.push({
       index: 2,
       btnNum: 4,
       name: '待简',
       num: listNum.assendResumeSum,
-      classNum: currentListNum.value == 4 ? 'classNumActivce' : 'classNumRed'
+      classNum: currentListNum.value == 4 ? 'classNumActivce' : 'classNumRed',
     });
     listNumber.value.push({
       index: 3,
       btnNum: 5,
       name: '待发HR',
       num: listNum.resumeConditionPendingSum,
-      classNum: currentListNum.value == 5 ? 'classNumActivce' : 'classNum'
+      classNum: currentListNum.value == 5 ? 'classNumActivce' : 'classNum',
     });
     listNumber.value.push({
       index: 4,
       btnNum: 6,
       name: '已发HR',
       num: listNum.resumeConditionPassSum,
-      classNum: currentListNum.value == 6 ? 'classNumActivce' : 'classNum'
+      classNum: currentListNum.value == 6 ? 'classNumActivce' : 'classNum',
     });
     listNumber.value.push({
       index: 5,
       btnNum: 7,
       name: 'HR过',
       num: listNum.hrFeedbackPassSum,
-      classNum: currentListNum.value == 7 ? 'classNumActivce' : 'classNum'
+      classNum: currentListNum.value == 7 ? 'classNumActivce' : 'classNum',
     });
     // listNumber.value.push({
     //   index: 6,
@@ -1143,22 +1176,22 @@
     //   name: '待交接',
     //   num: listNum.liuChengSum,
     // });
-  }
+  };
   const handleListNumber = (value) => {
     currentListNum.value = value;
-    formState.value = {...formState.value,number: value, pageNumber: '1'};
-    listNumber.value = listNumber.value.reduce((prev,curr) => {
+    formState.value = { ...formState.value, number: value, pageNumber: '1' };
+    listNumber.value = listNumber.value.reduce((prev, curr) => {
       if (curr.btnNum === value) {
-        return [...prev, {...curr,classNum: 'classNumActivce'}];
+        return [...prev, { ...curr, classNum: 'classNumActivce' }];
       }
       return [...prev, curr];
-    },[]);
+    }, []);
     onFinish(1);
-  }
+  };
   const onFinish = (e) => {
-   if(e == 1) {
-    formState.value.pageNumber = '1';
-   }
+    if (e == 1) {
+      formState.value.pageNumber = '1';
+    }
     // 点击搜索时执行的函数
     tableLoading.value = true;
     resumeListStore.queryRecommendResumeButton(formState.value).then((res) => {
@@ -1241,10 +1274,15 @@
    * @param phoneNum 手机
    * @param recruitId 推荐顾问id
    */
-  const handleToResumeDetailsCurrent = (phoneNum,recruitId) => {
-    resumeListStore.queryQueryResumeNewDetails(phoneNum,recruitId).then(res => {
-        handleToResumeDetails(res.info.id,res.info.addConsultantId);
-    })
+  const handleToResumeDetailsCurrent = (phoneNum, recruitId) => {
+    resumeListStore.queryQueryResumeNewDetails(phoneNum, recruitId).then((res) => {
+      handleToResumeDetails(res.info.id, res.info.addConsultantId);
+    });
+  };
+  //违规上报推荐modal展示
+  const violationRecord = ref({});
+  const addNewViolation = (record) => {
+    violationRecord.value = record;
   }
 </script>
 <style lang="less" scoped>
