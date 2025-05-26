@@ -3,6 +3,7 @@ import BlankLayout from '/@/layouts/BlankLayout.vue';
 import Resume from '/@/views/resume/index.vue';
 import ResumeList from '/@/views/resumeList/index.vue';
 import ResumeDetail from '/@/views/resumeDetail/index.vue';
+import MappingList from '/@/views/mappingList/index.vue'
 import type { RouteRecordRaw } from 'vue-router';
 
 export const accessRoutes: RouteRecordRaw[] = [
@@ -37,6 +38,12 @@ const constantRoutes: RouteRecordRaw[] = [
     name: 'ResumeDetail',
     component: ResumeDetail,
     meta: { title: '简历管理' },
+  },
+   {
+    path: '/mapping/list',
+    name: 'MappingList',
+    component: MappingList,
+    meta: { title: '人员信息' },
   },
   // ...accessRoutes,
 ];

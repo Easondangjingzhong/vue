@@ -14,214 +14,277 @@
       <CloseOutlined @click="handleColsePosition" />
     </template>
     <a-spin :spinning="spinning">
-    <div>
-      <a-row :gutter="24" class="resume_row">
-        <a-col :span="24">
-          <h4 class="resume_h4"> 提醒信息 </h4>
-        </a-col>
-      </a-row>
-      <a-row :gutter="24" class="resume_row">
-        <a-col :span="24"> 1、请确认简历内容是否与候选人仔细核对？ </a-col>
-      </a-row>
-      <a-row :gutter="24" class="resume_row">
-        <a-col :span="24"> 2、请确认是否填写候选人简历报告？ </a-col>
-      </a-row>
-      <a-row :gutter="24" class="resume_row">
-        <a-col :span="24">
-          3、推荐顾问在企业顾问简历审核通过后，应在1个工作日内邮件形式把完整准确简历发送至企业顾问邮箱并在系统中操作简历已发；若超出1个工作日未进行操作，则针对推荐顾问进行1000元业绩金额的处罚，推荐顾问依然可以进行跟进，若超出3个工作日未进行操作，则此推荐则被系统强制关闭，且此候选人针对此职位的推荐权归属企业顾问，由该职位的企业顾问跟进。
-        </a-col>
-      </a-row>
-      <a-divider :dashed="true" style="background-color: #0505050f; margin-top: 5px" />
-      <a-row :gutter="24" class="resume_row">
-        <a-col :span="24">
-          <h4 class="resume_h4"> 推荐信息 </h4>
-        </a-col>
-      </a-row>
-      <a-row :gutter="24" class="resume_row">
-        <a-col :span="24">
-          <a-table
-            :columns="columns"
-            :data-source="dataSource"
-            :pagination="false"
-            size="small"
-          ></a-table>
-        </a-col>
-      </a-row>
-      <a-row :gutter="24" class="resume_row" style="margin-top: 10px" v-if="template">
-        <a-col :span="24" class="resume_col">
-          <h4 class="resume_h4"> 简历模板: </h4>
-          <span style="padding-left: 5px">{{ template }}</span>
-        </a-col>
-      </a-row>
-      <a-row :gutter="24" class="resume_row" style="margin-top: 10px" v-if="isVideoTemp">
-        <a-col :span="24" class="resume_col" v-if="isVideoTemp == '1'">
-          <h4 class="resume_h4"> 视频截图: </h4>
-          <span style="padding-left: 5px; display: flex">
-            您推荐的职位要求顾问进行视频面试，且上传视频面试截图，请上传对应图片
-            <a-upload v-model:file-list="videoFile" :before-upload="handleChangeFileUpload">
-              <a-button
+      <div>
+        <div class="resume_row_div">
+          <a-row :gutter="24" class="resume_row">
+            <a-col :span="24">
+              <h4 class="resume_h4"> 提醒信息 </h4>
+            </a-col>
+          </a-row>
+          <a-row :gutter="24" class="resume_row">
+            <a-col :span="24"> 1、请确认简历内容是否与候选人仔细核对？ </a-col>
+          </a-row>
+          <a-row :gutter="24" class="resume_row">
+            <a-col :span="24"> 2、请确认是否填写候选人简历报告？ </a-col>
+          </a-row>
+          <a-row :gutter="24" class="resume_row">
+            <a-col :span="24">
+              3、推荐顾问在企业顾问简历审核通过后，应在1个工作日内邮件形式把完整准确简历发送至企业顾问邮箱并在系统中操作简历已发；若超出1个工作日未进行操作，则针对推荐顾问进行1000元业绩金额的处罚，推荐顾问依然可以进行跟进，若超出3个工作日未进行操作，则此推荐则被系统强制关闭，且此候选人针对此职位的推荐权归属企业顾问，由该职位的企业顾问跟进。
+            </a-col>
+          </a-row>
+        </div>
+        <!-- <a-divider :dashed="true" style="background-color: #0505050f; margin-top: 5px" /> -->
+        <div class="resume_row_div">
+          <a-row :gutter="24" class="resume_row">
+            <a-col :span="24">
+              <h4 class="resume_h4"> 推荐信息 </h4>
+            </a-col>
+          </a-row>
+          <a-row :gutter="24" class="resume_row">
+            <a-col :span="24">
+              <a-table
+                :columns="columns"
+                :data-source="dataSource"
+                :pagination="false"
                 size="small"
-                style="
-                  background-color: #f0ad4e;
-                  border-color: #eea236;
-                  color: #fff;
-                  margin-left: 12px;
-                "
-                >上传</a-button
+              ></a-table>
+            </a-col>
+          </a-row>
+          <a-row :gutter="24" class="resume_row" style="margin-top: 10px" v-if="template">
+            <a-col :span="24" class="resume_col">
+              <h4 class="resume_h4"> 简历模板: </h4>
+              <span style="padding-left: 5px">{{ template }}</span>
+            </a-col>
+          </a-row>
+          <a-row :gutter="24" class="resume_row" style="margin-top: 10px" v-if="isVideoTemp">
+            <a-col :span="24" class="resume_col" v-if="isVideoTemp == '1'">
+              <h4 class="resume_h4"> 视频截图: </h4>
+              <span style="padding-left: 5px; display: flex">
+                您推荐的职位要求顾问进行视频面试，且上传视频面试截图，请上传对应图片
+                <a-upload v-model:file-list="videoFile" :before-upload="handleChangeFileUpload">
+                  <a-button
+                    size="small"
+                    style="
+                      background-color: #f0ad4e;
+                      border-color: #eea236;
+                      color: #fff;
+                      margin-left: 12px;
+                    "
+                    >上传</a-button
+                  >
+                </a-upload>
+              </span>
+            </a-col>
+            <a-col :span="24" class="resume_col" v-if="(isVideoTemp != '1')">
+              <h4 class="resume_h4"> 视频截图: </h4>
+              <span style="padding-left: 5px; display: flex">否</span>
+            </a-col>
+          </a-row>
+          <a-row :gutter="24" class="resume_row" style="margin-top: 10px" v-if="description">
+            <a-col :span="24" class="resume_col">
+              <h4 class="resume_h4"> 推荐要求: </h4>
+              <span style="padding-left: 5px; display: block"> {{ description }} </span>
+            </a-col>
+          </a-row>
+        </div>
+        <!-- <a-divider :dashed="true" style="background-color: #0505050f; margin-top: 5px" /> -->
+        <div class="resume_row_div" v-if="repeatFlag == 1">
+          <a-row :gutter="24" class="resume_row" v-if="repeatFlag == 1" style="margin-top: 10px">
+            <a-col :span="24" class="resume_col">
+              <h4 class="resume_h4">
+                推荐查重:
+                <a-tag color="green" class="resume_tag">通过</a-tag>
+                恭喜您查重通过，您可以继续推荐此候选人至当前品牌。
+              </h4>
+            </a-col>
+          </a-row>
+        </div>
+        <a-row :gutter="24" class="resume_row" v-if="repeatFlag == 1">
+          <a-col :span="24" class="resume_col_btn">
+            <a-button
+              type="primary"
+              :loading="isloading"
+              class="resume_btn"
+              size="middle"
+              @click="handleAddRecommend"
+            >
+              推荐
+            </a-button>
+          </a-col>
+        </a-row>
+        <div class="resume_row_div" v-if="repeatFlag == 22">
+          <a-row :gutter="24" class="resume_row" v-if="repeatFlag == 22" style="margin-top: 10px">
+            <a-col :span="24" class="resume_col">
+              <h4 class="resume_h4">
+                推荐查重:
+                <a-tag color="red" class="resume_tag">限制</a-tag>
+              </h4>
+            </a-col>
+            <a-col :span="24" class="resume_col">
+              <span style="margin-left: 6%; margin-top: 5px" v-html="conflictRemark"></span>
+            </a-col>
+            <a-col style="margin-top: 5px" :span="24" class="resume_col">
+              <h4 class="resume_h4">
+                Leader评估:
+                <a-select
+                  v-model:value="leaderEvaluate"
+                  :options="optionsLeaderEvaluate"
+                  @change="handleLeaderEvaluate"
+                  style="width: 440px"
+                ></a-select>
+              </h4>
+            </a-col>
+          </a-row>
+        </div>
+        <a-row :gutter="24" class="resume_row" v-if="repeatFlag == 22">
+          <a-col :span="24" class="resume_col_btn">
+            <a-button
+              v-if="!leaderEvaluateFlag"
+              type="primary"
+              class="resume_btn_evaluate"
+              size="middle"
+              @click="handleLeaderEvaluateFlag"
+            >
+              发起申诉
+            </a-button>
+            <a-button
+              v-if="leaderEvaluateFlag"
+              type="primary"
+              :loading="isloading"
+              class="resume_btn"
+              size="middle"
+              @click="handleRecommendConfirmAppeal"
+            >
+              发起申诉
+            </a-button>
+          </a-col>
+        </a-row>
+        <div class="resume_row_div" v-if="repeatFlag == 2">
+          <a-row :gutter="24" class="resume_row" v-if="repeatFlag == 2" style="margin-top: 10px">
+            <a-col :span="24" class="resume_col">
+              <h4 class="resume_h4">
+                推荐查重:
+                <a-tag color="red" class="resume_tag">重复</a-tag>
+                您不能继续推荐此候选人，因为已经被其他小伙伴推荐过当前品牌哦，请查看下列推荐详情。
+              </h4>
+            </a-col>
+            <a-col :span="24">
+              <a-table
+                class="row_table"
+                :columns="columnsRecommend"
+                :data-source="dataSourceRecommend"
+                :locale="{ emptyText: '暂无推荐查重' }"
+                :pagination="false"
+                size="small"
               >
-            </a-upload>
-          </span>
-        </a-col>
-        <a-col :span="24" class="resume_col" v-if="(isVideoTemp = '1')">
-          <h4 class="resume_h4"> 视频截图: </h4>
-          <span style="padding-left: 5px; display: flex">否</span>
-        </a-col>
-      </a-row>
-      <a-row :gutter="24" class="resume_row" style="margin-top: 10px" v-if="description">
-        <a-col :span="24" class="resume_col">
-          <h4 class="resume_h4"> 推荐要求: </h4>
-          <span style="padding-left: 5px;display: block;"> {{ description }} </span>
-        </a-col>
-      </a-row>
-      <a-divider :dashed="true" style="background-color: #0505050f; margin-top: 5px" />
-      <a-row :gutter="24" class="resume_row" v-if="repeatFlag == 1" style="margin-top: 10px">
-        <a-col :span="24" class="resume_col">
-          <h4 class="resume_h4">
-            推荐查重:
-            <a-tag color="green" class="resume_tag">通过</a-tag>
-            恭喜您查重通过，您可以继续推荐此候选人至当前品牌。
-          </h4>
-        </a-col>
-        <a-col :span="24" class="resume_col_btn">
-          <a-button
-            type="primary"
-            :loading="isloading"
-            class="resume_btn"
-            size="middle"
-            @click="handleAddRecommend"
-          >
-            推荐
-          </a-button>
-        </a-col>
-      </a-row>
-      <a-row :gutter="24" class="resume_row" v-if="repeatFlag == 2" style="margin-top: 10px">
-        <a-col :span="24" class="resume_col">
-          <h4 class="resume_h4">
-            推荐查重:
-            <a-tag color="red" class="resume_tag">重复</a-tag>
-            您不能继续推荐此候选人，因为已经被其他小伙伴推荐过当前品牌哦，请查看下列推荐详情。
-          </h4>
-        </a-col>
-        <a-col :span="24">
-          <a-table
-            class="row_table"
-            :columns="columnsRecommend"
-            :data-source="dataSourceRecommend"
-            :locale="{ emptyText: '暂无推荐查重' }"
-            :pagination="false"
-            size="small"
-          >
-            <template #bodyCell="{ column, record }">
-              <template v-if="column.key === 'recommendStatus'">
-                <span v-if="record.recommendStatus == 'HR拒绝'">HR简拒</span>
-                <span v-else-if="record.recommendStatus == 'HR通过'">HR简过</span>
-                <span v-else-if="record.recommendStatus == '被动离职'" title="保期未过-人才放弃">{{
-                  record.recommendStatus
-                }}</span>
-                <span v-else-if="record.recommendStatus == '企业放弃'" title="保期未过-人才放弃">{{
-                  record.recommendStatus
-                }}</span>
-                <span v-else-if="record.recommendStatus == '个人放弃'" title="未下OFFER-个人放弃"
-                  >未下OFFER</span
-                >
-                <span v-else-if="record.recommendStatus == '人才放弃'" title="放弃入职-人才放弃"
-                  >放弃入职</span
-                >
-                <span v-else-if="record.recommendStatus == '企业放弃'" title="放弃入职-企业放弃"
-                  >企业放弃</span
-                >
-                <span v-else-if="record.recommendStatus == '面过企弃'">企业放弃</span>
-                <span
-                  v-else-if="record.recommendStatus == '已OFFER背调问题'"
-                  title="背调拒绝-已OFFER"
-                  >背调拒绝</span
-                >
-                <span v-else-if="record.recommendStatus == '背调问题'" title="背调拒绝-未OFFER"
-                  >背调拒绝</span
-                >
-                <span v-else-if="record.recommendStatus == '顾问通过'">企顾通过</span>
-                <span v-else-if="record.recommendStatus == '推荐顾问'">推荐人才</span>
-                <span v-else>{{ record.recommendStatus }}</span>
-              </template>
-              <template v-if="column.key === 'action'">
-                <a-button
-                  type="primary"
-                  :loading="isloading"
-                  class="resume_btn"
-                  size="small"
-                  @click="handleRecommendConfirmAppeal"
-                  v-if="record.action == 1"
-                >
-                  发起申诉
-                </a-button>
-              </template>
-            </template>
-          </a-table>
-        </a-col>
-        <a-col :span="24" style="margin-top: 10px">
-          <h4 class="resume_h4"> 申诉理由 </h4>
-        </a-col>
-        <a-radio-group
-          v-model:value="recommendConfirmReason"
-          @change="handleRecommendConfirmReason"
-        >
-          <a-col :span="24">
-            <a-radio :value="1">{{ recommendConfirmReasonObjDetails[1] }}</a-radio>
-          </a-col>
-          <a-col :span="24">
-            <a-radio :value="2">{{ recommendConfirmReasonObjDetails[2] }}</a-radio>
-          </a-col>
-          <a-col :span="24">
-            <a-radio :value="3">{{ recommendConfirmReasonObjDetails[3] }}</a-radio>
-          </a-col>
-          <a-col :span="24">
-            <a-radio :value="6">{{ recommendConfirmReasonObjDetails[6] }}</a-radio>
-          </a-col>
-          <a-col :span="24">
-            <a-radio :value="5">{{ recommendConfirmReasonObjDetails[5] }}</a-radio>
-          </a-col>
-        </a-radio-group>
-        <a-col v-if="recommendConfirmReasonFlag" :span="24">
-          <a-textarea
-            :rows="7"
-            v-model:value="recommendConfirmReasonOther"
-            placeholder="请仔细填写申诉理由"
-          ></a-textarea>
-        </a-col>
-        <a-col :span="24">
-          注意:
-          请仔细填写申诉理由，仅根据选择的申诉理由审核，若申诉理由不符或不匹配导致审核未通过，则此申诉将同步提醒原推荐顾问。
-        </a-col>
-        <a-col :span="24" style="padding-left: 39px">
-          若候选人表示没有同意其他顾问推荐，请在系统首页发起工单“人才推荐”申请查询确认，不可直接发起申诉。
-        </a-col>
-      </a-row>
-    </div>
-  </a-spin>
+                <template #bodyCell="{ column, record }">
+                  <template v-if="column.key === 'recommendStatus'">
+                    <span v-if="record.recommendStatus == 'HR拒绝'">HR简拒</span>
+                    <span v-else-if="record.recommendStatus == 'HR通过'">HR简过</span>
+                    <span
+                      v-else-if="record.recommendStatus == '被动离职'"
+                      title="保期未过-人才放弃"
+                      >{{ record.recommendStatus }}</span
+                    >
+                    <span
+                      v-else-if="record.recommendStatus == '企业放弃'"
+                      title="保期未过-人才放弃"
+                      >{{ record.recommendStatus }}</span
+                    >
+                    <span
+                      v-else-if="record.recommendStatus == '个人放弃'"
+                      title="未下OFFER-个人放弃"
+                      >未下OFFER</span
+                    >
+                    <span v-else-if="record.recommendStatus == '人才放弃'" title="放弃入职-人才放弃"
+                      >放弃入职</span
+                    >
+                    <span v-else-if="record.recommendStatus == '企业放弃'" title="放弃入职-企业放弃"
+                      >企业放弃</span
+                    >
+                    <span v-else-if="record.recommendStatus == '面过企弃'">企业放弃</span>
+                    <span
+                      v-else-if="record.recommendStatus == '已OFFER背调问题'"
+                      title="背调拒绝-已OFFER"
+                      >背调拒绝</span
+                    >
+                    <span v-else-if="record.recommendStatus == '背调问题'" title="背调拒绝-未OFFER"
+                      >背调拒绝</span
+                    >
+                    <span v-else-if="record.recommendStatus == '顾问通过'">企顾通过</span>
+                    <span v-else-if="record.recommendStatus == '推荐顾问'">推荐人才</span>
+                    <span v-else>{{ record.recommendStatus }}</span>
+                  </template>
+                  <template v-if="column.key === 'action'">
+                    <a-button
+                      type="primary"
+                      :loading="isloading"
+                      class="resume_btn"
+                      size="small"
+                      @click="handleRecommendConfirmAppeal"
+                      v-if="record.action == 1"
+                    >
+                      发起申诉
+                    </a-button>
+                  </template>
+                </template>
+              </a-table>
+            </a-col>
+            <a-col :span="24" style="margin-top: 10px">
+              <h4 class="resume_h4"> 申诉理由 </h4>
+            </a-col>
+            <a-radio-group
+              v-model:value="recommendConfirmReason"
+              @change="handleRecommendConfirmReason"
+            >
+              <a-col :span="24">
+                <a-radio :value="1">{{ recommendConfirmReasonObjDetails[1] }}</a-radio>
+              </a-col>
+              <a-col :span="24">
+                <a-radio :value="2">{{ recommendConfirmReasonObjDetails[2] }}</a-radio>
+              </a-col>
+              <a-col :span="24">
+                <a-radio :value="3">{{ recommendConfirmReasonObjDetails[3] }}</a-radio>
+              </a-col>
+              <a-col :span="24">
+                <a-radio :value="6">{{ recommendConfirmReasonObjDetails[6] }}</a-radio>
+              </a-col>
+              <a-col :span="24">
+                <a-radio :value="5">{{ recommendConfirmReasonObjDetails[5] }}</a-radio>
+              </a-col>
+            </a-radio-group>
+            <a-col v-if="recommendConfirmReasonFlag" :span="24">
+              <a-textarea
+                :rows="7"
+                v-model:value="recommendConfirmReasonOther"
+                placeholder="请仔细填写申诉理由"
+              ></a-textarea>
+            </a-col>
+            <a-col :span="24">
+              注意:
+              请仔细填写申诉理由，仅根据选择的申诉理由审核，若申诉理由不符或不匹配导致审核未通过，则此申诉将同步提醒原推荐顾问。
+            </a-col>
+            <a-col :span="24" style="padding-left: 39px">
+              若候选人表示没有同意其他顾问推荐，请在系统首页发起工单“人才推荐”申请查询确认，不可直接发起申诉。
+            </a-col>
+          </a-row>
+        </div>
+      </div>
+    </a-spin>
   </a-drawer>
 </template>
 <script setup lang="ts">
   import { storeToRefs } from 'pinia';
-  import { message, Upload} from 'ant-design-vue';
+  import { message, Upload } from 'ant-design-vue';
   import { CloseOutlined } from '@ant-design/icons-vue';
   import { formatToDateMinute } from '/@/utils/dateUtil';
   import type { UploadProps } from 'ant-design-vue';
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
-  const emit = defineEmits([ "doHandlePagination" ]);
+  const emit = defineEmits(['doHandlePagination']);
   const doHandlePagination = () => {
     emit('doHandlePagination');
-  }
-  
+  };
+
   const resumeDetailStore = useResumeDetailStore();
   const { recommendFlag, mappingId } = storeToRefs(resumeDetailStore);
   const props = defineProps({
@@ -232,17 +295,17 @@
     userName: {
       type: String,
       required: true,
-    }
+    },
   });
   const drawerWidth = ref(800);
   const isloading = ref(false);
   const isVideo = ref(false);
   const spinning = ref(true);
   const videoFile = ref<UploadProps['fileList']>([]);
-  const handleChangeFileUpload = file => {
-    let isSize = (((file.size / 1024 / 1024) - 10) < 0);
+  const handleChangeFileUpload = (file) => {
+    let isSize = file.size / 1024 / 1024 - 10 < 0;
     if (!isSize) {
-      message.error("上传截图不能超过10MB");
+      message.error('上传截图不能超过10MB');
       return Upload.LIST_IGNORE;
     } else {
       videoFile.value = [...(videoFile.value || []), file];
@@ -402,6 +465,8 @@
     },
   ]);
   const conflictId = ref('');
+  const conflictRemark = ref('');
+  const conflictRemarkShow = ref('');
   watch(
     () => props.recommendPerson,
     () => {
@@ -422,44 +487,58 @@
           if (res.info) {
             template.value = res.info.template == '0' ? '优态' : '我推';
             isVideoTemp.value = res.info.isVideo;
-            isVideo.value = res.info.isVideo == "1" ?  true : false;
+            isVideo.value = res.info.isVideo == '1' ? true : false;
 
             description.value = res.info.description;
           }
-          resumeDetailStore.checkCandidateRecommendRepeat({...props.recommendPerson,recommendId: mappingId.value}).then((data) => {
-            spinning.value =false;
-            if (data.code == 1) {
-              repeatFlag.value = 1;
-            } else if (data.code == 2) {
-              repeatFlag.value = 2;
-              conflictId.value = data.info.conflictId;
-              dataSourceRecommend.value = [{
-                city: data.info.city,
-                brand: data.info.brand,
-                position: data.info.position,
-                recommendCounselor: data.info.recommendCounselor,
-                recommendTime: formatToDateMinute(data.info.recommendTime),
-                counselor: data.info.counselor,
-                recommendStatus: data.info.recommendStatus,
-                endTime: (data.info.endTime ? formatToDateMinute(data.info.endTime) : ""),
-                action: '1',
-              }];
-              console.log(dataSourceRecommend.value);
-              
-            } else if (data.code == 3) {
-              message.error('您30天内有该候选人推荐过该候选人给同一HR，并且超时关闭，本次不能推荐');
-              handleColsePosition();
-            } else if (data.code == 15) {
-              message.error('新发布的职位,15分钟内不能推荐');
-              handleColsePosition();
-            } else if (data.code == 4) {
-              message.error('重启流程保护中，无法推荐');
-              handleColsePosition();
-            } else {
-              message.error(data.info);
-              handleColsePosition();
-            } 
-          });
+          resumeDetailStore
+            .checkCandidateRecommendRepeat({
+              ...props.recommendPerson,
+              recommendId: mappingId.value,
+            })
+            .then((data) => {
+              spinning.value = false;
+              if (data.code == 1) {
+                repeatFlag.value = 1;
+              } else if (data.code == 2) {
+                repeatFlag.value = 2;
+                conflictId.value = data.info.conflictId;
+                dataSourceRecommend.value = [
+                  {
+                    city: data.info.city,
+                    brand: data.info.brand,
+                    position: data.info.position,
+                    recommendCounselor: data.info.recommendCounselor,
+                    recommendTime: formatToDateMinute(data.info.recommendTime),
+                    counselor: data.info.counselor,
+                    recommendStatus: data.info.recommendStatus,
+                    endTime: data.info.endTime ? formatToDateMinute(data.info.endTime) : '',
+                    action: '1',
+                  },
+                ];
+                console.log(dataSourceRecommend.value);
+              } else if (data.code == 3) {
+                message.error(
+                  '您30天内有该候选人推荐过该候选人给同一HR，并且超时关闭，本次不能推荐',
+                );
+                handleColsePosition();
+              } else if (data.code == 15) {
+                message.error('新发布的职位,15分钟内不能推荐');
+                handleColsePosition();
+              } else if (data.code == 4) {
+                message.error('重启流程保护中，无法推荐');
+                handleColsePosition();
+              } else if (data.code == 22) {
+                repeatFlag.value = 22;
+                conflictRemarkShow.value = `此公司在职人员推荐受到限制，需上报直属Leader沟通评估，直属Leader同意后方可提交申诉，并注明：此次推荐本人可掌控投诉风险，且直属 Leader(${data.info})已做评估审核，同意此次推荐;`;
+                conflictRemark.value = `此公司在职人员推荐受到限制，需上报直属Leader沟通评估，直属Leader同意后方可提交申诉，<br/>
+            并注明：此次推荐本人可掌控投诉风险，且直属 Leader(${data.info})已做评估审核，同意此次推荐;`;
+                conflictId.value = '';
+              } else {
+                message.error(data.info);
+                handleColsePosition();
+              }
+            });
         }
       });
     },
@@ -481,7 +560,7 @@
     recommendConfirmReasonOther.value = '';
     recommendConfirmReasonFlag.value = false;
   };
- 
+
   const recommendConfirmReasonObjDetails = ref({
     '1': '1.若同一个HR负责单个品牌或多个品牌，或同一品牌多个HR负责，职位在不同的城市，a顾问推荐候选人至a城市a品牌a职位，则其他顾问可以推荐此候选人至其它城市任意品牌的任意职位；',
     '2': '2.若A公司若存在多个品牌，并且由不同的HR负责，则其他顾问可推荐此候选人至A公司其他HR负责的品牌任何职位；（若同品牌分为奥莱线和精品线，由不同的HR负责，也适用此条规则）；',
@@ -507,20 +586,44 @@
     }
     recommendConfirmReason.value = e.target.value;
   };
+  const leaderEvaluateFlag = ref(false);
+  const leaderEvaluate = ref('');
+  const optionsLeaderEvaluate = ref([
+    { label: '', value: '' },
+    {
+      label: '我已经与直属Leader沟通，且直属Leader评估后同意此次推荐',
+      value: '我已经与直属Leader沟通，且直属Leader评估后同意此次推荐',
+    },
+  ]);
+  const handleLeaderEvaluate = () => {
+    leaderEvaluateFlag.value = true;
+  };
+  const handleLeaderEvaluateFlag = () => {
+    message.warning('请先选择Leader评估');
+  };
   const handleRecommendConfirmAppeal = () => {
     // 申诉功能
     if (
-      !recommendConfirmReason.value ||
-      (recommendConfirmReason.value == '5' && !recommendConfirmReasonOther.value)
+      repeatFlag.value != 22 &&
+      (!recommendConfirmReason.value ||
+        (recommendConfirmReason.value == '5' && !recommendConfirmReasonOther.value))
     ) {
       // 提示请填写申诉理由
       message.warning('请填写申诉理由');
       return;
     }
-    const appealRemark =
-      recommendConfirmReason.value == '5'
-        ? recommendConfirmReasonOther.value
-        : recommendConfirmReasonObjDetailsTemp.value[recommendConfirmReason.value];
+    let appealRemark = '';
+    let appealType = '重复推荐';
+    if (repeatFlag.value != 22) {
+      appealRemark =
+        recommendConfirmReason.value == '5'
+          ? recommendConfirmReasonOther.value
+          : recommendConfirmReasonObjDetailsTemp.value[recommendConfirmReason.value];
+    } else {
+      appealRemark = conflictRemarkShow.value;
+      appealType = '客户限制';
+    }
+
     let formData = {
       id: props.recommendPerson.id,
       brand: props.recommendPerson.brand,
@@ -534,6 +637,7 @@
       recommendId: '',
       companyName: props.recommendPerson.companyName,
       conflictId: conflictId.value,
+      appealType: appealType,
       recruitId: props.recommendPerson.recruitId,
       appealRemark: appealRemark,
     };
@@ -545,6 +649,9 @@
         recommendConfirmReasonFlag.value = false;
         handleColsePosition();
         message.error('申诉成功等待审核');
+        leaderEvaluateFlag.value = false;
+      } else if (res.code == 2){
+        message.error('此候选人已在申诉中未审核');
       } else {
         message.error('申诉失败');
       }
@@ -553,7 +660,7 @@
   };
 
   const handleAddRecommend = () => {
-    console.log(videoFile.value[0])
+    console.log(videoFile.value[0]);
     if (isVideo.value && videoFile?.value.length == 0) {
       message.warning('请上传视频面试截图');
       return;
@@ -580,7 +687,7 @@
       recommendId: mappingId.value,
       companyName: props.recommendPerson.companyName,
       recruitId: props.recommendPerson.recruitId,
-      file: (isVideo.value ? videoFile.value[0]: ""),
+      file: isVideo.value ? videoFile.value[0] : '',
     };
     isloading.value = true;
     resumeDetailStore.addCandidateRecommend(formData).then((res) => {
@@ -612,11 +719,21 @@
         handleColsePosition();
         isloading.value = false;
       }
-     
     });
   };
 </script>
 <style lang="less" scoped>
+  .resume_row_div {
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    padding: 4px;
+    border-radius: 5px;
+  }
+  .resume_btn_evaluate {
+    color: #fff;
+    background-color: #ccc;
+    border-color: #ccc;
+  }
   .resume_btn {
     color: #fff;
     background-color: #f0ad4e;

@@ -22,6 +22,7 @@ interface ResumeDetailState {
   resumeShowFlag: boolean; //简历展示
   recommendCandidatePositionSearch: {}; //推荐职位查询条件
   resumeId: string; //简历的ID
+  copyed: string; //是否复制简历 1 复制过 2没复制过
   addConsultantId: string; //简历的添加顾问
   resumeTypeEnglish: string; //简历类型 1 英文 2或其他是中文
   addRecruitId: string; //简历的添加顾问id
@@ -57,6 +58,7 @@ export const useResumeDetailStore = defineStore({
     recommendFlag: false,
     recommendCandidatePositionSearch: {},
     resumeId: '',
+    copyed: '',
     addConsultantId: '',
     addRecruitId: '',
     commRecruitId: '',
@@ -76,6 +78,7 @@ export const useResumeDetailStore = defineStore({
      */
     setResumeDetail(info) {
       this.resumeDetail = info;
+      this.copyed = info.copyed;
       this.commRecruitId = info.resume.recruitId;
     },
     /**
@@ -482,6 +485,7 @@ export const useResumeDetailStore = defineStore({
       formData.append('recommendId', this.mappingId);
       formData.append('companyName', data.companyName);
       formData.append('conflictId', data.conflictId);
+      formData.append('appealType', data.appealType);
       formData.append('appealRemark', data.appealRemark);
       formData.append('recruitId', data.recruitId);
       formData.append('SystemRecruitId', loginVueUser.loginId);

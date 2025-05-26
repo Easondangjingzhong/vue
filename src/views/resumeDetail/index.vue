@@ -162,7 +162,7 @@
           !item.companyName ||
           (item.category == '店铺' &&
             (!item.marketName ||
-              !item.workFloor ||
+              (item.isRetreat == 0 && !item.workFloor) ||
               !(item.isRetreat == 0 || item.isRetreat == 1))) ||
           !(item.isNewtest == 0 || item.isNewtest == 1) ||
           !item.positionName ||

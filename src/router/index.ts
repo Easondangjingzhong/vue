@@ -18,7 +18,7 @@ router.beforeEach((to, from, next) => {
   }
   next()
 })
-function getQueryVariable(variable)
+function getQueryVariable(variable) 
 {
     var query = window.location.search.substring(1);
     var vars = query.split("&");
@@ -81,4 +81,14 @@ export const handleToAddResumeDetails = () => {
   window.open(href.href, '_blank')
   // 跳转到简历详情页
   //window.open(`http://work.wotui.com:8889/WTSM/system/consultant-query-resume.html?resumeId=${resumeId}&resumeType=C&addConsultantId=${addConsultantId}`);
+}
+
+export const handleToMappingList = () => {
+  const loginVueUser: {loginName: "", loginId: "", loginTocken: "",loginType: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
+  let query = {...loginVueUser};
+  const href = router.resolve({
+    path: '/mapping/list',
+    query: query,
+  });
+  window.open(href.href, '_blank')
 }

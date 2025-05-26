@@ -93,6 +93,7 @@
       <a-row>
         <a-col :span="24">
           <a-form-item
+            class="languageAbility0"
             name="languageAbility0"
             :label="themeLanguage?.English?.label"
             :label-col="{ span: 1 }"
@@ -143,6 +144,8 @@
               更多
             </a>
           </a-form-item>
+          <span style="font-size: 10px;display: inline-block;color: red;padding-left: 32px;">听说流利: 要求候选人能在对话、交流、面试等场景中，自信、清晰地表达观点，准确理解他人，展现自然流畅的语言能力，如不达标禁止选择。</span>
+          <span style="font-size: 10px;display: inline-block;color: red;padding-left: 32px;">读写流利: 要求候选人能精准理解并创作各类文本，熟练运用语言进行翻译或原创写作，如不达标禁止选择。</span>
         </a-col>
       </a-row>
       <a-row v-if="expand">
@@ -940,5 +943,8 @@ const onFinish = () => {
   }
   .resume_span{
     padding-left: 15px;
+  }
+  :deep(.languageAbility0) {
+    margin-bottom: 0;
   }
 </style>

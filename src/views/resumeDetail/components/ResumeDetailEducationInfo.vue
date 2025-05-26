@@ -35,8 +35,8 @@
         {{ resumeData.schoolName }}
       </a-col>
       <a-col :span="4">
-        {{ resumeData.startYear }}.{{ resumeData.startMonth }} - {{ resumeData.endYear }}.{{
-          resumeData.endMonth
+        {{ resumeData.startYear }}.{{ formatDateToMonth(resumeData.startMonth) }} - {{ resumeData.endYear }}.{{
+          formatDateToMonth(resumeData.endMonth)
         }}
       </a-col>
       <a-col :span="4">
@@ -209,7 +209,7 @@
   import { FormOutlined,PlusOutlined,DeleteOutlined } from '@ant-design/icons-vue';
   import { degreeArr,degreeEnArr } from '/@/store/data/resume';
   import { message } from 'ant-design-vue';
-  import { dateUtil } from '/@/utils/dateUtil';
+  import { dateUtil,formatDateToMonth } from '/@/utils/dateUtil';
   import { shcoolType985, shcoolType211 } from '/@/utils/schoolType';
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   import { validateLanguage } from '/@/utils/resumeTypeEn';

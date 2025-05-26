@@ -86,7 +86,6 @@
         <a-tag
           color="orange"
           class="resume_tag_checked_top"
-          title="外包保护期中"
           v-if="resumeData.resumeStatus == '外包保护期中'"
           :title="entryTime"
           >保证期</a-tag
@@ -131,15 +130,15 @@
     <a-row :gutter="24" class="resume_row">
       <a-col :span="16">
         标签:
-        <a-tag class="tagspan" color="#a2c9fd" v-if="industryLabelDetail">
+        <a-tag class="tagspan" color="orange" v-if="industryLabelDetail">
           {{industryLabelDetail}}
         </a-tag>
-        <a-tag class="tagspan" color="#a2c9fd" v-if="positionsLabelDetail">
+        <a-tag class="tagspan" color="orange" v-if="positionsLabelDetail">
           {{positionsLabelDetail}}
         </a-tag>
         <!-- <a-tag class="tagspan" color="#a2c9fd" v-if="language">{{ language }}</a-tag> -->
-        <a-tag class="tagspan" color="#a2c9fd" v-if="personLabel">{{ personLabel }}</a-tag>
-        <a-tag class="tagspan" color="#a2c9fd" v-if="manageLabel">{{ manageLabel }}</a-tag>
+        <a-tag class="tagspan" color="orange" v-if="personLabel">{{ personLabel }}</a-tag>
+        <a-tag class="tagspan" color="orange" v-if="manageLabel">{{ manageLabel }}</a-tag>
         <PlusSquareFilled v-if="!tagFlag && showResumeAdd" @click="handleShowAddTag"/>
         <span v-if="tagFlag">
         <a-input v-if="!tagType" size="small" style="width: 80px;margin-right: 5px;" v-model:value="tagValue"/>
@@ -170,7 +169,7 @@
           @click="handleAddCheckedTwoYear"
           >激活</a-button>
        <a-button
-          v-if="showResumeCopy"
+          v-if="showResumeCopy && copyed != '1'"
           style="margin-left: 4px;"
            size="middle"
           @click="handleOpenResumeCopy"
@@ -265,7 +264,7 @@
   import RecommendCandidatePosition from './RecommendCandidatePosition.vue';
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   const resumeDetailStore = useResumeDetailStore();
-  const { resumeDetail,resumeId,personWholeFlag,workWholeFlag,educationWholeFlag,languageWholeFlag,selfWholeFlag } =storeToRefs(resumeDetailStore);
+  const { resumeDetail,resumeId,personWholeFlag,workWholeFlag,educationWholeFlag,languageWholeFlag,selfWholeFlag,copyed } =storeToRefs(resumeDetailStore);
   const props = defineProps({
     resumeData: {
       type: Object,
