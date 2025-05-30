@@ -129,6 +129,5 @@ const columnsMappingRseult = [
       ellipsis: true,
     },
  ];
-  
 </script>
 <style lang="less" scoped></style>

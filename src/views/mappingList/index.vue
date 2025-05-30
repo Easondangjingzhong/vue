@@ -6,9 +6,9 @@
     </a-form>
     <div class="resume-content">
       <a-row style="margin-bottom: 4px; justify-content: flex-end;">
-        <a-button style="background-color: #eee;margin-left: 4px;" size="small">推荐申诉</a-button>
-        <a-button style="background-color: #eee;margin-left: 4px;" size="small">LVMH</a-button>
-        <a-button style="background-color: #eee;margin-left: 4px;" size="small">M审核</a-button>
+        <a-button style="background-color: #eee;margin-left: 4px;" @click="handleOpenMappingAppeal" size="small">推荐申诉</a-button>
+        <a-button style="background-color: #eee;margin-left: 4px;" @click="handleOpenMappingLvmh" size="small">LVMH</a-button>
+        <a-button style="background-color: #eee;margin-left: 4px;" @click="handleOpenMappingChecked" size="small">M审核</a-button>
       </a-row>
        <MappingListContent/>
     <a-row style="justify-content: end; margin-top: 10px">
@@ -32,16 +32,22 @@
         </a-row>
     </div>
   </div>
+  <MappingAppeal v-if="mappingAppealFlag"/>
+  <MappingLvmh v-if="mappingLvmhFlag"/>
+  <MappingChecked v-if="mappingCheckedFlag"/>
 </template>
 <script setup lang="ts">
 import MenuTop from '/@/views/MenuTop/index.vue';
 import { storeToRefs } from 'pinia';
+import MappingAppeal from './components/MappingAppeal.vue';
+import MappingLvmh from './components/MappingLvmh.vue';
+import MappingChecked from './components/MappingChecked.vue';
 import MappingListSearch from './components/MappingListSearch.vue';
 import MappingListContent from './components/MappingListContent.vue';
 import { SearchMappingCandidate } from '/@/api/mappingList/model';
 import {useMappingListStoreWithOut} from '/@/store/modules/mappingList';
 const mappingListStore = useMappingListStoreWithOut();
-const { pagination } = storeToRefs(mappingListStore);
+const { pagination, mappingAppealFlag, mappingLvmhFlag, mappingCheckedFlag } = storeToRefs(mappingListStore);
 const formState = ref<SearchMappingCandidate>({} as SearchMappingCandidate);
 const onFinish = () => {
     mappingListStore.queryMappingCandidate(formState.value);
@@ -51,6 +57,16 @@ const handleMappingListData = (current) => {
     onFinish();
 }
 onFinish();
+const handleOpenMappingAppeal = () => {
+  mappingListStore.handleMappingAppealFlag(); 
+}
+const handleOpenMappingLvmh = () => {
+  mappingListStore.handleMappingLvmhFlag(); 
+}
+const handleOpenMappingChecked = () => {
+  mappingListStore.handleMappingCheckedFlag(); 
+}
+
 </script>
 <style lang="less" scoped>
   .resume_container {
