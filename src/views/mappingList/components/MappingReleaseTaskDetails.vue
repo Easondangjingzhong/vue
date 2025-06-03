@@ -57,16 +57,11 @@ import { Modal } from 'ant-design-vue';
 import { message } from 'ant-design-vue';
 import {useMappingListStoreWithOut} from '/@/store/modules/mappingList';
 const mappingListStore = useMappingListStoreWithOut();
-const {mappingReleaseTaskDetailsFlag,currentYearMonthWeek,releaseTaskList,tableReleaseTaskLoading,searchMappingCandidate} = storeToRefs(mappingListStore);
+const {mappingReleaseTaskDetailsFlag,currentYearMonthWeek,releaseTaskList,tableReleaseTaskLoading,searchMappingCandidate,mappingTaskId} = storeToRefs(mappingListStore);
 const props = defineProps({
   releaseTaskRecord: {
     type: Object,
     default: () => ({}),
-    required: false,
-  },
-  mappingTaskId: {
-    type: String,
-    default: '',
     required: false,
   }
 })
@@ -76,15 +71,18 @@ const handleCloseReleaseTask = () => {
   mappingListStore.handleRecommendReleaseTaskDetailsFlag();
 }
 const queryRecommendReleaseTaskDetails = () => {
-  releaseTaskTitle.value = `本周任务 - ${props.releaseTaskRecord?.userName}`;
-  mappingListStore.queryCurrentDate(currentDate());
+  if (mappingTaskId.value) {
+      releaseTaskTitle.value = "本周任务";
+      mappingListStore.queryRecommendReleaseTaskDetailsById(mappingTaskId.value);
+  } else {
+      releaseTaskTitle.value = `本周任务 - ${props.releaseTaskRecord?.userName}`;
+      mappingListStore.queryCurrentDate(currentDate());
+  }
+ 
 }
 queryRecommendReleaseTaskDetails();
 watch(currentYearMonthWeek,()=>{
-  if (props.mappingTaskId) {
-    mappingListStore.queryRecommendReleaseTaskDetailsById(mappingTaskId);
-  } else {
-    const params = {
+ const params = {
     pageNumber: 1,
     year: currentYearMonthWeek.value?.year,
     month: currentYearMonthWeek.value?.month,
@@ -92,8 +90,6 @@ watch(currentYearMonthWeek,()=>{
     recruitId: props.releaseTaskRecord?.recruitId,
   }
   mappingListStore.queryRecommendReleaseTaskDetails(params);
-  }
-  
 });
 const mappingReleaseTaskDetailsFlagShow = computed(()=>{
   return mappingReleaseTaskDetailsFlag.value;

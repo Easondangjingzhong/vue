@@ -35,6 +35,7 @@
   <MappingAppeal v-if="mappingAppealFlag"/>
   <MappingLvmh v-if="mappingLvmhFlag"/>
   <MappingChecked v-if="mappingCheckedFlag"/>
+  <MappingCandidate v-if="mappingCandidateFlag"/>
 </template>
 <script setup lang="ts">
 import MenuTop from '/@/views/MenuTop/index.vue';
@@ -44,10 +45,11 @@ import MappingLvmh from './components/MappingLvmh.vue';
 import MappingChecked from './components/MappingChecked.vue';
 import MappingListSearch from './components/MappingListSearch.vue';
 import MappingListContent from './components/MappingListContent.vue';
+import MappingCandidate from './components/MappingCandidate.vue';
 import { SearchMappingCandidate } from '/@/api/mappingList/model';
 import {useMappingListStoreWithOut} from '/@/store/modules/mappingList';
 const mappingListStore = useMappingListStoreWithOut();
-const { pagination, mappingAppealFlag, mappingLvmhFlag, mappingCheckedFlag } = storeToRefs(mappingListStore);
+const { pagination, mappingAppealFlag, mappingLvmhFlag, mappingCheckedFlag,mappingCandidateFlag } = storeToRefs(mappingListStore);
 const formState = ref<SearchMappingCandidate>({} as SearchMappingCandidate);
 const onFinish = () => {
     mappingListStore.queryMappingCandidate(formState.value);

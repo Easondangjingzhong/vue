@@ -84,19 +84,24 @@
       <a-col :span="spanCol">
         <a-button style="margin: 0 0 0 8px" type="primary" html-type="submit">搜索</a-button>
           <a-button style="margin: 0 8px">清空</a-button>
-          <a-button style="margin: 0 8px 0 0">新增</a-button>
+          <a-button style="margin: 0 8px 0 0" @click="handleAddNewCandidate">新增</a-button>
       </a-col>
     </a-row>
   </div>
 </template>
 <script setup lang="ts">
 import { SearchMappingCandidate } from '/@/api/mappingList/model';
+import {useMappingListStoreWithOut} from '/@/store/modules/mappingList';
+const mappingListStore = useMappingListStoreWithOut();
 defineProps<{ formState: SearchMappingCandidate }>();
 let spanCol = 4;
 const optionsCity = ref([
     { label: '北京', value: '北京' },]);
 const handleOptionsCity = (value: string) => {
     
+}
+const handleAddNewCandidate = () => {
+    mappingListStore.handleMappingCandidateFlag();
 }
 </script>
 <style lang="less" scoped>

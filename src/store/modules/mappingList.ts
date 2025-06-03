@@ -40,6 +40,8 @@ interface MappingListState {
   releaseTaskList: []; //发布任务列表
   tableReleaseTaskLoading: Boolean; //发布任务列表状态
   searchMappingCandidate: {}; //查询
+  mappingTaskId: string; //任务id
+  mappingCandidateFlag: Boolean; //新增M状态
 }
 const loginVueUser: {loginName: "", loginId: "", loginTocken: "",loginType: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
 export const useMappingListStore = defineStore({
@@ -87,6 +89,8 @@ export const useMappingListStore = defineStore({
     mappingReleaseTaskDetailsFlag: false, //发布任务详情
     releaseTaskList: [], //发布任务列表
     tableReleaseTaskLoading: false, //发布任务列表状态
+    mappingTaskId: '', //任务id
+    mappingCandidateFlag: false, //新增M状态
   }),
   actions: {
     setInfo(info: []) {
@@ -517,7 +521,8 @@ export const useMappingListStore = defineStore({
      /**
       * @description: 发布任务详情
       */
-     handleRecommendReleaseTaskDetailsFlag() {
+     handleRecommendReleaseTaskDetailsFlag(mappingTaskId = '') {
+      this.mappingTaskId = mappingTaskId;
        this.mappingReleaseTaskDetailsFlag =!this.mappingReleaseTaskDetailsFlag;
      },
      /**
@@ -577,7 +582,7 @@ export const useMappingListStore = defineStore({
        if (res) {
         // save token
         this.tableReleaseTaskLoading = false;
-        this.releaseTaskList = res.info.list.map((item,index) => {
+        this.releaseTaskList = res.info?.map((item,index) => {
           return {
           ...item,
             key: item.id,
@@ -622,12 +627,37 @@ export const useMappingListStore = defineStore({
         return res; 
        }
      },
+     /**
+      * mapping提交审核
+      * @param data 
+      * @returns 
+      */
      async saveCandidateApplyCheck(data) {
        let dataForm = new FormData();
        dataForm.append('id', data.id);
        dataForm.append('taskId', data.taskId);
        dataForm.append('SystemRecruitId', loginVueUser.loginId);
        const res = await fetchApi.saveCandidateApplyCheck(dataForm);
+       if (res) {
+        return res; 
+       }
+     },
+     /**
+      * @description: M新增页面打开展示
+      */
+     async handleMappingCandidateFlag() {
+       this.mappingCandidateFlag =!this.mappingCandidateFlag;
+     },
+     /**
+      * 校验数据库中是否存在maping匹配信息
+      * @param data 
+      * @returns 
+      */
+     async queryMappingCandidateByPhone(data) {
+        let dataForm = new FormData();
+       dataForm.append('phone', data.phone);
+       dataForm.append('SystemRecruitId', loginVueUser.loginId);
+       const res = await fetchApi.queryMappingCandidateByPhone(dataForm);
        if (res) {
         return res; 
        }

@@ -125,7 +125,7 @@
         <a v-if="record.tongHua != '1'" style="cursor: not-allowed;"><svg style="vertical-align: bottom;" t="1741692859456" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4909" width="16" height="16"><path d="M512 1024a512 512 0 1 1 512-512 512 512 0 0 1-512 512z m0-992a480 480 0 1 0 480 480A480 480 0 0 0 512 32z m16 623.2V736h48a16 16 0 0 1 0 32h-128a16 16 0 0 1 0-32h48v-80.8A160 160 0 0 1 352 496a16 16 0 0 1 32 0 128 128 0 0 0 256 0 16 16 0 0 1 32 0 160 160 0 0 1-144 159.2zM512 592a96 96 0 0 1-96-96v-144a96 96 0 0 1 192 0v144a96 96 0 0 1-96 96z m64-240a64 64 0 0 0-128 0v144a64 64 0 0 0 128 0v-144z" fill="#8a8a8a" p-id="4910"></path></svg></a>
       </template>
     <template v-if="column.key === 'mappingTaskId'">
-        <a-tag v-if="record.mappingTaskId" color="default" @click="handleRecommendReleaseTaskDetails(record)">查看</a-tag>
+        <a-tag v-if="record.mappingTaskId" color="default" style="cursor: pointer;" @click="handleRecommendReleaseTaskDetailsChecked(record)">查看</a-tag>
     </template>
     <template v-if="column.key === 'action'">
           <a-dropdown>
@@ -197,16 +197,17 @@
             </a-col>
           </a-row>
   </a-modal>
-  <MappingReleaseTaskDetails :mappingTaskId="mappingTaskId" ref="mappingReleaseTaskDetails" v-if="mappingReleaseTaskDetailsFlag"/>
+  <!-- <MappingReleaseTaskDetails :mappingTaskIdTemp="mappingTaskId" :releaseTaskRecord="{}" ref="mappingReleaseTaskDetails" v-if="mappingReleaseTaskDetailsFlag"/> -->
 </template>
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { currentDate } from '/@/utils/dateUtil';
 import { message } from 'ant-design-vue';
+//import MappingReleaseTaskDetails from './MappingReleaseTaskDetails.vue';
 import { CloseOutlined, MenuUnfoldOutlined } from '@ant-design/icons-vue';
 import {useMappingListStoreWithOut} from '/@/store/modules/mappingList';
 const mappingListStore = useMappingListStoreWithOut();
-const {mappingReleaseTaskDetailsFlag,mappingCheckedList, tableCheckedLoading, mappingCheckedFlag, mappingCheckedPagination, weekNumArr, currentYearMonthWeek, teamArr, counselorArr} = storeToRefs(mappingListStore);
+const {mappingCheckedList, tableCheckedLoading, mappingCheckedFlag, mappingCheckedPagination, weekNumArr, currentYearMonthWeek, teamArr, counselorArr} = storeToRefs(mappingListStore);
 const drawerWidth = ref(1250);
 let spanCol = 4;
 const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: '' } = JSON.parse(
@@ -497,10 +498,8 @@ const saveCheckViolation = () => {
     })
   }
 }
-const mappingTaskId = ref('');
-const handleRecommendReleaseTaskDetails = (record) => {
-  mappingTaskId.value = record.mappingTaskId;
-  mappingListStore.handleRecommendReleaseTaskDetailsFlag();
+const handleRecommendReleaseTaskDetailsChecked = (record) => {
+  mappingListStore.handleRecommendReleaseTaskDetailsFlag(record.mappingTaskId);
  }
 </script>
 <style lang="less" scoped>

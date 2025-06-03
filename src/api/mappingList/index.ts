@@ -15,6 +15,7 @@ enum URL {
   mapping_release_task_by_id = '/employee-group/resume-vue-query-task-position-recruit-byId.action',
   mapping_release_task_cancle = '/candidate/resume-vue-canel-mapping-task-check.action',
   mapping_release_task_add = '/candidate/resume-vue-apply-mapping-task-check.action',
+  mapping_candidate_by_phone = '/candidate/resume-vue-checkMappingByPhone.action',
 }
 const queryMappingCandidate = async (data: any) =>
   post<any>({ url: URL.query_mapping_candidate, data});
@@ -44,4 +45,6 @@ const saveCandidateApplyCheck = async (data: any) =>
   post<any>({ url: URL.mapping_release_task_add, data});
 const queryRecommendReleaseTaskDetailsById = async (data: any) =>
   post<any>({ url: URL.mapping_release_task_by_id, data});
-export default { queryRecommendReleaseTaskDetailsById,saveCandidateApplyCheck,queryMappingCandidate,queryMappingAppealList,queryMappingLvmhList,queryMappingCheckedList,queryCurrentWeekNum,queryCurrentDate,queryTeam,queryCounselor,saveCheckViolationStudent,saveCheckViolation,queryRecommendReleaseTaskDetails,cancleCandidateApplyCheck };
+const queryMappingCandidateByPhone = async (data: any) =>
+  post<any>({ url: URL.mapping_candidate_by_phone, data});
+export default { queryMappingCandidateByPhone,queryRecommendReleaseTaskDetailsById,saveCandidateApplyCheck,queryMappingCandidate,queryMappingAppealList,queryMappingLvmhList,queryMappingCheckedList,queryCurrentWeekNum,queryCurrentDate,queryTeam,queryCounselor,saveCheckViolationStudent,saveCheckViolation,queryRecommendReleaseTaskDetails,cancleCandidateApplyCheck };
