@@ -121,11 +121,11 @@
         <a-tag v-if="record.mappingCheckFlag == '4'" color="red" :title="record.mapinngCheckRemark">拒绝</a-tag>
         <a-tag v-if="record.mappingCheckFlag == '5'" color="red">超时</a-tag>
         <a-tag v-if="record.mappingCheckFlag == '6'" color="red" :title="record.mapinngCheckRemark">强制关闭</a-tag>
-        <a-tag v-if="record.tongHua == '1'" color="red" :title="record.mapinngCheckRemark">超时</a-tag>
-        <a-tag v-else color="red" :title="record.mapinngCheckRemark">超时</a-tag>
-    </template>
+        <a v-if="record.tongHua == '1'"><svg style="vertical-align: bottom;" t="1741692859456" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4909" width="16" height="16"><path d="M512 1024a512 512 0 1 1 512-512 512 512 0 0 1-512 512z m0-992a480 480 0 1 0 480 480A480 480 0 0 0 512 32z m16 623.2V736h48a16 16 0 0 1 0 32h-128a16 16 0 0 1 0-32h48v-80.8A160 160 0 0 1 352 496a16 16 0 0 1 32 0 128 128 0 0 0 256 0 16 16 0 0 1 32 0 160 160 0 0 1-144 159.2zM512 592a96 96 0 0 1-96-96v-144a96 96 0 0 1 192 0v144a96 96 0 0 1-96 96z m64-240a64 64 0 0 0-128 0v144a64 64 0 0 0 128 0v-144z" fill="#74d811" p-id="4910"></path></svg></a>
+        <a v-if="record.tongHua != '1'" style="cursor: not-allowed;"><svg style="vertical-align: bottom;" t="1741692859456" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4909" width="16" height="16"><path d="M512 1024a512 512 0 1 1 512-512 512 512 0 0 1-512 512z m0-992a480 480 0 1 0 480 480A480 480 0 0 0 512 32z m16 623.2V736h48a16 16 0 0 1 0 32h-128a16 16 0 0 1 0-32h48v-80.8A160 160 0 0 1 352 496a16 16 0 0 1 32 0 128 128 0 0 0 256 0 16 16 0 0 1 32 0 160 160 0 0 1-144 159.2zM512 592a96 96 0 0 1-96-96v-144a96 96 0 0 1 192 0v144a96 96 0 0 1-96 96z m64-240a64 64 0 0 0-128 0v144a64 64 0 0 0 128 0v-144z" fill="#8a8a8a" p-id="4910"></path></svg></a>
+      </template>
     <template v-if="column.key === 'mappingTaskId'">
-        <a-tag v-if="record.mappingTaskId" color="default">查看</a-tag>
+        <a-tag v-if="record.mappingTaskId" color="default" @click="handleRecommendReleaseTaskDetails(record)">查看</a-tag>
     </template>
     <template v-if="column.key === 'action'">
           <a-dropdown>
@@ -134,7 +134,7 @@
             </span>
             <template #overlay>
               <a-menu>
-                <a-menu-item  v-if="loginVueUser.loginId == record.recruitId && (loginVueUser.loginType =='A' || loginVueUser.loginType =='T' || loginVueUser.loginType =='V')">
+                <a-menu-item  v-if="loginVueUser.loginId != record.recruitId && (loginVueUser.loginType =='A' || loginVueUser.loginType =='T' || loginVueUser.loginType =='V')">
                   <a href="javascript:;" @click="checkViolation(record)">M审核</a>
                 </a-menu-item>
               </a-menu>
@@ -166,36 +166,38 @@
   </a-drawer>
   <a-modal :maskClosable="false" @cancel="handleCloseCheckedResult" v-model:open="openCheckedResult" style="width: 600px;" title="Mapping审核" :footer="null">
           <a-row :gutter="24">
-            <a-col :span="3">
+            <a-col :span="2" style="line-height: 2;">
               审核: 
             </a-col>
-            <a-col :span="21" style="padding: 0;">
+            <a-col :span="22" style="padding: 0;">
               <a-select
               class="resumeName"
               style="width: 90%;"
               v-model:value="checkedResult"
               :options="optionsCheckedResult"
+              @change="handleCheckedResult"
             ></a-select>
             </a-col>
           </a-row>
-          <a-row :gutter="24" v-if="checkRemarkFlag">
-            <a-col :span="3">
+          <a-row :gutter="24" v-if="checkRemarkFlag" style="margin-top: 10px;">
+            <a-col :span="2">
               原因: 
             </a-col>
-            <a-col :span="21" style="padding: 0;">
+            <a-col :span="22" style="padding: 0;">
               <a-textarea
               :rows="7"
-              style="white-space: pre-wrap"
+              style="width: 90%;white-space: pre-wrap"
               v-model:value="checkRemark"
             ></a-textarea>
             </a-col>
           </a-row>
           <a-row :gutter="24" style="margin-top: 10px;">
             <a-col :span="24" style="text-align: center;">
-              <a-button size="small" @click="saveCheckViolation" type="primary">下载</a-button>
+              <a-button size="small" @click="saveCheckViolation" type="primary">确定</a-button>
             </a-col>
           </a-row>
   </a-modal>
+  <MappingReleaseTaskDetails :mappingTaskId="mappingTaskId" ref="mappingReleaseTaskDetails" v-if="mappingReleaseTaskDetailsFlag"/>
 </template>
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
@@ -204,7 +206,7 @@ import { message } from 'ant-design-vue';
 import { CloseOutlined, MenuUnfoldOutlined } from '@ant-design/icons-vue';
 import {useMappingListStoreWithOut} from '/@/store/modules/mappingList';
 const mappingListStore = useMappingListStoreWithOut();
-const {mappingCheckedList, tableCheckedLoading, mappingCheckedFlag, mappingCheckedPagination, weekNumArr, currentYearMonthWeek, teamArr, counselorArr} = storeToRefs(mappingListStore);
+const {mappingReleaseTaskDetailsFlag,mappingCheckedList, tableCheckedLoading, mappingCheckedFlag, mappingCheckedPagination, weekNumArr, currentYearMonthWeek, teamArr, counselorArr} = storeToRefs(mappingListStore);
 const drawerWidth = ref(1250);
 let spanCol = 4;
 const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: '' } = JSON.parse(
@@ -279,7 +281,6 @@ watch(currentYearMonthWeek, (newValue) => {
     month: newValue.month,
     weekNum: newValue.weekNum,
   };
-  console.log(formState.value);
   onFinish();
 })
 interface SearchMappingChecked {
@@ -394,14 +395,14 @@ const columnsMappingChecked = [
       title: '审状',
       dataIndex: 'mappingCheckFlag',
       key: 'mappingCheckFlag',
-      width: 50,
+      width: 33,
       ellipsis: true,
     },
     {
       title: '操作',
       dataIndex: 'action',
       key: 'action',
-      width: 30,
+      width: 20,
       ellipsis: true,
     },
  ];
@@ -428,8 +429,16 @@ const optionsCheckedResult = ref([
 const checkViolation = (record) => {
   cheeckedRecord.value = record;
   openCheckedResult.value = true;
-  checkedResult.value = '';
-  checkRemark.value = ''; 
+  if (record.mappingCheckFlag == '1' || record.mappingCheckFlag == '4') {
+    checkedResult.value = record.mappingCheckFlag;
+  }
+  if (record.mappingCheckFlag == '4') {
+    checkRemarkFlag.value = true;
+    checkRemark.value = record.mapinngCheckRemark; 
+  } else {
+    checkRemarkFlag.value = false;
+    checkRemark.value = '';
+  }
 }
 const handleCloseCheckedResult = () => {
   openCheckedResult.value = false;
@@ -437,7 +446,23 @@ const handleCloseCheckedResult = () => {
   checkRemark.value = '';
   cheeckedRecord.value = {};
 }
+const handleCheckedResult = () => {
+  if (checkedResult.value == '4') {
+    checkRemarkFlag.value = true;
+  } else {
+    checkRemarkFlag.value = false;
+     checkRemark.value = '';
+  }
+}
 const saveCheckViolation = () => {
+  if (!checkedResult.value) {
+    message.warning('请选择审核状态');
+    return;
+  }
+  if (checkedResult.value == '4' && !checkRemark.value) {
+    message.warning('请输入审核原因');
+    return; 
+  }
   if(cheeckedRecord.value.teacherId) {
     const params = {
     id: cheeckedRecord.value.id,
@@ -472,6 +497,11 @@ const saveCheckViolation = () => {
     })
   }
 }
+const mappingTaskId = ref('');
+const handleRecommendReleaseTaskDetails = (record) => {
+  mappingTaskId.value = record.mappingTaskId;
+  mappingListStore.handleRecommendReleaseTaskDetailsFlag();
+ }
 </script>
 <style lang="less" scoped>
   .resume-content,

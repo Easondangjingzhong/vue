@@ -36,12 +36,17 @@ interface MappingListState {
   currentYearMonthWeek: {}; //当前年月周
   teamArr: []; //团队
   counselorArr: []; //顾问
+  mappingReleaseTaskDetailsFlag: Boolean; //发布任务详情
+  releaseTaskList: []; //发布任务列表
+  tableReleaseTaskLoading: Boolean; //发布任务列表状态
+  searchMappingCandidate: {}; //查询
 }
 const loginVueUser: {loginName: "", loginId: "", loginTocken: "",loginType: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
 export const useMappingListStore = defineStore({
   id: 'app-MappingList',
   state: (): MappingListState => ({
     // info
+    searchMappingCandidate: {},
     mappingCandidate: [],
     tableLoading: false,
     mappingList: [],
@@ -79,6 +84,9 @@ export const useMappingListStore = defineStore({
     currentYearMonthWeek: {} as currentDateItem, //当前年月周
     teamArr: [], //团队
     counselorArr: [], //顾问
+    mappingReleaseTaskDetailsFlag: false, //发布任务详情
+    releaseTaskList: [], //发布任务列表
+    tableReleaseTaskLoading: false, //发布任务列表状态
   }),
   actions: {
     setInfo(info: []) {
@@ -94,6 +102,7 @@ export const useMappingListStore = defineStore({
         pageNumber: this.pagination.current,
         pageSize: this.pagination.pageSize,
       }
+      this.searchMappingCandidate = data;
       //console.log(this.paramSearchMappingCandidateToformData(data));
       const res = await fetchApi.queryMappingCandidate(this.paramSearchMappingCandidateToformData(data));
       if (res) {
@@ -504,6 +513,124 @@ export const useMappingListStore = defineStore({
       if (res) {
         return res;
       }
+     },
+     /**
+      * @description: 发布任务详情
+      */
+     handleRecommendReleaseTaskDetailsFlag() {
+       this.mappingReleaseTaskDetailsFlag =!this.mappingReleaseTaskDetailsFlag;
+     },
+     /**
+      * @description: 查询任务详情
+      */
+     async queryRecommendReleaseTaskDetails(data) {
+       let dataForm = new FormData();
+      dataForm.append('SystemRecruitId', loginVueUser.loginId);
+      dataForm.append('pageNumber', data.pageNumber); 
+      dataForm.append('year', data.year); 
+      dataForm.append('month', data.month); 
+      dataForm.append('weekNum', data.weekNum); 
+      dataForm.append('recruitId', data.recruitId); 
+      this.tableReleaseTaskLoading = true;
+       const res = await fetchApi.queryRecommendReleaseTaskDetails(dataForm);
+       if (res) {
+        // save token
+        this.tableReleaseTaskLoading = false;
+        this.releaseTaskList = res.info.list.map((item,index) => {
+          return {
+          ...item,
+            key: item.id,
+            index: (index + 1),
+            realNameEn: (item.realNameEn || ""),
+            brand: (item.secret == '是' ? item.secretBrand : item.brand),
+            jobTitle: (item.jobTitle || ""),
+            city: (item.city || ""),
+            workPlace: (item.workPlace || ""),
+            counselor: (item.counselor || ""),
+            createTimePostion: (item.createTimePostion? formatToDateTime(item.createTimePostion) : ""),
+            updateTimePosition: (item.updateTimePosition? formatToDateTime(item.updateTimePosition) : formatToDateTime(item.createTimePostion)),
+            recruitingNum: (item.recruitingNum || "0"),
+            openResumesNum: (item.openResumesNum || "0"),
+            surplus: (item.surplus || "0"),
+            jobStatus: (item.jobStatus || ""),
+            taskNum: (item.createTime == item.updateTime ? item.taskNum : item.updateTaskNum),
+            createTime: (item.createTime == item.updateTime ? formatToDateTime(item.createTime) :  formatToDateTime(item.updateTime)),
+            mappingTarget: (item.createTime == item.updateTime ? item.mappingTarget : item.updateMappingTarget),
+            punishNum: (item.punishNum || "0"),
+            finishNum: (item.finishNum || "0"),
+            finishScore: (item.finishScore || "0"),
+            noTaskScore: (item.noTaskScore || "0"),
+            endMappingNum: (item.endMappingNum || "0"),
+            updateMappingRemark: (item.updateMappingRemark || ""),
+          }})
+        }
+     },
+      /**
+      * @description: 查询任务详情根据id
+      */
+     async queryRecommendReleaseTaskDetailsById(mappingTaskId) {
+       let dataForm = new FormData();
+      dataForm.append('SystemRecruitId', loginVueUser.loginId);
+      dataForm.append('id',mappingTaskId); 
+      this.tableReleaseTaskLoading = true;
+       const res = await fetchApi.queryRecommendReleaseTaskDetailsById(dataForm);
+       if (res) {
+        // save token
+        this.tableReleaseTaskLoading = false;
+        this.releaseTaskList = res.info.list.map((item,index) => {
+          return {
+          ...item,
+            key: item.id,
+            index: (index + 1),
+            realNameEn: (item.realNameEn || ""),
+            brand: (item.secret == '是' ? item.secretBrand : item.brand),
+            jobTitle: (item.jobTitle || ""),
+            city: (item.city || ""),
+            workPlace: (item.workPlace || ""),
+            counselor: (item.counselor || ""),
+            createTimePostion: (item.createTimePostion? formatToDateTime(item.createTimePostion) : ""),
+            updateTimePosition: (item.updateTimePosition? formatToDateTime(item.updateTimePosition) : formatToDateTime(item.createTimePostion)),
+            recruitingNum: (item.recruitingNum || "0"),
+            openResumesNum: (item.openResumesNum || "0"),
+            surplus: (item.surplus || "0"),
+            jobStatus: (item.jobStatus || ""),
+            taskNum: (item.createTime == item.updateTime ? item.taskNum : item.updateTaskNum),
+            createTime: (item.createTime == item.updateTime ? formatToDateTime(item.createTime) :  formatToDateTime(item.updateTime)),
+            mappingTarget: (item.createTime == item.updateTime ? item.mappingTarget : item.updateMappingTarget),
+            punishNum: (item.punishNum || "0"),
+            finishNum: (item.finishNum || "0"),
+            finishScore: (item.finishScore || "0"),
+            noTaskScore: (item.noTaskScore || "0"),
+            endMappingNum: (item.endMappingNum || "0"),
+            updateMappingRemark: (item.updateMappingRemark || ""),
+          }})
+        }
+     },
+     /**
+      * 取消关联
+      * @param id mapping的id
+      * @param taskId 任务的id
+      * @returns 
+      */
+     async cancleCandidateApplyCheck(id,taskId) {
+       let dataForm = new FormData();
+       dataForm.append('id', id);
+       dataForm.append('taskId', taskId);
+       dataForm.append('SystemRecruitId', loginVueUser.loginId);
+       const res = await fetchApi.cancleCandidateApplyCheck(dataForm);
+       if (res) {
+        return res; 
+       }
+     },
+     async saveCandidateApplyCheck(data) {
+       let dataForm = new FormData();
+       dataForm.append('id', data.id);
+       dataForm.append('taskId', data.taskId);
+       dataForm.append('SystemRecruitId', loginVueUser.loginId);
+       const res = await fetchApi.saveCandidateApplyCheck(dataForm);
+       if (res) {
+        return res; 
+       }
      },
   },
 });

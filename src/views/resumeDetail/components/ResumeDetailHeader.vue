@@ -411,7 +411,7 @@
   gradeLabel.value = currentArr[2];
   positionsLabel.value = currentArr[3];
   rankLabel.value = currentArr[4];
-  manageLabel.value = currentArr.length > 6 ? `${currentArr[6]}${currentArr[7]}` : "";
+  manageLabel.value = currentArr.length > 6 ? `${currentArr[6]}${currentArr[7] && currentArr[7] != undefined ? currentArr[7]: ""}` : "";
   language.value = resumeArr[5];
   const industryLabelDetail = ref("");
   if (industryLabel.value) {

@@ -13,15 +13,38 @@
         <a-tag v-if="record.jubStatus == '1'" color="green">在职</a-tag>
         <a-tag v-if="record.jubStatus == '2'" color="red">离职</a-tag>
     </template>
+      <template v-if="column.key === 'action'">
+        <span v-if="loginVueUser.loginType !='P'" :class="record.mappingTaskId ? 'resume_action':''" :title="record.mappingTaskId ? '已提交M任务审核':''">
+          <a-dropdown v-if="loginVueUser.loginType !='P'">
+            <span class="ant-dropdown-link" style="cursor: pointer;" @click.prevent>
+              <MenuUnfoldOutlined style="font-size: 15px;"/>
+            </span>
+            <template #overlay>
+              <a-menu>
+                <a-menu-item>
+                  <a href="javascript:;" @click="handleRecommendReleaseTaskDetails(record)">M提交</a>
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+          </span>
+        </template>
    </template>
   </a-table>
   </div>
+  <MappingReleaseTaskDetails :releaseTaskRecord="releaseTaskRecord" ref="mappingReleaseTaskDetails" v-if="mappingReleaseTaskDetailsFlag"/>
 </template>
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
+import { MenuUnfoldOutlined } from '@ant-design/icons-vue';
+import MappingReleaseTaskDetails from './MappingReleaseTaskDetails.vue';
 import {useMappingListStoreWithOut} from '/@/store/modules/mappingList';
 const mappingListStore = useMappingListStoreWithOut();
-const {mappingList, tableLoading} = storeToRefs(mappingListStore);
+const {mappingList, tableLoading, mappingReleaseTaskDetailsFlag} = storeToRefs(mappingListStore);
+const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: '' } = JSON.parse(
+  localStorage.getItem('loginVueUser'),
+);
+const releaseTaskRecord = ref({});
 const columnsMappingRseult = [
   {
       title: '编号',
@@ -129,5 +152,15 @@ const columnsMappingRseult = [
       ellipsis: true,
     },
  ];
+ const handleRecommendReleaseTaskDetails = (record) => {
+  releaseTaskRecord.value = record;
+  mappingListStore.handleRecommendReleaseTaskDetailsFlag();
+ }
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+  .resume_action {
+    background: linear-gradient(225deg, #5eb95e 15%, transparent 0); 
+    padding-right: 5px;
+    display: inline-block;
+  }
+</style>
