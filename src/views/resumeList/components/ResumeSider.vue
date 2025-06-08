@@ -79,10 +79,15 @@
   const resumeList = useResumeListStoreWithOut();
   resumeList.fetchInfo();
   const { resumeMenu,teamPersonChangeArr,sortResumeUpdateData,sortResumeUpdate,formState } = storeToRefs(resumeList);
+  const loginVueUser: {loginName: "", loginId: "", loginTocken: "",loginType: "",loginOutFlag: ''} = JSON.parse(localStorage.getItem("loginVueUser"));
   const state = reactive({
     selectedKeys: ['2'],
     openKeys: ['01','51','6','7'],
   });
+  if (loginVueUser.loginOutFlag == '1') {
+    state.selectedKeys = ['5'];
+    state.openKeys = ['01','51'];
+  }
   let items = ref([{}]);
   const optionsLoginNameTeam = ref<SelectProps['options']>([]);
   const handleResumeLoginNameClick = (e) => {

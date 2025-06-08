@@ -62,8 +62,8 @@
     </a-row> -->
         <div v-if="expendShow">
           <ResumeLeftHeader v-if="showResumeRightHeader" :showResumeAdd="showResumeAdd" />
-          <ResumeLeftCheckDuplicate v-if="showResumeRightHeader" :showResumeAdd="showResumeAdd" />
-          <ResumeLeftPositions v-if="showResumePositionsAndRecommendRecord" />
+          <ResumeLeftCheckDuplicate v-if="showResumeRightHeader && showResumeRightOutFlag" :showResumeAdd="showResumeAdd" />
+          <ResumeLeftPositions v-if="showResumePositionsAndRecommendRecord && showResumeRightOutFlag" />
           <ResumeLeftContactContent v-if="showResumeRightContact" :showResumeAdd="showResumeAdd" />
           <ResumeLeftRecommendRecord v-if="showResumePositionsAndRecommendRecord" />
         </div>
@@ -101,6 +101,7 @@
   const showResumeRightHeader = ref(true); //控制简历右边简历详情和客户查重是否展示
   const showResumeRightContact = ref(true); //控制简历右边联络记录是否展示
   const showResumePositionsAndRecommendRecord = ref(true); //控制简历右边职位意向及推荐记录是否展示
+   const showResumeRightOutFlag= ref(false); //控制简历右边简历详情和客户查重是否展示
   //const loginVueUser: {loginName: "", loginId: "", loginTocken: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
   // 如果简历的创建人不是当前登录人，则显示复制简历按钮
   // 注意：此处需要和后端协商好，获取简历创建人id的api
@@ -108,7 +109,9 @@
   // 假设 resumeDetail.recruitId 和 loginVueUser.loginId 相等时，表示是创建人，可以显示复制简历按钮
   // 假设 resumeDetail.recruitId 和 loginVueUser.loginId 不等时，表示不是创建人，不可以显示复制简历按钮
   // 以下代码是假设简历创建人id是 resumeDetail.recruitId，loginVueUser.loginId是假设的登录人id
-
+const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginOutFlag: '' } = JSON.parse(
+  localStorage.getItem('loginVueUser'),
+);
   watch(resumeDetail, () => {
     //@ts-ignore
     resumeDetailTemp.value = { ...resumeDetail.value };
@@ -209,6 +212,9 @@
       resumeDetailStore.$patch({
         educationWholeFlag: wtemp,
       });
+    }
+    if (loginVueUser.loginOutFlag != '1') {
+      showResumeRightOutFlag.value = true; 
     }
   });
   cityStore.fetchCountryInfo();

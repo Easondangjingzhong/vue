@@ -29,7 +29,12 @@
   import { useResumeListStoreWithOut } from '/@/store/modules/resumeList';
   const resumeList = useResumeListStoreWithOut();
   const { searchResumeType } = storeToRefs(resumeList);
-  
+  // const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginOutFlag: '' } = JSON.parse(
+  // localStorage.getItem('loginVueUser'),
+  // );
+  // if (loginVueUser && loginVueUser.loginOutFlag == '1') {
+  //   resumeList.handleSearchResumeType('1');
+  // }
 </script>
 <style lang="less" scoped>
   .resume_container {

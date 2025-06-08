@@ -444,7 +444,7 @@
   };
   const formRef = ref<FormInstance>();
   //@ts-ignore
-  resumeListStore.queryResumeList(formState.value);
+  //resumeListStore.queryResumeList(formState.value);
   const searchContentChild = ref(null);
   const dateRange = ref([]);
   const selectedRecruitIdValue = ref([]);

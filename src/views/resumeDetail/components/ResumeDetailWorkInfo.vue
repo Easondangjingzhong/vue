@@ -359,7 +359,7 @@
             ></a-select>
           </a-form-item>
         </a-col>
-        <a-col :span="spanTitle" v-if="!categoryFlag && indexNum > 0">
+        <a-col :span="spanTitle" v-if="!categoryFlag">
           <a-form-item
             :label="themeLanguage?.workRetail?.label"
             name="retail"
@@ -799,7 +799,7 @@
     },
   );
   const themeLanguage = ref(validateLanguage('workInfo', resumeTypeEnglish.value));
-  const loginVueUser: { loginName: ''; loginId: ''; loginTocken: '' } = JSON.parse(
+  const loginVueUser: { loginName: ''; loginId: ''; loginTocken: '';loginOutFlag: '' } = JSON.parse(
     localStorage.getItem('loginVueUser'),
   );
   const formState = reactive({
@@ -1288,6 +1288,14 @@
       return;
     }
     optionsWorkFloor.value = [{ value: '', label: '' }];
+    if (loginVueUser.loginOutFlag == '1') {
+       if (resumeTypeEnglish.value == '1') {
+              optionsWorkFloor.value = workFloorEnArr.map((item) => ({ value: item, label: item }));
+            } else {
+              optionsWorkFloor.value = workFloorArr.map((item) => ({ value: item, label: item }));
+            }
+      return;
+    }
     resumeDetailStore
       .queryMarkBrandFloor(formState.marketName.value, formState.brandName.value || '')
       .then((res) => {
@@ -1420,6 +1428,9 @@
       brandNameCn.value = '';
       return;
     }
+    if (loginVueUser.loginOutFlag == '1') {
+      return;
+    }
     resumeDetailStore.queryCheckBrandName(e.target.value, '').then((res) => {
       if (res.code != 1) {
         message.error(res.info);
@@ -1434,6 +1445,9 @@
     const reg = /^[a-zA-Z][a-zA-Z0-9]*$/;
     if (!reg.test(e.target.value)) {
       message.error('品牌英文只能填写英文');
+      return;
+    }
+    if (loginVueUser.loginOutFlag == '1') {
       return;
     }
     resumeDetailStore.queryCheckBrandName('', e.target.value).then((res) => {
@@ -1467,6 +1481,7 @@
     let brandNameFlag = false;
     if (brandFlag.value && (brandNameCn.value || brnadNameEn.value)) {
       brandNameFlag = true;
+      if (loginVueUser.loginOutFlag != '1') {
       const res = await resumeDetailStore.queryCheckBrandName(brandNameCn.value, brnadNameEn.value);
       if (res.code == 1) {
         brandNameFlag = false;
@@ -1475,6 +1490,12 @@
         formState.brnadNameEn = brnadNameEn.value;
       } else {
         message.error(res.info);
+      }
+      } else {
+       brandNameFlag = false;
+        formState.brandWrite = '1';
+        formState.brandNameCn = brandNameCn.value;
+        formState.brnadNameEn = brnadNameEn.value; 
       }
     }
     if (brandNameFlag) {

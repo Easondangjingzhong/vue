@@ -38,7 +38,7 @@ interface ResumeListState {
   enterpriseConsultantArr: []; //查询企业顾问
   violationFlag: boolean; //违规上报modal展示 true 展示 false 隐藏
 }
-const loginVueUser: { loginName: ''; loginId: ''; loginTocken: '' } = JSON.parse(
+const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginOutFlag: '' } = JSON.parse(
   localStorage.getItem('loginVueUser'),
 );
 export const useResumeListStore = defineStore({
@@ -95,7 +95,7 @@ export const useResumeListStore = defineStore({
       let itemsTemp = [];
       let myDataChildren = [];
       this.systemType = info.systemType;
-      if (info.allResumeName) {
+      if (info.allResumeName && loginVueUser.loginOutFlag != '1') {
         let item = {} as Item;
         item.key = '1';
         item.label = `${info.allResumeNameJingShu}/${info.allResumeNameQuanShu}`;
@@ -104,7 +104,7 @@ export const useResumeListStore = defineStore({
         //@ts-ignore
         myDataChildren.push(item);
       }
-      if (info.gongResumeName) {
+      if (info.gongResumeName && loginVueUser.loginOutFlag != '1') {
         let item = {} as Item;
         item.key = '2';
         item.label = info.gongResumeShu;
@@ -113,7 +113,7 @@ export const useResumeListStore = defineStore({
         //@ts-ignore
         myDataChildren.push(item);
       }
-      if (info.gangAoResumeName) {
+      if (info.gangAoResumeName && loginVueUser.loginOutFlag != '1') {
         let item = {} as Item;
         item.key = '3';
         item.label = info.gangAoResumeShu;
@@ -168,13 +168,13 @@ export const useResumeListStore = defineStore({
         //@ts-ignore
         itemsTemp.push({ type: 'divider' });
       }
-      if (info.sortResumeName) {
+      if (info.sortResumeName && loginVueUser.loginOutFlag != '1') {
         //@ts-ignore
         itemsTemp.push({ title: '人才分类', label: '', key: '6', level: 1 });
         //@ts-ignore
         itemsTemp.push({ type: 'divider' });
       }
-      if (info.serchResumeName) {
+      if (info.serchResumeName && loginVueUser.loginOutFlag != '1') {
         let serchResumeListChildren = [];
         if (info.serchResumeList && info.serchResumeList.length > 0) {
           this.serchResumeListNum = info.serchResumeList.length;
@@ -211,7 +211,11 @@ export const useResumeListStore = defineStore({
       if (res) {
         // save token
         this.setInfo(res.info);
-        this.fetchTeamData('51');
+        if (loginVueUser.loginOutFlag == '1') {
+          this.fetchTeamData('5');
+        } else {
+          this.fetchTeamData('51');
+        }
         this.resumeMenu.forEach((item) => {
           if (item.key === '01') {
             item.children?.forEach((temp) => {
@@ -567,11 +571,20 @@ export const useResumeListStore = defineStore({
         this.formState = {
           ...this.formState,
           leftType: param,
-          recruitId: this.loginNameChangeRecruitId || loginVueUser.loginId,
-          leftRecruitId: this.loginNameChangeRecruitId || loginVueUser.loginId,
+          recruitId: this.loginNameChangeRecruitId ? this.loginNameChangeRecruitId : loginVueUser.loginId,
+          leftRecruitId: this.loginNameChangeRecruitId ? this.loginNameChangeRecruitId : loginVueUser.loginId,
         };
-        //@ts-ignore
+         //@ts-ignore
         this.queryResumeList(this.formState);
+        if (loginVueUser.loginOutFlag == '1') {
+            let formData = new FormData();
+            formData.append('recruitId', loginVueUser.loginId);
+            //formData.append('viewType', this.systemType);
+            formData.append('viewType', 'S');
+            const res = await fetchApi.queryPersonTalentData(formData);
+            this.queryMyPersonData(res, '51');
+        }
+       
       }
       if (param == '51') {
         let formData = new FormData();
@@ -656,7 +669,7 @@ export const useResumeListStore = defineStore({
           //@ts-ignore
           mytalentResumeNameChildren.push(item);
         }
-        if (info.interviewResumeName) {
+        if (info.interviewResumeName && loginVueUser.loginOutFlag != '1') {
           let item = {} as Item;
           item.key = '53';
           item.label = info.interviewResumeShu;
@@ -665,7 +678,7 @@ export const useResumeListStore = defineStore({
           //@ts-ignore
           mytalentResumeNameChildren.push(item);
         }
-        if (info.offerResumeName) {
+        if (info.offerResumeName && loginVueUser.loginOutFlag != '1') {
           let item = {} as Item;
           item.key = '54';
           item.label = `${info.offerLiuchengResumeShu}/${info.offerEndResumeShu}`;
@@ -675,7 +688,7 @@ export const useResumeListStore = defineStore({
           mytalentResumeNameChildren.push(item);
         }
         let myPersonSortResume = [];
-        if (info.sortResumeName && info.sortResumeList && info.sortResumeList.length > 0) {
+        if (info.sortResumeName && info.sortResumeList && info.sortResumeList.length > 0 && loginVueUser.loginOutFlag != '1') {
           info.sortResumeList.forEach((item) => {
             let subItem = {} as Item;
             subItem.key = `sortResume-${item.sortId}`;
@@ -694,7 +707,7 @@ export const useResumeListStore = defineStore({
               ? this.loginNameChangeRecruitName
               : item.label;
           }
-          if (item.key == '6') {
+          if (item.key == '6' && loginVueUser.loginOutFlag != '1') {
             item.children = myPersonSortResume;
           }
         });
@@ -729,6 +742,9 @@ export const useResumeListStore = defineStore({
       if (res.info) {
         this.positionsList = res.info.postList;
       }
+    },
+     handleSearchResumeType(searchResumeType) {
+      this.searchResumeType = searchResumeType;
     },
      /**
          * 查询职位排除门店销售和门店支持
@@ -837,7 +853,7 @@ export const useResumeListStore = defineStore({
           tempItem.limitFlag = item.limitFlag || ''; //限制 保护
           tempItem.options = item.options;
           tempItem.recruitId = item.recruitId;
-          tempItem.leftType = param.leftType || '2'; //参数
+          tempItem.leftType = param.leftType ||  (loginVueUser.loginOutFlag != '1' ? '2' : '5'); //参数
           tempItem.projectFlag = item.projectFlag;
           tempItem.twoYearFlag = item.twoYearFlag; //两年
           tempItem.resumeStatus = item.resumeStatus; //两年
@@ -958,7 +974,7 @@ export const useResumeListStore = defineStore({
       formData.append('maxAge', param.maxAge || '');
       formData.append('leftTeamId', param.leftTeamId || '');
       formData.append('leftRecruitId', param.leftRecruitId || '');
-      formData.append('leftType', param.leftType || '2');
+      formData.append('leftType', param.leftType || (loginVueUser.loginOutFlag != '1' ? '2' : '5'));
       formData.append('isWorkExp', this.searchWorkExp);
       formData.append('sortId', param.sortId || '');
       formData.append('viewType', param.viewType || 'T');
