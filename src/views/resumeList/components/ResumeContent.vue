@@ -154,33 +154,33 @@
         <template v-else-if="column.key === 'projectFlag'">
           <a-tag
             class="tagspan"
-            v-if="!record.recruitId && record.projectFlag == '待保'"
+            v-if="showResumeRightOutFlag && !record.recruitId && record.projectFlag == '待保'"
             color="red"
             >过保</a-tag
           >
           <a-tag
             class="tagspan"
             :title="record.limitRemarkDetail"
-            v-if="!record.recruitId && record.projectFlag == '在保'"
+            v-if="showResumeRightOutFlag && !record.recruitId && record.projectFlag == '在保'"
             color="green"
             >{{ record.projectFlag }}</a-tag
           >
           <a-tag
             class="tagspan"
-            v-if="!record.recruitId && record.projectFlag == '不保'"
+            v-if="showResumeRightOutFlag && !record.recruitId && record.projectFlag == '不保'"
             color="red"
             >过保</a-tag
           >
           <a-tag
             class="tagspan"
-            v-if="!record.recruitId && record.projectFlag == '过保'"
+            v-if="showResumeRightOutFlag && !record.recruitId && record.projectFlag == '过保'"
             color="red"
             >{{ record.projectFlag }}</a-tag
           >
-          <a-tag class="tagspan" v-if="!record.recruitId" color="orange">公共</a-tag>
+          <a-tag class="tagspan" v-if="showResumeRightOutFlag && !record.recruitId" color="orange">公共</a-tag>
           <a-tag
             class="tagspan"
-            v-if="!record.recruitId && record.twoYearFlag == '两年'"
+            v-if="showResumeRightOutFlag && !record.recruitId && record.twoYearFlag == '两年'"
             color="green"
             >两年</a-tag
           >
@@ -193,7 +193,7 @@
           >
           <a-tag
             class="tagspan"
-            v-if="record.recruitId && record.checkFlag == '待激活' && record.resumeStatus != '外包保护期中'"
+            v-if="showResumeRightOutFlag && record.recruitId && record.checkFlag == '待激活' && record.resumeStatus != '外包保护期中'"
             color="#d8d8d8"
             >激活</a-tag
           >
@@ -215,30 +215,30 @@
           <a-tag
             class="tagspan"
             :title="record.repeatTime"
-            v-if="record.recruitId && record.checkFlag == '待核' && record.fristFlag"
+            v-if="showResumeRightOutFlag && record.recruitId && record.checkFlag == '待核' && record.fristFlag"
             color="#d8d8d8"
             >{{ record.fristFlag }}</a-tag
           >
           <a-tag
             class="tagspan"
             :title="record.repeatTime"
-            v-if="record.recruitId && record.checkFlag != '待核' && record.fristFlag"
+            v-if="showResumeRightOutFlag && record.recruitId && record.checkFlag != '待核' && record.fristFlag"
             color="green"
             >{{ record.fristFlag }}</a-tag
           >
 
-          <a-tag class="tagspan" v-if="record.recruitId && record.onlyFlag" color="green">{{
+          <a-tag class="tagspan" v-if="showResumeRightOutFlag && record.recruitId && record.onlyFlag" color="green">{{
             record.onlyFlag
           }}</a-tag>
 
           <a-tag
             class="tagspan"
             :title="record.commonFlagTime"
-            v-if="record.recruitId && record.commonFlag"
+            v-if="showResumeRightOutFlag && record.recruitId && record.commonFlag"
             color="green"
             >{{ record.commonFlag }}</a-tag
           >
-          <a-tag class="tagspan" v-if="record.recruitId && record.gognGongFlag" color="orange">{{
+          <a-tag class="tagspan" v-if="showResumeRightOutFlag && record.recruitId && record.gognGongFlag" color="orange">{{
             record.gognGongFlag
           }}</a-tag>
 
@@ -246,21 +246,21 @@
           <a-tag
             class="tagspan"
             :title="record.limitRemarkDetail"
-            v-if="(record.limitFlag == '限制禁推' || record.limitFlag == '限制分单') && record.resumeStatus != '外包保护期中'"
+            v-if="showResumeRightOutFlag && (record.limitFlag == '限制禁推' || record.limitFlag == '限制分单') && record.resumeStatus != '外包保护期中'"
             color="orange"
             >限制</a-tag
           >
           <a-tag
             class="tagspan"
             :title="record.limitRemarkDetail"
-            v-if="record.limitFlag == '限制' && record.resumeStatus != '外包保护期中'"
+            v-if="showResumeRightOutFlag && record.limitFlag == '限制' && record.resumeStatus != '外包保护期中'"
             color="orange"
             >限制</a-tag
           >
           <a-tag
             class="tagspan"
             :title="record.limitRemarkDetail"
-            v-if="record.limitFlag == '激活' && record.resumeStatus != '外包保护期中'"
+            v-if="showResumeRightOutFlag && record.limitFlag == '激活' && record.resumeStatus != '外包保护期中'"
             color="orange"
             >激活</a-tag
           >
@@ -409,6 +409,7 @@
     tableLoading,
     teamPersonChangeArr,
   } = storeToRefs(resumeListStore);
+  const showResumeRightOutFlag= ref(false);
   const optionsNp = ref([
     { value: '1', label: '当前' },
     { value: '2', label: '所有' },
@@ -443,8 +444,14 @@
     expand.value = expandArr[expand.value];
   };
   const formRef = ref<FormInstance>();
-  //@ts-ignore
-  //resumeListStore.queryResumeList(formState.value);
+  const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginOutFlag: '' } = JSON.parse(
+  localStorage.getItem('loginVueUser'),
+);
+  if(loginVueUser.loginOutFlag != '1') {
+    //@ts-ignore
+    resumeListStore.queryResumeList(formState.value);
+    showResumeRightOutFlag.value = true;
+  }
   const searchContentChild = ref(null);
   const dateRange = ref([]);
   const selectedRecruitIdValue = ref([]);

@@ -8,7 +8,7 @@
       </a-col>
       <a-divider :dashed="true" style="background-color: #ccc; margin-top: 0; margin-bottom: 5px" />
     </a-row>
-    <div class="resume_mapping_work"  :title="mappingWorkTime" v-if="mappingWork">最新工作：{{ mappingWork.split("%")[0] }}</div>
+    <div class="resume_mapping_work"  :title="mappingWorkTime" v-if="mappingWork && showResumeRightOutFlag">最新工作：{{ mappingWork.split("%")[0] }}</div>
     <div v-if="expend">
       <a-form ref="formRef" :model="formState" @finish="onFinish">
         <a-row :gutter="24">
@@ -109,7 +109,11 @@
     showResumeAdd: {
       type: Boolean,
       default: false,
-    }
+    },
+    showResumeRightOutFlag: {
+      type: Boolean,
+      default: false,
+    },
   });
   const iconLoading = ref(false);
   const expend = ref(false);

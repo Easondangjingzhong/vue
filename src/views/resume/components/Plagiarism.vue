@@ -83,7 +83,7 @@
         </template> -->
       <a-table size="small" :dataSource="plagiarusnInfo.info" :columns="columnsPlagiarusnRseult" />
     </a-card>
-    <a-card v-if="plagiarusnInfoFlag" class="resume_card">
+    <a-card v-if="plagiarusnInfoFlag && showResumeRightOutFlag" class="resume_card">
       <h3 class="resume_title_h3">警告信息</h3>
       <a-divider class="resume_divider" dashed />
       <div>
@@ -103,6 +103,13 @@ import { usePlagiarusnStoreWithOut } from '/@/store/modules/plagiarusn';
   import { storeToRefs } from 'pinia';
   const plagiarusnStore = usePlagiarusnStoreWithOut();
   const {plagiarusnRseult, plagiarusnInfoFlag, plagiarusnInfo} = storeToRefs(plagiarusnStore);
+  const showResumeRightOutFlag = ref(false);
+  const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginOutFlag: '' } = JSON.parse(
+  localStorage.getItem('loginVueUser'),
+);
+ if (loginVueUser.loginOutFlag != '1') {
+      showResumeRightOutFlag.value = true; 
+    }
   let resultPpercentage = ref("");
   watch(plagiarusnRseult,() => {
     if (plagiarusnRseult.value == 2 || plagiarusnRseult.value == 4 || plagiarusnRseult.value == 8) {

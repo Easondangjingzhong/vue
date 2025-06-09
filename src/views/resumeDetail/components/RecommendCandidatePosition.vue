@@ -46,7 +46,7 @@
               ></a-select>
             </a-form-item>
           </a-col>
-          <a-col :span="6">
+          <a-col :span="6" v-if="outOpenFlag">
             <a-form-item name="positionsId" label="职位">
               <a-select
                 v-model:value="formState.positionsId"
@@ -101,7 +101,7 @@
             </a-form-item>
           </a-col>
         </a-row>
-        <a-row :gutter="24">
+        <a-row :gutter="24" v-if="outOpenFlag">
           <a-col :span="spanCol">
             <a-form-item name="brand" label="品牌">
               <a-select
@@ -150,7 +150,7 @@
             </a-form-item>
           </a-col>
         </a-row>
-        <a-row :gutter="24">
+        <a-row v-if="outOpenFlag" :gutter="24">
           <a-col :span="8">
             <a-space class="resume_spance" style="display: flex">
               <a-form-item name="year" label="任务">
@@ -183,10 +183,18 @@
               </a-form-item>
             </a-space>
           </a-col>
-
           <a-col :span="6">
             <a-form-item>
               <a-button type="primary" style="margin-right: 8px" htmlType="submit">搜索</a-button>
+              <a-button @click="handleClearSearch">清空</a-button>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row v-if="!outOpenFlag" :gutter="24">
+          <a-col :span="18"></a-col>
+          <a-col :span="6">
+            <a-form-item>
+              <a-button type="primary" style="margin-right: 8px;margin-left: 30px;" htmlType="submit">搜索</a-button>
               <a-button @click="handleClearSearch">清空</a-button>
             </a-form-item>
           </a-col>
@@ -366,7 +374,6 @@
   import { debounce } from 'lodash-es';
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   import { useResumeListStoreWithOut } from '/@/store/modules/resumeList';
-import { tryOnBeforeUnmount } from '@vueuse/core';
   const resumeListStore = useResumeListStoreWithOut();
   const cityStore = useCityStoreWithOut();
   const { province } = storeToRefs(cityStore);
@@ -381,6 +388,13 @@ import { tryOnBeforeUnmount } from '@vueuse/core';
     recommendMapping,
   } = storeToRefs(resumeDetailStore);
   const spanCol = 6;
+  const outOpenFlag = ref(true);
+  const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginOutFlag: '' } = JSON.parse(
+    localStorage.getItem('loginVueUser'),
+  );
+  if (loginVueUser.loginOutFlag == '1') {
+    outOpenFlag.value = false;
+  }
   interface RecommendPerson {
     index: string;
     city: string;
@@ -680,7 +694,8 @@ import { tryOnBeforeUnmount } from '@vueuse/core';
   const handlePagination = (page = 1, pageSize = 8) => {
     const values = { ...formState.value, page: page, market: formState.value.market.value };
     loading.value = true;
-    resumeDetailStore.queryRecommendCandidatePosition(values).then((res) => {
+    if (outOpenFlag.value) {
+resumeDetailStore.queryRecommendCandidatePosition(values).then((res) => {
       loading.value = false;
       if (res.code == 1) {
         const candidatePosition = res.info.list;
@@ -758,6 +773,87 @@ import { tryOnBeforeUnmount } from '@vueuse/core';
         dataSource.value = [];
       }
     });
+    } else {
+        resumeDetailStore.queryRecommendCandidateOutPosition(values).then((res) => {
+      loading.value = false;
+      if (res.code == 1) {
+        const candidatePosition = res.info.list;
+        const positionList = res.info.positionList;
+        const apealList = res.info.apealList;
+        const positionArr = positionList?.reduce((prev, curr) => {
+          curr?.forEach((item) => {
+            prev.push(item.pId);
+          });
+          return prev;
+        }, []);
+        const appealTemp = [''];
+        const apealArr = apealList?.reduce((prev, curr) => {
+          curr?.forEach((item) => {
+            appealTemp.push(item.pId);
+            prev.push({
+              apId: item.pId,
+              checkResult: item.checkResult,
+              refuseRemark: item.refuseRemark || '',
+            });
+          });
+          return prev;
+        }, []);
+        dataSource.value = candidatePosition?.reduce((prev, curr, index) => {
+          let temp = {} as RecommendPerson;
+          temp.index = (res.info.currentPage - 1) * pageSize + (index + 1);
+          temp.city = curr.city || '-';
+          temp.brand = curr.secret == "是" ?  curr.secretBrand : curr.brand;
+          temp.jobTitle = curr.jobTitle || '-';
+          temp.workPlace = curr.workPlace || '-';
+          temp.turnoverTime = curr.turnoverTime ? formatToDateTime(curr.turnoverTime) : '-';
+          temp.counselor = curr.counselor || '-';
+          if (curr.jobStatus == '开放(急)') {
+            temp.jobStatus = '开放1级';
+          } else if (curr.jobStatus == '开放(急)') {
+            temp.jobStatus = '开放2级';
+          } else {
+            temp.jobStatus = curr.jobStatus;
+          }
+          temp.recruitingNum = curr.recruitingNum || '0';
+          temp.offerNum = (curr.recruitingNum - curr.offerNum)?.toString() || '0';
+          temp.openResumesNum = curr.openResumesNum || '0';
+          temp.surplus = curr.surplus || '0';
+          temp.isTask = curr.isTask == 1 ? '是' : '-';
+          if (positionArr.includes(curr.id)) {
+            temp.action = '1'; //已推
+          } else if (appealTemp.includes(curr.id)) {
+            temp.action = '4'; //已推
+            temp.checkResult = apealArr.filter((item) => item.apId == curr.id)[0]?.checkResult;
+            temp.refuseRemark = apealArr.filter((item) => item.apId == curr.id)[0]?.refuseRemark;
+          } else {
+            if (curr.recruitingNum - curr.offerNum <= 0) {
+              temp.action = '2'; //余职为0
+            } else {
+              temp.action = '3'; //推荐
+            }
+          }
+          temp.companyName = curr.companyName;
+          temp.bId = curr.bId;
+          temp.id = curr.id;
+          temp.mId = curr.mId;
+          temp.recruitId = curr.recruitId;
+          temp.positionsId = curr.positionsId;
+          prev.push(temp);
+          return prev;
+        }, []);
+        pagination.value = {
+          pageSize: pageSize,
+          current: res.info.currentPage,
+          total: res.info.count,
+          hideOnSinglePage: true,
+          size: 'small',
+        };
+      } else {
+        dataSource.value = [];
+      }
+    });
+    }
+    
   };
   const handleColseCandidatePosition = () => {
     resumeDetailStore.$patch({

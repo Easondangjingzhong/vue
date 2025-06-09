@@ -6,6 +6,7 @@
           <ResumeDetailHeader
             :resumeData="resumeDetailTemp.resume"
             :showResumeAdd="showResumeAdd"
+            :showResumeRightOutFlag="showResumeRightOutFlag"
           />
           <div class="resume_container_detail">
             <ResumeDetailPersonInfo
@@ -61,10 +62,10 @@
       </a-col>
     </a-row> -->
         <div v-if="expendShow">
-          <ResumeLeftHeader v-if="showResumeRightHeader" :showResumeAdd="showResumeAdd" />
+          <ResumeLeftHeader v-if="showResumeRightHeader" :showResumeAdd="showResumeAdd" :showResumeRightOutFlag="showResumeRightOutFlag"/>
           <ResumeLeftCheckDuplicate v-if="showResumeRightHeader && showResumeRightOutFlag" :showResumeAdd="showResumeAdd" />
           <ResumeLeftPositions v-if="showResumePositionsAndRecommendRecord && showResumeRightOutFlag" />
-          <ResumeLeftContactContent v-if="showResumeRightContact" :showResumeAdd="showResumeAdd" />
+          <ResumeLeftContactContent v-if="showResumeRightContact" :showResumeAdd="showResumeAdd"  :showResumeRightOutFlag="showResumeRightOutFlag"/>
           <ResumeLeftRecommendRecord v-if="showResumePositionsAndRecommendRecord" />
         </div>
       </a-layout-sider>

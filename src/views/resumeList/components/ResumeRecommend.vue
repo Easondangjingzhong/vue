@@ -174,7 +174,7 @@
             ></a-select>
           </a-form-item>
         </a-col>
-        <a-col :span="spanCol">
+        <!-- <a-col :span="spanCol">
           <a-form-item name="companyName" label="公司">
             <a-select
               optionFilterProp="label"
@@ -184,7 +184,7 @@
               :options="optionsCompany"
             ></a-select>
           </a-form-item>
-        </a-col>
+        </a-col> -->
       </a-row>
       <a-row :gutter="24">
         <a-col :span="spanCol">
@@ -569,7 +569,7 @@
     //@ts-ignore
     tempOptionBrand.push(tempObj);
   });
-  optionsBrand.value = tempOptionBrand;
+  //optionsBrand.value = tempOptionBrand;
   function brandListShow(cnName, usName) {
     if (cnName && usName) {
       return `${cnName}/${usName}`;

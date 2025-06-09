@@ -159,6 +159,27 @@
             </a-button>
           </a-col>
         </a-row>
+         <div class="resume_row_div" v-if="repeatFlag == 16">
+          <a-row :gutter="24" class="resume_row" v-if="repeatFlag == 16" style="margin-top: 10px">
+            <a-col :span="24" class="resume_col">
+              <h4 class="resume_h4">
+                推荐查重:
+                <a-tag color="red" class="resume_tag">重复</a-tag>
+                您不能继续推荐此候选人，因为已经被其他小伙伴推荐过当前品牌哦，请查看下列推荐详情。
+              </h4>
+            </a-col>
+            <a-col :span="12">
+              <a-table
+                class="row_table"
+                :columns="columnsRecommendOut"
+                :data-source="dataSourceRecommendOut"
+                :locale="{ emptyText: '暂无推荐查重' }"
+                :pagination="false"
+                size="small"
+              ></a-table>
+            </a-col>
+            </a-row>
+        </div>
         <div class="resume_row_div" v-if="repeatFlag == 2">
           <a-row :gutter="24" class="resume_row" v-if="repeatFlag == 2" style="margin-top: 10px">
             <a-col :span="24" class="resume_col">
@@ -464,6 +485,36 @@
       action: '1',
     },
   ]);
+  const columnsRecommendOut = ref([
+    {
+      title: '城市',
+      dataIndex: 'city',
+      key: 'city',
+      ellipsis: true,
+      width: 30,
+    },
+    {
+      title: '品牌',
+      dataIndex: 'brand',
+      key: 'brand',
+      ellipsis: true,
+      width: 50,
+    },
+    {
+      title: '推荐日期',
+      dataIndex: 'endTime',
+      key: 'endTime',
+      ellipsis: true,
+      width: 50,
+    },
+  ]);
+   const dataSourceRecommendOut = ref([
+    {
+      city: '',
+      brand: '',
+      endTime: '',
+    },
+  ]);
   const conflictId = ref('');
   const conflictRemark = ref('');
   const conflictRemarkShow = ref('');
@@ -516,7 +567,38 @@
                     action: '1',
                   },
                 ];
-                console.log(dataSourceRecommend.value);
+              } else if (data.code == 17) {
+                repeatFlag.value = 2;
+                if (data.info && data.info.length > 0) {
+                  conflictId.value = data.info[0].ID;
+                  dataSourceRecommend.value = [
+                  {
+                    city: data.info[0].CITY,
+                    brand: data.info[0].BRAND,
+                    position: data.info[0].POSITIONS,
+                    recommendCounselor: data.info[0].COUNSELOR,
+                    recommendTime: formatToDateMinute(data.info[0].RECOMMEND_TIME),
+                    counselor: data.info[0].COUNSELOR,
+                    recommendStatus: data.info[0].RECOMMEND_STATUS,
+                    endTime: data.info[0].RECOMMEND_TIME ? formatToDateMinute(data.info[0].RECOMMEND_TIME) : '',
+                    action: '1',
+                  },
+                ];
+                }
+                
+              } else if (data.code == 16) {
+                repeatFlag.value = 16;
+                if (data.info && data.info.length > 0) {
+                  dataSourceRecommendOut.value = [
+                  {
+                    city: data.info[0].city,
+                    brand: data.info[0].brand,
+                    endTime: data.info[0].recommendTime ? formatToDateMinute(data.info[0].recommendTime) : '',
+                  },
+                ];
+                console.log(dataSourceRecommendOut.value);
+                }
+               
               } else if (data.code == 3) {
                 message.error(
                   '您30天内有该候选人推荐过该候选人给同一HR，并且超时关闭，本次不能推荐',

@@ -391,6 +391,32 @@ export const useResumeDetailStore = defineStore({
       const res = await fetchApi.queryRecommendCandidatePosition(formData);
       return res;
     },
+      /**
+     * 查询推荐职位查询外部
+     * @returns
+     */
+    async queryRecommendCandidateOutPosition(data) {
+      this.recommendCandidatePositionSearch = data;
+      let formData = new FormData();
+      formData.append('page', data.page);
+      formData.append('recruitId', loginVueUser.loginId);
+      formData.append('recommendId', this.mappingId);
+      formData.append('city', data.city || '');
+      formData.append('brand', data.brand || '');
+      formData.append('positionsId', data.positionsId || '');
+      formData.append('jobTitle', data.positionsId || '');
+      formData.append('counselor', '');
+      formData.append('market', data.market || '');
+      formData.append('phone', this.resumeDetail.resume.phoneNum);
+      formData.append('companyRecruitId', data.companyRecruitId || '');
+      formData.append('isTask', data.isTask || '');
+      formData.append('year', data.year || '');
+      formData.append('month', data.month || '');
+      formData.append('weekNum', data.weekNum || '');
+      formData.append('jobType', data.jobType || '');
+      const res = await fetchApi.queryRecommendCandidateOutPosition(formData);
+      return res;
+    },
     /**
      * 根据当前日期查询所属周度
      * @returns
@@ -431,6 +457,7 @@ export const useResumeDetailStore = defineStore({
     async queryEnterpriseConsultant(teamId = '') {
       let formData = new FormData();
       formData.append('teamId', teamId);
+      formData.append('SystemRecruitId', loginVueUser.loginId);
       const res = await fetchApi.queryEnterpriseConsultant(formData);
       if (res.code == 1) {
         this.enterpriseConsultant = res.info;

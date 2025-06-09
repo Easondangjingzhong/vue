@@ -3,16 +3,16 @@
     <a-row :gutter="24">
       <a-col :span="24" class="resume_info">
         <h2 class="resume_h3">{{ resumeData.userName }}</h2>
-        <a-tag class="resume_tag_checked" v-if="!resumeData.recruitId && resumeData.projectFlag == '待保'" color="red">过保</a-tag>
-        <a-tag class="resume_tag_checked" :title="limitRemarkDetail" v-if="!resumeData.recruitId && resumeData.projectFlag == '在保'" color="green">{{ resumeData.projectFlag }}</a-tag>
-        <a-tag class="resume_tag_checked" v-if="!resumeData.recruitId && resumeData.projectFlag == '不保'" color="red">过保</a-tag>
-        <a-tag class="resume_tag_checked" v-if="!resumeData.recruitId && resumeData.projectFlag == '过保'" color="red">{{ resumeData.projectFlag }}</a-tag>
-        <a-tag class="resume_tag_checked_top" v-if="!resumeData.recruitId" color="orange">公共</a-tag>
-        <a-tag class="resume_tag_checked_top" v-if="!resumeData.recruitId && resumeData.twoYearFlag == '两年'" color="green">两年</a-tag>
+        <a-tag class="resume_tag_checked" v-if="props.showResumeRightOutFlag && !resumeData.recruitId && resumeData.projectFlag == '待保'" color="red">过保</a-tag>
+        <a-tag class="resume_tag_checked" :title="limitRemarkDetail" v-if="props.showResumeRightOutFlag && !resumeData.recruitId && resumeData.projectFlag == '在保'" color="green">{{ resumeData.projectFlag }}</a-tag>
+        <a-tag class="resume_tag_checked" v-if="props.showResumeRightOutFlag && !resumeData.recruitId && resumeData.projectFlag == '不保'" color="red">过保</a-tag>
+        <a-tag class="resume_tag_checked" v-if="props.showResumeRightOutFlag && !resumeData.recruitId && resumeData.projectFlag == '过保'" color="red">{{ resumeData.projectFlag }}</a-tag>
+        <a-tag class="resume_tag_checked_top" v-if="props.showResumeRightOutFlag && !resumeData.recruitId" color="orange">公共</a-tag>
+        <a-tag class="resume_tag_checked_top" v-if="props.showResumeRightOutFlag && !resumeData.recruitId && resumeData.twoYearFlag == '两年'" color="green">两年</a-tag>
         <a-tag :title="checkedTime" style="cursor: pointer;" color="#d8d8d8" class="resume_tag_checked" v-if="showResumeAdd && resumeData.recruitId && resumeData.checkFlag == '待核'"
           >待核</a-tag
         >
-        <a-tag style="cursor: pointer;" color="#d8d8d8" class="resume_tag_checked" v-if="showResumeAdd && resumeData.recruitId && resumeData.checkFlag == '待激活'"
+        <a-tag style="cursor: pointer;" color="#d8d8d8" class="resume_tag_checked" v-if="props.showResumeRightOutFlag && showResumeAdd && resumeData.recruitId && resumeData.checkFlag == '待激活'"
           >激活</a-tag
         >
         <a-tag :title="newTime" style="cursor: pointer;" color="green" class="resume_tag_checked" v-if="showResumeAdd && resumeData.recruitId && resumeData.checkFlag == '已激活'"
@@ -29,18 +29,18 @@
           color="#d8d8d8"
           class="resume_tag_checked_top"
           :title="repeatTime"
-          v-if="resumeData.recruitId && resumeData.checkFlag == '待核' && resumeData.fristFlag"
+          v-if="props.showResumeRightOutFlag && resumeData.recruitId && resumeData.checkFlag == '待核' && resumeData.fristFlag"
           >首增</a-tag
         >
         <a-tag
           color="green"
           class="resume_tag_checked_top"
           :title="repeatTime"
-          v-if="resumeData.recruitId && resumeData.checkFlag != '待核' && resumeData.fristFlag"
+          v-if="props.showResumeRightOutFlag && resumeData.recruitId && resumeData.checkFlag != '待核' && resumeData.fristFlag"
           >首增</a-tag>
-        <a-tag class="resume_tag_checked_top" v-if="resumeData.recruitId && resumeData.onlyFlag" color="green">{{ resumeData.onlyFlag }}</a-tag>
-        <a-tag :title="commonFlagTime" class="resume_tag_checked_top" v-if="resumeData.recruitId && resumeData.commonFlag" color="green">{{ resumeData.commonFlag }}</a-tag>
-        <a-tag class="resume_tag_checked_top" v-if="resumeData.recruitId && resumeData.gognGongFlag" color="orange">{{ resumeData.gognGongFlag }}</a-tag>
+        <a-tag class="resume_tag_checked_top" v-if="props.showResumeRightOutFlag && resumeData.recruitId && resumeData.onlyFlag" color="green">{{ resumeData.onlyFlag }}</a-tag>
+        <a-tag :title="commonFlagTime" class="resume_tag_checked_top" v-if="props.showResumeRightOutFlag && resumeData.recruitId && resumeData.commonFlag" color="green">{{ resumeData.commonFlag }}</a-tag>
+        <a-tag class="resume_tag_checked_top" v-if="props.showResumeRightOutFlag && resumeData.recruitId && resumeData.gognGongFlag" color="orange">{{ resumeData.gognGongFlag }}</a-tag>
         <!-- <a-tag
           color="#4bb632"
           class="resume_tag_checked_top"
@@ -51,21 +51,21 @@
          <a-tag
           color="orange"
           class="resume_tag_checked_top"
-          v-if="resumeData.limitFlag == '限制'"
+          v-if="props.showResumeRightOutFlag &&resumeData.limitFlag == '限制'"
           :title="limitRemarkDetail ? limitRemarkDetail : `${formatToDateMinute(resumeData.offerTime)}  OFFER推荐禁止`"
           >限制</a-tag
         >
         <a-tag
           color="orange"
           class="resume_tag_checked_top"
-          v-if="resumeData.limitFlag == '限制禁推'"
+          v-if="props.showResumeRightOutFlag &&resumeData.limitFlag == '限制禁推'"
           :title="limitRemarkDetail"
           >限制</a-tag
         >
         <a-tag
           color="orange"
           class="resume_tag_checked_top"
-          v-if="resumeData.limitFlag == '限制分单'"
+          v-if="props.showResumeRightOutFlag &&resumeData.limitFlag == '限制分单'"
           :title="limitRemarkDetail"
           >限制</a-tag
         >
@@ -90,18 +90,24 @@
           :title="entryTime"
           >保证期</a-tag
         > 
-        <a-tag style="cursor: pointer;" :title="limitRemarkDetail" color="orange" class="resume_tag_checked" v-if="showResumeAdd && resumeData.recruitId && resumeData.limitFlag == '激活'&& resumeData.resumeStatus != '外包保护期中'"
+        <a-tag style="cursor: pointer;" :title="limitRemarkDetail" color="orange" class="resume_tag_checked" v-if="props.showResumeRightOutFlag && showResumeAdd && resumeData.recruitId && resumeData.limitFlag == '激活'&& resumeData.resumeStatus != '外包保护期中'"
           >激活</a-tag
         >
         <a-modal v-model:open="openResumeCopy" title="复制简历" @ok="handleResumeCopy">
       <p>是否将简历复制到自己名下</p>
     </a-modal>
     <a-modal v-model:open="openResumeChecked" title="简历核对" @ok="handleResumeChecked">
+      <span v-if="props.showResumeRightOutFlag">
       <p>请确认此简历匹配以下4条要求，方可继续点击已核按钮：</p>
       <p>1. 候选人简历属于零售行业或属于目前公司在做的职位的寻找方向；</p>
       <p>2. 新增的候选人简历的内容（个人信息、工作经历、教育经历、语言能力等）完整准确真实，完整度需达到90%以上；</p>
       <p>3. 与新增的候选人进行过有效电话沟通且填写匹配的有效沟通记录；</p>
       <p>4. 已按照公司“简历核对制度”要求仔细且正确的核对此候选人简历。</p>
+      </span>
+      <span v-if="!props.showResumeRightOutFlag">
+         <p>请确认此简历匹配以下1条要求，方可继续点击已核按钮：</p>
+         <p>1. 新增的候选人简历的内容（个人信息、工作经历、教育经历、语言能力等）完整准确真实，完整度需达到90%以上；</p>
+       </span>
     </a-modal>
     <a-modal v-model:open="openResumeCheckedTwoYear" title="简历激活" @ok="handleResumeCheckedTwoYear">
       <p>此简历新增之日起已满2年，根据公司制度，可以申请重新激活保护，请确认此简历匹配以下3条制度要求，方可申请重新激活保护：</p>
@@ -117,7 +123,16 @@
         >{{ resumeProgressDetailScore }}%</a-tag
       >
       <a-tag class="resume_tag_source" v-if="resumeData.talentSource" color="#00bcd4" title="来源">{{ resumeData.talentSource }}</a-tag>
-      <a-tag color="#ccc" class="resume_tag_phone" style="cursor: pointer;" @click="handlePhoneNumToSystem(resumeData.phoneNum)"
+      <a-tag v-if="props.showResumeRightOutFlag" color="#ccc" class="resume_tag_phone" style="cursor: pointer;" @click="handlePhoneNumToSystem(resumeData.phoneNum)"
+        ><PhoneFilled :style="{ fontSize: '8px' }" :rotate="90" />
+        <a-popover placement="topLeft">
+          <template #content>
+            <span>{{ resumeData.phoneNum }}</span>
+          </template>
+          查看
+        </a-popover>
+      </a-tag>
+      <a-tag v-if="!props.showResumeRightOutFlag" color="#ccc" class="resume_tag_phone" style="cursor: pointer;"
         ><PhoneFilled :style="{ fontSize: '8px' }" :rotate="90" />
         <a-popover placement="topLeft">
           <template #content>
@@ -273,7 +288,11 @@
     showResumeAdd: {
       type: Boolean,
       default: false,
-    }
+    },
+    showResumeRightOutFlag: {
+      type: Boolean,
+      default: false,
+    },
   });
   const newTime = ref(
     props.resumeData.newtestStartTime

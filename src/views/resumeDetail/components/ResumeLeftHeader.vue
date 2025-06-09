@@ -4,6 +4,7 @@
       <a-col :span="24" class="resume_detail_title">
         <h4 class="resume_h4"> 简历信息 </h4>
         <a-button
+          v-if="showResumeRightOutFlag"
           type="primary"
           style="background-color: #22c428"
           size="small"
@@ -422,6 +423,10 @@
   const { resumeReport, resumeId, resumeTypeEnglish } = storeToRefs(resumeDetailStore);
   defineProps({
     showResumeAdd: {
+      type: Boolean,
+      default: false,
+    },
+    showResumeRightOutFlag: {
       type: Boolean,
       default: false,
     },

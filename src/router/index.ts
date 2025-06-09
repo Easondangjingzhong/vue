@@ -31,7 +31,7 @@ function getQueryVariable(variable)
     return("");
 }
 export const routerQuery = async () => {
-  // if (getQueryVariable("loginFirst")) {
+  //if (getQueryVariable("loginFirst")) {
     localStorage.removeItem("loginVueUser");
     localStorage.setItem("loginVueUser",JSON.stringify({"loginId": getQueryVariable("loginId"),"loginName": getQueryVariable("loginName"),"loginTocken": getQueryVariable("loginTocken"),"loginType": getQueryVariable("loginType"),"loginOutFlag": getQueryVariable("loginOutFlag")}));
     return true;

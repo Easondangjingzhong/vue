@@ -18,6 +18,7 @@
   const resumeList = useResumeListStoreWithOut();
   const current = ref<string[]>([route.name as string]);
   const items = ref<MenuProps['items']>([]);
+  const loginVueUser: {loginName: "", loginId: "", loginTocken: "",loginType: "",loginOutFlag: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
   interface FormMenu {
     key: string;
     label: string | JSX.Element;
@@ -35,7 +36,50 @@
       const rId = res.info.rId;
       const roleId = res.info.roleId;
       const type = res.info.type;
-      list.forEach((item) => {
+       if(loginVueUser.loginOutFlag == "1") {
+          list.forEach((item) => {
+             if (item.functionName == '人才') {
+          menuArrTemp.value.push({
+            key: 'resumeList',
+            label: item.functionName,
+            title: item.functionName,
+            showFlag: false,
+            index: 3,
+          });
+        }
+         if (item.functionName == '职位信息') {
+          menuArrTemp.value.push({
+            key: 'mapPositions',
+            label: h(
+              'a',
+              { href: `http://work.wotui.com:8889/WTSM/${item.functionUrl}`, target: '_blank' },
+              item.functionName,
+            ),
+            title: item.functionName,
+            showFlag: false,
+            index: 1,
+          });
+         }
+          if (item.functionName == '推荐人选') {
+          menuArrTemp.value.push({
+            key: 'mapRecommend',
+            label: h(
+              'a',
+              { href: `http://work.wotui.com:8889/WTSM/${item.functionUrl}`, target: '_blank' },
+              item.functionName,
+            ),
+            title: item.functionName,
+            showFlag: false,
+            index: 2,
+          });
+         }
+          })
+          menuArrTemp.value.sort((a, b) => {
+              return a.index - b.index;
+            });
+            items.value = menuArrTemp.value;
+        } else {
+          list.forEach((item) => {
         if (item.functionName == 'TOP榜单') {
           menuArrTemp.value.push({
             key: 'TOPList',
@@ -1739,6 +1783,7 @@
         return a.index - b.index;
       });
       items.value = menuArrTemp.value;
+        }
     }
   });
   watch(
@@ -1748,7 +1793,6 @@
     },
   );
   const handleSelect: MenuProps['onSelect'] = ({ key }) => {
-    const loginVueUser: {loginName: "", loginId: "", loginTocken: "",loginType: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
     if (route.name !== key) {
       router.push({
          name: key,

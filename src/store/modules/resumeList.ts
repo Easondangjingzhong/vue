@@ -213,10 +213,20 @@ export const useResumeListStore = defineStore({
         this.setInfo(res.info);
         if (loginVueUser.loginOutFlag == '1') {
           this.fetchTeamData('5');
+          this.resumeMenu.forEach((item) => {
+          if (item.key === '01') {
+            item.children?.forEach((temp) => {
+              if (temp.key == 'teamData') {
+                temp.children?.forEach((subItem) => {
+                  this.fetchTeamData(subItem.key,"3");
+                });
+              }
+            });
+          }
+        });
         } else {
           this.fetchTeamData('51');
-        }
-        this.resumeMenu.forEach((item) => {
+           this.resumeMenu.forEach((item) => {
           if (item.key === '01') {
             item.children?.forEach((temp) => {
               if (temp.key == 'teamData') {
@@ -227,6 +237,7 @@ export const useResumeListStore = defineStore({
             });
           }
         });
+        }
         this.queryTeamPersonChange();
       }
     },
@@ -379,6 +390,7 @@ export const useResumeListStore = defineStore({
     /**
      * 根据recruitId和teamId查询团队的简历数
      * @param param teamId
+     * @param type 3 表示外部团队,其他空或参数正常
      * @returns
      */
     async fetchTeamData(param: string, type = '') {
@@ -393,19 +405,21 @@ export const useResumeListStore = defineStore({
         this.searchResumeType = '';
       }
       this.pagination = { ...this.pagination, current: 1 };
-      this.formState = {
+      if (type != '3') {
+        this.formState = {
         ...this.formState,
         sortId: '',
         leftType: '',
         recruitId: loginVueUser.loginId,
         leftRecruitId: '',
         leftTeamId: '',
-      };
+        };
+      }
       if (param.includes('teamLevel1')) {
         let formData = new FormData();
         formData.append('recruitId', loginVueUser.loginId);
         formData.append('teamId', param.split('_')[1]);
-        if (type) {
+        if (type && type != '3') {
           this.formState = {
             ...this.formState,
             leftType: '4',
@@ -1070,6 +1084,7 @@ export const useResumeListStore = defineStore({
     async queryEnterpriseConsultant(teamId = '') {
       let formData = new FormData();
       formData.append('teamId', teamId);
+      formData.append('SystemRecruitId', loginVueUser.loginId);
       const res = await fetchApi.queryEnterpriseConsultant(formData);
       if (res.code == 1) {
         this.enterpriseConsultantArr = res.info;
