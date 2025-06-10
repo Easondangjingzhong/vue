@@ -283,6 +283,7 @@
               :placeholder="themeLanguage?.companyName?.message"
               :options="optionsCompanyId"
               optionFilterProp="label"
+              :searchValue="formState.companyName"
               showSearch
               @select="handleSelcetCompanyName"
               @search="handleCompanyName"
@@ -607,7 +608,7 @@
             name="monthSalary"
             :label="themeLanguage?.monthSalary?.label"
             style="padding-left: 8px"
-            :rules="[{ required: false, message: themeLanguage?.monthSalary?.message }]"
+            :rules="[{ required: (formState.category == '店铺' && formState.isNewtest == '1' ? true : false), message: themeLanguage?.monthSalary?.message }]"
           >
             <a-input-number
               style="width: 100%"
@@ -624,7 +625,7 @@
             :label="themeLanguage?.salaryStructure?.label"
             style="padding-left: 8px"
             :label-col="{ span: resumeTypeEnglish == '1' ? 3.6 : 0 }"
-            :rules="[{ required: false, message: themeLanguage?.salaryStructure?.message }]"
+            :rules="[{ required: (formState.category == '店铺' && formState.isNewtest == '1' ? true : false), message: themeLanguage?.salaryStructure?.message }]"
           >
             <a-input
               v-model:value="formState.salaryStructure"
@@ -637,7 +638,7 @@
             name="shopVolume"
             :label="themeLanguage?.shopVolume?.label"
             style="padding-left: 8px"
-            :rules="[{ required: false, message: themeLanguage?.shopVolume?.message }]"
+            :rules="[{ required: (formState.category == '店铺' && formState.isNewtest == '1' ? true : false), message: themeLanguage?.shopVolume?.message }]"
           >
             <a-input
               v-model:value="formState.shopVolume"
@@ -653,7 +654,7 @@
             :label="themeLanguage?.personnelStructure?.label"
             style="padding-left: 8px"
             :label-col="{ span: resumeTypeEnglish == '1' ? 3.6 : 0 }"
-            :rules="[{ required: false, message: themeLanguage?.personnelStructure?.message }]"
+            :rules="[{ required: (formState.category == '店铺' && formState.isNewtest == '1' ? true : false), message: themeLanguage?.personnelStructure?.message }]"
           >
             <a-input
               v-model:value="formState.personnelStructure"
@@ -1356,6 +1357,10 @@
   const fetching = ref(false);
   const fetchingCompanyName = ref(false);
   const handleCompanyName = debounce((value) => {
+    if (!value) {
+      return;
+    }
+    formState.companyName = value;
     let tempOptionMarkIdUpdate = [];
     fetching.value = true;
     fetchingCompanyName.value = true;
@@ -1376,7 +1381,7 @@
       optionsCompanyId.value = tempOptionMarkIdUpdate;
       fetching.value = false;
     });
-  }, 2000);
+  }, 500);
   const selcetCompanyNameFlag = ref(false);
   const handleSelcetCompanyName = () => {
     selcetCompanyNameFlag.value = true;

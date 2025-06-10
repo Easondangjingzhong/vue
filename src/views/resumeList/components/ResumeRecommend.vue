@@ -728,7 +728,7 @@
   }
   const optionsTeam = ref<SelectProps['options']>([]);
   //@ts-ignore
-  optionsTeam.value = teamPersonChangeArr.value.map((item) => ({
+  optionsTeam.value = teamPersonChangeArr?.value?.map((item) => ({
     value: item.teamId,
     label: item.teamName,
   }));

@@ -37,6 +37,7 @@ interface ResumeListState {
   recommendCounselorArr: []; //查询推荐顾问
   enterpriseConsultantArr: []; //查询企业顾问
   violationFlag: boolean; //违规上报modal展示 true 展示 false 隐藏
+  resumeLoginNameChangeFlag: boolean; //切换后我的人才modal展示 true 展示 false 隐藏
 }
 const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginOutFlag: '' } = JSON.parse(
   localStorage.getItem('loginVueUser'),
@@ -85,6 +86,7 @@ export const useResumeListStore = defineStore({
       pageSize: 15,
       total: 0,
     } as PaginationItem,
+    resumeLoginNameChangeFlag: true,
   }),
   actions: {
     /**
@@ -590,7 +592,7 @@ export const useResumeListStore = defineStore({
         };
          //@ts-ignore
         this.queryResumeList(this.formState);
-        if (loginVueUser.loginOutFlag == '1') {
+        if (loginVueUser.loginOutFlag == '1' && this.resumeLoginNameChangeFlag) {
             let formData = new FormData();
             formData.append('recruitId', loginVueUser.loginId);
             //formData.append('viewType', this.systemType);
@@ -620,6 +622,7 @@ export const useResumeListStore = defineStore({
      * @param viewType T 部门视角 （非Leader 此参数不生效 T也不影响） V 团队L视角  S个人视角
      */
     async resumeLoginNameChange(recruitId: string, viewType: string) {
+      this.resumeLoginNameChangeFlag = false;
       let formData = new FormData();
       if (viewType == 'T') {
         this.loginNameChangeRecruitId = recruitId.split('-')[0];

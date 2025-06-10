@@ -5,7 +5,7 @@ enum URL {
   resume_add = '/resume/create-resume-by-consultant-vue.action',
   resume_file = '/resume/upload-resume-vue-orginalResume.action',
   resume_photo = '/resume/upload-resume-head-vue.action',
-  resume_position = '/candidate/query-position.action',
+  resume_position = '/candidate/resume-vue-query-position.action',
   query_mapping_resumeId = '/candidateRecommend/resume-vue-query-cId-byResumeId.action',
   query_resume_resumeId =  '/candidate/rusume-vue-query-resume-by-consultant.action',
 }

@@ -620,7 +620,7 @@
   const screenWidth = Math.round(window.screen.width * window.devicePixelRatio);
   const handleTemplateTypeeManage = () => {
     const systemUserTemp = systemUsereManage.value ? "1" : "2";
-    location.href = `http://work.wotui.com:8889/WTSM/DownloadResumeServlet?resumeId=${resumeId.value}&resumeType=C&systemUser=${systemUserTemp}&template=${templatTypeeManage.value}&realEnName=&screenWidth=${screenWidth}`
+    location.href = `http://localhost:8080/WTSM/DownloadResumeServlet?resumeId=${resumeId.value}&resumeType=C&systemUser=${systemUserTemp}&template=${templatTypeeManage.value}&resumeName=1&realEnName=&screenWidth=${screenWidth}`
     handleCloseResumeUploadeManage();
   }
   //根据登录人的ID判断是否是NR38不能推荐

@@ -97,7 +97,7 @@
   watch(teamPersonChangeArr,() => {
     if (teamPersonChangeArr.value && teamPersonChangeArr.value.length > 0 && (!optionsLoginNameTeam.value || optionsLoginNameTeam.value.length == 0)) {
       //@ts-ignore
-      optionsLoginNameTeam.value = teamPersonChangeArr.value.map(item => ({value: item.teamId,label: item.teamName}));
+      optionsLoginNameTeam.value = teamPersonChangeArr.value?.map(item => ({value: item.teamId,label: item.teamName}));
     }
 });
   const handleResumeSvgClick = (e) => {
@@ -365,7 +365,7 @@
   const teamSelectPersonArr = ref([]);
   const teamSelectPerson = ref(['']);
   const handleTeamPersonChange = (values) => {
-    teamSelectPersonArr.value = teamPersonChangeArr.value.filter(item => item.teamId == values)[0].recruitList;
+    teamSelectPersonArr.value = teamPersonChangeArr.value.filter(item => item.teamId == values)[0].recruitList.filter(item => item.recruitId != loginVueUser.loginId);
   }
   const handleTeamSelectPerson = (values) => {
     if (values.length > 0) {

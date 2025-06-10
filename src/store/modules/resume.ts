@@ -29,6 +29,9 @@ interface ResumeState {
   closeBtn: boolean;//上传完成提示 true 展开 false 关闭
   updatePhotoFlag: Number;//简历照片状态 0 是无照片  1 是有照片  2 是有照片已修改 
 }
+const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginOutFlag: '' } = JSON.parse(
+  localStorage.getItem('loginVueUser'),
+);
 const cityStore = useCityStoreWithOut();
 const { country, province } = storeToRefs(cityStore);
 const diffBirthday = (birthday, age, talentSource) => {
@@ -71,6 +74,7 @@ export const useResumeStore = defineStore({
     async fetchPosition(data) {
       let formData = new FormData();
       formData.append("jobCategory",data);
+      formData.append('SystemRecruitId', loginVueUser.loginId);
       const res = await fetchApi.fetchResumePosition(formData);
       if (data == "店铺") {
         this.positionStore = res.info;
@@ -183,7 +187,6 @@ export const useResumeStore = defineStore({
         }
       }
        // @ts-ignore
-      const loginVueUser: {loginName: "", loginId: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
       const resume: Resume = {
         resumeType: 'C',
         realNameEn: loginVueUser.loginName,
@@ -247,7 +250,6 @@ export const useResumeStore = defineStore({
     async queryResumeById(resumeId,addConsultantId) {
       this.resumeTypeEnglish = '1';
       // @ts-ignore
-      const loginVueUser: {loginName: "", loginId: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
       let formData = new FormData();
       formData.append('resumeId', resumeId); // resumeId
       formData.append('resumeType', 'C'); // resumeType C
