@@ -42,8 +42,7 @@ interface ResumeListState {
 const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginOutFlag: '' } = JSON.parse(
   localStorage.getItem('loginVueUser'),
 );
-export const useResumeListStore = defineStore({
-  id: 'app-Resume-List',
+export const useResumeListStore = defineStore('app-Resume-List',{
   state: (): ResumeListState => ({
     //用户菜单
     resumeMenu: [],
@@ -124,6 +123,7 @@ export const useResumeListStore = defineStore({
         //@ts-ignore
         myDataChildren.push(item);
       }
+    
       let teamDataChildren = [];
       let teamDataNum = 0;
       if (info.teamList && info.teamList.length > 0) {
@@ -144,6 +144,15 @@ export const useResumeListStore = defineStore({
         item.label = teamDataNum + '';
         item.title = '团队简历';
         item.children = teamDataChildren;
+        item.level = 2;
+        //@ts-ignore
+        myDataChildren.push(item);
+      }
+       if (info.blackResume && loginVueUser.loginOutFlag != '1') {
+        let item = {} as Item;
+        item.key = '4';
+        item.label = info.blackShu || 0;
+        item.title = '黑名单';
         item.level = 2;
         //@ts-ignore
         myDataChildren.push(item);
@@ -406,6 +415,7 @@ export const useResumeListStore = defineStore({
       } else {
         this.searchResumeType = '';
       }
+      this.formState = { ...this.formState, isBlack: '' };
       this.pagination = { ...this.pagination, current: 1 };
       if (type != '3') {
         this.formState = {
@@ -580,6 +590,11 @@ export const useResumeListStore = defineStore({
       }
       if (param == '1' || param == '2' || param == '3') {
         this.formState = { ...this.formState, leftType: param };
+        //@ts-ignore
+        this.queryResumeList(this.formState);
+      }
+      if (param == '4') {
+        this.formState = { ...this.formState, leftType: '9',isBlack: '1' };
         //@ts-ignore
         this.queryResumeList(this.formState);
       }
@@ -852,7 +867,7 @@ export const useResumeListStore = defineStore({
           tempItem.userName = item.userName;
           tempItem.resumeProgress = `${item.resumeProgress}%`;
           tempItem.addConsultantId = item.addConsultantId;
-          tempItem.phone = item.phone;
+          tempItem.phone = item.phoneNum;
           tempItem.gender = item.gender == 'F' ? '女' : '男';
           tempItem.age = item.age;
           tempItem.currentCity = item.currentCity;
@@ -871,6 +886,8 @@ export const useResumeListStore = defineStore({
           tempItem.options = item.options;
           tempItem.recruitId = item.recruitId;
           tempItem.leftType = param.leftType ||  (loginVueUser.loginOutFlag != '1' ? '2' : '5'); //参数
+          tempItem.isBlack = item.isBlack; //黑名单 1是 其他 否
+          tempItem.blackRemark = item.blackRemark; //黑名单 1是 其他 否
           tempItem.projectFlag = item.projectFlag;
           tempItem.twoYearFlag = item.twoYearFlag; //两年
           tempItem.resumeStatus = item.resumeStatus; //两年
@@ -1004,6 +1021,7 @@ export const useResumeListStore = defineStore({
       formData.append('notSelf', param.notSelf || '');
       formData.append('isEnglish', param.isEnglish || '');
       formData.append('totalCount', param.totalCount || '');
+      formData.append('isBlack', param.isBlack || '');
       return formData;
     },
     /**
@@ -1156,6 +1174,18 @@ export const useResumeListStore = defineStore({
       formData.append('phoneNum', phoneNum);
       formData.append('recruitId', recruitId);
       const res = await fetchApi.queryQueryResumeNewDetails(formData);
+      return res;
+    },
+     /**
+     * 根据手机号加入黑名单
+     * @returns
+     */
+    async addNewBlack(data) {
+      let formData = new FormData();
+      formData.append('phoneNum', data.phone);
+      formData.append('isBlack', data.isBlcak);
+      formData.append('blackRemark', data.blackRemark || "");
+      const res = await fetchApi.addNewBlack(formData);
       return res;
     },
   },

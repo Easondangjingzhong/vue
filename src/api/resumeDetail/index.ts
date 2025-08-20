@@ -54,9 +54,30 @@ enum URL {
   update_resume_progress = '/candidate/rusume-vue-update-resumeprogress.action',
   query_resume_mapping_work = '/resume/getMappingAndResumeWorkLatest.action',
   query_nr_position_id = '/candidate/rusume-vue-get-currentPosition.action',
+  query_limit_flag_recommend = '/candidate/rusume-vue-check-resume-offer-limit.action',
+  query_resume_by_resumeid = '/resume/resume-vue-view1-resume-by-resumeId.action',
+  update_resume_report_borth = '/city/resume-vue-update-resume-hide-collect.action',
+  update_resume_detail_flag = '/city/resume-vue-update-resume-hide-detail.action',
+  add_resume_recommend_pdf = '/city/resume-vue-create-Pdf-resumeId.action',
+  add_resume_recommend_pdf_repeat = '/city/resume-vue-create-Pdf-resumeId-chongTui.action',
+  delete_brand_daiShen = '/city/resume-vue-delete-brand-Daishen.action',
 }
+const handleResumeJobtitleFlag = (formData: any) =>
+  post<any>({ url: URL.update_resume_report_borth, data: formData });
+const addCandidateRecommendRepeat = (formData: any) =>
+  post<any>({ url: URL.add_resume_recommend_pdf_repeat, data: formData });
+const addCandidateRecommendPdf = (formData: any) =>
+  post<any>({ url: URL.add_resume_recommend_pdf, data: formData });
+const handleResumeDetailFlag = (formData: any) =>
+  post<any>({ url: URL.update_resume_detail_flag, data: formData });
+const handleResumeReportAndBorthFlag = (formData: any) =>
+  post<any>({ url: URL.update_resume_report_borth, data: formData });
+const queryResumeByResumeId = (formData: any) =>
+  post<any>({ url: URL.query_resume_by_resumeid, data: formData });
 const queryNrPositionId = (formData: any) =>
   post<any>({ url: URL.query_nr_position_id, data: formData });
+const queryLimitFlagRecommend = (formData: any) =>
+  post<any>({ url: URL.query_limit_flag_recommend, data: formData });
 const queryResumeMappingWork = (formData: any) =>
   post<any>({ url: URL.query_resume_mapping_work, data: formData });
 const updateResumeProgressDetailScore = (formData: any) =>
@@ -162,8 +183,17 @@ const queryMarkBrandFloor = async (data: any) => post<any>({ url: URL.resume_mar
  */
 const queryMarkList = async (data: any) => post<any>({ url: URL.resume_markList, data });
 const resumeMappingJiagou = async (data: any) => post<any>({ url: URL.resume_mapping_jiagou, data });
+const deleteBrandDaiShen = async (data: any) => post<any>({ url: URL.delete_brand_daiShen, data });
 export default {
+  deleteBrandDaiShen,
+  handleResumeJobtitleFlag,
+  addCandidateRecommendRepeat,
+  addCandidateRecommendPdf,
+  handleResumeDetailFlag,
+  handleResumeReportAndBorthFlag,
+  queryResumeByResumeId,
   queryNrPositionId,
+  queryLimitFlagRecommend,
   queryResumeMappingWork,
   updateResumeProgressDetailScore,
   checkWorkNewtest,

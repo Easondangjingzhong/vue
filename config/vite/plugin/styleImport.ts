@@ -63,6 +63,7 @@ export function configStyleImportPlugin(isBuild: boolean) {
             'layout-footer': 'layout',
             'layout-header': 'layout',
             'month-picker': 'date-picker',
+            'time-picker': 'time-picker',
           };
 
           return ignoreList.includes(name)
@@ -74,5 +75,6 @@ export function configStyleImportPlugin(isBuild: boolean) {
       },
     ],
   });
+
   return styleImportPlugin;
 }

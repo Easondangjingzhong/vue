@@ -206,12 +206,23 @@
               record.checkFlag &&
               record.checkFlag != '待核' &&
               record.checkFlag != '待激活' &&
-              record.checkFlag != '已激活'
+              record.checkFlag != '已激活' &&
+              record.checkFlag != '过期'
             "
             color="green"
             >{{ record.checkFlag }}</a-tag
           >
-
+          <a-tag
+            class="tagspan"
+            :title="record.newTime"
+            v-if="
+              record.recruitId &&
+              record.checkFlag &&
+              record.checkFlag == '过期'
+            "
+            color="orange"
+            >{{ record.checkFlag }}</a-tag
+          >
           <a-tag
             class="tagspan"
             :title="record.repeatTime"
@@ -285,6 +296,27 @@
             color="orange"
             >保证期</a-tag
           >
+           <a-tag
+            class="tagspan"
+            v-if="record.isBlack == '1'"
+            color="red"
+            :title="loginVueUser.loginType == 'A' ? (record.blackRemark ? record.blackRemark : '此候选人已经存在公司黑名单中，禁止推荐') : '此候选人已经存在公司黑名单中，禁止推荐'"
+            >黑名单</a-tag
+          >
+        </template>
+        <template v-if="column.key === 'action' && loginVueUser.loginType == 'A'">
+          <a-dropdown>
+            <span class="ant-dropdown-link" style="cursor: pointer;" @click.prevent>
+              <MenuUnfoldOutlined style="font-size: 15px;"/>
+            </span>
+            <template #overlay>
+              <a-menu>
+                <a-menu-item>
+                 <a href="javascript:;" @click="addNewBlack(record)">黑名单</a>
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
         </template>
       </template>
       <template #expandedRowRender="{ record }">
@@ -374,6 +406,35 @@
       </a-form>
     </a-modal>
   </template>
+  <template>
+    <a-modal
+      v-model:open="openNewBlack"
+      :title="newBlackItem.isBlcak == '1' ? '添加黑名单' : '取消黑名单'"
+      @ok="saveAddNewBlack"
+      @cancel="clearAddNewBlack"
+      :footer="null"
+      :width="400"
+    >
+      <a-row>
+          <a-col :span="24" style="margin-bottom: 5px;padding-left: 10px;">
+            <span>候选人: </span> {{newBlackItem.name}}
+            <span>手机号: </span> {{newBlackItem.phone}}
+          </a-col>
+        </a-row>
+        <a-row>
+          <a-col :span="24">
+           <a-textarea :rows="3" style="white-space: pre-wrap;" v-model:value="blackRemark"></a-textarea>
+
+          </a-col>
+        </a-row>
+         <a-row>
+          <a-col :span="24" style="text-align: right;margin-top: 5px;">
+            <a-button size="small" style="margin: 0 0 0 12px" type="primary" @click="saveAddNewBlack">保存</a-button>
+            <a-button size="small" style="margin: 0 8px" @click="clearAddNewBlack">取消</a-button>
+          </a-col>
+        </a-row>
+    </a-modal>
+  </template>
 </template>
 <script lang="ts" setup>
   import { ref } from 'vue';
@@ -382,6 +443,7 @@
     DoubleLeftOutlined,
     PlusSquareOutlined,
     MinusSquareOutlined,
+    MenuUnfoldOutlined,
   } from '@ant-design/icons-vue';
   import type { FormInstance } from 'ant-design-vue';
   import { storeToRefs } from 'pinia';
@@ -444,7 +506,7 @@
     expand.value = expandArr[expand.value];
   };
   const formRef = ref<FormInstance>();
-  const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginOutFlag: '' } = JSON.parse(
+  const loginVueUser: { loginName: '', loginId: '', loginTocken: '', loginOutFlag: '',loginType: '' } = JSON.parse(
   localStorage.getItem('loginVueUser'),
 );
   if(loginVueUser.loginOutFlag != '1') {
@@ -608,8 +670,8 @@
     },
     {
       title: '操作',
-      dataIndex: 'options',
-      key: 'options',
+      dataIndex: 'action',
+      key: 'action',
       ellipsis: true,
       width: 35,
     },
@@ -795,6 +857,46 @@ optionsRecruitId.value = teamPersonChangeArr.value.map(item => ({value: item.tea
       selectedRecruitIdValue.value = [];
     }
   }
+  const newBlackItem = ref({
+    name: '',
+    phone: '',
+    blackRemark: '',
+    isBlcak: '1',
+  })
+  const blackRemark = ref('');
+  const openNewBlack = ref<boolean>(false);
+   const addNewBlack = (record) => {
+    newBlackItem.value.name = record.userName;
+    newBlackItem.value.phone = record.phone;
+    if (record.isBlack == '1') {
+      newBlackItem.value.isBlcak = '2';
+    } else {
+      newBlackItem.value.isBlcak = '1';
+    }
+    newBlackItem.value.blackRemark = record.blackRemark;
+    blackRemark.value = record.blackRemark;
+    openNewBlack.value = true;
+  };
+  const clearAddNewBlack = () => {
+    newBlackItem.value.name = '';
+    newBlackItem.value.phone = '';
+    newBlackItem.value.blackRemark = '';
+    newBlackItem.value.isBlcak = '1';
+    openNewBlack.value = false;
+    blackRemark.value = '';
+  }
+ const saveAddNewBlack = () => {
+  newBlackItem.value.blackRemark = blackRemark.value;
+    resumeListStore.addNewBlack(newBlackItem.value).then((res) => {
+      if (res.code == 1) {
+        clearAddNewBlack();
+        message.success('加入黑名单成功');
+        onFinish(2);
+      } else {
+        message.error('加入黑名单失败');
+      }
+    });
+ }
 </script>
 <style lang="less" scoped>
   .resume-content,

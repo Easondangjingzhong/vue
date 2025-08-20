@@ -3,6 +3,32 @@ import { store } from '/@/store';
 import { currentDate } from '/@/utils/dateUtil';
 import { ResumeDetail } from '/@/api/resumeDetail/modal';
 import fetchApi from '/@/api/resumeDetail';
+interface RecommendPerson {
+      index: string;
+      city: string;
+      brand: string;
+      jobTitle: string;
+      workPlace: string;
+      turnoverTime: string;
+      counselor: string;
+      jobStatus: string;
+      recruitingNum: string;
+      offerNum: string;
+      openResumesNum: string;
+      surplus: string;
+      isTask: string;
+      action: string;
+      companyName: string;
+      bId: string;
+      id: string;
+      mId: string;
+      recruitId: string;
+      positionsId: string;
+      checkResult: string;
+      refuseRemark: string;
+      rid: string;
+      cId: string;
+    }
 interface ResumeDetailState {
   resumeDetail: ResumeDetail; // 简历数据
   eduFlag: boolean; // 添加教育经历是否 true是 false 否
@@ -13,6 +39,9 @@ interface ResumeDetailState {
   resumeContactContent: []; // 联络记录
   resumeReport: []; // 简历报告
   candidatePositionFlag: boolean; //推荐人才是否展开显示
+  currentWorkCity: string; //当前工作城市
+  currentYear: string; //当前考核周度
+  currentMonth: string; //当前考核周度
   currentWeekNum: string; //当前考核周度
   currentWeek: []; //当前所有考核周
   enterpriseConsultant: []; //所有企业顾问
@@ -28,28 +57,43 @@ interface ResumeDetailState {
   addRecruitId: string; //简历的添加顾问id
   commRecruitId: string; //不为空是正常简历,空是公共库简历
   searchRecommend: string; //企业顾问查看简历
-  personWholeFlag: boolean; //简历个人信息完整 true false 30 
-  workWholeFlag: boolean; //简历工作信息完整 true false 30 
-  educationWholeFlag: boolean; //简历教育信息完整 true false 20 
-  languageWholeFlag: boolean; //简历语言信息完整 false true 10 
-  selfWholeFlag: boolean; //简历自我评价信息完整 true false 10 
-  workWholeFlagAtShcool:boolean;//是否应届毕业生 true 是 false 
+  personWholeFlag: boolean; //简历个人信息完整 true false 30
+  workWholeFlag: boolean; //简历工作信息完整 true false 30
+  educationWholeFlag: boolean; //简历教育信息完整 true false 20
+  languageWholeFlag: boolean; //简历语言信息完整 false true 10
+  selfWholeFlag: boolean; //简历自我评价信息完整 true false 10
+  workWholeFlagAtShcool: boolean; //是否应届毕业生 true 是 false
+  resumeRecommendUploadData: {};//推荐时简历详情
+  recommendPerson: {};//推荐时对象
+  resumeRecommendUploadFlag: boolean;//推荐时简历详情展开
+  resumeRecommendShowFlag: boolean;//推荐时简历信息展示
+  repeatRecommendFlag: boolean;//重新推荐时简历信息展示
+  handleResumePid: string; //推荐职位id
+  handleResumebId: string; //推荐品牌id
+  handleResumePdfPath: string; //推荐顾问重新推荐的PDF文件路径
+  orginalPathShow: boolean; //简历层级设置
+  resumeContainerIndexFlag: boolean; //简历层级设置
+  resumeContainerIndexBtnFlag: boolean; //简历层级设置
 }
-const loginVueUser: {loginName: "", loginId: "", loginTocken: "",loginType: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
-export const useResumeDetailStore = defineStore({
-  id: 'app-Resume',
+const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: '' } = JSON.parse(
+  localStorage.getItem('loginVueUser'),
+);
+export const useResumeDetailStore = defineStore('app-Resume',{
   state: (): ResumeDetailState => ({
     // info
     resumeDetail: {} as ResumeDetail,
     resumeShowFlag: false,
     eduFlag: false,
     workFlag: false,
+    currentWorkCity: '',
     candidatePositionFlag: false,
     resumeRecord: [],
     resumeIntention: [],
     resumeCheckResult: [],
     resumeContactContent: [],
     resumeReport: [],
+    currentYear: '',
+    currentMonth: '',
     currentWeekNum: '',
     currentWeek: [],
     enterpriseConsultant: [],
@@ -70,6 +114,17 @@ export const useResumeDetailStore = defineStore({
     languageWholeFlag: true,
     selfWholeFlag: false,
     workWholeFlagAtShcool: false,
+    orginalPathShow: false,
+    resumeContainerIndexFlag: false,
+    resumeContainerIndexBtnFlag: false,
+    repeatRecommendFlag: true,
+    resumeRecommendUploadData: {},
+    resumeRecommendUploadFlag: false,
+    resumeRecommendShowFlag: true,
+    handleResumePid: '',
+    handleResumebId: '',
+    handleResumePdfPath: '',
+    recommendPerson: {} as RecommendPerson,
   }),
   actions: {
     /**
@@ -80,12 +135,13 @@ export const useResumeDetailStore = defineStore({
       this.resumeDetail = info;
       this.copyed = info.copyed;
       this.commRecruitId = info.resume.recruitId;
+      this.currentWorkCity = info.resume.currentCity;
     },
     /**
      * 查询简历详情
      */
-    async queryResumeDetail(resumeId='',addConsultantId='') {
-      let formData = new FormData();
+    async queryResumeDetail(resumeId = '', addConsultantId = '') {
+      const formData = new FormData();
       if (resumeId) {
         this.resumeId = resumeId;
       }
@@ -113,7 +169,7 @@ export const useResumeDetailStore = defineStore({
      * 修改个人信息
      */
     async updateResumePersonal(data) {
-      const res = await fetchApi.updateResumePersonal({...data,recruitId: loginVueUser.loginId});
+      const res = await fetchApi.updateResumePersonal({ ...data, recruitId: loginVueUser.loginId });
       return res;
     },
     /**
@@ -138,13 +194,13 @@ export const useResumeDetailStore = defineStore({
         startMonth: data.startYear.split('-')[1],
         positionName: data.positionsId.label,
         positionsId: data.positionsId.value,
-        brandName: data.brandName.label ? data.brandName.label.split('(')[0] : "",
+        brandName: data.brandName.label ? data.brandName.label.split('(')[0] : '',
         workBrand: data.brandName.value,
         cityName: data.cityName.label,
         workCity: data.cityName.value,
         marketName: data.marketName.label,
         workMark: data.marketName.value,
-        qichachaSign: "1",
+        qichachaSign: '1',
       };
       if (dataTemp.id) {
         res = await fetchApi.updateResumeWorkExp(dataTemp);
@@ -153,11 +209,12 @@ export const useResumeDetailStore = defineStore({
       }
       return res;
     },
-    async queryCheckBrandName(cnName,enName) {
-      let formData = new FormData();
+    async queryCheckBrandName(cnName, enName, workId = '') {
+      const formData = new FormData();
       formData.append('cnName', cnName);
       formData.append('enName', enName);
-      return await fetchApi.queryCheckBrandName(formData).then(res => res);
+      formData.append('workId', workId);
+      return await fetchApi.queryCheckBrandName(formData).then((res) => res);
     },
     /**
      * 修改教育经理
@@ -191,7 +248,7 @@ export const useResumeDetailStore = defineStore({
      * @param file 简历头像
      */
     fetchResumePhote(resumeId: String, file: File) {
-      let formData = new FormData();
+      const formData = new FormData();
       formData.append('file', file);
       // @ts-ignore
       formData.append('resumeId', resumeId);
@@ -202,7 +259,7 @@ export const useResumeDetailStore = defineStore({
      * @param param 城市商场
      */
     async queryMarkList(city, marketName?: string) {
-      let formData = new FormData();
+      const formData = new FormData();
       formData.append('city', city);
       formData.append('marketName', marketName || '');
       formData.append('curPage', '1');
@@ -210,7 +267,7 @@ export const useResumeDetailStore = defineStore({
       return res;
     },
     async queryMarkBrandFloor(marketId, brandId) {
-      let formData = new FormData();
+      const formData = new FormData();
       formData.append('marketId', marketId);
       formData.append('brandId', brandId);
       formData.append('recruitId', loginVueUser.loginId);
@@ -220,8 +277,8 @@ export const useResumeDetailStore = defineStore({
     /**
      * 查询职位排除门店销售和门店支持
      */
-    async queryResumePositions(jobCategory='店铺') {
-      let formData = new FormData();
+    async queryResumePositions(jobCategory = '店铺') {
+      const formData = new FormData();
       formData.append('industry', '');
       formData.append('jobCategory2', '');
       formData.append('management2', '');
@@ -237,7 +294,7 @@ export const useResumeDetailStore = defineStore({
      * @returns
      */
     async queryResumeRecord(PageNumber) {
-      let formData = new FormData();
+      const formData = new FormData();
       const phone = this.resumeDetail.resume.phoneNum;
       const phoneOther = this.resumeDetail.resume.phoneNumOther;
       formData.append('phone', phone);
@@ -256,7 +313,7 @@ export const useResumeDetailStore = defineStore({
      * @returns
      */
     async addResumeCheckResult(data) {
-      let formData = new FormData();
+      const formData = new FormData();
       const resumeId = this.resumeDetail.resumeId;
       formData.append('companyName', data.companyName);
       formData.append('checkResult', data.checkResult);
@@ -274,7 +331,7 @@ export const useResumeDetailStore = defineStore({
      * @returns
      */
     async queryResumeCheckResult(PageNumber) {
-      let formData = new FormData();
+      const formData = new FormData();
       const resumeId = this.resumeDetail.resumeId;
       formData.append('resumeId', resumeId.toString());
       formData.append('PageNumber', PageNumber);
@@ -307,7 +364,7 @@ export const useResumeDetailStore = defineStore({
      * @returns
      */
     async queryResumeContactContent(PageNumber) {
-      let formData = new FormData();
+      const formData = new FormData();
       const resumeId = this.resumeDetail.resumeId;
       formData.append('resumeId', resumeId.toString());
       formData.append('PageNumber', PageNumber);
@@ -333,10 +390,10 @@ export const useResumeDetailStore = defineStore({
      * @returns
      */
     async queryResumeReport() {
-      let formData = new FormData();
+      const formData = new FormData();
       const resumeId = this.resumeDetail.resumeId;
       formData.append('resumeId', resumeId.toString());
-      if (this.searchRecommend == "Q") {
+      if (this.searchRecommend == 'Q') {
         formData.append('recruitId', this.addRecruitId);
       } else {
         formData.append('recruitId', this.commRecruitId || loginVueUser.loginId);
@@ -354,7 +411,7 @@ export const useResumeDetailStore = defineStore({
      * @returns
      */
     async updateResumeReportContent(reportContent) {
-      let formData = new FormData();
+      const formData = new FormData();
       const resumeId = this.resumeDetail.resumeId;
       formData.append('resumeId', resumeId.toString());
       formData.append('recruitId', loginVueUser.loginId);
@@ -371,7 +428,7 @@ export const useResumeDetailStore = defineStore({
      */
     async queryRecommendCandidatePosition(data) {
       this.recommendCandidatePositionSearch = data;
-      let formData = new FormData();
+      const formData = new FormData();
       formData.append('page', data.page);
       formData.append('recruitId', loginVueUser.loginId);
       formData.append('recommendId', this.mappingId);
@@ -391,13 +448,13 @@ export const useResumeDetailStore = defineStore({
       const res = await fetchApi.queryRecommendCandidatePosition(formData);
       return res;
     },
-      /**
+    /**
      * 查询推荐职位查询外部
      * @returns
      */
     async queryRecommendCandidateOutPosition(data) {
       this.recommendCandidatePositionSearch = data;
-      let formData = new FormData();
+      const formData = new FormData();
       formData.append('page', data.page);
       formData.append('recruitId', loginVueUser.loginId);
       formData.append('recommendId', this.mappingId);
@@ -422,11 +479,14 @@ export const useResumeDetailStore = defineStore({
      * @returns
      */
     async queryWeekNumByWorkDate() {
-      let formData = new FormData();
+      const formData = new FormData();
       formData.append('workDate', currentDate());
       const res = await fetchApi.queryWeekNumByWorkDate(formData);
       if (res.code == 1) {
-        this.currentWeekNum = res.info[0].weekNum;
+        this.currentYear = res.info[0]?.year;
+        this.currentMonth = res.info[0]?.month;
+        this.currentWeekNum = res.info[0]?.weekNum;
+        this.queryWeekByYearAndMonth(res.info[0]?.year,res.info[0]?.month);
       }
       return res;
     },
@@ -435,7 +495,7 @@ export const useResumeDetailStore = defineStore({
      * @returns
      */
     async queryWeekByYearAndMonth(year = '', month = '') {
-      let formData = new FormData();
+      const formData = new FormData();
       if (!year) {
         const nowyear = currentDate().split('-');
         formData.append('year', nowyear[0]);
@@ -455,7 +515,7 @@ export const useResumeDetailStore = defineStore({
      * @returns
      */
     async queryEnterpriseConsultant(teamId = '') {
-      let formData = new FormData();
+      const formData = new FormData();
       formData.append('teamId', teamId);
       formData.append('SystemRecruitId', loginVueUser.loginId);
       const res = await fetchApi.queryEnterpriseConsultant(formData);
@@ -468,8 +528,8 @@ export const useResumeDetailStore = defineStore({
      * 点击推荐查询mapping的id 没有生成
      * @returns
      */
-    async queryMappingIdByResumeId(resumeIdTemp='') {
-      let formData = new FormData();
+    async queryMappingIdByResumeId(resumeIdTemp = '') {
+      const formData = new FormData();
       const resumeId = resumeIdTemp || this.resumeDetail.resumeId.toString();
       formData.append('resumeId', resumeId);
       formData.append('recruitId', this.commRecruitId || loginVueUser.loginId);
@@ -481,12 +541,12 @@ export const useResumeDetailStore = defineStore({
       }
       return res;
     },
-     /**
+    /**
      * 根据mapping的id 查询推荐记录
      * @returns
      */
-     async queryRecommendByMappingId() {
-      let formData = new FormData();
+    async queryRecommendByMappingId() {
+      const formData = new FormData();
       formData.append('cId', this.mappingId);
       const res = await fetchApi.queryRecommendByMappingId(formData);
       if (res.code == 1) {
@@ -499,7 +559,7 @@ export const useResumeDetailStore = defineStore({
      * @returns
      */
     async addCandidateRecommendAppeal(data) {
-      let formData = new FormData();
+      const formData = new FormData();
       formData.append('id', data.id);
       formData.append('brand', data.brand);
       formData.append('bId', data.bId);
@@ -516,6 +576,12 @@ export const useResumeDetailStore = defineStore({
       formData.append('appealRemark', data.appealRemark);
       formData.append('recruitId', data.recruitId);
       formData.append('SystemRecruitId', loginVueUser.loginId);
+      formData.append('template', data.template);
+      formData.append('resumeId', this.resumeId);
+      formData.append('pid', this.handleResumePid);
+      formData.append('isHide', '1');
+      formData.append('file', data.file ? data.file.originFileObj : '');
+      formData.append('file2', data.file2 ? data.file2.originFileObj : '');
       const res = await fetchApi.addCandidateRecommendAppeal(formData);
       if (res.code == 1) {
         this.queryRecommendCandidatePosition(this.recommendCandidatePositionSearch);
@@ -523,12 +589,12 @@ export const useResumeDetailStore = defineStore({
       }
       return res;
     },
-     /**
+    /**
      * 新增候选人推荐
      * @returns
      */
-     async addCandidateRecommend(data) {
-      let formData = new FormData();
+    async addCandidateRecommend(data) {
+      const formData = new FormData();
       formData.append('id', data.id);
       formData.append('brand', data.brand);
       formData.append('bId', data.bId);
@@ -541,8 +607,13 @@ export const useResumeDetailStore = defineStore({
       formData.append('recommendId', data.recommendId);
       formData.append('companyName', data.companyName);
       formData.append('recruitId', data.recruitId);
-      formData.append('file', data.file ? data.file.originFileObj : "");
+      formData.append('file', data.file ? data.file.originFileObj : '');
+      formData.append('file2', data.file2 ? data.file2.originFileObj : '');
       formData.append('SystemRecruitId', loginVueUser.loginId);
+      formData.append('template', data.template);
+      formData.append('resumeId', this.resumeId);
+      formData.append('pid', this.handleResumePid);
+      formData.append('isHide', '1');
       const res = await fetchApi.addCandidateRecommend(formData);
       if (res.code == 1) {
         this.queryRecommendCandidatePosition(this.recommendCandidatePositionSearch);
@@ -550,22 +621,22 @@ export const useResumeDetailStore = defineStore({
       }
       return res;
     },
-     /**
+    /**
      * 查询推荐要求
      * @returns
      */
-     async queryCandidatePositionRequest(id) {
-      let formData = new FormData();
+    async queryCandidatePositionRequest(id) {
+      const formData = new FormData();
       formData.append('pId', id);
       const res = await fetchApi.queryCandidatePositionRequest(formData);
       return res;
     },
-     /**
+    /**
      * 候选人推荐查重
      * @returns
      */
-     async checkCandidateRecommendRepeat(data) {
-      let formData = new FormData();
+    async checkCandidateRecommendRepeat(data) {
+      const formData = new FormData();
       formData.append('id', data.id);
       formData.append('brand', data.brand);
       formData.append('bId', data.bId);
@@ -587,7 +658,7 @@ export const useResumeDetailStore = defineStore({
      * @returns
      */
     async deleteRecommend(data) {
-      let formData = new FormData();
+      const formData = new FormData();
       formData.append('pId', data);
       formData.append('cId', this.mappingId);
       formData.append('SystemRecruitId', loginVueUser.loginId);
@@ -598,12 +669,12 @@ export const useResumeDetailStore = defineStore({
       }
       return res;
     },
-     /**
+    /**
      * 候选人职位意向添加
      * @returns
      */
-     async addCandidatePositionIntention(data) {
-      let temp = data.map(item => ({
+    async addCandidatePositionIntention(data) {
+      const temp = data.map((item) => ({
         resumeId: this.resumeDetail.resumeId,
         recruitId: loginVueUser.loginId,
         brandId: item.bId,
@@ -614,10 +685,10 @@ export const useResumeDetailStore = defineStore({
         positionName: item.jobTitle,
         intention: item.intention,
       }));
-      let param = {
+      const param = {
         recruitId: loginVueUser.loginId,
-        resumeContactRecordmaps: temp
-      }
+        resumeContactRecordmaps: temp,
+      };
       const res = await fetchApi.addCandidatePositionIntention(param);
       if (res.code == 1) {
         this.queryCandidatePositionIntention(1);
@@ -629,7 +700,7 @@ export const useResumeDetailStore = defineStore({
      * @returns
      */
     async queryCandidatePositionIntention(PageNumber) {
-      let formData = new FormData();
+      const formData = new FormData();
       const resumeId = this.resumeDetail.resumeId.toString();
       formData.append('PageNumber', PageNumber);
       formData.append('resumeId', resumeId);
@@ -639,12 +710,12 @@ export const useResumeDetailStore = defineStore({
       }
       return res;
     },
-     /**
+    /**
      * 删除工作经历
      * @returns
      */
-     async deleteWorkExp(workExpId) {
-      let formData = new FormData();
+    async deleteWorkExp(workExpId) {
+      const formData = new FormData();
       const resumeId = this.resumeDetail.resumeId.toString();
       formData.append('workExpId', workExpId);
       formData.append('resumeId', resumeId);
@@ -657,7 +728,7 @@ export const useResumeDetailStore = defineStore({
      * @returns
      */
     async deleteEducationExp(eduExpId) {
-      let formData = new FormData();
+      const formData = new FormData();
       const resumeId = this.resumeDetail.resumeId.toString();
       formData.append('eduExpId', eduExpId);
       formData.append('resumeId', resumeId);
@@ -667,10 +738,10 @@ export const useResumeDetailStore = defineStore({
     },
     /**
      * 简历复制到登录人名下
-     * @returns 
+     * @returns
      */
     async resumeCopyToSelf(isTwoYear) {
-      let formData = new FormData();
+      const formData = new FormData();
       const resumeId = this.resumeDetail.resumeId.toString();
       formData.append('resumeId', resumeId);
       formData.append('isTwoYear', isTwoYear);
@@ -680,11 +751,11 @@ export const useResumeDetailStore = defineStore({
     },
     /**
      * 添加自定义标签
-     * @param tagValue 
-     * @returns 
+     * @param tagValue
+     * @returns
      */
     async addTag(tagValue) {
-      let formData = new FormData();
+      const formData = new FormData();
       const resumeId = this.resumeDetail.resumeId.toString();
       formData.append('resumeId', resumeId);
       formData.append('personLabel', tagValue);
@@ -693,10 +764,10 @@ export const useResumeDetailStore = defineStore({
     },
     /**
      * 简历核对
-     * @returns 
+     * @returns
      */
     async addResumeChecked(resumeProgress) {
-      let formData = new FormData();
+      const formData = new FormData();
       const resumeId = this.resumeDetail.resumeId.toString();
       formData.append('resumeId', resumeId);
       formData.append('resumeProgress', resumeProgress);
@@ -707,10 +778,10 @@ export const useResumeDetailStore = defineStore({
     },
     /**
      * 简历激活
-     * @returns 
+     * @returns
      */
     async addResumeCheckedTwoYear(resumeProgress) {
-      let formData = new FormData();
+      const formData = new FormData();
       const resumeId = this.resumeDetail.resumeId.toString();
       formData.append('resumeId', resumeId);
       formData.append('resumeProgress', resumeProgress);
@@ -721,38 +792,38 @@ export const useResumeDetailStore = defineStore({
     },
     /**
      * 推荐职位条件搜索
-     * @returns 
+     * @returns
      */
     async searchFormState(formState) {
-      let formData = new FormData();
-      formData.append('city', formState.city);
-      formData.append('mId', formState.market.value);
-      formData.append('positionId', formState.positionsId);
-      formData.append('bId', formState.brand);
-      formData.append('retail', formState.retail);
-      formData.append('retailLevel', formState.retailLevel);
-      formData.append('category', formState.category);
+      const formData = new FormData();
+      formData.append('city', formState.city || "");
+      formData.append('mId', formState.market?.value || "");
+      formData.append('positionId', formState.positionsId || "");
+      formData.append('bId', formState.brand || "");
+      formData.append('retail', formState.retail || "");
+      formData.append('retailLevel', formState.retailLevel || "");
+      formData.append('category', formState.category || "");
       formData.append('pinji', '');
-      formData.append('leibie', formState.leibie);
-      formData.append('industry', formState.retail);
-      formData.append('jobcategory2', formState.jobcategory2);
-      formData.append('management2', formState.management2);
+      formData.append('leibie', formState.leibie || "");
+      formData.append('industry', formState.retail || "");
+      formData.append('jobcategory2', formState.jobcategory2 || "");
+      formData.append('management2', formState.management2 || "");
       const res = await fetchApi.searchFormState(formData);
       return res;
     },
     /**
      * 文件路径转换为Blob
-     * @param path 
-     * @returns 
+     * @param path
+     * @returns
      */
     async resumeFlieToBlob(path) {
-      let formData = new FormData();
+      const formData = new FormData();
       formData.append('fileUrl', path);
       const res = await fetchApi.resumeFlieToBlob(formData);
       return res;
     },
     async queryCompanyQiChacha(companyName?: string) {
-      let formData = new FormData();
+      const formData = new FormData();
       const token = '47532bc3-1d66-4d13-8f63-fcff06028d7f';
       const url = `http://open.api.tianyancha.com/services/open/search/2.0?word=${companyName}&pageSize=20&pageNum=1`;
       formData.append('token', token);
@@ -761,13 +832,13 @@ export const useResumeDetailStore = defineStore({
       return res;
     },
     async queryConsultant() {
-      let formData = new FormData();
+      const formData = new FormData();
       formData.append('SystemRecruitId', loginVueUser.loginId);
       const res = await fetchApi.queryConsultant(formData);
       return res;
     },
     async recommendPersonRecommendAll(recruitId) {
-      let formData = new FormData();
+      const formData = new FormData();
       formData.append('phone', this.resumeDetail.resume.phoneNum);
       formData.append('phoneOther', '');
       formData.append('recruitId', recruitId);
@@ -776,7 +847,7 @@ export const useResumeDetailStore = defineStore({
       return res;
     },
     async resumeRecommendMsg(temp) {
-      let formData = new FormData();
+      const formData = new FormData();
       const resumeId = this.resumeDetail.resumeId.toString();
       formData.append('id', resumeId);
       formData.append('recommendCity', temp.recommendCity);
@@ -788,10 +859,10 @@ export const useResumeDetailStore = defineStore({
     },
     /**
      * 查询mapping信息
-     * @returns 
+     * @returns
      */
     async resumeMapping() {
-      let formData = new FormData();
+      const formData = new FormData();
       const resumeId = this.resumeDetail.resumeId.toString();
       formData.append('resumeId', resumeId);
       if (this.commRecruitId) {
@@ -804,10 +875,10 @@ export const useResumeDetailStore = defineStore({
     },
     /**
      * 查询mapping架构信息
-     * @returns 
+     * @returns
      */
-    async resumeMappingJiagou(brandId,marketId) {
-      let formData = new FormData();
+    async resumeMappingJiagou(brandId, marketId) {
+      const formData = new FormData();
       formData.append('brandId', brandId);
       formData.append('recruitId', this.commRecruitId || loginVueUser.loginId);
       formData.append('SystemRecruitId', loginVueUser.loginId);
@@ -816,12 +887,12 @@ export const useResumeDetailStore = defineStore({
       const res = await fetchApi.resumeMappingJiagou(formData);
       return res;
     },
-     /**
+    /**
      * 校验工作经历最近工作
-     * @returns 
+     * @returns
      */
-     async checkWorkNewtest(resumeId,workId) {
-      let formData = new FormData();
+    async checkWorkNewtest(resumeId, workId) {
+      const formData = new FormData();
       formData.append('resumeId', resumeId);
       formData.append('workId', workId);
       const res = await fetchApi.checkWorkNewtest(formData);
@@ -829,10 +900,10 @@ export const useResumeDetailStore = defineStore({
     },
     /**
      * 根据简历详情同步简历分数
-     * @returns 
+     * @returns
      */
     async updateResumeProgressDetailScore(resumeProgress) {
-      let formData = new FormData();
+      const formData = new FormData();
       const resumeId = this.resumeDetail.resumeId.toString();
       formData.append('id', resumeId);
       formData.append('resumeProgress', resumeProgress);
@@ -841,24 +912,210 @@ export const useResumeDetailStore = defineStore({
     },
     /**
      * 根据手机号查询mapping最近工作
-     * @returns 
+     * @returns
      */
     async queryResumeMappingWork() {
-      let formData = new FormData();
+      const formData = new FormData();
       const phone = this.resumeDetail.resume.phoneNum;
       formData.append('phone', phone);
       const res = await fetchApi.queryResumeMappingWork(formData);
       return res;
     },
-     /**
+    /**
      * 根据手机号查询mapping最近工作
-     * @returns 
+     * @returns
      */
-     async queryNrPositionId() {
-      let formData = new FormData();
+    async queryNrPositionId() {
+      const formData = new FormData();
       formData.append('recruitId', loginVueUser.loginId);
       const res = await fetchApi.queryNrPositionId(formData);
       return res;
+    },
+     /**
+     * 根据手机号查询mapping最近工作
+     * @returns
+     */
+    async queryLimitFlagRecommend(limitType) {
+      const formData = new FormData();
+      formData.append('limitType', limitType);
+      formData.append('resumeId', this.resumeId);
+      const res = await fetchApi.queryLimitFlagRecommend(formData);
+      return res;
+    },
+     /**
+     * 根据简历id查询简历数据
+     * @returns
+     */
+    async queryResumeByResumeId(templateType,screenWidth,pId,bId) {
+      const formData = new FormData();
+      formData.append('template', templateType);
+      formData.append('resumeId', this.resumeId);
+      formData.append('realEnName', loginVueUser.loginName);
+      formData.append('screenWidth', screenWidth);
+      formData.append('pid', pId);
+      this.handleResumePid = pId;
+      this.handleResumebId = bId;
+      const res = await fetchApi.queryResumeByResumeId(formData);
+        if (res.code == 1) {
+        this.resumeRecommendUploadData = res.info;
+        this.resumeRecommendUploadFlag = true;
+        }
+        return res;
+    },
+     /**
+     * 修改简历展示隐藏
+     * @returns
+     */
+    async handleResumeReportAndBorthFlag(reportHide,ageHide) {
+      const formData = new FormData();
+      formData.append('resumeId', this.resumeId);
+      formData.append('pid', this.handleResumePid);
+      formData.append('reportHide', reportHide);
+      formData.append('ageHide', ageHide);
+      const res = await fetchApi.handleResumeReportAndBorthFlag(formData);
+      return res;
+    },
+     /**
+     * 修改简历职业概况展示隐藏
+     * @returns
+     */
+    async handleResumeJobtitleFlag(jobtitleHide) {
+      const formData = new FormData();
+      formData.append('resumeId', this.resumeId);
+      formData.append('pid', this.handleResumePid);
+      formData.append('jobtitleHide', jobtitleHide);
+      const res = await fetchApi.handleResumeJobtitleFlag(formData);
+      return res;
+    },
+      /**
+     * 修改简历展示隐藏
+     * @returns
+     */
+    async handleResumeSalaryStructureFlag(workId,salaryHide) {
+      const formData = new FormData();
+      formData.append('resumeId', this.resumeId);
+      formData.append('pid', this.handleResumePid);
+      formData.append('workId', workId);
+      formData.append('officeHide', '');
+      formData.append('salaryHide', salaryHide);
+      formData.append('personHide', '');
+      formData.append('shopVolumeHide', '');
+      const res = await fetchApi.handleResumeDetailFlag(formData);
+      return res;
+    },
+      /**
+     * 修改简历展示隐藏
+     * @returns
+     */
+    async handleResumeOfficeFlag(workId,officeHide) {
+      const formData = new FormData();
+      formData.append('resumeId', this.resumeId);
+      formData.append('pid', this.handleResumePid);
+      formData.append('workId', workId);
+      formData.append('officeHide', officeHide);
+      formData.append('salaryHide', '');
+      formData.append('personHide', '');
+      formData.append('shopVolumeHide', '');
+      const res = await fetchApi.handleResumeDetailFlag(formData);
+      return res;
+    },
+      /**
+     * 修改简历展示隐藏
+     * @returns
+     */
+    async handleResumePersonFlag(workId,personHide) {
+      const formData = new FormData();
+      formData.append('resumeId', this.resumeId);
+      formData.append('pid', this.handleResumePid);
+      formData.append('workId', workId);
+      formData.append('officeHide', '');
+      formData.append('salaryHide', '');
+      formData.append('personHide', personHide);
+      formData.append('shopVolumeHide', '');
+      const res = await fetchApi.handleResumeDetailFlag(formData);
+      return res;
+    },
+      /**
+     * 修改简历展示隐藏
+     * @returns
+     */
+    async handleResumeShopVolume(workId,shopVolumeHide) {
+      const formData = new FormData();
+      formData.append('resumeId', this.resumeId);
+      formData.append('pid', this.handleResumePid);
+      formData.append('workId', workId);
+      formData.append('officeHide', '');
+      formData.append('salaryHide', '');
+      formData.append('personHide', '');
+      formData.append('shopVolumeHide', shopVolumeHide);
+      const res = await fetchApi.handleResumeDetailFlag(formData);
+      return res;
+    },
+      /**
+     * 推荐简历PDF
+     * @returns
+     */
+    async addCandidateRecommendPdf(template,rid) {
+      const formData = new FormData();
+      formData.append('resumeId', this.resumeId);
+      formData.append('pid', this.handleResumePid);
+      formData.append('rid', rid);
+      formData.append('template', template);
+      formData.append('appealId', '');
+      formData.append('isHide', '1');
+      formData.append('SystemRecruitId', loginVueUser.loginId);
+      const res = await fetchApi.addCandidateRecommendPdf(formData);
+      if (res.code == 1) {
+        this.queryResumeRecord(1);
+      }
+      return res;
+    },
+      /**
+     * 推荐简历PDF
+     * @returns
+     */
+    async addCandidateRecommendPdfAppeal(template,appealId) {
+      const formData = new FormData();
+      formData.append('resumeId', this.resumeId);
+      formData.append('pid', this.handleResumePid);
+      formData.append('rid', '');
+      formData.append('appealId', appealId);
+      formData.append('template', template);
+      formData.append('isHide', '1');
+      formData.append('SystemRecruitId', loginVueUser.loginId);
+      const res = await fetchApi.addCandidateRecommendPdf(formData);
+      return res;
+    },
+       /**
+     * 推荐简历PDF
+     * @returns 
+     */
+    async addCandidateRecommendRepeat(data) {
+      const formData = new FormData();
+      formData.append('resumeId', this.resumeId);
+      formData.append('cId', data.cId);
+      formData.append('rid', data.rid);
+      formData.append('pid', data.pid);
+      formData.append('isHide', '1');
+      formData.append('template', data.template);
+      formData.append('SystemRecruitId', loginVueUser.loginId);
+      formData.append('fileV', data.file ? data.file.originFileObj : '');
+      formData.append('fileV', data.file2 ? data.file2.originFileObj : '');
+      const res = await fetchApi.addCandidateRecommendRepeat(formData);
+       if (res.code == 1) {
+        this.queryResumeRecord(1);
+        this.orginalPathShow = false;
+      }
+      return res;
+    },
+       /**
+     * 推荐简历PDF
+     * @returns 
+     */
+    async deleteBrandDaiShen(workId) {
+      const formData = new FormData();
+      formData.append('workId', workId);
+      await fetchApi.deleteBrandDaiShen(formData);
     },
   },
 });

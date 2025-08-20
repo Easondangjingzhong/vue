@@ -1,8 +1,8 @@
 <template>
   <a-spin :spinning="resumeShowFlag" size="large">
     <a-layout>
-      <a-layout-content class="resume_container resume_container_index">
-        <div v-if="expendShow">
+      <a-layout-content class="resume_container">
+        <div class="resume_container_index" :class="{'resume_container_index_up': resumeContainerIndexFlag}" v-if="expendShow" @click="handleResumeContainerIndex">
           <ResumeDetailHeader
             :resumeData="resumeDetailTemp.resume"
             :showResumeAdd="showResumeAdd"
@@ -93,7 +93,7 @@
   const resumeListStore = useResumeListStoreWithOut();
   const cityStore = useCityStoreWithOut();
   const resumeDetailStore = useResumeDetailStore();
-  const { resumeDetail, eduFlag, workFlag, resumeShowFlag, commRecruitId } =
+  const { resumeDetail, eduFlag, workFlag, resumeShowFlag, commRecruitId,resumeContainerIndexFlag,orginalPathShow } =
     storeToRefs(resumeDetailStore);
   const resumeDetailTemp = ref({} as ResumeDetail);
   const expendShow = ref(false);
@@ -165,14 +165,14 @@ const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginOutFlag:
           !item.category ||
           !item.companyName ||
           (item.category == '店铺' &&
-            (!item.marketName ||
-              (item.isRetreat == 0 && !item.workFloor) ||
+            (!item.marketName  ||
               !(item.isRetreat == 0 || item.isRetreat == 1))) ||
           !(item.isNewtest == 0 || item.isNewtest == 1) ||
           !item.positionName ||
           !item.workDuty ||
           !item.cityName ||
-          ((item.category == '店铺' || index < 1)&& !item.brandName)
+          ((item.category == '店铺' || index < 1)&& (!item.brandName||
+              (item.isRetreat == 0 && !item.workFloor)))
           || (item.brandName == 'OFFICE')
         ) {
           wtemp = true;
@@ -217,6 +217,10 @@ const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginOutFlag:
     if (loginVueUser.loginOutFlag != '1') {
       showResumeRightOutFlag.value = true; 
     }
+    //推顾是否重新推荐展示标注的PDF
+    if (route.query?.pdfPath) {
+      resumeDetailStore.$patch({handleResumePdfPath: route.query?.pdfPath});
+    }
   });
   cityStore.fetchCountryInfo();
   cityStore.fetchInfo();
@@ -225,7 +229,7 @@ const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginOutFlag:
   resumeListStore.queryMarkList();
   resumeListStore.queryCompanyList();
   resumeDetailStore.queryWeekNumByWorkDate();
-  resumeDetailStore.queryWeekByYearAndMonth();
+  //resumeDetailStore.queryWeekByYearAndMonth();
   resumeDetailStore.queryEnterpriseConsultant();
   if (route.query?.searchRecommend == 'Q') {
     resumeDetailStore.$patch({
@@ -238,6 +242,11 @@ const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginOutFlag:
     .then(() => {
       expendShow.value = true;
     });
+    const handleResumeContainerIndex = () => {
+      if (orginalPathShow.value) {
+        resumeContainerIndexFlag.value = true;
+      }
+    }
 </script>
 <style lang="less" scoped>
   .resume_container {
@@ -267,5 +276,10 @@ const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginOutFlag:
     min-width: 560px !important;
     width: 560px !important;
     margin-left: 10px;
+  }
+  .resume_container_index_up {
+    z-index: 1010;
+    background-color: #fff;
+    position: relative;
   }
 </style>

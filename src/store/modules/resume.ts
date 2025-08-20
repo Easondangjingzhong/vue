@@ -6,6 +6,7 @@ import fetchApi from '/@/api/resume';
 import { dateUtil } from '/@/utils/dateUtil';
 import {dataURLtoBlob} from '/@/utils/base64tofile'
 import { useCityStoreWithOut } from '/@/store/modules/city';
+import { normalizeText } from '/@/utils/normalizeText';
  import { marriageEnArr,degreeEnAndCnArr } from '/@/store/data/resume';
 import {
   Resume,
@@ -52,8 +53,7 @@ const diffBirthday = (birthday, age, talentSource) => {
   
 }
 
-export const useResumeStore = defineStore({
-  id: 'app-Resume',
+export const useResumeStore = defineStore('app-Resume',{
   state: (): ResumeState => ({
     // info
     resumeFormState: {} as ResumeFormState,
@@ -441,6 +441,7 @@ export const useResumeStore = defineStore({
               workExperienceObj.isNewtest = item.end_date == '至今' ? '1' : '0';
               workExperienceObj.isRetreat = '';
               workExperienceObj.workFloor = '';
+            
               workExperienceObj.startYear = item.start_date;
               workExperienceObj.endYear = item.end_date;
               workExperienceObj.positionName = item.job_position;
@@ -449,7 +450,7 @@ export const useResumeStore = defineStore({
               workExperienceObj.department = item.job_dept;
               workExperienceObj.salaryStructure = '';
               workExperienceObj.personnelStructure = '';
-              workExperienceObj.workDuty = item.job_content;
+              workExperienceObj.workDuty = normalizeText(item.job_content);
               workExperienceList.push(workExperienceObj);
             });
           }
@@ -457,8 +458,8 @@ export const useResumeStore = defineStore({
           if (educationArr.length > 0) {
             educationArr.forEach((item) => {
               let educationInfoObj = {} as educationInfoData;
-              educationInfoObj.schoolName = item.edu_college;
-              educationInfoObj.isRegular = item.edu_recruit == '统招' ? 'Y' : 'N';
+              educationInfoObj.schoolName = normalizeText(item.edu_college);
+              educationInfoObj.isRegular = item.edu_recruit == '统招' ? 'Y' : '';
               let schoolTypeTemp: String[] = [];
               if (item.edu_college) {
                 // @ts-ignore
@@ -480,13 +481,27 @@ export const useResumeStore = defineStore({
                 if ((endYear -  yearNow > 0) || (endYear -  yearNow <= 0 && endMonth - monthNow > 0)) {
                   educationInfoObj.atSchool = "1";
                 } else {
-                  educationInfoObj.atSchool = "2";
+                  educationInfoObj.atSchool = "";
                 }
               }
               educationInfoObj.majorName = item.edu_major;
               educationInfoObj.degree = item.edu_degree;
-              educationInfoObj.startYear = (item.start_date && item.start_date.length == 4 ? item.start_date + "-09" : item.start_date);
-              educationInfoObj.endYear = (item.end_date && item.end_date.length == 4 ? item.end_date + "-06" : item.end_date);
+              if (item.start_date && (/^\d{4}$/.test(item.start_date))) {
+                  educationInfoObj.startYear = item.start_date + "-09"; 
+              } else if (item.start_date && (/^\d{7}$/.test(item.start_date))) {
+                  educationInfoObj.startYear = item.start_date;
+              } else {
+                educationInfoObj.startYear = "";
+              }
+              if (item.end_date && (/^\d{4}$/.test(item.end_date))) {
+                  educationInfoObj.endYear = item.end_date + "-06"; 
+              } else if (item.end_date && (/^\d{7}$/.test(item.end_date))) {
+                  educationInfoObj.endYear = item.end_date;
+              } else {
+                educationInfoObj.endYear = "";
+              }
+              //educationInfoObj.startYear = (item.start_date && item.start_date.length == 4 ? item.start_date + "-09" : item.start_date);
+              //educationInfoObj.endYear = (item.end_date && item.end_date.length == 4 ? item.end_date + "-06" : item.end_date);
               educationInfoList.push(educationInfoObj);
             });
           }
@@ -530,7 +545,7 @@ export const useResumeStore = defineStore({
             resumeLanguageList.languageAbility = languageAbility0;
           }
           if (result.cont_my_desc) {
-            selfEvaluationData.selfEvaluation = result.cont_my_desc;
+            selfEvaluationData.selfEvaluation = normalizeText(result.cont_my_desc);
           }
         }
         obj.personInfoData = personInfoData;

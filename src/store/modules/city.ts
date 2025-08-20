@@ -9,8 +9,7 @@ interface CityState {
   cheieseCity: [];
 }
 
-export const useCityStore = defineStore({
-  id: 'app-City',
+export const useCityStore = defineStore('app-City',{
   state: (): CityState => ({
     // info
     province: [],

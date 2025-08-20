@@ -13,7 +13,7 @@
         :label="themeLanguage?.companyName?.label"
         :label-col="{ span: resumeTypeEnglish == '1' ? 6 : 4 }"
         :wrapper-col="{ span: 20 }"
-        :rules="[{ required: true, message: themeLanguage?.companyName?.message }]"
+        :rules="[{ required: false, message: themeLanguage?.companyName?.message }]"
       >
         <a-input
           v-model:value="workExperienceData.companyName"
@@ -40,12 +40,12 @@
         </a-select>
       </a-form-item>
     </a-col>
-    <a-col v-if="resumeTypeEnglish == '1' && categoryFlag" :span="spanTitle">
+    <!-- <a-col v-if="resumeTypeEnglish == '1' && categoryFlag" :span="spanTitle">
       <a-form-item
         :label="themeLanguage?.isRetreat?.label"
         :name="['workExperienceList', indexNum, 'isRetreat']"
         style="margin-right: -38px;margin-left: 4px;"
-        :rules="[{ required: true, message: themeLanguage?.isRetreat?.message }]"
+        :rules="[{ required: false, message: themeLanguage?.isRetreat?.message }]"
       >
         <a-select
           v-model:value="workExperienceData.isRetreat"
@@ -56,7 +56,7 @@
           :options="optionRetreat"
         ></a-select>
       </a-form-item>
-    </a-col>
+    </a-col> -->
     <!-- <a-col :span="spanTitle" v-if="resumeTypeEnglish == '1' && !categoryFlag && indexNum > 0">
       <a-form-item
         :label="themeLanguage?.workRetail?.label"
@@ -83,13 +83,14 @@
       <a-form-item
         :name="['workExperienceList', indexNum, 'startYear']"
         :label="themeLanguage?.startYear?.label"
-        :rules="[{ required: true, message: themeLanguage?.startYear?.message }]"
+        :rules="[{ required: false, message: themeLanguage?.startYear?.message }]"
       >
         <a-date-picker
           v-model:value="workExperienceData.startYear"
-          value-format="YYYY-MM"
-          picker="month"
+          :value-format="datePickerValue"
+          :picker="datePickerContent"
           :placeholder="themeLanguage?.startYear?.message"
+          @focus="handleFocusDateYear"
         />
       </a-form-item>
     </a-col>
@@ -97,14 +98,15 @@
       <a-form-item
         :name="['workExperienceList', indexNum, 'endYear']"
         :label="themeLanguage?.endYear?.label"
-        :rules="[{ required: true, message: themeLanguage?.endYear?.message }]"
+        :rules="[{ required: false, message: themeLanguage?.endYear?.message }]"
       >
         <a-date-picker
           v-model:value="workExperienceData.endYear"
           :placeholder="themeLanguage?.endYear?.message"
-          value-format="YYYY-MM"
-          picker="month"
+          :value-format="datePickerValue"
+          :picker="datePickerContent"
           @change="handleEndYearTime"
+          @focus="handleFocusDateYear"
         />
       </a-form-item>
       <a-checkbox
@@ -126,12 +128,12 @@
         >
       </a-form-item></a-col
     >
-    <a-col v-if="resumeTypeEnglish == '1'" :span="6">
+    <!-- <a-col v-if="resumeTypeEnglish == '1'" :span="6">
       <a-form-item
         :label="themeLanguage?.isNewtest?.label"
         :name="['workExperienceList', indexNum, 'isNewtest']"
         style="margin-left: 52px;"
-        :rules="[{ required: true, message: themeLanguage?.isNewtest?.message }]"
+        :rules="[{ required: false, message: themeLanguage?.isNewtest?.message }]"
       >
         <a-select
           v-model:value="workExperienceData.isNewtest"
@@ -142,7 +144,7 @@
           :options="optionNewtest"
         ></a-select>
       </a-form-item>
-    </a-col>
+    </a-col> -->
   </a-row>
   <a-row v-if="resumeTypeEnglish != '1'">
     <a-col :span="spanTitle">
@@ -156,7 +158,7 @@
           v-model:value="workExperienceData.positionName"
           :placeholder="themeLanguage?.positionName?.message"
           labelInValue
-          optionFilterProp="label"
+          optionFilterProp="code"
           :options="optionsPosition"
           @change="handlePositionName"
           showSearch
@@ -176,12 +178,12 @@
       </a-form-item>
     </a-col>
   </a-row>
-  <a-row v-if="resumeTypeEnglish == '1'" class="resume_row_update">
+  <!-- <a-row v-if="resumeTypeEnglish == '1'" class="resume_row_update">
     <a-col :span="spanTitle">
       <a-form-item
         :label="themeLanguage?.cityName?.label"
         :name="['workExperienceList', indexNum, 'workCity']"
-        :rules="[{ required: true, message: themeLanguage?.cityName?.message }]"
+        :rules="[{ required: false, message: themeLanguage?.cityName?.message }]"
       >
         <a-select
           v-model:value="workExperienceData.workCity"
@@ -198,7 +200,7 @@
       <a-form-item
         :label="themeLanguage?.marketName?.label"
         :name="['workExperienceList', indexNum, 'workMark']"
-        :rules="[{ required: true, message: themeLanguage?.marketName?.message }]"
+        :rules="[{ required: false, message: themeLanguage?.marketName?.message }]"
       >
         <a-select
           optionFilterProp="label"
@@ -227,7 +229,7 @@
           showSearch
           v-if="!brandFlag"
         ></a-select>
-        <!-- <a-input
+       <a-input
               v-if="brandFlag"
               style="width: 50%"
               v-model:value="brandNameCn"
@@ -240,9 +242,9 @@
               v-model:value="brnadNameEn"
               @blur="handleBrandNameEn"
               placeholder="品牌英文"
-            ></a-input> -->
+            ></a-input>
       </a-form-item>
-    </a-col>
+    </a-col> -->
     <!-- <a-col :span="11" v-if="!categoryFlag">
           <a-button
             style="margin-top: 1%; margin-left: 2%"
@@ -280,11 +282,11 @@
             ></span
           >
         </a-col> -->
-    <a-col :span="spanTitle" v-if="categoryFlag">
+    <!-- <a-col :span="spanTitle" v-if="categoryFlag">
       <a-form-item
         :label="themeLanguage?.workFloor?.label"
         :name="['workExperienceList', indexNum, 'workFloor']"
-        :rules="[{ required: true, message: themeLanguage?.workFloor?.message }]"
+        :rules="[{ required: false, message: themeLanguage?.workFloor?.message }]"
       >
         <a-select
           v-model:value="workExperienceData.workFloor"
@@ -294,25 +296,25 @@
         ></a-select>
       </a-form-item>
     </a-col>
-  </a-row>
+  </a-row> -->
   <a-row v-if="resumeTypeEnglish == '1'" class="resume_row_update">
     <a-col :span="spanTitle">
       <a-form-item
         :label="themeLanguage?.positionName?.label"
         :name="['workExperienceList', indexNum, 'positionsId']"
-        :rules="[{ required: true, message: themeLanguage?.positionName?.message }]"
+        :rules="[{ required: false, message: themeLanguage?.positionName?.message }]"
       >
         <a-select
           v-model:value="workExperienceData.positionsId"
           :placeholder="themeLanguage?.positionName?.message"
           :options="optionsPositions"
-          optionFilterProp="label"
+          optionFilterProp="code"
           :labelInValue="true"
           showSearch
         ></a-select>
       </a-form-item>
     </a-col>
-    <a-col :span="spanTitle">
+    <!-- <a-col :span="spanTitle">
       <a-form-item
         name="reporter"
         :label="themeLanguage?.reporter?.label"
@@ -323,7 +325,7 @@
           :placeholder="themeLanguage?.reporter?.message"
         ></a-input>
       </a-form-item>
-    </a-col>
+    </a-col> -->
     <a-col :span="spanTitle">
       <a-form-item
         name="department"
@@ -336,7 +338,7 @@
         ></a-input>
       </a-form-item>
     </a-col>
-    <a-col :span="spanTitle">
+    <!-- <a-col :span="spanTitle">
       <a-form-item
         name="monthSalary"
         :label="themeLanguage?.monthSalary?.label"
@@ -349,9 +351,9 @@
           :placeholder="themeLanguage?.monthSalary?.message"
         ></a-input-number>
       </a-form-item>
-    </a-col>
+    </a-col> -->
   </a-row>
-  <a-row v-if="resumeTypeEnglish == '1'" class="resume_row_update">
+  <!-- <a-row v-if="resumeTypeEnglish == '1'" class="resume_row_update">
     <a-col :span="24">
       <a-form-item
         name="salaryStructure"
@@ -381,19 +383,20 @@
         ></a-input>
       </a-form-item>
     </a-col>
-  </a-row>
+  </a-row> -->
   <a-row style="margin-top: -15px">
     <a-col :span="24">
       <a-form-item
         name="workDuty"
         :label="themeLanguage?.workDuty?.label"
-        style="padding-left: 10px"
+        style="padding-left: 5px"
         :label-col="{ span: 24 }"
         :rules="[{ required: false, message: themeLanguage?.workDuty?.message }]"
       >
         <a-textarea
           :rows="7"
           v-model:value="workExperienceData.workDuty"
+          @input="e => workExperienceData.workDuty = normalizeText(e.target.value)"
           :placeholder="themeLanguage?.workDuty?.message"
         ></a-textarea>
       </a-form-item>
@@ -410,6 +413,7 @@
   import { useResumeStoreWithOut } from '/@/store/modules/resume';
   import { workFloorEnArr } from '/@/store/data/resume';
   import { useResumeListStoreWithOut } from '/@/store/modules/resumeList';
+  import { normalizeText } from '/@/utils/normalizeText';
   const resumeListStore = useResumeListStoreWithOut();
   const resumeStore = useResumeStoreWithOut();
   const cityStore = useCityStoreWithOut();
@@ -417,12 +421,38 @@
   const { positionStore, positionOffice, resumeTypeEnglish } = storeToRefs(resumeStore);
   const { province } = storeToRefs(cityStore);
   const themeLanguage = ref(validateLanguage('workInfo', resumeTypeEnglish.value));
+  const peops = defineProps({
+    workExperienceList: {
+      type: Array,
+      required: true,
+    },
+    workExperienceData: {
+      type: Object,
+      required: true,
+    },
+    indexNum: {
+      type: Number,
+      required: true,
+    },
+  });
   const delNewWorkExperienceDetails = (param: number) => {
     resumeStore.delNewWorkExperienceDetails(param);
   };
- 
+  const datePickerContent = ref("month");
+  const datePickerValue = ref("YYYY-MM");
+  const handleFocusDateYear = () => {
+    datePickerContent.value = "month";
+    datePickerValue.value = "YYYY-MM";
+    if (/^\d{4}$/.test(peops.workExperienceData.startYear)) {
+      peops.workExperienceData.startYear = peops.workExperienceData.startYear + "-00";
+    }
+    if (/^\d{4}$/.test(peops.workExperienceData.endYear)) {
+      peops.workExperienceData.endYear = peops.workExperienceData.endYear + "-00";
+    }
+  }
+
   const categoryFlag = ref(true);
-  const brandFlag = ref(false);
+  //const brandFlag = ref(false);
   const brandCheckBox = ref(false);
   //const brandCheckBoxShow = ref(false);
   const optionRetreat = ref([
@@ -440,25 +470,20 @@
     { value: '1', label: 'Retail' },
     { value: '2', label: 'Non Retail' },
   ]);
-  const peops = defineProps({
-    workExperienceList: {
-      type: Array,
-      required: true,
-    },
-    workExperienceData: {
-      type: Object,
-      required: true,
-    },
-    indexNum: {
-      type: Number,
-      required: true,
-    },
-  });
+
   //工作经历结束年月是否为"至今" false 展示日期组件 true 展示至今
   let endYearFlag = ref(false);
   onBeforeMount(() => {
     if (peops.workExperienceData.endYear == '至今' || peops.workExperienceData.endYear == '-1') {
       endYearFlag.value = true;
+    }
+    if (peops.workExperienceData.startYear == '至今' || peops.workExperienceData.startYear == '-1') {
+      datePickerContent.value = "year";
+      datePickerValue.value = "YYYY";
+    }
+    if (/^\d{4}$/.test(peops.workExperienceData.startYear)) {
+      datePickerContent.value = "year";
+      datePickerValue.value = "YYYY";
     }
   });
   const endYearTemp = peops.workExperienceData.endYear;
@@ -507,11 +532,11 @@
     positionStore.value
       .map((item) => {
         if (resumeTypeEnglish.value == '1' && item.usPosition) {
-          return { label: item.usPosition, value: item.id.toString() };
+          return { label: item.usPosition, value: item.id.toString(), code: `${item.cnPosition}-${item.usPosition}` };
         } else if (resumeTypeEnglish.value != '1' && item.cnPosition) {
-          return { label: item.cnPosition, value: item.id.toString() };
+          return { label: item.cnPosition, value: item.id.toString(), code: `${item.cnPosition}-${item.usPosition}` };
         } else {
-          return { label: '', value: '' };
+          return { label: '', value: '', code: '' };
         }
       })
       .filter((item) => item.value != ''),
@@ -520,11 +545,11 @@
     optionsPosition.value = positionStore.value
       .map((item) => {
         if (resumeTypeEnglish.value == '1' && item.usPosition) {
-          return { label: item.usPosition, value: item.id.toString() };
+          return { label: item.usPosition, value: item.id.toString(), code: `${item.cnPosition}-${item.usPosition}` };
         } else if (resumeTypeEnglish.value != '1' && item.cnPosition) {
-          return { label: item.cnPosition, value: item.id.toString() };
+          return { label: item.cnPosition, value: item.id.toString(), code: `${item.cnPosition}-${item.usPosition}` };
         } else {
-          return { label: '', value: '' };
+          return { label: '', value: '', code: '' };
         }
       })
       .filter((item) => item.value != '');
@@ -535,22 +560,22 @@
       optionsPosition.value = positionOffice.value
         .map((item) => {
           if (resumeTypeEnglish.value == '1' && item.usPosition) {
-            return { label: item.usPosition, value: item.id.toString() };
+            return { label: item.usPosition, value: item.id.toString(), code: `${item.cnPosition}-${item.usPosition}` };
           } else if (resumeTypeEnglish.value != '1' && item.cnPosition) {
-            return { label: item.cnPosition, value: item.id.toString() };
+            return { label: item.cnPosition, value: item.id.toString(), code: `${item.cnPosition}-${item.usPosition}` };
           } else {
-            return { label: '', value: '' };
+            return { label: '', value: '', code: '' };
           }
         })
         .filter((item) => item.value != '');
         optionsPositions.value = positionOffice.value
         .map((item) => {
           if (resumeTypeEnglish.value == '1' && item.usPosition) {
-            return { label: item.usPosition, value: item.id.toString() };
+            return { label: item.usPosition, value: item.id.toString(), code: `${item.cnPosition}-${item.usPosition}` };
           } else if (resumeTypeEnglish.value != '1' && item.cnPosition) {
-            return { label: item.cnPosition, value: item.id.toString() };
+            return { label: item.cnPosition, value: item.id.toString(), code: `${item.cnPosition}-${item.usPosition}` };
           } else {
-            return { label: '', value: '' };
+            return { label: '', value: '', code: '' };
           }
         })
         .filter((item) => item.value != '');
@@ -603,6 +628,7 @@
             label: item.usPosition,
             //@ts-ignore
             value: item.positionId,
+            code: `${item.cnPosition}-${item.usPosition}`,
           };
           //@ts-ignore
           tempOptionPositions.push(tempObj);

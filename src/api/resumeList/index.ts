@@ -27,7 +27,10 @@ enum URL {
   query_system_function = '/system/resume-vue-system-function.action',
   query_resumeNew_details = '/candidate/rusume-vue-query-resumeId-byphone.action',
   resume_positionsList_details = '/candidate/rusume-vue-query-position-ChuMendian.action',
+  add_new_black = '/resume/resume-vue-update-resume-isBlack-vue.action',
 }
+const addNewBlack = (formData: any) =>
+  post<any>({ url: URL.add_new_black, data: formData});
 
 const queryResumeListPositions = (formData: any) =>
   post<any>({ url: URL.resume_positionsList_details, data: formData});
@@ -195,4 +198,4 @@ const queryResumeSerchData = async (data:any) =>
  */
 const queryPersonTalentData = async (data:any) =>
   post<any>({ url: URL.resume_personTalentData, data });
-export default { queryResumeListPositions,queryQueryResumeNewDetails,querySystemFunction,queryRecommendOffer,queryRecommendInterview,queryRecommendResumeButton,queryCompanyCnList,queryEnterpriseConsultant,queryRecommendCounselor,updateResumeSort,querySortById,fetchUpdateSearchResume,queryTeamPersonChangeSystemA,queryTeamPersonChangeSystemTs,queryPersonTalentData,queryResumeSerchData,queryCompanyList,resumeMenu,queryTeamData,queryPersonData,queryBranList,queryResumeList,addSortResumeName,fetchAddSearchResume,queryPositionsList,queryMarkList };
+export default { addNewBlack,queryResumeListPositions,queryQueryResumeNewDetails,querySystemFunction,queryRecommendOffer,queryRecommendInterview,queryRecommendResumeButton,queryCompanyCnList,queryEnterpriseConsultant,queryRecommendCounselor,updateResumeSort,querySortById,fetchUpdateSearchResume,queryTeamPersonChangeSystemA,queryTeamPersonChangeSystemTs,queryPersonTalentData,queryResumeSerchData,queryCompanyList,resumeMenu,queryTeamData,queryPersonData,queryBranList,queryResumeList,addSortResumeName,fetchAddSearchResume,queryPositionsList,queryMarkList };

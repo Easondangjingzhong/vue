@@ -212,7 +212,8 @@
   import { dateUtil,formatDateToMonth } from '/@/utils/dateUtil';
   import { shcoolType985, shcoolType211 } from '/@/utils/schoolType';
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
-  import { validateLanguage } from '/@/utils/resumeTypeEn';
+  import { validateLanguage } from '/@/utils/resumeTypeEn'; 
+  import { normalizeText } from '/@/utils/normalizeText';
   const resumeDetailStore = useResumeDetailStore();
   const { educationWholeFlag, resumeTypeEnglish } = storeToRefs(resumeDetailStore);
   const props = defineProps({
@@ -402,7 +403,8 @@ const onChangeAtSchool = () => {
   const handleSchoolName = () => {
     let schoolTypeTemp: String[] = [];
     if (formState.value.schoolName) {
-      console.log(formState.value.schoolName);
+      formState.value.schoolName = normalizeText(formState.value.schoolName)
+      //console.log(formState.value.schoolName);
       // @ts-ignore
       let t985 = shcoolType985.filter(
         (items) => items === formState.value.schoolName.replace(/[\u200B-\u200F]+/g, ''),

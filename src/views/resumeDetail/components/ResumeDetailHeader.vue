@@ -9,9 +9,8 @@
         <a-tag class="resume_tag_checked" v-if="props.showResumeRightOutFlag && !resumeData.recruitId && resumeData.projectFlag == '过保'" color="red">{{ resumeData.projectFlag }}</a-tag>
         <a-tag class="resume_tag_checked_top" v-if="props.showResumeRightOutFlag && !resumeData.recruitId" color="orange">公共</a-tag>
         <a-tag class="resume_tag_checked_top" v-if="props.showResumeRightOutFlag && !resumeData.recruitId && resumeData.twoYearFlag == '两年'" color="green">两年</a-tag>
-        <a-tag :title="checkedTime" style="cursor: pointer;" color="#d8d8d8" class="resume_tag_checked" v-if="showResumeAdd && resumeData.recruitId && resumeData.checkFlag == '待核'"
-          >待核</a-tag
-        >
+        <a-tag :title="checkedTime" style="cursor: pointer;" color="#d8d8d8" class="resume_tag_checked" v-if="showResumeAdd && resumeData.recruitId && (resumeData.checkFlag == '待核' || resumeData.checkFlag == '过期')"
+        >待核</a-tag>
         <a-tag style="cursor: pointer;" color="#d8d8d8" class="resume_tag_checked" v-if="props.showResumeRightOutFlag && showResumeAdd && resumeData.recruitId && resumeData.checkFlag == '待激活'"
           >激活</a-tag
         >
@@ -22,8 +21,15 @@
           color="green"
           class="resume_tag_checked"
           :title="newTime"
-          v-if="resumeData.recruitId && resumeData.checkFlag && resumeData.checkFlag != '待核' && resumeData.checkFlag != '待激活' && resumeData.checkFlag != '已激活'"
+          v-if="resumeData.recruitId && resumeData.checkFlag && resumeData.checkFlag != '待核' && resumeData.checkFlag != '待激活' && resumeData.checkFlag != '已激活' && resumeData.checkFlag != '过期'"
           >最新</a-tag
+        >
+        <a-tag
+          color="orange"
+          class="resume_tag_checked"
+          :title="newTime"
+          v-if="resumeData.recruitId && resumeData.checkFlag && resumeData.checkFlag == '过期'"
+          >过期</a-tag
         >
         <a-tag
           color="#d8d8d8"
@@ -93,6 +99,13 @@
         <a-tag style="cursor: pointer;" :title="limitRemarkDetail" color="orange" class="resume_tag_checked" v-if="props.showResumeRightOutFlag && showResumeAdd && resumeData.recruitId && resumeData.limitFlag == '激活'&& resumeData.resumeStatus != '外包保护期中'"
           >激活</a-tag
         >
+         <a-tag
+            class="resume_tag_checked_top"
+            v-if="resumeData.isBlack == '1'"
+            :title="loginVueUser.loginType == 'A' ? (resumeData.blackRemark ? resumeData.blackRemark : '此候选人已经存在公司黑名单中，禁止推荐') : '此候选人已经存在公司黑名单中，禁止推荐'"
+            color="red"
+            >黑名单</a-tag
+          >
         <a-modal v-model:open="openResumeCopy" title="复制简历" @ok="handleResumeCopy">
       <p>是否将简历复制到自己名下</p>
     </a-modal>
@@ -172,7 +185,7 @@
           @click="handleOpenResumeUploadManage"
           >下载</a-button>
         <a-button
-          v-if="showResumeAdd && resumeData.recruitId && resumeData.checkFlag == '待核'"
+          v-if="showResumeAdd && resumeData.recruitId && (resumeData.checkFlag == '待核' || resumeData.checkFlag == '过期')"
           style="margin-left: 4px;background-color: orange;color: #fff;"
            size="middle"
           @click="handleAddChecked"
@@ -191,7 +204,7 @@
           >复制</a-button>
         <a-button
         style="margin-left: 4px;"
-          v-if="!isNR38 && showResumeAdd && (resumeData.recommendLimit == '推荐' || resumeData.zhuCeFlag == '注册顾问') && (resumeData.checkFlag == '最新'|| resumeData.checkFlag == '已激活') && resumeProgressDetailScore >= 90 && resumeData.resumeStatus != '外包保护期中'"
+          v-if="!isNR38 && showResumeAdd && (resumeData.recommendLimit == '推荐' || resumeData.zhuCeFlag == '注册顾问') && resumeData.isBlack != '1' && (resumeData.checkFlag == '最新'|| resumeData.checkFlag == '已激活') && resumeProgressDetailScore >= 90 && (resumeData.resumeStatus != '外包保护期中' || !limitFlagRecommend)"
           type="primary"
           danger
           size="middle"
@@ -199,6 +212,13 @@
         >
           {{ resumeData.recommendLimit }}
         </a-button>
+         <a-button
+        style="margin-left: 4px;"
+          v-if="!isNR38 && showResumeAdd && (resumeData.recommendLimit == '推荐' || resumeData.zhuCeFlag == '注册顾问') && resumeData.isBlack == '1' && (resumeData.checkFlag == '最新'|| resumeData.checkFlag == '已激活') && resumeProgressDetailScore >= 90 && (resumeData.resumeStatus != '外包保护期中' || !limitFlagRecommend)"
+          size="middle"
+          :disabled="true"
+          title="此候选人已经存在公司黑名单中，禁止推荐"
+        >推荐</a-button>
         <a-button
         style="margin-left: 4px;"
           v-if="!isNR38 && showResumeAdd && (resumeData.recommendLimit == '推荐' || resumeData.zhuCeFlag == '注册顾问') && (resumeData.checkFlag == '最新'|| resumeData.checkFlag == '已激活') && resumeProgressDetailScore < 90"
@@ -211,7 +231,7 @@
         </a-button>
         <a-button
         style="margin-left: 4px;"
-          v-if="!isNR38 && showResumeAdd && resumeData.recommendLimit == '限制分单' && resumeData.checkFlag == '最新' && resumeProgressDetailScore >= 90"
+          v-if="!isNR38 && showResumeAdd && resumeData.recommendLimit == '限制分单' && resumeData.isBlack != '1' && resumeData.checkFlag == '最新' && resumeData.checkFlag == '最新' && resumeProgressDetailScore >= 90"
           type="primary"
           danger
           title="在保推荐分单"
@@ -239,7 +259,7 @@
         style="margin-left: 4px;"
           v-if="!isNR38 && showResumeAdd && resumeData.recommendLimit == '限制推荐' && resumeData.checkFlag != '待核'"
           size="middle"
-          :disabled="true"
+          :disabled="limitFlagRecommend"
           title="OFFER推荐禁止"
         >
         推荐
@@ -248,7 +268,7 @@
         style="margin-left: 4px;"
           v-if="!isNR38 && showResumeAdd && resumeData.recommendLimit == '限制禁推' && resumeData.checkFlag != '待核'"
           size="middle"
-          :disabled="true"
+          :disabled="limitFlagRecommend"
           title="在保推荐禁止"
         >
         推荐
@@ -457,6 +477,15 @@
       message.error("语言能力英语为必填");
       return;
     }
+    if (
+      props.resumeData?.workExpeList?.length > 0 && 
+      props.resumeData.workExpeList[0].category == '店铺' &&
+      props.resumeData.workExpeList[0].isNewtest == '1' &&
+      (!props.resumeData.workExpeList[0].salaryStructure || !props.resumeData.workExpeList[0].personnelStructure || !props.resumeData.workExpeList[0].shopVolume)
+    ) {
+      message.warning('店铺最近工作需要填写薪资构架,团队构架及业绩体量');
+      return;
+    }
     resumeDetailStore.queryMappingIdByResumeId();
   };
   const positionsLabelDetail = ref("");
@@ -499,6 +528,7 @@
         openResumeCopy.value = false;
         resumeDetailStore.queryMappingIdByResumeId(res.info);
         resumeDetailStore.queryResumeDetail();
+        resumeDetailStore.queryResumeReport();
       }else if (res.code === 2) {
         message.warning('已复制无需再次复制');
         openResumeCopy.value = false;
@@ -636,6 +666,27 @@
     })
   }
   queryNrPositionId();
+  const limitFlagRecommend = ref(true);
+  const queryLimitFlagRecommend = () =>{
+    if ((props.resumeData.limitFlag == 'OFFER' && props.resumeData.resumeStatus != '保证期中') ||
+    (props.resumeData.limitFlag == 'OFFER' && props.resumeData.resumeStatus == '保证期中') ||
+    props.resumeData.resumeStatus == '外包保护期中'
+  ) {
+    let limitType = '1';
+    if (props.resumeData.resumeStatus == '外包保护期中') {
+        limitType = '2';
+    }
+      resumeDetailStore.queryLimitFlagRecommend(limitType).then(res => {
+      if(res.code === 1){
+        limitFlagRecommend.value = false;
+      } else {
+        limitFlagRecommend.value = true;
+      }
+    })
+    }
+  }
+  queryLimitFlagRecommend();
+  
 </script>
 <style lang="less" scoped>
   .resume_header {
@@ -698,4 +749,5 @@
   :deep(.resume_tag_phone > .anticon + span, .resume_tag_phone > span + .anticon) {
     margin-inline-start: 0px !important;
   }
+ 
 </style>

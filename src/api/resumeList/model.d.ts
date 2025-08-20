@@ -55,6 +55,7 @@ export interface SearchResumeList {
   serchRecruitId: string; // 添加顾问
   isEnglish: string; // 添加顾问
   totalCount: string; // 页码是1返回的总数,其他的都默认
+  isBlack: string; // 是否黑名单
 }
 
 export interface Item {

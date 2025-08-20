@@ -38,21 +38,27 @@
               :height="156"
               class="resume_photo_image"
               mode="aspectFill"
-              :src="personInfoData.photoPath"
+              :src="photoPath"
               :preview="false"
               @click="handleChangephoto"
               fallback="data:image/png;base64,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"
             />
-            <a-form-item>
+            <a-form-item class='resume_photo_title_item'>
+               <a-upload
+            v-model:file-list="fileList"
+            name="file"
+            :showUploadList="false"
+            :customRequest="handleChangephotoUpload"
+          >
+            <a-button
+              size="small"
+              :class="{'resume_photo_title_btn': updatePhotoFlag === 0, 'resume_photo_title_btn_have': updatePhotoFlag !== 0}"
+              >上传</a-button
+            >
+          </a-upload>
               <a-button
                 v-if="updatePhotoFlag !== 0"
-                style="
-                  margin-left: 45px;
-                  background-color: #f0ad4e;
-                  border-color: #eea236;
-                  color: #fff;
-                  margin-top: 4px;
-                "
+                class="resume_photo_title_btn_update"
                 size="small"
                 @click="handleChangephoto"
                 >修改</a-button
@@ -65,6 +71,16 @@
             />
           </a-form-item>
         </a-col>
+        <a-col :span="spanTitle" class="resume_photo_title_col">
+          <a-card class="resume_photo_title_card">
+    <p>请注意，请填写正确的手机号码，其他国家和地区需要前需加国家代码：</p>
+    <p>● 中国大陆手机为11位号码：例如：18688888888</p>
+    <p>● 中国香港地区代码00852：例如：0085288888888</p>
+    <p>● 中国澳门地区代码00853：例如：0085388888888</p>
+    <p>● 中国台湾地区代码00886：例如：0088688888888</p>
+    <p>● 新加坡国家代码0065：例如：006588888888</p>
+  </a-card>
+          </a-col>
       </a-row>
       <a-row>
         <a-col :span="spanTitle">
@@ -133,6 +149,7 @@
               :placeholder="themeLanguage?.nationality?.message"
               :options="optionsCountry"
               @change="handleNationality"
+              optionFilterProp="code"
               showSearch
             ></a-select>
           </a-form-item>
@@ -164,6 +181,7 @@
               v-model:value="personInfoData.huji"
               :placeholder="themeLanguage?.huji?.message"
               :options="optionsCity"
+              optionFilterProp="code"
               @change="handleHuji"
               showSearch
             ></a-select>
@@ -181,6 +199,7 @@
               v-model:value="personInfoData.currentCity"
               :placeholder="themeLanguage?.currentCity?.message"
               :options="optionsCity"
+              optionFilterProp="code"
               showSearch
             ></a-select>
           </a-form-item>
@@ -228,6 +247,7 @@
   import { useResumeStoreWithOut } from '/@/store/modules/resume';
   import { marriageArr, marriageEnArr } from '/@/store/data/resume';
   import { validateLanguage } from '/@/utils/resumeTypeEn';
+  import { fileToBlob, blobToDataURI } from '/@/utils/base64tofile';
   const props = defineProps({
     personInfoData: {
       type: Object,
@@ -264,8 +284,9 @@
     centerBox: true, // 截图框是否被限制在图片里面
     infoTrue: false, // true 为展示真实输出图片宽高 false 展示看到的截图框宽高
   };
+  const fileList = ref([]);
   const cropperModal = ref<any>();
-  const { photoPath } = props.personInfoData;
+  const photoPath = ref(props.personInfoData.photoPath);
   const handleChangephoto = () => {
     const target = Object.assign({}, coverOptions, {
       img: photoPath,
@@ -276,6 +297,12 @@
     props.personInfoData.photoPath = e;
     resumeStore.updateResumePhoto(e);
   };
+   const handleChangephotoUpload = (e) => {
+      blobToDataURI(fileToBlob(e.file), (res) => {
+        photoPath.value = res;
+        handleChangephoto();
+      });
+    };
   //头像结束
   const handleChangeHeight = (e: Event) => {
     const input = e.target as HTMLInputElement;
@@ -301,6 +328,7 @@
     country.value.map((item) => ({
       label: item.country,
       value: item.country,
+      code: `${item.country}-${item.countryEn}`,
     })),
   );
 
@@ -386,6 +414,7 @@
       optionsCountry.value = country.value.map((item) => ({
         label: item.countryEn,
         value: item.countryEn,
+        code: `${item.country}-${item.countryEn}`,
       }));
 
       let tempOptionCityEn = [];
@@ -396,6 +425,7 @@
         let tempObjEn = {
           label: item.provinceNameEn + (item.cityNameEn ? '-' + item.cityNameEn : ''),
           value: item.provinceNameEn + (item.cityNameEn ? '-' + item.cityNameEn : ''),
+          code: `${item.cityName}-${item.cityNameEn}`,
         };
         //@ts-ignore
         tempOptionCityEn.push(tempObjEn);
@@ -410,6 +440,7 @@
       optionsCountry.value = country.value.map((item) => ({
         label: item.country,
         value: item.country,
+        code: `${item.country}-${item.countryEn}`,
       }));
       let tempOptionCity = [];
       //@ts-ignore
@@ -419,6 +450,7 @@
         let tempObj = {
           label: item.provinceName + (item.cityName ? '-' + item.cityName : ''),
           value: item.provinceName + (item.cityName ? '-' + item.cityName : ''),
+          code: `${item.cityName}-${item.cityNameEn}`,
         };
         //@ts-ignore
         tempOptionCity.push(tempObj);
@@ -457,5 +489,44 @@
     width: 160px;
     height: 200px;
     box-shadow: 0 0 2px #ccc;
+  }
+  .resume_photo_title_col {
+    position: absolute;
+    left: 65%;
+    top: 30%;
+  }
+  :deep(.resume_photo_title_col .resume_photo_title_card ) {
+width: 460px;
+  }
+  :deep(.resume_photo_title_col .resume_photo_title_card .ant-card-body){
+    width: 460px;
+    padding: 0 4px !important;
+  }
+  .resume_photo_title_card p {
+    margin: 4px 0;
+  }
+  .resume_photo_title_btn {
+      background-color: #f0ad4e;
+                border-color: #eea236;
+                color: #fff;
+                margin-left: 55px;
+                margin-top: 5px;
+  }
+  .resume_photo_title_btn_have {
+      background-color: #f0ad4e;
+                border-color: #eea236;
+                color: #fff;
+                margin-left: 20px;
+                margin-top: 5px;
+  }
+   .resume_photo_title_btn_update {
+       margin-left: 5px;
+                  background-color: #f0ad4e;
+                  border-color: #eea236;
+                  color: #fff;
+                  margin-top: 5px;
+  }
+  :deep(.resume_photo_title_item .ant-form-item-control-input-content){
+    display: flex;
   }
 </style>

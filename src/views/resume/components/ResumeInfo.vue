@@ -95,32 +95,32 @@
       message.warning("请输入城市");
       return;
     }
-    const work = resumeFormState.value.workExperienceList;
-    let workFlag = false;
-    if (work.length > 0) {
-      work.forEach(item => {
-        if (!item.companyName ||!item.startYear ||!item.endYear) {
-          workFlag =  true;
-        }
-      })
-    }
-    if (workFlag) {
-      message.warning("请完善工作经历");
-      return;
-    }
-    const edu = resumeFormState.value.educationInfoList;
-    let eduFlag = false;
-    if (edu.length > 0) {
-      edu.forEach(item => {
-        if (!item.schoolName ||!item.degree) {
-          eduFlag =  true;
-        }
-      })
-    }
-    if (eduFlag) {
-      message.warning("请完善教育经历");
-      return;
-    }
+    // const work = resumeFormState.value.workExperienceList;
+    // let workFlag = false;
+    // if (work.length > 0) {
+    //   work.forEach(item => {
+    //     if (!item.companyName ||!item.startYear ||!item.endYear) {
+    //       workFlag =  true;
+    //     }
+    //   })
+    // }
+    // if (workFlag) {
+    //   message.warning("请完善工作经历");
+    //   return;
+    // }
+    // const edu = resumeFormState.value.educationInfoList;
+    // let eduFlag = false;
+    // if (edu.length > 0) {
+    //   edu.forEach(item => {
+    //     if (!item.schoolName ||!item.degree) {
+    //       eduFlag =  true;
+    //     }
+    //   })
+    // }
+    // if (eduFlag) {
+    //   message.warning("请完善教育经历");
+    //   return;
+    // }
 
     iconLoading.value = true;
     

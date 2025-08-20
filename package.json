@@ -57,6 +57,7 @@
     "vue": "^3.2.16",
     "vue-cropper": "^1.1.4",
     "vue-demi": "^0.14.10",
+    "vue-office": "^0.0.5",
     "vue-request": "^1.2.3",
     "vue-router": "^4.0.12"
   },

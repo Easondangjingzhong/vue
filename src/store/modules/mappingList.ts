@@ -44,8 +44,7 @@ interface MappingListState {
   mappingCandidateFlag: Boolean; //新增M状态
 }
 const loginVueUser: {loginName: "", loginId: "", loginTocken: "",loginType: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
-export const useMappingListStore = defineStore({
-  id: 'app-MappingList',
+export const useMappingListStore = defineStore('app-MappingList',{
   state: (): MappingListState => ({
     // info
     searchMappingCandidate: {},

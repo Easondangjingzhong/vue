@@ -18,7 +18,7 @@
               d="M810.666667 170.666667 632.32 170.666667C614.4 121.173333 567.466667 85.333333 512 85.333333 456.533333 85.333333 409.6 121.173333 391.68 170.666667L213.333333 170.666667C166.4 170.666667 128 209.066667 128 256L128 853.333333C128 900.266667 166.4 938.666667 213.333333 938.666667L810.666667 938.666667C857.6 938.666667 896 900.266667 896 853.333333L896 256C896 209.066667 857.6 170.666667 810.666667 170.666667L810.666667 170.666667ZM512 170.666667C535.466667 170.666667 554.666667 189.866667 554.666667 213.333333 554.666667 236.8 535.466667 256 512 256 488.533333 256 469.333333 236.8 469.333333 213.333333 469.333333 189.866667 488.533333 170.666667 512 170.666667L512 170.666667ZM597.333333 768 298.666667 768 298.666667 682.666667 597.333333 682.666667 597.333333 768 597.333333 768ZM725.333333 597.333333 298.666667 597.333333 298.666667 512 725.333333 512 725.333333 597.333333 725.333333 597.333333ZM725.333333 426.666667 298.666667 426.666667 298.666667 341.333333 725.333333 341.333333 725.333333 426.666667 725.333333 426.666667Z"
               fill="#000000"
               p-id="8294"
-            ></path>
+            />
           </svg>
           工作经历
         </h4>
@@ -50,7 +50,7 @@
               d="M810.666667 170.666667 632.32 170.666667C614.4 121.173333 567.466667 85.333333 512 85.333333 456.533333 85.333333 409.6 121.173333 391.68 170.666667L213.333333 170.666667C166.4 170.666667 128 209.066667 128 256L128 853.333333C128 900.266667 166.4 938.666667 213.333333 938.666667L810.666667 938.666667C857.6 938.666667 896 900.266667 896 853.333333L896 256C896 209.066667 857.6 170.666667 810.666667 170.666667L810.666667 170.666667ZM512 170.666667C535.466667 170.666667 554.666667 189.866667 554.666667 213.333333 554.666667 236.8 535.466667 256 512 256 488.533333 256 469.333333 236.8 469.333333 213.333333 469.333333 189.866667 488.533333 170.666667 512 170.666667L512 170.666667ZM597.333333 768 298.666667 768 298.666667 682.666667 597.333333 682.666667 597.333333 768 597.333333 768ZM725.333333 597.333333 298.666667 597.333333 298.666667 512 725.333333 512 725.333333 597.333333 725.333333 597.333333ZM725.333333 426.666667 298.666667 426.666667 298.666667 341.333333 725.333333 341.333333 725.333333 426.666667 725.333333 426.666667Z"
               fill="#000000"
               p-id="8294"
-            ></path>
+            />
           </svg>
           工作经历
         </h4>
@@ -67,9 +67,8 @@
         {{ resumeData.startYear }}.{{ formatDateToMonth(resumeData.startMonth) }} - 至今
       </a-col>
       <a-col :span="4" v-else-if="resumeData.endYear != -1">
-        {{ resumeData.startYear }}.{{ formatDateToMonth(resumeData.startMonth) }} - {{ resumeData.endYear }}.{{
-          formatDateToMonth(resumeData.endMonth)
-        }}
+        {{ resumeData.startYear }}.{{ formatDateToMonth(resumeData.startMonth) }} -
+        {{ resumeData.endYear }}.{{ formatDateToMonth(resumeData.endMonth) }}
       </a-col>
       <a-col :span="18" class="resume_col">
         <span v-if="resumeData.companyName">{{ resumeData.companyName }}</span>
@@ -85,7 +84,7 @@
         :span="1"
         style="padding-left: 10px; padding-right: 0px; text-align: right"
       >
-        <form-outlined @click="handleUpdateWorkInfo"></form-outlined>
+        <form-outlined @click="handleUpdateWorkInfo" />
       </a-col>
       <a-col
         style="padding-left: 10px !important"
@@ -94,7 +93,7 @@
         :class="workWholeFlagTemp ? 'workWholeFlagRed' : 'workWholeFlagGreen'"
         :title="workWholeFlagTemp ? '缺失' : '完整'"
       >
-        <delete-outlined @click="handleDeleteWorkExp"></delete-outlined>
+        <delete-outlined @click="handleDeleteWorkExp" />
       </a-col>
     </a-row>
     <a-row :gutter="24" class="resume_row">
@@ -161,7 +160,7 @@
       <a-col :span="12"> {{ themeLanguage?.workDuty?.label }}: </a-col>
     </a-row>
     <a-row :gutter="24" class="resume_row" style="margin-bottom: 0">
-      <a-col :span="24" v-html="resumeData.workDuty"></a-col>
+      <a-col :span="24" v-html="resumeData.workDuty" />
     </a-row>
   </div>
   <div class="resume_header_update" v-if="expend && !workWholeFlagAtShcool">
@@ -183,7 +182,7 @@
               d="M810.666667 170.666667 632.32 170.666667C614.4 121.173333 567.466667 85.333333 512 85.333333 456.533333 85.333333 409.6 121.173333 391.68 170.666667L213.333333 170.666667C166.4 170.666667 128 209.066667 128 256L128 853.333333C128 900.266667 166.4 938.666667 213.333333 938.666667L810.666667 938.666667C857.6 938.666667 896 900.266667 896 853.333333L896 256C896 209.066667 857.6 170.666667 810.666667 170.666667L810.666667 170.666667ZM512 170.666667C535.466667 170.666667 554.666667 189.866667 554.666667 213.333333 554.666667 236.8 535.466667 256 512 256 488.533333 256 469.333333 236.8 469.333333 213.333333 469.333333 189.866667 488.533333 170.666667 512 170.666667L512 170.666667ZM597.333333 768 298.666667 768 298.666667 682.666667 597.333333 682.666667 597.333333 768 597.333333 768ZM725.333333 597.333333 298.666667 597.333333 298.666667 512 725.333333 512 725.333333 597.333333 725.333333 597.333333ZM725.333333 426.666667 298.666667 426.666667 298.666667 341.333333 725.333333 341.333333 725.333333 426.666667 725.333333 426.666667Z"
               fill="#000000"
               p-id="8294"
-            ></path>
+            />
           </svg>
           工作经历
         </h4>
@@ -262,7 +261,7 @@
                 d="M810.666667 170.666667 632.32 170.666667C614.4 121.173333 567.466667 85.333333 512 85.333333 456.533333 85.333333 409.6 121.173333 391.68 170.666667L213.333333 170.666667C166.4 170.666667 128 209.066667 128 256L128 853.333333C128 900.266667 166.4 938.666667 213.333333 938.666667L810.666667 938.666667C857.6 938.666667 896 900.266667 896 853.333333L896 256C896 209.066667 857.6 170.666667 810.666667 170.666667L810.666667 170.666667ZM512 170.666667C535.466667 170.666667 554.666667 189.866667 554.666667 213.333333 554.666667 236.8 535.466667 256 512 256 488.533333 256 469.333333 236.8 469.333333 213.333333 469.333333 189.866667 488.533333 170.666667 512 170.666667L512 170.666667ZM597.333333 768 298.666667 768 298.666667 682.666667 597.333333 682.666667 597.333333 768 597.333333 768ZM725.333333 597.333333 298.666667 597.333333 298.666667 512 725.333333 512 725.333333 597.333333 725.333333 597.333333ZM725.333333 426.666667 298.666667 426.666667 298.666667 341.333333 725.333333 341.333333 725.333333 426.666667 725.333333 426.666667Z"
                 fill="#000000"
                 p-id="8294"
-              ></path>
+              />
             </svg>
             工作经历
           </h4>
@@ -311,7 +310,13 @@
               v-model:value="formState.companyType"
               :options="optionsCompanyType"
               @change="handleCompanyType"
-            ></a-select>
+            >
+           <template #option="{ label, tooltip }">
+        <a-tooltip :title="tooltip" placement="left">
+            <span>{{ label }}</span>
+        </a-tooltip>
+    </template>
+          </a-select>
           </a-form-item>
         </a-col>
         <a-col v-else :span="12">
@@ -340,7 +345,7 @@
               showSearch
               @change="handleCategory"
               :options="optionCategory"
-            ></a-select>
+            />
           </a-form-item>
         </a-col>
         <a-col :span="spanTitle" v-if="categoryFlag">
@@ -357,7 +362,7 @@
               @change="handleMarketBrandFloor"
               showSearch
               :options="optionRetreat"
-            ></a-select>
+            />
           </a-form-item>
         </a-col>
         <a-col :span="spanTitle" v-if="!categoryFlag">
@@ -373,7 +378,7 @@
               optionFilterProp="label"
               showSearch
               :options="optionWorkRetail"
-            ></a-select>
+            />
           </a-form-item>
         </a-col>
       </a-row>
@@ -417,7 +422,7 @@
             >
           </a-form-item></a-col
         >
-        <a-col :span="6"></a-col>
+        <a-col :span="6" />
         <a-col :span="6">
           <a-form-item
             :label="themeLanguage?.isNewtest?.label"
@@ -431,7 +436,7 @@
               showSearch
               @change="handleMarketBrandFloor"
               :options="optionNewtest"
-            ></a-select>
+            />
           </a-form-item>
         </a-col>
       </a-row>
@@ -451,7 +456,7 @@
               :labelInValue="true"
               @change="handleCityName"
               showSearch
-            ></a-select>
+            />
           </a-form-item>
         </a-col>
         <a-col :span="spanTitle" v-if="categoryFlag">
@@ -470,8 +475,7 @@
               showSearch
               @change="handleMarketBrandFloor"
               @search="handleCityAndMarktName"
-            >
-            </a-select>
+            />
           </a-form-item>
         </a-col>
         <a-col v-if="!brandCheckBox" :span="spanTitle">
@@ -490,21 +494,21 @@
               @change="handleMarketBrandFloor('1')"
               showSearch
               v-if="!brandFlag"
-            ></a-select>
+            />
             <a-input
               v-if="brandFlag"
               style="width: 50%"
               v-model:value="brandNameCn"
               @blur="handleBrandNameCn"
               placeholder="品牌中文"
-            ></a-input>
+            />
             <a-input
               v-if="brandFlag"
               style="width: 50%"
               v-model:value="brnadNameEn"
               @blur="handleBrandNameEn"
               placeholder="品牌英文"
-            ></a-input>
+            />
           </a-form-item>
         </a-col>
         <a-col :span="11" v-if="!categoryFlag">
@@ -549,14 +553,16 @@
             :label="themeLanguage?.workFloor?.label"
             name="workFloor"
             style="padding-left: 21px"
-            :rules="[{ required: formState.isRetreat != '1', message: themeLanguage?.workFloor?.message }]"
+            :rules="[
+              { required: formState.isRetreat != '1', message: themeLanguage?.workFloor?.message },
+            ]"
           >
             <a-select
               v-model:value="formState.workFloor"
               :placeholder="themeLanguage?.workFloor?.message"
               :options="optionsWorkFloor"
               showSearch
-            ></a-select>
+            />
           </a-form-item>
         </a-col>
       </a-row>
@@ -574,7 +580,7 @@
               optionFilterProp="label"
               :labelInValue="true"
               showSearch
-            ></a-select>
+            />
           </a-form-item>
         </a-col>
         <a-col :span="spanTitle">
@@ -582,12 +588,14 @@
             name="reporter"
             :label="themeLanguage?.reporter?.label"
             style="padding-left: 8px"
-            :rules="[{ required: false, message: themeLanguage?.reporter?.message }]"
+            :rules="[{ required: false,
+               message: themeLanguage?.reporter?.message }]"
           >
             <a-input
               v-model:value="formState.reporter"
+            @blur="formState.reporter = formState.reporter?.trim()"
               :placeholder="themeLanguage?.reporter?.message"
-            ></a-input>
+            />
           </a-form-item>
         </a-col>
         <a-col :span="spanTitle">
@@ -599,8 +607,9 @@
           >
             <a-input
               v-model:value="formState.department"
+            @blur="formState.department = formState.department?.trim()"
               :placeholder="themeLanguage?.department?.message"
-            ></a-input>
+            />
           </a-form-item>
         </a-col>
         <a-col :span="spanTitle">
@@ -608,13 +617,19 @@
             name="monthSalary"
             :label="themeLanguage?.monthSalary?.label"
             style="padding-left: 8px"
-            :rules="[{ required: (formState.category == '店铺' && formState.isNewtest == '1' ? true : false), message: themeLanguage?.monthSalary?.message }]"
+            :rules="[
+              {
+                required: false,
+                message: themeLanguage?.monthSalary?.message,
+              },
+            ]"
           >
             <a-input-number
               style="width: 100%"
               v-model:value="formState.monthSalary"
+            @blur="formState.monthSalary = formState.monthSalary?.trim()"
               :placeholder="themeLanguage?.monthSalary?.message"
-            ></a-input-number>
+            />
           </a-form-item>
         </a-col>
       </a-row>
@@ -625,12 +640,18 @@
             :label="themeLanguage?.salaryStructure?.label"
             style="padding-left: 8px"
             :label-col="{ span: resumeTypeEnglish == '1' ? 3.6 : 0 }"
-            :rules="[{ required: (formState.category == '店铺' && formState.isNewtest == '1' ? true : false), message: themeLanguage?.salaryStructure?.message }]"
+            :rules="[
+              {
+                required: false,
+                message: themeLanguage?.salaryStructure?.message,
+              },
+            ]"
           >
             <a-input
               v-model:value="formState.salaryStructure"
               placeholder="薪资案例：底薪4000+补助500+提成"
-            ></a-input>
+            @blur="formState.salaryStructure = formState.salaryStructure?.trim()"
+            />
           </a-form-item>
         </a-col>
         <a-col :span="6">
@@ -638,44 +659,57 @@
             name="shopVolume"
             :label="themeLanguage?.shopVolume?.label"
             style="padding-left: 8px"
-            :rules="[{ required: (formState.category == '店铺' && formState.isNewtest == '1' ? true : false), message: themeLanguage?.shopVolume?.message }]"
+            :rules="[
+              {
+                required: false,
+                message: themeLanguage?.shopVolume?.message,
+              },
+            ]"
           >
-            <a-input
-              v-model:value="formState.shopVolume"
-              placeholder="填写案例：100W/M"
-            ></a-input>
-          </a-form-item>
-        </a-col>
-      </a-row>
-      <a-row class="resume_row_update">
-      <a-col :span="24">
-          <a-form-item
-            name="personnelStructure"
-            :label="themeLanguage?.personnelStructure?.label"
-            style="padding-left: 8px"
-            :label-col="{ span: resumeTypeEnglish == '1' ? 3.6 : 0 }"
-            :rules="[{ required: (formState.category == '店铺' && formState.isNewtest == '1' ? true : false), message: themeLanguage?.personnelStructure?.message }]"
-          >
-            <a-input
-              v-model:value="formState.personnelStructure"
-              placeholder="团队案例：1SM+1SPV+5SA"
-            ></a-input>
+            <a-input v-model:value="formState.shopVolume"
+            @blur="formState.shopVolume = formState.shopVolume?.trim()"
+            placeholder="填写案例：100W/M" />
           </a-form-item>
         </a-col>
       </a-row>
       <a-row class="resume_row_update">
         <a-col :span="24">
           <a-form-item
+            name="personnelStructure"
+            :label="themeLanguage?.personnelStructure?.label"
+            style="padding-left: 8px"
+            :label-col="{ span: resumeTypeEnglish == '1' ? 3.6 : 0 }"
+            :rules="[
+              {
+                required: formState.category == '店铺' && formState.isNewtest == '1' ? false : false,
+                message: themeLanguage?.personnelStructure?.message,
+              },
+            ]"
+          >
+            <a-input
+              v-model:value="formState.personnelStructure"
+              placeholder="团队案例：1SM+1SPV+5SA"
+              @blur="formState.personnelStructure = formState.personnelStructure?.trim()"
+            />
+          </a-form-item>
+        </a-col>
+      </a-row>
+      <a-row class="resume_row_update">
+        <a-col :span="24" class="hint-text-area">
+          <a-form-item
             name="workDuty"
             :label="themeLanguage?.workDuty?.label"
             :rules="[{ required: true, message: themeLanguage?.workDuty?.message }]"
           >
+          <div class="hint-text">职责必须填写序号，且只可为以下2种格式：1、2、或1. 2. 其他格式推荐时简历序号可能乱</div>
             <a-textarea
               :rows="7"
-              style="white-space: pre-wrap"
+              style="white-space: pre-wrap;padding-top: 20px;"
               v-model:value="formState.workDuty"
               :placeholder="themeLanguage?.workDuty?.message"
-            ></a-textarea>
+              @input="e => formState.workDuty = normalizeText(e.target.value)"
+            >
+          </a-textarea>
           </a-form-item>
         </a-col>
       </a-row>
@@ -693,7 +727,7 @@
 <script setup lang="ts">
   import { FormOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons-vue';
   import { storeToRefs } from 'pinia';
-  import { message,Modal } from 'ant-design-vue';
+  import { message, Modal } from 'ant-design-vue';
   import type { SelectProps } from 'ant-design-vue';
   import { useResumeListStoreWithOut } from '/@/store/modules/resumeList';
   import { useCityStoreWithOut } from '/@/store/modules/city';
@@ -703,14 +737,15 @@
   import { createVNode } from 'vue';
   import { debounce } from 'lodash-es';
   import { validateLanguage } from '/@/utils/resumeTypeEn';
-  import { formatDateToMonth } from '/@/utils/dateUtil'
+  import { formatDateToMonth } from '/@/utils/dateUtil';
+  import { normalizeText } from '/@/utils/normalizeText';
   const cityStore = useCityStoreWithOut();
   const resumeListStore = useResumeListStoreWithOut();
   const { positionsList, brandList, companyList } = storeToRefs(resumeListStore);
   const { province } = storeToRefs(cityStore);
   const spanTitle = 6;
   const resumeDetailStore = useResumeDetailStore();
-  const { workWholeFlag, resumeTypeEnglish, workWholeFlagAtShcool } =
+  const { workWholeFlag, resumeTypeEnglish, workWholeFlagAtShcool, currentWorkCity } =
     storeToRefs(resumeDetailStore);
   const expend = ref(false);
   const expendShow = ref(false);
@@ -722,9 +757,15 @@
   const optionRetreat = ref([{ value: 1, label: '' }]);
   const optionNewtest = ref([{ value: 1, label: '' }]);
   const optionsCompanyType = ref([
-    { value: '', label: '开业' },
-    { value: '海外', label: '海外' },
-    { value: '注销', label: '注销' },
+    { value: '', label: '开业',
+      tooltip: '开业: 表示此公司正常营业中，系统将与国家工商局数据比对是否一致;'
+     },
+    { value: '海外', label: '海外',
+      tooltip: '海外: 非中国大陆公司，请选择海外;'
+     },
+    { value: '注销', label: '注销',
+      tooltip: '注销: 表示此公司目前已经注销，系统将不进行比对，禁止开业公司选择注销;'
+     },
   ]);
   const optionWorkRetail = ref([
     { value: '', label: '' },
@@ -758,17 +799,16 @@
       !props.resumeData.companyName ||
       (props.resumeData.category == '店铺' &&
         (!props.resumeData.marketName ||
-          !props.resumeData.workFloor ||
           !(props.resumeData.isRetreat == 0 || props.resumeData.isRetreat == 1))) ||
       !(props.resumeData.isNewtest == 0 || props.resumeData.isNewtest == 1) ||
       !props.resumeData.positionName ||
       !props.resumeData.workDuty ||
       !props.resumeData.cityName ||
       ((props.resumeData.category == '店铺' || props.indexNum < 1) &&
-        !props.resumeData.brandName) ||
+        ((!props.resumeData.workFloor && props.resumeData.isRetreat == 0 ) || !props.resumeData.brandName)) ||
       props.resumeData.brandName == 'OFFICE'
     ) {
-      workWholeFlagTemp.value = true;
+     workWholeFlagTemp.value = true;
     }
   };
   handleWorkWholeFlagTemp();
@@ -783,14 +823,14 @@
         !newProps.category ||
         !newProps.companyName ||
         (newProps.category == '店铺' &&
-          (!newProps.marketName ||
-            (newProps.isRetreat == 0 && !newProps.workFloor) ||
+          (!newProps.marketName  ||
             !(newProps.isRetreat == 0 || newProps.isRetreat == 1))) ||
         !(newProps.isNewtest == 0 || newProps.isNewtest == 1) ||
         !newProps.positionName ||
         !newProps.workDuty ||
         !newProps.cityName ||
-        ((newProps.category == '店铺' || props.indexNum < 1) && !newProps.brandName) ||
+        ((newProps.category == '店铺' || props.indexNum < 1) && (!newProps.brandName ||
+            (newProps.isRetreat == 0 && !newProps.workFloor))) ||
         newProps.brandName == 'OFFICE'
       ) {
         workWholeFlagTemp.value = true;
@@ -800,9 +840,8 @@
     },
   );
   const themeLanguage = ref(validateLanguage('workInfo', resumeTypeEnglish.value));
-  const loginVueUser: { loginName: ''; loginId: ''; loginTocken: '';loginOutFlag: '' } = JSON.parse(
-    localStorage.getItem('loginVueUser'),
-  );
+  const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginOutFlag: '' } =
+    JSON.parse(localStorage.getItem('loginVueUser'));
   const formState = reactive({
     companyName: '',
     category: '',
@@ -845,6 +884,9 @@
       formState.brandName = { value: '', label: '' };
       formState.brandNameCn = '';
       formState.brnadNameEn = '';
+      if (props.resumeData?.id) {
+        resumeDetailStore.deleteBrandDaiShen(props.resumeData?.id);
+      }
     }
   };
   if (!props.resumeData?.id) {
@@ -982,7 +1024,7 @@
     formState.brandCategory = props.resumeData?.brandCategory;
     formState.companyType = props.resumeData?.companyType || '';
     formState.retail = props.resumeData?.retail || '';
-    handleCategory();
+    handleCategory(1);
     handleCityName(formState.cityName, formState.marketName.label);
     handleMarketBrandFloor();
     handleCompanyType();
@@ -1000,9 +1042,9 @@
     if (props.resumeData?.workBrand) {
       formState.workBrand = props.resumeData?.workBrand?.toString();
       formState.brandName = {
-      value: props.resumeData?.workBrand?.toString(),
-      label: props.resumeData?.brandName,
-    };
+        value: props.resumeData?.workBrand?.toString(),
+        label: props.resumeData?.brandName,
+      };
       brandCheckBox.value = false;
     }
   };
@@ -1259,12 +1301,22 @@
       }
     });
   };
-  const handleMarketBrandFloor = (type='') => {
-    if (type != '1' && props.indexNum > 0 && formState.category == 'OFFICE' && formState.isNewtest == '1') {
+  const handleMarketBrandFloor = (type = '') => {
+    if (
+      type != '1' &&
+      props.indexNum > 0 &&
+      formState.category == 'OFFICE' &&
+      formState.isNewtest == '1'
+    ) {
       brandCheckBox.value = false;
       categoryFlag.value = false;
     }
-    if (type != '1' && props.indexNum > 0 && formState.category == 'OFFICE' && formState.isNewtest != '1') {
+    if (
+      type != '1' &&
+      props.indexNum > 0 &&
+      formState.category == 'OFFICE' &&
+      formState.isNewtest != '1'
+    ) {
       brandCheckBox.value = true;
       brandCheckBoxShow.value = true;
       formState.brandName = { value: '', label: '' };
@@ -1289,12 +1341,12 @@
       return;
     }
     optionsWorkFloor.value = [{ value: '', label: '' }];
-    if (loginVueUser.loginOutFlag == '1') {
-       if (resumeTypeEnglish.value == '1') {
-              optionsWorkFloor.value = workFloorEnArr.map((item) => ({ value: item, label: item }));
-            } else {
-              optionsWorkFloor.value = workFloorArr.map((item) => ({ value: item, label: item }));
-            }
+    if (loginVueUser.loginOutFlag == '1' || currentWorkCity.value == '香港' || currentWorkCity.value == 'Hong Kong' || currentWorkCity.value == 'Macao'  || currentWorkCity.value == '澳门') {
+      if (resumeTypeEnglish.value == '1') {
+        optionsWorkFloor.value = workFloorEnArr.map((item) => ({ value: item, label: item }));
+      } else {
+        optionsWorkFloor.value = workFloorArr.map((item) => ({ value: item, label: item }));
+      }
       return;
     }
     resumeDetailStore
@@ -1304,31 +1356,30 @@
           if (resumeTypeEnglish.value == '1') {
             let floor = res.info[0].floor.replace('层', 'F');
             let temp = [];
-            res.info.forEach(item => {
+            res.info.forEach((item) => {
               let f = item.floor.replace('层', 'F');
               temp.push({
-                value: f, label: f
-              })
+                value: f,
+                label: f,
+              });
             });
             optionsWorkFloor.value = temp;
             formState.workFloor = floor;
           } else {
             //optionsWorkFloor.value = [{ value: res.info[0].floor, label: res.info[0].floor }];
             let temp = [];
-            res.info.forEach(item => {
+            res.info.forEach((item) => {
               let f = item.floor;
               temp.push({
-                value: f, label: f
-              })
+                value: f,
+                label: f,
+              });
             });
             optionsWorkFloor.value = temp;
             formState.workFloor = res.info[0].floor;
           }
         } else {
-          if (
-            formState.isNewtest == '1' ||
-            formState.isRetreat != '1' 
-          ) {
+          if (formState.isNewtest == '1' || formState.isRetreat != '1') {
             formState.workFloor = '';
             message.error('该商场无此品牌数据，商场信息中添加该品牌楼层信息！');
           } else {
@@ -1393,7 +1444,7 @@
     brandNameCn.value = '';
     brnadNameEn.value = '';
   };
-  const handleCategory = () => {
+  const handleCategory = (type) => {
     brandNameCn.value = '';
     brnadNameEn.value = '';
     formState.brandName = { value: '', label: '' };
@@ -1401,7 +1452,10 @@
       formState.retail = '';
       categoryFlag.value = true;
       brandCheckBox.value = false;
-      loadOptionsPositions();
+      if (props.resumeData?.id && type != 1) {
+        resumeDetailStore.deleteBrandDaiShen(props.resumeData?.id);
+      }
+      loadOptionsPositionsOFFICE();
     } else {
       if (props.indexNum > 0) {
         brandCheckBoxShow.value = true;
@@ -1425,7 +1479,7 @@
     }
   };
   const handleBrandNameCn = (e) => {
-    if (!e.target.value) {
+    if (!e.target.value && e.target.value != '') {
       return;
     }
     if (e.target.value.length > 8) {
@@ -1433,10 +1487,10 @@
       brandNameCn.value = '';
       return;
     }
-    if (loginVueUser.loginOutFlag == '1') {
+    if (loginVueUser.loginOutFlag == '1' || currentWorkCity.value == '香港' || currentWorkCity.value == 'Hong Kong' || currentWorkCity.value == 'Macao'  || currentWorkCity.value == '澳门') {
       return;
     }
-    resumeDetailStore.queryCheckBrandName(e.target.value, '').then((res) => {
+    resumeDetailStore.queryCheckBrandName(e.target.value?.trim(), '', formState.id).then((res) => {
       if (res.code != 1) {
         message.error(res.info);
       }
@@ -1452,10 +1506,10 @@
       message.error('品牌英文只能填写英文');
       return;
     }
-    if (loginVueUser.loginOutFlag == '1') {
+    if (loginVueUser.loginOutFlag == '1' || currentWorkCity.value == '香港' || currentWorkCity.value == '澳门') {
       return;
     }
-    resumeDetailStore.queryCheckBrandName('', e.target.value).then((res) => {
+    resumeDetailStore.queryCheckBrandName('', e.target.value?.trim(), formState.id).then((res) => {
       if (res.code != 1) {
         message.error(res.info);
       }
@@ -1486,35 +1540,48 @@
     let brandNameFlag = false;
     if (brandFlag.value && (brandNameCn.value || brnadNameEn.value)) {
       brandNameFlag = true;
-      if (loginVueUser.loginOutFlag != '1') {
-      const res = await resumeDetailStore.queryCheckBrandName(brandNameCn.value, brnadNameEn.value);
-      if (res.code == 1) {
+      if (loginVueUser.loginOutFlag != '1' && !(currentWorkCity.value == '香港' || currentWorkCity.value == 'Hong Kong' || currentWorkCity.value == 'Macao' ||currentWorkCity.value == '澳门')) {
+        const res = await resumeDetailStore.queryCheckBrandName(
+          brandNameCn.value,
+          brnadNameEn.value,
+          formState.id,
+        );
+        if (res.code == 1) {
+          brandNameFlag = false;
+          formState.brandWrite = '1';
+          formState.brandNameCn = brandNameCn.value;
+          formState.brnadNameEn = brnadNameEn.value;
+        } else {
+          message.error(res.info);
+        }
+      } else {
         brandNameFlag = false;
         formState.brandWrite = '1';
         formState.brandNameCn = brandNameCn.value;
         formState.brnadNameEn = brnadNameEn.value;
-      } else {
-        message.error(res.info);
-      }
-      } else {
-       brandNameFlag = false;
-        formState.brandWrite = '1';
-        formState.brandNameCn = brandNameCn.value;
-        formState.brnadNameEn = brnadNameEn.value; 
       }
     }
     if (brandNameFlag) {
       return;
     }
     //没有选择公司 工作经历是缺失的 是前2份工作
-    if (resumeTypeEnglish.value != '1' && !selcetCompanyNameFlag.value && workWholeFlagTemp.value && props.indexNum < 2) {
+    if (
+      resumeTypeEnglish.value != '1' &&
+      !selcetCompanyNameFlag.value &&
+      workWholeFlagTemp.value &&
+      props.indexNum < 2 && !(currentWorkCity.value == '香港' || currentWorkCity.value == 'Hong Kong' || currentWorkCity.value == 'Macao' ||currentWorkCity.value == '澳门')
+    ) {
       message.warning('请确认后选择公司名称');
       return;
     }
-    if (formState.category == '店铺' && formState.isNewtest == '1' && (!formState.salaryStructure || !formState.personnelStructure || !formState.shopVolume)) {
-      message.warning('店铺最近工作需要填写薪资构架,团队构架及业绩体量');
-      return;
-    }
+    // if (
+    //   formState.category == '店铺' &&
+    //   formState.isNewtest == '1' &&
+    //   (!formState.salaryStructure || !formState.personnelStructure || !formState.shopVolume)
+    // ) {
+    //   message.warning('店铺最近工作需要填写薪资构架,团队构架及业绩体量');
+    //   return;
+    // }
     iconLoading.value = true;
     resumeDetailStore
       .updateResumeWorkExp(formState)
@@ -1537,6 +1604,9 @@
             }
             message.success('保存成功');
           });
+        } else if(res.code == 2) {
+          iconLoading.value = false;
+          message.error('工作经历中,时间段有重叠,请修改');
         } else {
           iconLoading.value = false;
           message.error('保存失败');
@@ -1588,10 +1658,10 @@
         { value: 0, label: 'No' },
       ];
       optionWorkRetail.value = [
-    { value: '', label: '' },
-    { value: '1', label: 'Retail' },
-    { value: '2', label: 'Non Retail' },
-  ];
+        { value: '', label: '' },
+        { value: '1', label: 'Retail' },
+        { value: '2', label: 'Non Retail' },
+      ];
     } else {
       optionCategory.value = [
         { value: '店铺', label: '店铺' },
@@ -1606,10 +1676,10 @@
         { value: 0, label: '否' },
       ];
       optionWorkRetail.value = [
-    { value: '', label: '' },
-    { value: '1', label: '零售业' },
-    { value: '2', label: '非零售' },
-  ];
+        { value: '', label: '' },
+        { value: '1', label: '零售业' },
+        { value: '2', label: '非零售' },
+      ];
     }
   };
   loadresumeTypeEnglish();
@@ -1744,5 +1814,24 @@
   }
   :deep(.brandCheckBox .ant-checkbox) {
     margin-top: 6px;
+  }
+  .hint-text {
+    position: absolute;
+    top: 1px;
+    left: 12px;
+    z-index: 1;
+    color: rgba(0, 0, 0, 0.5);
+    border-bottom: 1px solid #ccc;
+    width: 97.5%;
+    background-color: #fff;
+  }
+  .hint-text-area {
+    position: relative
+  }
+  .hint-text-area:focus-within .hint-text {
+    border-bottom: 1px solid #2372d9;
+  }
+   .hint-text-area:hover .hint-text {
+    border-bottom: 1px solid #2372d9;
   }
 </style>

@@ -1,5 +1,6 @@
 <template>
-  <div class="resume_header">
+  <!-- <div class="resume_header" @click="handleResumeContainerIndex" :class="{'resume_container_index_up': resumeContainerIndexBtnFlag}"> -->
+  <div class="resume_header" @click="handleResumeContainerIndex">
     <a-row :gutter="24">
       <a-col :span="24" class="resume_detail_title">
         <h4 class="resume_h4"> 简历信息 </h4>
@@ -133,7 +134,7 @@
     </a-row>
     <div v-if="expend">
       <a-row :gutter="24">
-        <a-col :span="24" v-html="formState.reportContentShow"></a-col>
+        <a-col :span="24" v-html="formState.reportContentShow"  class="report-content"></a-col>
       </a-row>
       <a-row :gutter="24">
         <a-col :span="24" style="text-align: right">
@@ -152,15 +153,18 @@
     <div v-if="expendUpdate">
       <a-form ref="formRef" :model="formState" @finish="onFinish">
         <a-row :gutter="24">
-          <a-col :span="24">
+          <a-col :span="24"  class="hint-text-area">
             <a-form-item
               name="reportContent"
               :rules="[{ required: true, message: '请输入简历报告' }]"
             >
-              <a-textarea
+             <div class="hint-text">必须填写序号，只能为以下2种：1、2、或1. 2. 其他格式推荐时简历序号会乱</div>
+             <a-textarea
                 :rows="7"
+                style="white-space: pre-wrap;padding-top: 20px;"
                 v-model:value="formState.reportContent"
                 placeholder="请输入简历报告"
+              @input="e => formState.reportContent = normalizeText(e.target.value)"
               ></a-textarea>
             </a-form-item>
           </a-col>
@@ -192,7 +196,7 @@
     </p>
   </a-modal>
   <a-drawer
-    v-model:open="orginalPathShow"
+    v-model:open="orginalPathHeaderShow"
     title="文件预览"
     :keyboard="false"
     :closable="false"
@@ -419,8 +423,9 @@
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   import OrginalPath from '/@/components/OrginalPath/index.vue';
   import MappingJiaGou from './MappingJiaGou.vue';
+  import { normalizeText } from '/@/utils/normalizeText';
   const resumeDetailStore = useResumeDetailStore();
-  const { resumeReport, resumeId, resumeTypeEnglish } = storeToRefs(resumeDetailStore);
+  const { resumeReport, resumeId, resumeTypeEnglish,resumeContainerIndexBtnFlag,orginalPathShow } = storeToRefs(resumeDetailStore);
   defineProps({
     showResumeAdd: {
       type: Boolean,
@@ -482,10 +487,11 @@
   const handleReportContent = (reportContent) => {
     if (reportContent) {
       //formState.value.reportContent = reportContent?.replaceAll(/<[^>]+>/g, '');
-      formState.value.reportContent = reportContent
-        ?.replaceAll(/<p>/g, '')
-        .replaceAll(/<(\/)?p>/g, '\n');
-      formState.value.reportContentShow = reportContent;
+    formState.value.reportContent = reportContent
+      ?.replaceAll(/<\/?p[^>]*>/g, '\n')  // 匹配所有p标签替换为换行
+      .replace(/\n+/g, '\n')             // 合并多个换行
+      .trim(); 
+      formState.value.reportContentShow = formState.value.reportContent;
       expend.value = true;
     } else {
       expendUpdate.value = true;
@@ -513,14 +519,14 @@
   };
   //原始简历预览开始
   const orginalPathBlobPath = ref('');
-  const orginalPathShow = ref(false);
+  const orginalPathHeaderShow = ref(false);
   const handleResumeOrginalPath = (path) => {
     orginalPathBlobPath.value = path;
-    orginalPathShow.value = true;
+    orginalPathHeaderShow.value = true;
   };
   const handleOrginalPathClose = () => {
     mappingJiaGouId.value = "";
-    orginalPathShow.value = false;
+    orginalPathHeaderShow.value = false;
   };
   const openOrginalPatChoose = ref(false);
   const openOrginalPatChooseOrginalPath = ref('');
@@ -879,8 +885,16 @@ const mappingJiaGouId = ref("")
       },
     });
   };
+  const handleResumeContainerIndex = () => {
+    if (orginalPathShow.value) {
+      resumeContainerIndexBtnFlag.value = true;
+    }
+  }
 </script>
 <style lang="less" scoped>
+.report-content {
+  white-space: pre-line;
+}
   .resume_header {
     margin: 10px 20px;
   }
@@ -994,5 +1008,32 @@ const mappingJiaGouId = ref("")
   }
   :deep(.ant-drawer-content-wrapper .docx) {
     zoom: 0.6;
+  }
+  .resume_container_index_up {
+    z-index: 99999;
+    background-color: #fff;
+    position: relative;
+    box-shadow: 10px 0 16px #ccc;
+    margin: 0px 2px 10px;
+    padding-bottom: 10px;
+  }
+     .hint-text {
+    position: absolute;
+    top: 1px;
+    left: 12px;
+    z-index: 1;
+    color: rgba(0, 0, 0, 0.5);
+    border-bottom: 1px solid #ccc;
+    width: 96.5%;
+    background-color: #fff;
+  }
+  .hint-text-area {
+    position: relative
+  }
+  .hint-text-area:focus-within .hint-text {
+    border-bottom: 1px solid #2372d9;
+  }
+   .hint-text-area:hover .hint-text {
+    border-bottom: 1px solid #2372d9;
   }
 </style>

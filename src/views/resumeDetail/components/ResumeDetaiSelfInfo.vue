@@ -38,6 +38,7 @@
             <a-textarea
               :rows="7"
               v-model:value="formState.selfEvaluation"
+              @input="e => formState.selfEvaluation = normalizeText(e.target.value)"
               placeholder="请输入自我评价"
             ></a-textarea>
           </a-form-item>  
@@ -56,6 +57,7 @@
   import { FormOutlined } from '@ant-design/icons-vue';
   import { message } from 'ant-design-vue';
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail'; 
+  import { normalizeText } from '/@/utils/normalizeText';
   const resumeDetailStore = useResumeDetailStore();
   const props = defineProps({
     resumeData: {

@@ -8,7 +8,7 @@
       v-else-if="pathType == '.pdf'"
         :src="path"
     />
-    <img v-else :src="path" style="width: 770px;">
+    <img v-else :src="path" style="width: 600px;">
   </template>
 </template>
 <script lang="ts" setup>
@@ -25,11 +25,11 @@ import '@vue-office/docx/lib/index.css'
   //const path = ref(null);
   const pathType = ref('');
   const path = ref('');
-  pathType.value = props.orginalPathBlobPath.substring(props.orginalPathBlobPath.lastIndexOf("."));
-  path.value = props.orginalPathBlobPath;
+  pathType.value = computed(() => props.orginalPathBlobPath.substring(props.orginalPathBlobPath.lastIndexOf("."))).value;
+  path.value = computed(() => props.orginalPathBlobPath).value;
   watch(props,() =>{
-    pathType.value = props.orginalPathBlobPath.substring(props.orginalPathBlobPath.lastIndexOf("."));
-    path.value = props.orginalPathBlobPath;
+    pathType.value = computed(() => props.orginalPathBlobPath.substring(props.orginalPathBlobPath.lastIndexOf("."))).value;
+    path.value = computed(() => props.orginalPathBlobPath).value;
   })
   const handleRendered = () => {
       console.log('Document rendered successfully');
@@ -39,3 +39,9 @@ import '@vue-office/docx/lib/index.css'
     }
   console.log(pathType.value);
 </script>
+<style lang="less" scoped>
+/* 子组件继承父容器高度 */
+.vue-office-pdf {
+  height: 100% !important;
+}
+</style>

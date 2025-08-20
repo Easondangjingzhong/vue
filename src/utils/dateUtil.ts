@@ -38,7 +38,7 @@ export function formatToDateMinute(
  * @returns 
  */
 export function formatToDate(date: dayjs.ConfigType = undefined, format = DATE_FORMAT): string {
-  return dayjs(date).format(format);
+  return date ? dayjs(date).format(format) : '';
 }
 /**
  * 当前日期

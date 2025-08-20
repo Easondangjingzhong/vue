@@ -306,8 +306,8 @@ import { storeToRefs } from 'pinia';
   const themeLanguage = ref(validateLanguage('englishInfo', resumeTypeEnglish.value));
   message.config({
   duration: 2, // 提示时常单位为s
-  top: '50%', // 距离顶部的位置
-  maxCount: 3 // 最多显示提示信息条数(后面的会替换前面的提示)
+  top: '40%', // 距离顶部的位置
+  maxCount: 3, // 最多显示提示信息条数(后面的会替换前面的提示)
 })
  watch(resumeTypeEnglish,() => {
   themeLanguage.value = validateLanguage('englishInfo', resumeTypeEnglish.value);
@@ -426,6 +426,12 @@ import { storeToRefs } from 'pinia';
       LanguagesTemplates.value = props.Languages;
     }
   if (lang && lang.length > 0) {
+    if (!languageWholeFlagTemp.value) {
+        languageWholeFlagTemp.value = true;
+        resumeDetailStore.$patch({
+          languageWholeFlag: true
+        })
+      }
     lang.forEach((element) => {
       if (element.languageName == '英语') {
         languageWholeFlagTemp.value = false;

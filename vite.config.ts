@@ -9,7 +9,6 @@ function pathResolve(dir: string) {
   return resolve(process.cwd(), '.', dir);
 }
 
-
 // https://vitejs.dev/config/
 export default ({ command, mode }: ConfigEnv): UserConfig => {
   const isBuild = command === 'build';
@@ -37,7 +36,6 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
           //javascriptEnabled: true,
         },
       },
-      
     },
 
     // server

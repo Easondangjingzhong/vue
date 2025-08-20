@@ -12,8 +12,8 @@
         :name="['educationInfoList', indexNum, 'schoolName']"
         :label="themeLanguage?.schoolName?.label"
         :label-col="{ span: resumeTypeEnglish == '1' ? 4.3 : 3.3}"
-        :wrapper-col="{ span: resumeTypeEnglish == '1' ? 20 : 20,offset: 0.5}"
-        :rules="[{ required: true, message: themeLanguage?.schoolName?.message }]"
+        :wrapper-col="{ span: resumeTypeEnglish == '1' ? 21 : 21,offset: 0.5}"
+        :rules="[{ required: false, message: themeLanguage?.schoolName?.message }]"
       >
         <a-input
           v-model:value="educationInfoData.schoolName"
@@ -68,7 +68,7 @@
         />
       </a-form-item>
     </a-col>
-    <a-col :span="spanTitle">
+    <a-col :span="resumeTypeEnglish == '1' ? 7 : spanTitle">
       <a-form-item
         name="atSchool"
         :label="themeLanguage?.atSchool?.label"
@@ -90,7 +90,7 @@
         :wrapper-col="{ span: 16 }"
         :name="['educationInfoList', indexNum, 'degree']"
         :label="themeLanguage?.degree?.label"
-        :rules="[{ required: true, message: themeLanguage?.degree?.message }]"
+        :rules="[{ required: false, message: themeLanguage?.degree?.message }]"
       >
         <a-select
           class="form-select"
@@ -98,6 +98,8 @@
           :options="degreeOptions"
           :placeholder="themeLanguage?.degree?.message"
           @change="changeDegree"
+          optionFilterProp="code"
+          showSearch
         ></a-select>
       </a-form-item>
     </a-col>
@@ -138,7 +140,7 @@
   import { useResumeStoreWithOut } from '/@/store/modules/resume';
   import { useCityStoreWithOut } from '/@/store/modules/city';
   import { validateLanguage } from '/@/utils/resumeTypeEn';
-  import { degreeArr, degreeEnArr } from '/@/store/data/resume';
+  import { degreeEnAndCnArr } from '/@/store/data/resume';
   const cityStore = useCityStoreWithOut();
   const { cheieseCity } = storeToRefs(cityStore);
   const resumeStore = useResumeStoreWithOut();
@@ -163,9 +165,10 @@
   });
   const spanTitle = 4;
   const degreeOptions = ref<SelectProps['options']>(
-    degreeArr.map((item) => ({
-      label: item,
-      value: item,
+    degreeEnAndCnArr.map((item) => ({
+      label: item.cn,
+      value: item.cn,
+      code: `${item.en}-${item.cn}`,
     })),
   );
   let degreeFlag = ref(true);
@@ -272,9 +275,10 @@
       { label: 'Yes', value: 'Y' },
       { label: 'No', value: 'N' },
     ];
-    degreeOptions.value = degreeEnArr.map((item) => ({
-      label: item,
-      value: item,
+    degreeOptions.value = degreeEnAndCnArr.map((item) => ({
+      label: item.en,
+      value: item.en,
+      code: `${item.en}-${item.cn}`,
     }));
   }
   watch(
@@ -290,15 +294,17 @@
           { label: 'Yes', value: 'Y' },
           { label: 'No', value: 'N' },
         ];
-        degreeOptions.value = degreeEnArr.map((item) => ({
-          label: item,
-          value: item,
-        }));
+        degreeOptions.value = degreeEnAndCnArr.map((item) => ({
+      label: item.en,
+      value: item.en,
+      code: `${item.en}-${item.cn}`,
+    }));
       } else {
-        degreeOptions.value = degreeArr.map((item) => ({
-          label: item,
-          value: item,
-        }));
+        degreeOptions.value =  degreeEnAndCnArr.map((item) => ({
+      label: item.cn,
+      value: item.cn,
+      code: `${item.en}-${item.cn}`,
+    }));
         optionsAtSchool.value = [
           { label: '是', value: '1' },
           { label: '否', value: '2' },

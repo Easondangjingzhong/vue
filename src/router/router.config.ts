@@ -3,7 +3,9 @@ import BlankLayout from '/@/layouts/BlankLayout.vue';
 import Resume from '/@/views/resume/index.vue';
 import ResumeList from '/@/views/resumeList/index.vue';
 import ResumeDetail from '/@/views/resumeDetail/index.vue';
-import MappingList from '/@/views/mappingList/index.vue'
+import MappingList from '/@/views/mappingList/index.vue';
+import Administrative from '/@/views/administrative/index.vue';
+import CustomerTracking from '/@/views/customerTracking/index.vue';
 import type { RouteRecordRaw } from 'vue-router';
 
 export const accessRoutes: RouteRecordRaw[] = [
@@ -19,7 +21,7 @@ const constantRoutes: RouteRecordRaw[] = [
     path: '/',
     name: 'Root',
     component: Resume,
-    meta: { title: '简历解析' },
+    meta: { title: '' },
   },
   {
     path: '/resume',
@@ -39,12 +41,25 @@ const constantRoutes: RouteRecordRaw[] = [
     component: ResumeDetail,
     meta: { title: '简历管理' },
   },
-   {
+  {
     path: '/mapping/list',
     name: 'MappingList',
     component: MappingList,
     meta: { title: '人员信息' },
   },
+  {
+    path: '/administrative',
+    name: 'Administrative',
+    component: Administrative,
+    meta: { title: '行政管理' },
+  },
+  {
+    path: '/customer/tracking',
+    name: 'CustomerTracking',
+    component: CustomerTracking,
+    meta: { title: '客户跟踪' },
+  },
+
   // ...accessRoutes,
 ];
 export const publicRoutes = [

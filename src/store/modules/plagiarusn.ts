@@ -12,8 +12,7 @@ interface PlagiarusnState {
   resumeInfoFlag: Boolean; // false 不展示简历信息 true 打开展示简历信息
 }
 
-export const usePlagiarusnStore = defineStore({
-  id: 'app-plagiarusn',
+export const usePlagiarusnStore = defineStore('app-plagiarusn',{
   state: (): PlagiarusnState => ({
     // info
     plagiarusnInfo: {} as ResInfoList,

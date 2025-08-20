@@ -1,4 +1,8 @@
 <template>
+  <RecommendCandidatePositionChecked
+    @doHandlePagination="handlePagination"
+    :userName="resumeDetail.resume.userName"
+  />
   <a-drawer
     v-model:open="candidatePositionFlag"
     title="人才推荐"
@@ -136,6 +140,7 @@
                 v-model:value="formState.companyRecruitId"
                 :allowClear="true"
                 showSearch
+                optionFilterProp="label"
                 :options="optionsCompanyRecruitId"
               ></a-select>
             </a-form-item>
@@ -334,7 +339,7 @@
             <span v-else>{{ record.recommendStatus }}</span>
           </template>
           <template v-if="column.key === 'action'">
-            <a-popconfirm title="撤回推荐" @confirm="confirm(record.pId)" v-if="record.action == 1">
+            <a-popconfirm title="撤回推荐":overlay-style="{ width: '115px' }" @confirm="confirm(record.pId)" v-if="record.action == 1">
               <a-button title="撤回推荐" type="primary" class="resume_btn" size="small">
                 撤回
               </a-button>
@@ -345,14 +350,11 @@
       </a-table>
     </div>
   </a-drawer>
-  <RecommendCandidatePositionChecked
-    @doHandlePagination="handlePagination"
-    :recommendPerson="recommendPerson"
-    :userName="resumeDetail.resume.userName"
-  />
+  
 </template>
 <script setup lang="ts">
   import { storeToRefs } from 'pinia';
+  import { ref, onMounted, onBeforeUnmount } from 'vue';
   import { message } from 'ant-design-vue';
   import RecommendCandidatePositionChecked from './RecommendCandidatePositionChecked.vue';
   import type { SelectProps } from 'ant-design-vue';
@@ -382,10 +384,15 @@
   const {
     resumeDetail,
     candidatePositionFlag,
+    currentYear,
+    currentMonth,
     currentWeekNum,
     currentWeek,
     enterpriseConsultant,
     recommendMapping,
+    recommendPerson,
+    repeatRecommendFlag,
+    recommendFlag,
   } = storeToRefs(resumeDetailStore);
   const spanCol = 6;
   const outOpenFlag = ref(true);
@@ -395,40 +402,18 @@
   if (loginVueUser.loginOutFlag == '1') {
     outOpenFlag.value = false;
   }
-  interface RecommendPerson {
-    index: string;
-    city: string;
-    brand: string;
-    jobTitle: string;
-    workPlace: string;
-    turnoverTime: string;
-    counselor: string;
-    jobStatus: string;
-    recruitingNum: string;
-    offerNum: string;
-    openResumesNum: string;
-    surplus: string;
-    isTask: string;
-    action: string;
-    companyName: string;
-    bId: string;
-    id: string;
-    mId: string;
-    recruitId: string;
-    positionsId: string;
-    checkResult: string;
-    refuseRemark: string;
-  }
-  const recommendPerson = ref({} as RecommendPerson);
   const handleRecommendChecked = (item) => {
     recommendPerson.value = { ...item };
-    resumeDetailStore.$patch({
-      recommendFlag: true,
-    });
+    repeatRecommendFlag.value= true;
+    recommendFlag.value= true;
   };
   const optionsCompanyRecruitId = ref<SelectProps['options']>(
     enterpriseConsultant.value?.map((item) => ({ value: item.id, label: item.realNameEn })),
   );
+  watch(() => enterpriseConsultant,()=>{
+    optionsCompanyRecruitId.value = enterpriseConsultant.value?.map((item) => ({ value: item.id, label: item.realNameEn }));
+  })
+
   const selectWeekNum = (weekNum) => {
     let week = '';
     switch (weekNum) {
@@ -459,7 +444,9 @@
   const optionsWeekNum = ref<SelectProps['options']>(
     currentWeek.value.map((item) => ({ value: item.weekNum, label: selectWeekNum(item.weekNum) })),
   );
- 
+  watch(currentWeek,()=>{
+    optionsWeekNum.value = currentWeek.value.map((item) => ({ value: item.weekNum, label: selectWeekNum(item.weekNum) }));
+  })
   const handleCityName = debounce(() => {
     let tempOptionMarkIdUpdate = [];
     //商场数据
@@ -537,6 +524,32 @@
       optionsMonth.value?.push({ label: i + '月', value: i });
     }
   }
+  interface RecommendPerson {
+      index: string;
+      city: string;
+      brand: string;
+      jobTitle: string;
+      workPlace: string;
+      turnoverTime: string;
+      counselor: string;
+      jobStatus: string;
+      recruitingNum: string;
+      offerNum: string;
+      openResumesNum: string;
+      surplus: string;
+      isTask: string;
+      action: string;
+      companyName: string;
+      bId: string;
+      id: string;
+      mId: string;
+      recruitId: string;
+      positionsId: string;
+      checkResult: string;
+      refuseRemark: string;
+      rid: string;
+      cId: string;
+    }
   const formState = ref({
     retail: '',
     jobcategory2: '',
@@ -549,8 +562,8 @@
     market: { value: '', label: '' },
     positionsId: '',
     jobType: '',
-    year: nowyear[0],
-    month: nowyear[1],
+    year: currentYear,
+    month: currentMonth,
     weekNum: currentWeekNum,
     isTask: '',
     companyRecruitId: '',
@@ -860,7 +873,20 @@ resumeDetailStore.queryRecommendCandidatePosition(values).then((res) => {
       candidatePositionFlag: false,
     });
   };
-  const drawerWidth = ref(1000);
+    const drawerWidth = ref(Math.max(1000, window.innerWidth * 0.8));
+
+// Optional: Add window resize listener if you need dynamic updates
+const handleResize = () => {
+  drawerWidth.value = Math.max(1000, window.innerWidth * 0.8);
+};
+
+onMounted(() => {
+  window.addEventListener('resize', handleResize);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize);
+});
 
   const columnsRecommend = ref([
     {
@@ -1019,16 +1045,16 @@ resumeDetailStore.queryRecommendCandidatePosition(values).then((res) => {
     //职类数据展示
     const optionsPositionType = ref<SelectProps['options']>([{ value: '' }]);
     watch(() => formState.value.retail,() => {
-      optionsPositionType.value = positionsUpArrTitle.filter((item) => item.industry === formState.value.retail)[0].content.map(item => ({value:item.jobCategory}));
-      optionsPinlei.value = brandArrDetail.filter((item) => item.retail === formState.value.retail)[0].categoryArr.map(item => ({value:item}))
+      optionsPositionType.value = positionsUpArrTitle.filter((item) => item.industry === formState.value.retail)[0]?.content.map(item => ({value:item.jobCategory}));
+      optionsPinlei.value = brandArrDetail.filter((item) => item.retail === formState.value.retail)[0]?.categoryArr.map(item => ({value:item}))
     })
   //职级数据展示
   const optionsPositionLevel = ref<SelectProps['options']>([{ value: '' }]);
     watch(() => formState.value.jobcategory2,() => {
-      optionsPositionLevel.value = positionsUpArrTitle.filter((item) => item.industry === formState.value.retail)[0].content.filter(item => item.jobCategory === formState.value.jobcategory2)[0].management.map(item => ({value:item}))
+      optionsPositionLevel.value = positionsUpArrTitle.filter((item) => item.industry === formState.value.retail)[0]?.content.filter(item => item.jobCategory === formState.value.jobcategory2)[0]?.management.map(item => ({value:item}))
     })
     watch(() => formState.value.category,() => {
-      optionsLeibie.value = brandCategoryArr.filter((item) => item.category === formState.value.category && (item.title ? item.title === brandArrDetail.filter((item) => item.retail === formState.value.retail)[0].title : true))[0].leibie.map(item => ({value:item}))
+      optionsLeibie.value = brandCategoryArr.filter((item) => item.category === formState.value.category && (item.title ? item.title === brandArrDetail.filter((item) => item.retail === formState.value.retail)[0].title : true))[0]?.leibie.map(item => ({value:item}))
     })
   //品籍数据展示
   //const optionsPinji = ref<SelectProps['options']>(pinjiArr);
@@ -1107,5 +1133,8 @@ resumeDetailStore.queryRecommendCandidatePosition(values).then((res) => {
   }
   :deep(.resume_spance .ant-space-item:first-child) {
     width: 100%;
+  }
+  :deep(.ant-popover .ant-popover-inner) {
+    width: 200px;
   }
 </style>

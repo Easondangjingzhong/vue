@@ -8,7 +8,9 @@
         <a-form-item
           name="selfEvaluation"
          >
-         <a-textarea :rows="7" v-model:value="selfEvaluationData.selfEvaluation" placeholder="请输入自我评价"></a-textarea>
+         <a-textarea :rows="7" 
+          @input="e => selfEvaluationData.selfEvaluation = normalizeText(e.target.value)"
+         v-model:value="selfEvaluationData.selfEvaluation" placeholder="请输入自我评价"></a-textarea>
         </a-form-item>
       </a-col>
     </a-row>
@@ -16,6 +18,7 @@
   </div>
 </template>
 <script lang="ts" setup>
+  import { normalizeText } from '/@/utils/normalizeText';
   defineProps({
     selfEvaluationData: {
       type: Object,
