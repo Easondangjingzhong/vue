@@ -5,7 +5,15 @@ enum URL {
   query_customer_track_contract = '/enterprise/resume-vue-query-customer-track-contract.action',
   query_customer_track_hr = '/enterprise/resume-vue-query-customer-track-hr.action',
   query_customer_track = '/enterprise/resume-vue-query-customer-track.action',
+  add_customer_track_hr = '/enterprise/resume-vue-add-update-customer-track-Hr.action',
 }
+/**
+ * 添加客户追踪HR信息
+ * @param data 
+ * @returns 
+ */
+const addCustomerTrackHr = async (data: any) =>
+  post<any>({ url: URL.add_customer_track_hr, data});
 /**
  * 查询客户汇总
  * @param data {companyName,type类型  ABC,flag状态 已合作 深入中,cooperateStatus,pageNumber,pageSize}
@@ -44,4 +52,4 @@ const queryBrandByCompanyName = async (data: any) =>
  */
 const queryHrDetail = async (data: any) =>
   post<any>({ url: URL.query_hr_detail_cid, data});
-export default { queryHrDetail,queryBrandByCompanyName,queryCustomerTrackContract,queryCustomerTrackHr,queryCustomerTrack };
+export default { addCustomerTrackHr,queryHrDetail,queryBrandByCompanyName,queryCustomerTrackContract,queryCustomerTrackHr,queryCustomerTrack };

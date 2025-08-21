@@ -20,7 +20,7 @@ export interface HrDetailItem {
   gender: string;
   hrName: string;
   hrRecruit: null | string;
-  id: number;
+  id: string;
   isJiaGou: null | string;
   jobType: string;
   leaveMonth: null | string;
@@ -46,15 +46,13 @@ export interface HrDetailItem {
   wechat: string;
   work: string;
   workNum: number;
+  collectId: number;
 }
 
 export interface CustomerTrackItem {
   index: number;
   category: string;
   hrInfo: string;
-  brand: string;
-  cooperation: string;
-  customerService: string;
   bdAdvisor: string;
   meeting: string;
   contact: string;
@@ -62,15 +60,53 @@ export interface CustomerTrackItem {
   id: number;
   bdUserId: number | null;
   bdUserName: string | null;
-  brandId: number;
+  brandId: string;
   brandName: string;
   companyId: string;
   companyName: string;
   companyNameAll: string;
-  flag: string | null;
+  flag: string;
   registTime: string | null;
-  type: string | null;
+  type: string;
   updateTime: string | null;
+  lastContractTime: string | null;
+  cooperationLie: string | null;
+  cooperationWai: string | null;
+  lieList: Array<{ counselor: string; recruitId: number }> | null;
+  waiList: Array<{ counselor: string; recruitId: number }> | null;
+  lslist: Array<BrandCategoryItem> | null;
+  yueJianNum: number;
+}
+
+export interface BrandCategoryItem {
+  brandId: number; // 将string改为number类型以匹配1528数值
+  brandName: string;
+  brandType: string;
+  isPrize: string;
+  positionOpen: string;
+}
+
+export interface CustomerTrackHrItem {
+  address: string | null;
+  brandId: string;
+  brandName: string;
+  collectId: number;
+  companyId: string;
+  companyName: string;
+  email: string;
+  gender: string;
+  hrName: string;
+  id: number;
+  jobType: string;
+  leaveMonth: string | null;
+  mobilePhone: string;
+  positionId: string | null;
+  positionName: string | null;
+  registTime: string | null;
+  showNum: number;
+  telPhone: string;
+  updateTime: string | null;
+  wechat: string;
 }
 
 export interface PageItem {

@@ -10,6 +10,7 @@
         <a-layout-content class="resume_content">
           <CustomerTrackingContent />
           <CustomerTrackingHRInfo />
+          <CustomerTrackingInfo />
         </a-layout-content>
       </a-layout>
     </a-layout>
@@ -21,6 +22,7 @@ import MenuTop from '/@/views/MenuTop/index.vue';
 import CustomerTrackingContent from './components/CustomerTrackingContent.vue';
 import CustomerTrackingSider from './components/CustomerTrackingSider.vue';
 import CustomerTrackingHRInfo from './components/CustomerTrackingHRInfo.vue';
+import CustomerTrackingInfo from './components/CustomerTrackingInfo.vue';
 </script>
 
 <style lang="less" scoped>
