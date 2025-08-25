@@ -199,7 +199,8 @@ const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginOutFlag:
       eduExpeListTemp.forEach((item: any) => {
         if (
           !item.startYear || !item.startMonth || !item.endYear || !item.endMonth || !(degreeArr.includes(item.degree) || degreeEnArr.includes(item.degree))
-          || !item.degree || (!(item.degree == "初中" || item.degree == "高中") && !item.majorName) || !item.isRegular 
+          || !item.degree || (!(item.degree == "初中" || item.degree == "高中" || item.degree == "Senior high school" || item.degree == "Junior middle school") && !item.majorName) || !item.isRegular 
+
         ) {
           wtemp = true;
         }

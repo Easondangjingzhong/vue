@@ -1,13 +1,13 @@
 <template>
 <a-modal
   title="添加HR信息"
-  width="500px"
+  width="580px"
   :open="openAddCustomerTrackHRFlag"
   :footer="null"
-  @close="handleAddCustomerTrackHRCancel"
+  @cancel="handleAddCustomerTrackHRCancel"
   @ok="handleAddCustomerTrackHRInfo"
 >
-<a-form :model="addCustomerTrackHRInfo" @finish="handleAddCustomerTrackHRInfo">
+<a-form :label-col="{span: 4}" :model="addCustomerTrackHRInfo" @finish="handleAddCustomerTrackHRInfo">
   <a-row :gutter="24">
     <a-col :span="12" v-if="hrNameSelect">
       <a-form-item label="姓名">
@@ -23,7 +23,7 @@
       </a-form-item>
     </a-col>
     <a-col :span="12" v-if="!hrNameSelect">
-      <a-form-item label="姓名">
+      <a-form-item :rules="[{ required: true, message: '请输入HR姓名' }]" name="hrName" label="姓名">
         <div style="display: flex; align-items: center; gap: 8px;">
       <a-input v-model:value="addCustomerTrackHRInfo.hrName" placeholder="HR姓名" />
       <a-button @click="handleHrNameSelect">切换</a-button>
@@ -31,7 +31,7 @@
       </a-form-item>
     </a-col>
     <a-col :span="12">
-      <a-form-item label="手机号">
+      <a-form-item label="手机">
         <a-input v-model:value="addCustomerTrackHRInfo.mobilePhone" />
       </a-form-item>
     </a-col>
@@ -50,6 +50,7 @@
         <a-select
           :showSearch="true"
           v-model:value="addCustomerTrackHRInfo.positionId"
+          :options="positionsListOptions"
           optionFilterProp="label"
         ></a-select>
       </a-form-item>
@@ -88,12 +89,12 @@
   </a-row>
   <a-row :gutter="24">
     <a-col :span="24">
-      <a-form-item label="品牌">
+      <a-form-item :label-col="{span: 2}" :rules="[{ required: true, message: '请选择品牌' }]" name="brandId" label="品牌">
         <a-select
           :showSearch="true"
           v-model:value="addCustomerTrackHRInfo.brandId"
           optionFilterProp="label"
-          multiple
+          mode="multiple"
           :options="brandListOptions"
         ></a-select>
       </a-form-item>
@@ -101,8 +102,8 @@
   </a-row>
   <a-row :gutter="24">
     <a-col :span="24">
-      <a-form-item label="地址">
-        <a-input v-model:value="addCustomerTrackHRInfo.officeAddress"/>
+      <a-form-item :label-col="{span: 2}" label="地址">
+        <a-input v-model:value="addCustomerTrackHRInfo.address"/>
       </a-form-item>
     </a-col>
   </a-row>
@@ -119,11 +120,8 @@
 import { storeToRefs } from 'pinia';
 import { useCustomerTrackingStoreWithOut } from '/@/store/modules/customerTracking';
 const customerTrackingStore = useCustomerTrackingStoreWithOut();
-const { addCustomerTrackHRInfo, openAddCustomerTrackHRFlag, hrDetailList,customerTrackInfo } = storeToRefs(customerTrackingStore);
+const { addCustomerTrackHRInfo, openAddCustomerTrackHRFlag, hrDetailList,customerTrackInfo,getPositionsList } = storeToRefs(customerTrackingStore);
 const hrNameSelect = ref(false);
-if (!addCustomerTrackHRInfo.value.id) {
-  hrNameSelect.value = true;
-}
 const hrDetailListOptions = ref<{
   label: string;
   value: string;
@@ -141,8 +139,14 @@ const handleHrNameSelect = () => {
 }
 const handleAddCustomerTrackHRSelect = (e: any) => {
   hrNameSelect.value = !hrNameSelect.value;
+  const hrDetail = hrDetailList.value.filter(item => item.id === e)[0];
   addCustomerTrackHRInfo.value = {
-    ...hrDetailList.value.filter(item => item.id === e)[0],
+    ...hrDetail,
+    //@ts-ignore
+    brandId: hrDetail?.brandId?.toString().split(",") || [],
+    //@ts-ignore
+    brandName: hrDetail?.brandName?.split(",") || [],
+    address: hrDetail.officeAddress || hrDetail.familyAddress || '',
     id: '',
   };
 }
@@ -164,10 +168,24 @@ const brandListOptionsChange = () => {
   })
 }
 brandListOptionsChange();
+const positionsListOptions = ref<{
+  label: string;
+  value: string;
+}[]>(getPositionsList.value);
+watch(getPositionsList, () => {
+  positionsListOptions.value = getPositionsList.value;
+})
 const loading = ref(false);
 const handleAddCustomerTrackHRInfo = () => {
   loading.value = true;
   try {
+    //@ts-ignore
+    addCustomerTrackHRInfo.value.brandName = addCustomerTrackHRInfo.value.brandId?.map(item => {
+      return brandListOptions.value?.filter(brand => brand.value === item)[0]?.label;
+    }).join(',');
+    //@ts-ignore
+    addCustomerTrackHRInfo.value.brandId = addCustomerTrackHRInfo.value.brandId?.join(',');
+    addCustomerTrackHRInfo.value.positionName = positionsListOptions.value.filter(item => item.value == addCustomerTrackHRInfo.value?.positionId?.toString())[0]?.label;
     customerTrackingStore.addCustomerTrackHRInfoDetail(addCustomerTrackHRInfo.value).then(res => {
       if (res.code == 1) {
         loading.value = false;
@@ -176,12 +194,15 @@ const handleAddCustomerTrackHRInfo = () => {
       }
     });
   } catch (error) {
+    console.log(error);
     loading.value = false;
   }
 }
 const handleAddCustomerTrackHRCancel = () => {
   customerTrackingStore.closeAddCustomerTrackHRInfo();
 }
+
+
 </script>
 
 <style lang="less" scoped>

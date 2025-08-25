@@ -47,6 +47,7 @@ export interface HrDetailItem {
   work: string;
   workNum: number;
   collectId: number;
+  address: string;
 }
 
 export interface CustomerTrackItem {
@@ -114,3 +115,17 @@ export interface PageItem {
   pageSize: number;
   total: number;
 }
+
+export interface CustomerTrackContractItem {
+  id: string;
+  hrName: string;
+  hrId: string;
+  contractType: string;
+  contractFlag: string;
+  contractTime: string;
+  nextTime: string;
+  contractDetail: string;
+  createTime: string;
+  createUser: string;
+}
+

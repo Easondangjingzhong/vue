@@ -29,7 +29,7 @@ export function formatToDateMinute(
   date: dayjs.ConfigType = undefined,
   format = DATE_MINUTE_FORMAT,
 ): string {
-  return dayjs(date).format(format);
+  return date ? dayjs(date).format(format) : '';
 }
 /**
  * 格式化日期

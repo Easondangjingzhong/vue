@@ -8,6 +8,7 @@
               optionFilterProp="label"
               v-model:value="formState.companyName"
               :showArrow="false"
+              :options="companyListOptions"
               allowClear
             ></a-select>
           </a-form-item>
@@ -34,7 +35,7 @@
             ></a-select>
           </a-form-item>
         </a-col>
-        <a-col :span="4">
+        <!-- <a-col :span="4">
           <a-form-item name="cooperateStatus" label="合作">
             <a-select
               optionFilterProp="label"
@@ -44,7 +45,7 @@
               allowClear
             ></a-select>
           </a-form-item>
-        </a-col>
+        </a-col> -->
          <a-col :span="6">
           <a-button style="margin: 0 0 0 8px" type="primary" html-type="submit">搜索</a-button>
           <a-button style="margin: 0 8px" @click="clearFromState">清空</a-button>
@@ -84,6 +85,16 @@
          <template v-if="column.key === 'contact'">
           <a-tag class="tag">查看</a-tag>
         </template>
+        <template v-if="column.key === 'type'">
+          <a-tag class="tag" v-if="record.type" color="green">{{record.type}}</a-tag>
+        </template>
+        <template v-if="column.key === 'flag'">
+          <a-tag class="tag" v-if="record.flag == '已合作'" color="green">{{record.flag}}</a-tag>
+          <a-tag class="tag" v-if="record.flag == '深入中'" color="orange">{{record.flag}}</a-tag>
+          <a-tag class="tag" v-if="record.flag == '接洽中'" color="orange">{{record.flag}}</a-tag>
+          <a-tag class="tag" v-if="record.flag == '未开展'" color="red">{{record.flag}}</a-tag>
+        </template>
+
         <template v-if="column.key === 'customerService'">
           <template v-if="record.lieList && record.waiList">
              <a-tooltip :title="`${record.lieList || ''}\n${record.waiList || ''}`" color="cyan" :overlay-style="{ whiteSpace: 'pre-line', maxWidth: '300px' }">
@@ -121,7 +132,13 @@
             <template #overlay>
               <a-menu>
                 <a-menu-item>
-                 <a href="javascript:;">类别</a>
+                 <a href="javascript:;" @click="handleUpdateCustomerTrackType(record as CustomerTrackItem)">类型</a>
+                </a-menu-item>
+                <a-menu-item>
+                 <a href="javascript:;" @click="handleUpdateCustomerTrackFlag(record as CustomerTrackItem)">状态</a>
+                </a-menu-item>
+                <a-menu-item>
+                 <a href="javascript:;" @click="handleUpdateCustomerTrackBdAdvisor(record as CustomerTrackItem)">BD顾问</a> 
                 </a-menu-item>
               </a-menu>
             </template>
@@ -150,16 +167,101 @@
       </a-pagination>
     </a-row>
     </div>
+    <a-modal
+      title="更新类型"
+      :open="visibleUpdateCustomerTrackType"
+      @cancel="handleCancelUpdateCustomerTrackType"
+      @ok="handleOkUpdateCustomerTrackType"
+    >
+      <a-form :label-col="{span: 4}" :model="updateCustomerTrackTypeForm" @finish="handleOkUpdateCustomerTrackType">
+         <a-row :gutter="24">
+          <a-col :span="12">
+            <a-form-item label="公司">
+              {{ updateCustomerTrackTypeForm.companyNameAll}}
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="12">
+            <a-form-item label="类型">
+              <a-select
+                :showSearch="true"
+                v-model:value="updateCustomerTrackTypeForm.type"
+                :options="typeOptionsArr"
+                optionFilterProp="label"
+              ></a-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
+      </a-form>
+    </a-modal>
+    <a-modal
+      title="更新状态"
+      :open="visibleUpdateCustomerTrackFlag"
+      @cancel="handleCancelUpdateCustomerTrackFlag"
+      @ok="handleOkUpdateCustomerTrackFlag"
+    >
+      <a-form :label-col="{span: 4}" :model="updateCustomerTrackFlagForm" @finish="handleOkUpdateCustomerTrackFlag">
+         <a-row :gutter="24">
+          <a-col :span="12">
+            <a-form-item label="公司">
+              {{ updateCustomerTrackFlagForm.companyNameAll}}
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="12">
+            <a-form-item label="状态">
+              <a-select
+                :showSearch="true"
+                v-model:value="updateCustomerTrackFlagForm.flag"
+                :options="flagOptionsArr"
+                optionFilterProp="label"
+              ></a-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
+      </a-form>
+    </a-modal>
+    <a-modal
+      title="更新BD顾问"
+      :open="visibleUpdateCustomerTrackBdAdvisor"
+      @cancel="handleCancelUpdateCustomerTrackBdAdvisor"
+      @ok="handleOkUpdateCustomerTrackBdAdvisor"
+    >
+      <a-form :label-col="{span: 4}" :model="updateCustomerTrackBdAdvisorForm" @finish="handleOkUpdateCustomerTrackBdAdvisor">
+         <a-row :gutter="24">
+          <a-col :span="12">
+            <a-form-item label="公司">
+              {{ updateCustomerTrackBdAdvisorForm.companyNameAll}}
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="12">
+            <a-form-item label="BD顾问">
+              <a-cascader
+                :showSearch="true"
+                v-model:value="updateCustomerTrackBdAdvisorForm.bdAdvisor"
+                :options="getCustomerTrackBdAdvisorArr"
+                optionFilterProp="label"
+              ></a-cascader>
+            </a-form-item>
+          </a-col>
+        </a-row>
+      </a-form>
+    </a-modal>
 </template>
 
 <script setup lang="ts">
   import { storeToRefs } from 'pinia';
   import { MenuUnfoldOutlined } from '@ant-design/icons-vue';
   import { CustomerTrackItem } from '/@/api/customerTracking/model';
-  import { flagOptionsArr,typeOptionsArr,cooperateStatusOptionsArr } from '/@/api/customerTracking/constants';
+  import { flagOptionsArr,typeOptionsArr } from '/@/api/customerTracking/constants';
   import { useCustomerTrackingStoreWithOut } from '/@/store/modules/customerTracking';
+  import { message } from 'ant-design-vue';
   const customerTrackingStore = useCustomerTrackingStoreWithOut();
-  const { getCustomerTrackList, customerTrackIsLoading, pageCustomerTrackList } = storeToRefs(customerTrackingStore);
+  const { formState,getCustomerTrackList, customerTrackIsLoading, pageCustomerTrackList,getCompanyList,getCustomerTrackBdAdvisorArr } = storeToRefs(customerTrackingStore);
   const columnsRseult = ref([
     {
       title: '编号',
@@ -198,15 +300,13 @@
       title: '类型',
       dataIndex: 'type',
       key: 'type',
-      ellipsis: true,
-      width: 40,
+      width: 25,
     },
     {
       title: '状态',
       dataIndex: 'flag',
       key: 'flag',
-      ellipsis: true,
-      width: 40,
+      width: 30,
     },
     {
       title: '合作',
@@ -225,7 +325,7 @@
       dataIndex: 'bdAdvisor',
       key: 'bdAdvisor',
       ellipsis: true,
-      width: 35,
+      width: 40,
     },
     {
       title: '约见',
@@ -256,29 +356,29 @@
     },
   ]);
   const typeOptions = ref(typeOptionsArr);
+  const companyListOptions = ref<{
+    label: string;
+    value: string;
+  }[]>(getCompanyList.value);
+  watch(getCompanyList, () => {
+    companyListOptions.value = getCompanyList.value;
+  })
   const flagOptions = ref(flagOptionsArr);
-  const cooperateStatusOptions = ref(cooperateStatusOptionsArr);
-  const formState = reactive({
-    companyName: '',
-    type: '',
-    flag: '',
-    cooperateStatus: '',
-  });
+  //const cooperateStatusOptions = ref(cooperateStatusOptionsArr);
   const clearFromState = () => {
-    formState.companyName = '';
-    formState.type = '';
-    formState.flag = '';
-    formState.cooperateStatus = '';
+    formState.value.companyName = '';
+    formState.value.type = '';
+    formState.value.flag = '';
   }
   const onSearch = () => {
     pageCustomerTrackList.value = {
       ...pageCustomerTrackList.value,
       pageNumber: 1,
     }
-    customerTrackingStore.queryCustomerTrack(formState);
+    customerTrackingStore.queryCustomerTrack(formState.value);
   }
   const handleCustomerTrackListData = () => {
-    customerTrackingStore.queryCustomerTrack(formState);
+    customerTrackingStore.queryCustomerTrack(formState.value);
   }
   onSearch();
   const handleHrInfo = (record: CustomerTrackItem) => {
@@ -287,6 +387,118 @@
   const handleCompanyNameAll = (record: CustomerTrackItem) => {
     customerTrackingStore.queryCompanyNameAll(record);
   }
+  customerTrackingStore.queryPositionsList();
+  customerTrackingStore.queryCompanyList();
+  const visibleUpdateCustomerTrackType = ref(false);
+  const updateCustomerTrackTypeForm = ref({
+    id: '',
+    type: '',
+    companyNameAll: '',
+  })
+  const handleCancelUpdateCustomerTrackType = () => {
+    visibleUpdateCustomerTrackType.value = false;
+    updateCustomerTrackTypeForm.value.id = '';
+    updateCustomerTrackTypeForm.value.type = '';
+    updateCustomerTrackTypeForm.value.companyNameAll = '';
+  }
+  const handleOkUpdateCustomerTrackType = () => {
+    customerTrackingStore.updateCustomerTrackTypeById(updateCustomerTrackTypeForm.value).then(res => {
+      if (res.code == 1) {
+        handleCancelUpdateCustomerTrackType();
+        message.success('更新成功');
+      }
+
+    });
+  }
+  const handleUpdateCustomerTrackType = (record: CustomerTrackItem) => {
+    updateCustomerTrackTypeForm.value.id = record.id.toString();
+    updateCustomerTrackTypeForm.value.type = record.type;
+    updateCustomerTrackTypeForm.value.companyNameAll = record.companyNameAll;
+    visibleUpdateCustomerTrackType.value = true;
+  }
+
+  
+  const visibleUpdateCustomerTrackFlag = ref(false);
+  const updateCustomerTrackFlagForm = ref({
+    id: '',
+    flag: '',
+    companyNameAll: '',
+  })
+  const handleUpdateCustomerTrackFlag = (record: CustomerTrackItem) => {
+    updateCustomerTrackFlagForm.value.id = record.id.toString();
+    updateCustomerTrackFlagForm.value.flag = record.flag;
+    updateCustomerTrackFlagForm.value.companyNameAll = record.companyNameAll;
+    visibleUpdateCustomerTrackFlag.value = true;
+  }
+  const handleCancelUpdateCustomerTrackFlag = () => {
+    visibleUpdateCustomerTrackFlag.value = false;
+    updateCustomerTrackFlagForm.value.id = '';
+    updateCustomerTrackFlagForm.value.flag = '';
+    updateCustomerTrackFlagForm.value.companyNameAll = '';
+  }
+  const handleOkUpdateCustomerTrackFlag = () => {
+    customerTrackingStore.updateCustomerTrackFlagById(updateCustomerTrackFlagForm.value).then(res => {
+      if (res.code == 1) {
+        handleCancelUpdateCustomerTrackFlag();
+        message.success('更新成功');
+      }
+    });
+  }
+
+  const visibleUpdateCustomerTrackBdAdvisor = ref(false);
+  const updateCustomerTrackBdAdvisorForm = ref<{ 
+  id: string; 
+  bdAdvisor: string | undefined; 
+  companyNameAll: string; 
+  bdUserId: string | null; 
+  bdUserName: string | null; 
+}>({ 
+  id: '', 
+  bdAdvisor: undefined, 
+  companyNameAll: '', 
+  bdUserId: '', 
+  bdUserName: null 
+})
+  customerTrackingStore.queryCustomerTrackBdAdvisor();
+  const handleUpdateCustomerTrackBdAdvisor = (record: CustomerTrackItem) => {
+    updateCustomerTrackBdAdvisorForm.value.id = record.id.toString();
+    updateCustomerTrackBdAdvisorForm.value.bdUserId = record.bdUserId?.toString() || null;
+    updateCustomerTrackBdAdvisorForm.value.bdUserName = record.bdUserName || null;
+    updateCustomerTrackBdAdvisorForm.value.companyNameAll = record.companyNameAll;
+    visibleUpdateCustomerTrackBdAdvisor.value = true;
+  }
+  const handleCancelUpdateCustomerTrackBdAdvisor = () => {
+    visibleUpdateCustomerTrackBdAdvisor.value = false;
+    updateCustomerTrackBdAdvisorForm.value.id = '';
+    updateCustomerTrackBdAdvisorForm.value.bdAdvisor = undefined;
+    updateCustomerTrackBdAdvisorForm.value.companyNameAll = '';
+    updateCustomerTrackBdAdvisorForm.value.bdUserId = '';
+    updateCustomerTrackBdAdvisorForm.value.bdUserName = '';
+  }
+  const handleOkUpdateCustomerTrackBdAdvisor = () => {
+    
+    if (!updateCustomerTrackBdAdvisorForm.value.bdAdvisor) {
+      message.error('请选择BD顾问');
+      return;
+    }
+    updateCustomerTrackBdAdvisorForm.value.bdUserId = updateCustomerTrackBdAdvisorForm.value.bdAdvisor[1];
+    updateCustomerTrackBdAdvisorForm.value.bdUserName = '';
+    getCustomerTrackBdAdvisorArr.value.forEach(item => {
+      //@ts-ignore
+      if (item.value === updateCustomerTrackBdAdvisorForm.value?.bdAdvisor[0]) {
+        //@ts-ignore
+        updateCustomerTrackBdAdvisorForm.value.bdUserName = item.children.find(subItem => subItem.value === updateCustomerTrackBdAdvisorForm.value?.bdAdvisor[1])?.label;
+      }
+    })
+    customerTrackingStore.updateCustomerTrackBdAdvisorById(updateCustomerTrackBdAdvisorForm.value).then(res => {
+      if (res.code == 1) {
+        handleCancelUpdateCustomerTrackBdAdvisor();
+        message.success('操作成功');
+      }
+    });
+  }
+
+
 </script>
 
 <style lang="less" scoped>

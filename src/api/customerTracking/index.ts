@@ -6,7 +6,47 @@ enum URL {
   query_customer_track_hr = '/enterprise/resume-vue-query-customer-track-hr.action',
   query_customer_track = '/enterprise/resume-vue-query-customer-track.action',
   add_customer_track_hr = '/enterprise/resume-vue-add-update-customer-track-Hr.action',
+  add_customer_track_contract = '/enterprise/resume-vue-add-customer-track-contract.action',
+  query_company_list = '/enterprise/resume-vue-query-customer-track-company.action',
+  update_customer_track_type = '/enterprise/resume-vue-update-customer-track-type.action',
+  update_customer_track_flag = '/enterprise/resume-vue-update-customer-track-flag.action',
+  update_customer_track_bd_advisor = '/enterprise/resume-vue-update-customer-track-bdUserName.action',
 }
+/**
+ * 更新客户追踪BD顾问
+ * @param data {id,bdAdvisor,companyNameAll}
+ * @returns 
+ */
+const updateCustomerTrackBdAdvisor = async (data: any) =>
+  post<any>({ url: URL.update_customer_track_bd_advisor,data});
+/**
+ * 更新客户追踪状态
+ * @param data 
+ * @returns 
+ */
+const updateCustomerTrackFlag = async (data: any) =>
+  post<any>({ url: URL.update_customer_track_flag,data});
+/**
+ * 更新客户追踪类型
+ * @param data 
+ * @returns 
+ */
+const updateCustomerTrackType = async (data: any) =>
+  post<any>({ url: URL.update_customer_track_type,data});
+/**
+ * 添加客户追踪HRl联系记录
+ * @param data 
+ * @returns 
+ */
+const queryCompanyList = async () =>
+  post<any>({ url: URL.query_company_list});
+/**
+ * 添加客户追踪HRl联系记录
+ * @param data 
+ * @returns 
+ */
+const addCustomerTrackContract = async (data: any) =>
+  post<any>({ url: URL.add_customer_track_contract, data});
 /**
  * 添加客户追踪HR信息
  * @param data 
@@ -52,4 +92,4 @@ const queryBrandByCompanyName = async (data: any) =>
  */
 const queryHrDetail = async (data: any) =>
   post<any>({ url: URL.query_hr_detail_cid, data});
-export default { addCustomerTrackHr,queryHrDetail,queryBrandByCompanyName,queryCustomerTrackContract,queryCustomerTrackHr,queryCustomerTrack };
+export default { updateCustomerTrackBdAdvisor,updateCustomerTrackFlag,updateCustomerTrackType,queryCompanyList,addCustomerTrackContract,addCustomerTrackHr,queryHrDetail,queryBrandByCompanyName,queryCustomerTrackContract,queryCustomerTrackHr,queryCustomerTrack };

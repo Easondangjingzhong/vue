@@ -11,6 +11,7 @@
           <CustomerTrackingContent />
           <CustomerTrackingHRInfo />
           <CustomerTrackingInfo />
+          <AddCustomerTrackHRInfo />
         </a-layout-content>
       </a-layout>
     </a-layout>
@@ -23,6 +24,7 @@ import CustomerTrackingContent from './components/CustomerTrackingContent.vue';
 import CustomerTrackingSider from './components/CustomerTrackingSider.vue';
 import CustomerTrackingHRInfo from './components/CustomerTrackingHRInfo.vue';
 import CustomerTrackingInfo from './components/CustomerTrackingInfo.vue';
+import AddCustomerTrackHRInfo from './components/AddCustomerTrackHRInfo.vue';
 </script>
 
 <style lang="less" scoped>

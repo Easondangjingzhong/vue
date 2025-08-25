@@ -47,7 +47,7 @@
           <a-tag v-if="customerTrackInfo.cooperationWai == '外包未合'" color="orange">{{customerTrackInfo.cooperationWai}}</a-tag>
           <a-tag v-if="customerTrackInfo.cooperationWai == '外包过期'" color="red">{{customerTrackInfo.cooperationWai}}</a-tag>
           
-          <a-tag v-if="customerTrackInfo.meeting" color="pink">{{ customerTrackInfo.meeting }}</a-tag>
+          <a-tag v-if="customerTrackInfo.meeting" color="pink"><span v-if="customerTrackInfo.meeting">约见</span>{{ customerTrackInfo.meeting }}<span v-if="customerTrackInfo.meeting">次</span></a-tag>
 
         </a-col>
       </a-row>
@@ -81,7 +81,9 @@
                     <td class="customer_track_content">{{item?.wechat || ''}}</td>
                     <td class="customer_track_content">{{item?.email || ''}}</td>
                     <td class="customer_track_content">{{item?.jobType || ''}}</td>
-                    <td class="customer_track_content"></td>
+                    <td class="customer_track_content" style="text-align: right;">
+                      <FormOutlined @click="updateCustomerTrackHRInfo(item)"/>
+                    </td>
                   </tr>
                   <tr class="customer_track_row">
                     <td class="customer_track_label" colspan="1">负责品牌</td>
@@ -96,14 +98,14 @@
           </div>
         </div>
       </a-row>
+      <AddCustomerTrackingHRContract />
     </div>
   </a-drawer>
-  <AddCustomerTrackHRInfo />
 </template>
 
 <script setup lang="ts">
-import { CloseOutlined,PlusOutlined } from '@ant-design/icons-vue';
-import AddCustomerTrackHRInfo from './AddCustomerTrackHRInfo.vue';
+import { CloseOutlined,PlusOutlined,FormOutlined } from '@ant-design/icons-vue';
+import AddCustomerTrackingHRContract from './AddCustomerTrackingHRContract.vue';
 import { useCustomerTrackingStoreWithOut } from '/@/store/modules/customerTracking';
 import { storeToRefs } from 'pinia';
 import { flagOptionsArr,typeOptionsArr } from '/@/api/customerTracking/constants';
@@ -112,12 +114,18 @@ const { customerTrackInfo, customerTrackInfoFlag, getCustomerTrackHr } = storeTo
 const drawerWidth = ref(Math.max(1000, window.innerWidth * 0.4));
 const typeOptions = ref(typeOptionsArr);
 const flagOptions = ref(flagOptionsArr);
-const handleCustomerTrackTypeChange = () => {}
-const handleCustomerTrackFlagChange = () => {}
+const handleCustomerTrackTypeChange = () => {
+  customerTrackingStore.updateCustomerTrackType(customerTrackInfo.value.type);
+}
+const handleCustomerTrackFlagChange = () => {
+  customerTrackingStore.updateCustomerTrackFlag(customerTrackInfo.value.flag);
+}
 const addCustomerTrackHRInfo = () => {
   customerTrackingStore.addOpenCustomerTrackHRInfo();
 }
-
+const updateCustomerTrackHRInfo = (item: any) => {
+  customerTrackingStore.updateOpenCustomerTrackHRInfo(item);
+}
 </script>
 
 <style lang="less" scoped>

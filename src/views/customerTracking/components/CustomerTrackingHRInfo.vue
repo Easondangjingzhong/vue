@@ -76,7 +76,7 @@ const customerTrackingStore = useCustomerTrackingStoreWithOut();
 const { hrInfoFlag, getHrDetailList, hrInfoCompanyAll } = storeToRefs(customerTrackingStore);
 const drawerWidth = ref(Math.max(1000, window.innerWidth * 0.8));
 const expandedItems = reactive<Record<string, boolean>>({});
-const toggleItem = (id: number) => {
+const toggleItem = (id: string) => {
   expandedItems[id] = !expandedItems[id];
 };
 </script>

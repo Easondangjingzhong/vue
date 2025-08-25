@@ -50,3 +50,37 @@ export const cooperateStatusOptionsArr = [
     value: '外包过期',
   },
 ]
+
+export const contactFlagOptionsArr = [
+  {
+    label: '日常联系',
+    value: '日常联系',
+  },
+  {
+    label: '项目跟进',
+    value: '项目跟进',
+  },
+  {
+    label: '信息记录',
+    value: '信息记录',
+  },
+]
+
+export const contractTypeOptionsArr = [
+  {
+    label: '公司电话',
+    value: '公司电话',
+  },
+  {
+    label: '微信',
+    value: '微信',
+  },
+  {
+    label: '线下见面',
+    value: '线下见面',
+  },
+  {
+    label: '企顾反馈',
+    value: '企顾反馈',
+  },
+]
