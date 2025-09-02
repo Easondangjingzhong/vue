@@ -29,9 +29,10 @@
           <a-select
               optionFilterProp="label"
               v-model:value="formState.city"
-              :options="optionsCity"
+              :options="getProvince"
               @change="handleOptionsCity"
               :showArrow="false"
+              showSearch
             ></a-select>
           </a-form-item>
       </a-col>
@@ -75,7 +76,7 @@
            <a-select
               optionFilterProp="label"
               v-model:value="formState.positionsIds"
-              :options="optionsCity"
+              :options="getProvince"
               @change="handleOptionsCity"
               :showArrow="false"
             ></a-select>
@@ -90,13 +91,13 @@
   </div>
 </template>
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
 import { SearchMappingCandidate } from '/@/api/mappingList/model';
 import {useMappingListStoreWithOut} from '/@/store/modules/mappingList';
 const mappingListStore = useMappingListStoreWithOut();
+const {getProvince} = storeToRefs(mappingListStore);
 defineProps<{ formState: SearchMappingCandidate }>();
 let spanCol = 4;
-const optionsCity = ref([
-    { label: '北京', value: '北京' },]);
 const handleOptionsCity = (value: string) => {
     
 }

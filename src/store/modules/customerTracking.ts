@@ -63,7 +63,7 @@ export const useCustomerTrackingStore = defineStore('app-CustomerTrackingStore',
           return {
             ...item,
           index: ((state.pageCustomerTrackList.pageNumber - 1) * state.pageCustomerTrackList.pageSize) + (index + 1),
-          category: item.lslist?.map(item => `${item.brandName} ${item.brandType}`).join("\n") ?? '',
+          category: item.lslist?.map(item => `${item.brandName}=${item.brandType}`) ?? '',
           hrInfo: item.hrInfo ?? '',
           lieList: mergeCustomerServices(item.lieList,1) ?? '',
           waiList: mergeCustomerServices(item.waiList,2) ?? '',
@@ -156,7 +156,6 @@ export const useCustomerTrackingStore = defineStore('app-CustomerTrackingStore',
      */
     async queryCompanyNameAll(data) {
       this.customerTrackInfo = data;
-      this.customerTrackInfoFlag = true;
       let params = new FormData();
       params.append('collectId', data.id);
       const res = await fetchApi.queryCustomerTrackHr(params);

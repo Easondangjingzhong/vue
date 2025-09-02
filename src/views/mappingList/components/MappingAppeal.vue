@@ -44,8 +44,9 @@
             <a-select
               optionFilterProp="label"
               v-model:value="formState.recommendRecruitId"
-              :options="optionsRecommendRecruitId"
+              :options="getRecommendCounselorArr"
               :showArrow="false"
+              showSearch
             ></a-select>
           </a-form-item>
       </a-col>
@@ -57,14 +58,15 @@
             <a-select
               optionFilterProp="label"
               v-model:value="formState.recruitId"
-              :options="optionsRecruitId"
+              :options="getEnterpriseConsultant"
               :showArrow="false"
+              showSearch
             ></a-select>
           </a-form-item>
       </a-col>
       <a-col :span="5">
         <a-button style="margin: 0 0 0 8px" type="primary" html-type="submit">搜索</a-button>
-        <a-button style="margin: 0 8px">清空</a-button>
+        <a-button style="margin: 0 8px" @click="handleReset">清空</a-button>
       </a-col>
       </a-row>
       </a-form>
@@ -82,6 +84,17 @@
     <template v-if="column.key === 'appealType'">
         <a-tag v-if="record.appealType == '客户限制'" color="green">{{ record.appealType }}</a-tag>
         <a-tag v-if="record.appealType == '重复推荐'" color="red">{{ record.appealType }}</a-tag>
+    </template>
+    <template v-if="column.key === 'examineStatus'">
+        <a-tag v-if="record.examineStatus == '审核通过'" color="green">{{ record.examineStatus }}</a-tag>
+        <a-tag v-if="record.examineStatus == '未审核'" color="orange">{{ record.examineStatus }}</a-tag>
+        <a-tag v-if="record.examineStatus == '已拒绝'" color="red">{{ record.examineStatus }}</a-tag>
+    </template>
+    <template v-if="column.key === 'appealRemark'">
+        <a-tag :title="record.appealRemark">查看</a-tag>
+    </template>
+    <template v-if="column.key === 'refuseRemark' && record.refuseRemark">
+        <a-tag :title="record.refuseRemark">查看</a-tag>
     </template>
    </template>
   </a-table>
@@ -112,20 +125,21 @@ import { storeToRefs } from 'pinia';
 import { CloseOutlined } from '@ant-design/icons-vue';
 import {useMappingListStoreWithOut} from '/@/store/modules/mappingList';
 const mappingListStore = useMappingListStoreWithOut();
-const {mappingAppealList, tableAppealLoading, mappingAppealFlag, mappingAppealPagination} = storeToRefs(mappingListStore);
+const {mappingAppealList, tableAppealLoading, mappingAppealFlag, mappingAppealPagination,getEnterpriseConsultant, getRecommendCounselorArr} = storeToRefs(mappingListStore);
+
 const drawerWidth = ref(1250);
 let spanCol = 4;
-const optionsRecommendRecruitId = ref([
-    { label: '北京', value: '北京' },]);
-const optionsRecruitId = ref([
-    { label: '北京', value: '北京' },]);
 interface SearchMappingAppeal {
   userName?: string;
   phone?: string;
   recommendRecruitId?: string;
   recruitId?: string;
 }
+
 const formState = ref<SearchMappingAppeal>({} as SearchMappingAppeal);
+const handleReset = () => {
+  formState.value = {} as SearchMappingAppeal;
+}
 const columnsMappingAppeal = [
   {
       title: '编号',

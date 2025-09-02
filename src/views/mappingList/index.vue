@@ -68,7 +68,9 @@ const handleOpenMappingLvmh = () => {
 const handleOpenMappingChecked = () => {
   mappingListStore.handleMappingCheckedFlag(); 
 }
-
+mappingListStore.queryEnterpriseConsultant();
+mappingListStore.queryRecommendCounselor();
+mappingListStore.queryProvince();
 </script>
 <style lang="less" scoped>
   .resume_container {

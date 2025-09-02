@@ -559,7 +559,7 @@
     formState.value = {
       id: props.resumeData.id,
       currentCity: props.resumeData.currentCity,
-      userName: props.resumeData.userName,
+      userName: props.resumeData.userName?.trim(),
       phoneNum: props.resumeData.phoneNum,
       phoneNumOther: props.resumeData.phoneNumOther,
       gender: props.resumeData.gender,

@@ -42,7 +42,7 @@ import {useMappingListStoreWithOut} from '/@/store/modules/mappingList';
 const mappingListStore = useMappingListStoreWithOut();
 const {mappingList, tableLoading, mappingReleaseTaskDetailsFlag} = storeToRefs(mappingListStore);
 const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: '' } = JSON.parse(
-  localStorage.getItem('loginVueUser'),
+  localStorage.getItem('loginVueUser') || '{}',
 );
 const releaseTaskRecord = ref({});
 const columnsMappingRseult = [

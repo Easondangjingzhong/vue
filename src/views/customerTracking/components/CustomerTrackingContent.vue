@@ -71,19 +71,26 @@
         </template>
         <template v-if="column.key === 'brand'">
            <a-tooltip :title="record.brandName" color="cyan">
-                <a-tag class="tag">查看</a-tag>
+                <a-tag class="tag" color="cyan">查看</a-tag>
             </a-tooltip>
         </template>
          <template v-if="column.key === 'category'">
-           <a-tooltip :title="record.category" color="cyan" :overlay-style="{ whiteSpace: 'pre-line', maxWidth: '300px' }">
-                <a-tag class="tag">查看</a-tag>
+           <a-tooltip color="pink" :overlay-style="{ maxWidth: '250px', width: '100%' }"><!-- 修改宽度样式 -->
+    <template #title>
+      <div v-for="item in record.category" :key="item" style="display: flex; justify-content: space-between; width: 100%;">
+        <!-- 拆分品牌名称和类型 -->
+        <span>{{ item.split('=')[0] }}</span>
+        <span>{{ item.split('=')[1] }}</span>
+      </div>
+    </template>
+    <a-tag class="tag" color="pink">查看</a-tag>
             </a-tooltip>
         </template>
         <template v-if="column.key === 'hrInfo'">
           <a-tag class="tag" @click="handleHrInfo(record as CustomerTrackItem)">查看</a-tag>
         </template>
          <template v-if="column.key === 'contact'">
-          <a-tag class="tag">查看</a-tag>
+          <a-tag class="tag" @click="handleCustomerTrackContact(record as CustomerTrackItem)">查看</a-tag>
         </template>
         <template v-if="column.key === 'type'">
           <a-tag class="tag" v-if="record.type" color="green">{{record.type}}</a-tag>
@@ -98,17 +105,17 @@
         <template v-if="column.key === 'customerService'">
           <template v-if="record.lieList && record.waiList">
              <a-tooltip :title="`${record.lieList || ''}\n${record.waiList || ''}`" color="cyan" :overlay-style="{ whiteSpace: 'pre-line', maxWidth: '300px' }">
-                <a-tag class="tag">查看</a-tag>
+                <a-tag color="cyan" class="tag">查看</a-tag>
             </a-tooltip>
           </template>
           <template v-else-if="record.lieList">
              <a-tooltip :title="record.lieList" color="cyan">
-                <a-tag class="tag">查看</a-tag>
+                <a-tag color="cyan" class="tag">查看</a-tag>
             </a-tooltip>
           </template>
           <template v-else-if="record.waiList">
              <a-tooltip :title="record.waiList" color="cyan">
-                <a-tag class="tag">查看</a-tag>
+                <a-tag color="cyan" class="tag">查看</a-tag>
             </a-tooltip>
           </template>
         </template>
@@ -251,17 +258,35 @@
         </a-row>
       </a-form>
     </a-modal>
+     <a-drawer
+    v-model:open="customerTrackingHRFlag"
+    title="联络记录"
+    :maskClosable="false"
+    :keyboard="false"
+    :closable="false"
+    :width="drawerWidth"
+    :bodyStyle="{ padding: '4px 14px' }"
+    :headerStyle="{ padding: '5px 18px 5px 12px' }"
+    placement="right"
+  >
+  <template #extra>
+      <CloseOutlined @click="customerTrackingHRFlag = false" />
+    </template>
+  <AddCustomerTrackingHRContract />
+  </a-drawer>
 </template>
 
 <script setup lang="ts">
   import { storeToRefs } from 'pinia';
-  import { MenuUnfoldOutlined } from '@ant-design/icons-vue';
+  import { MenuUnfoldOutlined,CloseOutlined } from '@ant-design/icons-vue';
   import { CustomerTrackItem } from '/@/api/customerTracking/model';
   import { flagOptionsArr,typeOptionsArr } from '/@/api/customerTracking/constants';
   import { useCustomerTrackingStoreWithOut } from '/@/store/modules/customerTracking';
+  import AddCustomerTrackingHRContract from './AddCustomerTrackingHRContract.vue';
   import { message } from 'ant-design-vue';
+  const drawerWidth = ref(Math.max(1000, window.innerWidth * 0.8));
   const customerTrackingStore = useCustomerTrackingStoreWithOut();
-  const { formState,getCustomerTrackList, customerTrackIsLoading, pageCustomerTrackList,getCompanyList,getCustomerTrackBdAdvisorArr } = storeToRefs(customerTrackingStore);
+  const { customerTrackInfoFlag,customerTrackContractPage,formState,getCustomerTrackList, customerTrackIsLoading, pageCustomerTrackList,getCompanyList,getCustomerTrackBdAdvisorArr } = storeToRefs(customerTrackingStore);
   const columnsRseult = ref([
     {
       title: '编号',
@@ -385,6 +410,7 @@
     customerTrackingStore.queryHrDetail(record);
   }
   const handleCompanyNameAll = (record: CustomerTrackItem) => {
+    customerTrackInfoFlag.value = true;
     customerTrackingStore.queryCompanyNameAll(record);
   }
   customerTrackingStore.queryPositionsList();
@@ -448,13 +474,13 @@
   const visibleUpdateCustomerTrackBdAdvisor = ref(false);
   const updateCustomerTrackBdAdvisorForm = ref<{ 
   id: string; 
-  bdAdvisor: string | undefined; 
+  bdAdvisor: string[] | undefined; 
   companyNameAll: string; 
   bdUserId: string | null; 
   bdUserName: string | null; 
 }>({ 
   id: '', 
-  bdAdvisor: undefined, 
+  bdAdvisor: [], 
   companyNameAll: '', 
   bdUserId: '', 
   bdUserName: null 
@@ -470,14 +496,14 @@
   const handleCancelUpdateCustomerTrackBdAdvisor = () => {
     visibleUpdateCustomerTrackBdAdvisor.value = false;
     updateCustomerTrackBdAdvisorForm.value.id = '';
-    updateCustomerTrackBdAdvisorForm.value.bdAdvisor = undefined;
+    updateCustomerTrackBdAdvisorForm.value.bdAdvisor = [];
     updateCustomerTrackBdAdvisorForm.value.companyNameAll = '';
     updateCustomerTrackBdAdvisorForm.value.bdUserId = '';
     updateCustomerTrackBdAdvisorForm.value.bdUserName = '';
   }
   const handleOkUpdateCustomerTrackBdAdvisor = () => {
     
-    if (!updateCustomerTrackBdAdvisorForm.value.bdAdvisor) {
+    if (!updateCustomerTrackBdAdvisorForm.value.bdAdvisor?.length) {
       message.error('请选择BD顾问');
       return;
     }
@@ -497,7 +523,13 @@
       }
     });
   }
+  const customerTrackingHRFlag = ref(false);
+  const handleCustomerTrackContact = (record: CustomerTrackItem) => {
+    customerTrackingHRFlag.value = true;
+    customerTrackContractPage.value.pageNumber = 1;
+    customerTrackingStore.queryCompanyNameAll(record as CustomerTrackItem);
 
+  }
 
 </script>
 

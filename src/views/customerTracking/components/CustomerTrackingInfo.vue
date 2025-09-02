@@ -80,7 +80,10 @@
                     <td class="customer_track_content">{{item?.mobilePhone || ''}}</td>
                     <td class="customer_track_content">{{item?.wechat || ''}}</td>
                     <td class="customer_track_content">{{item?.email || ''}}</td>
-                    <td class="customer_track_content">{{item?.jobType || ''}}</td>
+                    <td class="customer_track_content">{{item?.jobType || ''}}
+                      <a-tag v-if="item?.jobType == '在职'" color="green">{{item?.jobType}}</a-tag>
+                      <a-tag v-if="item?.jobType == '离职'" color="red">{{item?.jobType}}</a-tag>
+                    </td>
                     <td class="customer_track_content" style="text-align: right;">
                       <FormOutlined @click="updateCustomerTrackHRInfo(item)"/>
                     </td>
