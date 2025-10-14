@@ -2,12 +2,14 @@ import { defineStore } from 'pinia';
 import { store } from '/@/store';
 import { isProxy } from 'vue';
 import { storeToRefs } from 'pinia';
+import {PlagiarusnItem} from '/@/api/plagiarusn/model';
 import fetchApi from '/@/api/resume';
+import fetchPlagiarusnApi from '/@/api/plagiarusn'
 import { dateUtil } from '/@/utils/dateUtil';
 import {dataURLtoBlob} from '/@/utils/base64tofile'
 import { useCityStoreWithOut } from '/@/store/modules/city';
 import { normalizeText } from '/@/utils/normalizeText';
- import { marriageEnArr,degreeEnAndCnArr } from '/@/store/data/resume';
+import { marriageEnArr,degreeEnAndCnArr } from '/@/store/data/resume';
 import {
   Resume,
   Position,
@@ -17,6 +19,7 @@ import {
   resumeLanguageList,
   selfEvaluationData,
   ResumeFormState,
+  BatchUploadItem,
 } from '/@/api/resume/model';
 import { shcoolType985,shcoolType211 } from '/@/utils/schoolType';
 interface ResumeState {
@@ -29,9 +32,12 @@ interface ResumeState {
   resumeTypeEnglish: string;//简历类型 1 英文 2或其他是中文
   closeBtn: boolean;//上传完成提示 true 展开 false 关闭
   updatePhotoFlag: Number;//简历照片状态 0 是无照片  1 是有照片  2 是有照片已修改 
+  batchUploadFlag: boolean;//批量上传弹窗
+  batchUploadFileList: [],//批量上传文件列表
+  batchUploadList: BatchUploadItem[],//批量上传数据列表
 }
 const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginOutFlag: '' } = JSON.parse(
-  localStorage.getItem('loginVueUser'),
+  localStorage.getItem('loginVueUser') || '{}',
 );
 const cityStore = useCityStoreWithOut();
 const { country, province } = storeToRefs(cityStore);
@@ -66,6 +72,9 @@ export const useResumeStore = defineStore('app-Resume',{
     resumeTypeEnglish: "2",
     closeBtn: false,
     updatePhotoFlag: 0,
+    batchUploadFlag: false,
+    batchUploadFileList: [],//批量上传文件列表
+    batchUploadList: [],//批量上传数据列表
   }),
   actions: {
     setInfo(resumeFormState: ResumeFormState) {
@@ -559,6 +568,252 @@ export const useResumeStore = defineStore('app-Resume',{
         this.setInfo(obj);
       }
       return res;
+    },
+     /**
+     * @description: 上传原始简历进行解析
+     */
+    async startParseUpload(params: any) {
+      try {
+        const formData = new FormData();
+        formData.append('fname', params.fileName); // 注意：此处的fileName需要和后端接收参数的fileName保持一致，否则无法正常接收
+        formData.append('file', params.file.originFileObj);
+        const res = await fetchApi.info(formData);
+      if (res) {
+        const { result } = JSON.parse(res.info);
+        let obj = {} as ResumeFormState;
+        let personInfoData = {} as PersonInfo;
+        let workExperienceList: WorkExperience[] = [];
+        let educationInfoList = [];
+        let resumeLanguageList = {} as resumeLanguageList;
+        let selfEvaluationData = {} as selfEvaluationData;
+        if (result) {
+          personInfoData.photoPath = result.avatar_data;
+          if (result.avatar_data) {
+            this.updatePhotoFlag = 1;
+            const blob = dataURLtoBlob(result.avatar_data);
+            const files = new window.File([blob], 'avatar.png', {type: 'application/png'})
+            //const file = blobToFile(blob, 'avatar.png');
+            obj.resumePhoto = files;
+          }
+          personInfoData.userName = result.name;
+          personInfoData.gender = result.gender
+            ? result.gender == '男'
+              ? 'M'
+              : 'F'
+            : result.gender_inf == '男'
+            ? 'M'
+            : 'F';
+          personInfoData.phone = result.phone;
+          personInfoData.age = result.age ? result.age : result.age_inf;
+          let city1 = province.value.filter(item => item.cityName == result.city?.replace(/\s/g, ""));
+          personInfoData.city = city1.length > 0 ? city1[0].provinceName + (city1[0].cityName ? '-' + city1[0].cityName : '') : '';
+          personInfoData.email = result.email;
+          personInfoData.height = (result.height ? result.height.replace("cm",""): "");
+          let city = [];
+          if (result.living_address) {
+            city = province.value.filter(item => item.cityName == result.living_address?.replace(/\s/g, ""));
+          }
+          let province2 = [];
+          if (result.hukou_address) {
+            province2 = province.value.filter(item => item.cityName == result.hukou_address?.replace(/\s/g, ""));
+          }
+          personInfoData.huji = province2.length > 0 ? province2[0].provinceName + (province2[0].cityName ? '-' + province2[0].cityName : '') : '';
+          personInfoData.weight = (result.weight ? result.weight.replace("kg",""): "");
+          personInfoData.birthday = result.birthday;
+          personInfoData.nationality = result.nationality;
+          personInfoData.currentCity = city.length > 0 ? city[0].provinceName + (city[0].cityName ? '-' + city[0].cityName : '') : '';
+          personInfoData.positionName = result.work_position;
+          personInfoData.positionStatus = result.work_status;
+          personInfoData.marriageStatus = result.marital_status;
+          const jobArr = result.job_exp_objs;
+          if (jobArr.length > 0) {
+            jobArr.forEach((item) => {
+              let workExperienceObj = {} as WorkExperience;
+              workExperienceObj.companyName = item.job_cpy;
+              workExperienceObj.category = '';
+              if (!this.endYearFlag && item.end_date == '至今') {
+                this.endYearFlag = true;
+              }
+              workExperienceObj.isNewtest = item.end_date == '至今' ? '1' : '0';
+              workExperienceObj.isRetreat = '';
+              workExperienceObj.workFloor = '';
+            
+              workExperienceObj.startYear = item.start_date?.substring(0,4);
+              workExperienceObj.endYear = item.end_date?.substring(0,4);
+              workExperienceObj.positionName = item.job_position;
+              workExperienceObj.positionsId = "";
+              workExperienceObj.reporter = item.job_report_to;
+              workExperienceObj.department = item.job_dept;
+              workExperienceObj.salaryStructure = '';
+              workExperienceObj.personnelStructure = '';
+              workExperienceObj.workDuty = normalizeText(item.job_content);
+              workExperienceList.push(workExperienceObj);
+            });
+          }
+          const educationArr = result.education_objs;
+          if (educationArr.length > 0) {
+            educationArr.forEach((item) => {
+              let educationInfoObj = {} as educationInfoData;
+              educationInfoObj.schoolName = normalizeText(item.edu_college);
+              educationInfoObj.isRegular = item.edu_recruit == '统招' ? 'Y' : '';
+              let schoolTypeTemp: String[] = [];
+              if (item.edu_college) {
+                // @ts-ignore
+                let t985 = shcoolType985.filter((items) => items === item.edu_college.replace(/[\u200B-\u200F]+/g, ''));
+                if (t985.length > 0) {
+                  schoolTypeTemp.push('985');
+                }
+                // @ts-ignore
+                let t211 = shcoolType211.filter((items) => items === item.edu_college.replace(/[\u200B-\u200F]+/g, ''));
+                if (t211.length > 0) {
+                  schoolTypeTemp.push('211');
+                } 
+              }
+              educationInfoObj.schoolType = schoolTypeTemp?.join(',');
+              if (item.end_date) {
+                const yearNow = dateUtil().year();
+                const monthNow = dateUtil().month();
+                const [endYear, endMonth] = item.end_date.split('-');
+                if ((endYear -  yearNow > 0) || (endYear -  yearNow <= 0 && endMonth - monthNow > 0)) {
+                  educationInfoObj.atSchool = "1";
+                } else {
+                  educationInfoObj.atSchool = "";
+                }
+              }
+              educationInfoObj.majorName = item.edu_major;
+              educationInfoObj.degree = item.edu_degree;
+              if (item.start_date && (/^\d{4}$/.test(item.start_date))) {
+                  educationInfoObj.startYear = item.start_date; 
+              } else if (item.start_date && (/^\d{7}$/.test(item.start_date))) {
+                  educationInfoObj.startYear = item.start_date.substring(0,4);
+              } else {
+                educationInfoObj.startYear = "";
+              }
+              if (item.end_date && (/^\d{4}$/.test(item.end_date))) {
+                  educationInfoObj.endYear = item.end_date; 
+              } else if (item.end_date && (/^\d{7}$/.test(item.end_date))) {
+                  educationInfoObj.endYear = item.end_date.substring(0,4);
+              } else {
+                educationInfoObj.endYear = "";
+              }
+              //educationInfoObj.startYear = (item.start_date && item.start_date.length == 4 ? item.start_date + "-09" : item.start_date);
+              //educationInfoObj.endYear = (item.end_date && item.end_date.length == 4 ? item.end_date + "-06" : item.end_date);
+              educationInfoList.push(educationInfoObj);
+            });
+          }
+          if (result.cont_language) {
+            //const language = ["CET-4","CET-6","TEM-4","TEM-8","英语", "6级", "4级", "四级", "六级"];
+            let languageAbility0 = [];
+            let languageLevel = [];
+            if (result.cont_language.includes("CET-6") || result.cont_language.includes("cet-6") || (result.cont_language.includes("英语") && result.cont_language.includes("6级"))) {
+              //@ts-ignore
+              languageLevel.push("CET-6");
+            }
+            if (result.cont_language.includes("CET-4") || result.cont_language.includes("cet-4") || (result.cont_language.includes("英语") && result.cont_language.includes("4级"))) {
+              //@ts-ignore
+              languageLevel.push("CET-4");
+            }
+            if (result.cont_language.includes("TEM-4") || result.cont_language.includes("tem-4")) {
+              //@ts-ignore
+              languageLevel.push("TEM-4");
+            }
+            if (result.cont_language.includes("TEM-8") || result.cont_language.includes("tem-8")) {
+              //@ts-ignore
+              languageLevel.push("TEM-8");
+            }
+            
+            if (languageLevel.length > 0) {
+              let language = {};
+                //@ts-ignore
+              language.languageName = '英语';
+                //@ts-ignore
+              language.bujia = "";
+                //@ts-ignore
+              language.duxieLiuli = "";
+                //@ts-ignore
+              language.tinshuoLiuli = "";
+                //@ts-ignore
+              language.languageLevel = languageLevel.join(",");
+              //@ts-ignore
+              languageAbility0.push(language);
+            }
+            //@ts-ignore
+            resumeLanguageList.languageAbility = languageAbility0;
+          }
+          if (result.cont_my_desc) {
+            selfEvaluationData.selfEvaluation = normalizeText(result.cont_my_desc);
+          }
+        }
+        obj.personInfoData = personInfoData;
+        obj.workExperienceList = workExperienceList;
+        obj.educationInfoList = educationInfoList;
+        obj.resumeLanguageList = resumeLanguageList;
+        obj.selfEvaluationData = selfEvaluationData;
+        obj.talentSource = this.resumeFormState.talentSource;
+        const plagiarusnForm = {} as PlagiarusnItem;
+        plagiarusnForm.userNameCn = (personInfoData.userName || "");
+        plagiarusnForm.userNameEn = "";
+        plagiarusnForm.phoneNum = (personInfoData.phone || "");
+        plagiarusnForm.email = (personInfoData.email || "");
+        plagiarusnForm.gender = "";
+        plagiarusnForm.birthYear = "";
+        plagiarusnForm.currentCity = "";
+        plagiarusnForm.recruitId = (loginVueUser.loginId);
+        plagiarusnForm.realNameEn = (loginVueUser.loginName);
+        plagiarusnForm.companyNames = "";
+        plagiarusnForm.schoolNames = "";
+        plagiarusnForm.majorNames = "";
+        plagiarusnForm.isEnglish = "";
+        const resultDetail = await fetchPlagiarusnApi.info(plagiarusnForm);
+        if (resultDetail?.code != 1 && resultDetail?.info?.length > 0) {
+            return "简历重复";
+        } else {
+           // @ts-ignore
+      const resume: Resume = {
+        resumeType: 'C',
+        realNameEn: loginVueUser.loginName,
+        photoPath: personInfoData.photoPath && personInfoData.photoPath.includes("http://101.201.142.39") ? personInfoData.photoPath : "",
+        recruitId: loginVueUser.loginId,
+        userName: personInfoData.userName,
+        gender: personInfoData.gender,
+        phoneNum: personInfoData.phone,
+        province: (personInfoData.huji.split("-").length > 1 ? personInfoData.huji.split("-")[1] : personInfoData.huji.split("-")[0]),
+        currentCity: (personInfoData.currentCity.split("-").length > 1 ? personInfoData.currentCity.split("-")[1] : personInfoData.currentCity.split("-")[0]),
+        positionStatus: personInfoData.positionStatus,
+        marriageStatus: personInfoData.marriageStatus,
+        positionName: personInfoData.positionName,
+        birthYear: personInfoData.birthYear || diffBirthday(personInfoData.birthday,personInfoData.age, obj.talentSource)?.birthYear,
+        bornMonth: personInfoData.bornMonth || diffBirthday(personInfoData.birthday,personInfoData.age, obj.talentSource)?.bornMonth,
+        bornDay: personInfoData.bornDay,
+        height: personInfoData.height,
+        weight: personInfoData.weight,
+        email: personInfoData.email,
+        languageAbility: "",
+        resumeLanguageList: resumeLanguageList.languageAbility,
+        selfEvaluation: selfEvaluationData.selfEvaluation,
+        age: personInfoData.age,
+        nationality: personInfoData.nationality,
+        isEnglish: this.resumeTypeEnglish,
+         // @ts-ignore
+        talentSource: obj.talentSource,
+        // @ts-ignore
+        workExpeList: workExperienceList,
+        // @ts-ignore
+        eduExpeList: educationInfoList,
+      };
+      const resd = await fetchApi.addResumeInfo(resume);
+      if (resd && resd != "上传失败") {
+        this.fetchResumeFile(resd,params.file.originFileObj);
+        this.fetchResumePhote(resd,obj.resumePhoto);
+        return "上传成功";
+      }
+        }
+      } 
+        return "上传失败";
+      } catch (error) {
+        console.log(error);
+        return "上传失败";
+      }
     },
     /**
      * 添加新的工作经历

@@ -39,14 +39,21 @@
             </a-button>
           </a-upload>
         </a-col>
+         <a-col :span="16.5" v-if="uploadFlag && loginVueUser.loginType == 'A'">
+          <a-button class="upload_btn_all" @click="handleBatchUpload">
+              批量上传
+            </a-button>
+        </a-col>
       </a-row>
     </a-card>
   </div>
-  <Plagiarism />
+  <Plagiarism v-if="!batchUploadFlag" />
+  <BatchUpload v-if="batchUploadFlag" />
 </template>
 <script lang="ts" setup>
   import { ref } from 'vue';
   import Plagiarism from './Plagiarism.vue';
+  import BatchUpload from './BatchUpload.vue';
   import type { SelectProps } from 'ant-design-vue';
   import { useMessage } from '/@/hooks/useMessage';
   import { UploadOutlined } from '@ant-design/icons-vue';
@@ -57,7 +64,10 @@
   import { storeToRefs } from 'pinia';
   const { createMessage } = useMessage();
   const resumeStore = useResumeStoreWithOut();
-  const { resumeFormState,resumeTypeEnglish } = storeToRefs(resumeStore);
+  const { resumeFormState,resumeTypeEnglish,batchUploadFlag,batchUploadFileList,batchUploadList } = storeToRefs(resumeStore);
+  const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: '' } = JSON.parse(
+  localStorage.getItem('loginVueUser') || '{}',
+  );
   const resumeSource = ref('原始简历');
   const resumeTypePotion = ref<SelectProps['options']>([
     {
@@ -240,7 +250,13 @@
     plagiarusnForm.isEnglish = resumeTypeEnglish.value;
     plagiarusnResumeAction(plagiarusnForm);
   };
- 
+  const handleBatchUpload = () => {
+    batchUploadFlag.value = !batchUploadFlag.value;
+    if (!batchUploadFlag.value) {
+      batchUploadList.value = [];
+      batchUploadFileList.value = [];
+    }
+  }
 </script>
 <style lang="less">
   .upload_container {
@@ -273,6 +289,9 @@
     .resume_source {
       margin-right: 10px;
       width: 200px;
+    }
+    .upload_btn_all {
+      margin-left: 10px;
     }
   }
 </style>

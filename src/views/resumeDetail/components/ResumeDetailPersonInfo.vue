@@ -598,10 +598,10 @@
   //婚育数据展示
   const optionsMarriage = ref<SelectProps['options']>(marriageArr);
   const onFinish = () => {
-    console.log((formState.value.gender == 'F' && +formState.value.weight > 70))
-    console.log((+formState.value.weight > 70))
-    if ((formState.value.gender == 'M' && +formState.value.weight > 90) || (formState.value.gender == 'F' && +formState.value.weight > 70)) {
-      message.warn("体重男士不能超过90KG, 女士不能超过70KG");  
+    // console.log((formState.value.gender == 'F' && +formState.value.weight > 70))
+    // console.log((+formState.value.weight > 70))
+    if ((formState.value.gender == 'M' && +formState.value.weight > 90) || (formState.value.gender == 'F' && +formState.value.weight > 80)) {
+      message.warn("体重男士不能超过90KG, 女士不能超过80KG");  
       return;
     }
     iconLoading.value = true;

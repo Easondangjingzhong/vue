@@ -6,16 +6,10 @@ import ResumeDetail from '/@/views/resumeDetail/index.vue';
 import MappingList from '/@/views/mappingList/index.vue';
 import Administrative from '/@/views/administrative/index.vue';
 import CustomerTracking from '/@/views/customerTracking/index.vue';
+import OutsourceDetail from '/@/views/outsourceDetail/index.vue';
 import type { RouteRecordRaw } from 'vue-router';
 
-export const accessRoutes: RouteRecordRaw[] = [
-  {
-    path: '/resume',
-    name: 'resume',
-    component: Resume,
-    meta: { title: '简历解析' },
-  },
-];
+export const accessRoutes: RouteRecordRaw[] = [];
 const constantRoutes: RouteRecordRaw[] = [
   {
     path: '/',
@@ -59,7 +53,12 @@ const constantRoutes: RouteRecordRaw[] = [
     component: CustomerTracking,
     meta: { title: '客户跟踪' },
   },
-
+  {
+    path: '/outsource/detail',
+    name: 'OutsourceDetail',
+    component: OutsourceDetail,
+    meta: { title: '外包详情' },
+  },
   // ...accessRoutes,
 ];
 export const publicRoutes = [

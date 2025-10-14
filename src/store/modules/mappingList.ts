@@ -45,7 +45,7 @@ interface MappingListState {
   searchMappingCandidate: {}; //查询
   mappingTaskId: string; //任务id
   mappingCandidateFlag: boolean; //新增M状态
-  province: [];
+  province: any[];
   enterpriseConsultant: any[];
   recommendCounselorArr: any[],
 }
@@ -98,7 +98,7 @@ export const useMappingListStore = defineStore('app-MappingList', {
     tableReleaseTaskLoading: false, //发布任务列表状态
     mappingTaskId: '', //任务id
     mappingCandidateFlag: false, //新增M状态
-    province: [],
+    province: [] as any[],
     enterpriseConsultant: [],
     recommendCounselorArr: [],
   }),

@@ -127,3 +127,13 @@ export interface Position {
   management: String;//职位级别
   flag: String;//职位状态 1审核通过 2审核拒绝
 }
+
+export interface BatchUploadItem {
+  id: string;
+  fileName: string;
+  fileType: string;
+  fileSize: string;
+  uploadTime: string;
+  uploadStatus: string;
+  file: File;
+}

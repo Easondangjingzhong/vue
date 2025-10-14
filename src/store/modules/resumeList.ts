@@ -891,6 +891,7 @@ export const useResumeListStore = defineStore('app-Resume-List',{
           tempItem.projectFlag = item.projectFlag;
           tempItem.twoYearFlag = item.twoYearFlag; //两年
           tempItem.resumeStatus = item.resumeStatus; //两年
+          tempItem.zaiZhi = item.zaiZhi; //在职离职标签
           tempItem.limitRemarkDetail = item.limitRemarkDetail
             ? item.limitRemarkDetail
             : item.resumeStatus == '保证期中'
@@ -1022,6 +1023,7 @@ export const useResumeListStore = defineStore('app-Resume-List',{
       formData.append('isEnglish', param.isEnglish || '');
       formData.append('totalCount', param.totalCount || '');
       formData.append('isBlack', param.isBlack || '');
+      formData.append('jobStatus', param.jobStatus || '');
       return formData;
     },
     /**

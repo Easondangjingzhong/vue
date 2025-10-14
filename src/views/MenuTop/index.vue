@@ -375,39 +375,39 @@
               });
             }
           }
-          if (item.functionName == 'Mapping' && roleId != 11 && roleId != 8) {
-            let temp = menuArrTemp.value.filter((subItem) => subItem.key === 'mapping');
-            if (temp.length > 0) {
-              menuArrTemp.value.forEach((subItem) => {
-                if (subItem.key === 'mapping') {
-                  subItem.children?.push({
-                    label: '人员信息',
-                    title: '人员信息',
-                    key: 'MappingList',
-                    showFlag: false,
-                    index: 0,
-                  });
-                }
-              });
-            } else {
-              menuArrTemp.value.push({
-                key: 'mapping',
-                label: 'Mapping',
-                title: 'Mapping',
-                showFlag: false,
-                index: 5,
-                children: [
-                  {
-                    key: 'MappingList',
-                    label: '人员信息',
-                    title: '人员信息',
-                    showFlag: false,
-                    index: 0,
-                  },
-                ],
-              });
-            }
-          }
+          // if (item.functionName == 'Mapping' && roleId != 11 && roleId != 8) {
+          //   let temp = menuArrTemp.value.filter((subItem) => subItem.key === 'mapping');
+          //   if (temp.length > 0) {
+          //     menuArrTemp.value.forEach((subItem) => {
+          //       if (subItem.key === 'mapping') {
+          //         subItem.children?.push({
+          //           label: '人员信息',
+          //           title: '人员信息',
+          //           key: 'MappingList',
+          //           showFlag: false,
+          //           index: 0,
+          //         });
+          //       }
+          //     });
+          //   } else {
+          //     menuArrTemp.value.push({
+          //       key: 'mapping',
+          //       label: 'Mapping',
+          //       title: 'Mapping',
+          //       showFlag: false,
+          //       index: 5,
+          //       children: [
+          //         {
+          //           key: 'MappingList',
+          //           label: '人员信息',
+          //           title: '人员信息',
+          //           showFlag: false,
+          //           index: 0,
+          //         },
+          //       ],
+          //     });
+          //   }
+          // }
           if (item.id == '125' && roleId != 11 && roleId != 8) {
             let temp = menuArrTemp.value.filter((subItem) => subItem.key === 'mapping');
             if (temp.length > 0) {
@@ -1742,13 +1742,22 @@
               });
             }
           }
+          if (item.functionName == 'OFFER背调' && type == 'A') {
+          menuArrTemp.value.push({
+            key: 'OutsourceDetail',
+            label: '外包',
+            title: '外包',
+            showFlag: false,
+            index: 13,
+          });
+        }
           if (item.functionName == 'OFFER背调') {
             menuArrTemp.value.push({
               key: 'backTone',
               label: '背调',
               title: '背调',
               showFlag: false,
-              index: 13,
+              index: 14,
               children: [
                 {
                   key: 'backToneOffer',
@@ -1773,7 +1782,7 @@
               label: '竞赛',
               title: '竞赛',
               showFlag: false,
-              index: 14,
+              index: 15,
               children: [
                 {
                   key: 'competitionJing',
@@ -1802,7 +1811,7 @@
               ),
               title: item.functionName,
               showFlag: false,
-              index: 15,
+              index: 16,
             });
           }
         });
@@ -1811,7 +1820,7 @@
           label: h('a', { href: `https://chat.deepseek.com`, target: '_blank' }, 'AI'),
           title: 'AI',
           showFlag: false,
-          index: 16,
+          index: 17,
         });
         menuArrTemp.value.forEach((item) => {
           if (item.key === 'finance' || item.key === 'report') {

@@ -3,7 +3,50 @@
     <a-form ref="formRef" :model="formState" @finish="onFinish">
       <SearchContent :expand="expand" :formState="formState" ref="searchContentChild" />
       <a-row>
-        <a-col :span="9" class="row_col_space_brand">
+        <a-col :span="18" class="row_col_space_brand">
+          <a-form-item :label-col="{ span: 4 }" name="brandRuleOut" label="品牌" class="row_col_space_left_brand">
+            <a-select
+              optionFilterProp="label"
+              v-model:value="formState.brandRuleOut"
+              :options="optionsNCp"
+              :showArrow="false"
+            ></a-select>
+          </a-form-item>
+          <a-form-item name="brandNp" class="row_col_space_centent_brand">
+            <a-select
+              optionFilterProp="label"
+              v-model:value="formState.brandNp"
+              :options="optionsNp"
+              :showArrow="false"
+            ></a-select>
+          </a-form-item>
+          <a-form-item name="brandId" class="row_col_space_right_brand">
+            <a-select
+              :max-tag-text-length="3"
+              :max-tag-count="8"
+              mode="multiple"
+              optionFilterProp="label"
+              v-model:value="formState.brandId"
+              show-search
+              :options="optionsBrand"
+            ></a-select>
+          </a-form-item>
+        </a-col>
+       <a-col :span="6">
+          <a-form-item :label-col="{ span: 5 }" name="jobStatus" label="职状">
+          <a-select
+            v-model:value="formState.jobStatus"
+            :allowClear="true"
+            :showArrow="false"
+          >
+          <a-select-option value="1">在职</a-select-option>
+          <a-select-option value="2">离职</a-select-option>
+        </a-select>
+        </a-form-item>
+        </a-col>
+      </a-row>
+      <a-row>
+        <a-col :span="18" class="row_col_space_brand">
           <a-form-item :label-col="{ span: 4 }" label="关键字" class="row_col_space_left_keyWords">
             <a-select
               optionFilterProp="label"
@@ -29,35 +72,6 @@
             class="row_col_space_right_brand"
           >
             <a-input v-model:value="formState.fullText" placeholder="可搜索简历全文关键词" />
-          </a-form-item>
-        </a-col>
-        <a-col :span="9" class="row_col_space_brand">
-          <a-form-item name="brandRuleOut" label="品牌" class="row_col_space_left_brand">
-            <a-select
-              optionFilterProp="label"
-              v-model:value="formState.brandRuleOut"
-              :options="optionsNCp"
-              :showArrow="false"
-            ></a-select>
-          </a-form-item>
-          <a-form-item name="brandNp" class="row_col_space_centent_brand">
-            <a-select
-              optionFilterProp="label"
-              v-model:value="formState.brandNp"
-              :options="optionsNp"
-              :showArrow="false"
-            ></a-select>
-          </a-form-item>
-          <a-form-item name="brandId" class="row_col_space_right_brand">
-            <a-select
-              :max-tag-text-length="3"
-              :max-tag-count="5"
-              mode="multiple"
-              optionFilterProp="label"
-              v-model:value="formState.brandId"
-              show-search
-              :options="optionsBrand"
-            ></a-select>
           </a-form-item>
         </a-col>
         <a-col :span="5.4" style="margin-left: 10px">
@@ -152,6 +166,18 @@
           <span :title="record.lastUpdateTimeStr">{{ record.lastUpdateTime }}</span>
         </template>
         <template v-else-if="column.key === 'projectFlag'">
+           <a-tag
+            class="tagspan"
+            v-if="record.zaiZhi == '2'"
+            color="red"
+            >离职</a-tag
+          >
+          <a-tag
+            class="tagspan"
+            v-if="record.zaiZhi == '1'"
+            color="green"
+            >在职</a-tag
+          >
           <a-tag
             class="tagspan"
             v-if="showResumeRightOutFlag && !record.recruitId && record.projectFlag == '待保'"
@@ -929,7 +955,7 @@ optionsRecruitId.value = teamPersonChangeArr.value.map(item => ({value: item.tea
     padding-right: 6px;
   }
   :deep(.row_col_space_right_brand) {
-    width: 80%;
+    width: 93%;
   }
   :deep(.row_col_space_right_brand .ant-select-selector) {
     border-start-start-radius: 0;
@@ -940,7 +966,7 @@ optionsRecruitId.value = teamPersonChangeArr.value.map(item => ({value: item.tea
     border-end-start-radius: 0;
   }
   :deep(.row_col_space_left_keyWords) {
-    width: 30%;
+    width: 15%;
     margin-inline-end: -1px;
   }
   :deep(.row_col_space_left_keyWords label) {
@@ -955,8 +981,9 @@ optionsRecruitId.value = teamPersonChangeArr.value.map(item => ({value: item.tea
     height: auto;
   }
   :deep(.row_col_space_left_brand) {
-    width: 24%;
+    width: 14%;
     margin-inline-end: -1px;
+    margin-inline-start: 19px;
   }
   :deep(.row_col_space_left_brand .ant-form-item-row .ant-form-item-label) {
     display: contents;
@@ -967,7 +994,7 @@ optionsRecruitId.value = teamPersonChangeArr.value.map(item => ({value: item.tea
     height: auto;
   }
   :deep(.row_col_space_centent_brand) {
-    width: 14%;
+    width: 10%;
     margin-inline-end: -1px;
   }
   :deep(.row_col_space_centent_brand .ant-select-selector) {

@@ -286,32 +286,20 @@ export const useCustomerTrackingStore = defineStore('app-CustomerTrackingStore',
          * @param param 公司的类型参数
          */
         queryCustomerTrackSider(data) {
-          if (data == '2') {
-            this.formState.cooperateStatus = '';
-          }
-           if (data == '21') {
-            this.formState.cooperateStatus = '猎头客户';
-          }
-          if (data == '211') {
-            this.formState.cooperateStatus = '猎头合作';
-          }
-          if (data == '212') {
-            this.formState.cooperateStatus = '猎头过期';
-          }
-          if (data == '213') {
-            this.formState.cooperateStatus = '猎头未合';
-          }
-          if (data == '31') {
-            this.formState.cooperateStatus = '外包客户';
-          }
-          if (data == '311') {
-            this.formState.cooperateStatus = '外包合作';
-          }
-          if (data == '312') {
-            this.formState.cooperateStatus = '外包过期';
-          }
-          if (data == '313') {
-            this.formState.cooperateStatus = '外包未合';
+          type CooperateStatusKey = '2' | '21' | '211' | '212' | '213' | '31' | '311' | '312' | '313';
+          const statusMap: Record<CooperateStatusKey, string> = {
+            '2': '',
+            '21': '猎头客户',
+            '211': '猎头合作',
+            '212': '猎头过期',
+            '213': '猎头未合',
+            '31': '外包客户',
+            '311': '外包合作',
+            '312': '外包过期',
+            '313': '外包未合',
+          };
+          if (statusMap.hasOwnProperty(data)) {
+            this.formState.cooperateStatus = statusMap[data];
           }
           this.pageCustomerTrackList.pageNumber = 1;
           this.queryCustomerTrack(this.formState);

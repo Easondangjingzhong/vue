@@ -3,6 +3,8 @@
     <a-row :gutter="24">
       <a-col :span="24" class="resume_info">
         <h2 class="resume_h3">{{ resumeData.userName }}</h2>
+        <a-tag class="resume_tag_checked" v-if=" resumeData.zaiZhi == '1'" color="green">在职</a-tag>
+        <a-tag class="resume_tag_checked" v-if=" resumeData.zaiZhi == '2'" color="red">离职</a-tag>
         <a-tag class="resume_tag_checked" v-if="props.showResumeRightOutFlag && !resumeData.recruitId && resumeData.projectFlag == '待保'" color="red">过保</a-tag>
         <a-tag class="resume_tag_checked" :title="limitRemarkDetail" v-if="props.showResumeRightOutFlag && !resumeData.recruitId && resumeData.projectFlag == '在保'" color="green">{{ resumeData.projectFlag }}</a-tag>
         <a-tag class="resume_tag_checked" v-if="props.showResumeRightOutFlag && !resumeData.recruitId && resumeData.projectFlag == '不保'" color="red">过保</a-tag>

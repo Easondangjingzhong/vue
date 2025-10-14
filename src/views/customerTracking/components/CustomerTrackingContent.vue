@@ -10,6 +10,7 @@
               :showArrow="false"
               :options="companyListOptions"
               allowClear
+              showSearch
             ></a-select>
           </a-form-item>
         </a-col>
