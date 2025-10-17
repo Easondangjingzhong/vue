@@ -12,9 +12,23 @@
       :columns="columns"
       :data-source="getOutsourceContractList"
       :pagination="false"
-      :scroll="{ x: 1600 }"
+      :scroll="{ x: 1000 }"
     >
     <template #bodyCell="{ column, record }">
+      <a-tag v-if="column.key === 'offerSign' && record.offerSign == '等待发起'" color="red">等待发起</a-tag>
+      <a-tag v-if="column.key === 'offerSign' && record.offerSign == '已经发起'" color="orange">已经发起</a-tag>
+      <a-tag v-if="column.key === 'offerSign' && record.offerSign == '签署完成'" color="green">签署完成</a-tag>
+
+      <a-tag v-if="column.key === 'contractFlag' && record.contractFlag == '等待发起'" color="red">等待发起</a-tag>
+      <a-tag v-if="column.key === 'contractFlag' && record.contractFlag == '已经发起'" color="orange">已经发起</a-tag>
+      <a-tag v-if="column.key === 'contractFlag' && record.contractFlag == '签署完成'" color="green">签署完成</a-tag>
+
+      <a-tag v-if="column.key === 'contractStatus' && record.contractStatus == '生效中'" color="green">生效中</a-tag>
+      <a-tag v-if="column.key === 'contractStatus' && record.contractStatus == '已失效'" color="red">已失效</a-tag>
+
+      <!-- 添加类型断言和存在性检查以修复TypeScript索引类型错误 -->
+      <span v-if="record[column.dataIndex] === null || record[column.dataIndex] === ''">-</span>
+      
       <span v-if="column.key == 'operation'">
         <FormOutlined @click="handleEditClick(record)"/>
       </span>
@@ -46,88 +60,88 @@ const columns = ref([
     dataIndex: 'offerTime',
     key: 'offerTime',
     fixed: 'left',
-    width: 50,
+    width: 40,
   },
   {
     title: 'OFFER',
     dataIndex: 'offerSign',
     key: 'offerSign',
     fixed: 'left',
-    width: 50,
+    width: 30,
   },
   {
     title: '合同类型',
     dataIndex: 'contractType',
     key: 'contractType',
     fixed: 'left',
-    width: 50,
-  },
-  {
-    title: '合同状态',
-    dataIndex: 'contractStatus',
-    key: 'contractStatus',
-    fixed: 'left',
-    width: 50,
-  },
-  {
-    title: '签署类型',
-    dataIndex: 'signType',
-    key: 'signType',
-    width: 50,
-  },
-  {
-    title: '签署公司',
-    dataIndex: 'signCompany',
-    key: 'signCompany',
-    width: 50,
-  },
-  {
-    title: '签署日期',
-    dataIndex: 'signDate',
-    key: 'signDate',
-    width: 50,
-  },
-  {
-    title: '合同开始',
-    dataIndex: 'startDate',
-    key: 'startDate',
-    width: 50,
-  },
-  {
-    title: '合同结束',
-    dataIndex: 'endDate',
-    key: 'endDate',
-    width: 50,
-  },
-  {
-    title: '合同周期',
-    dataIndex: 'contractCycle',
-    key: 'contractCycle',
-    width: 50,
-  },
-  {
-    title: '离职申请',
-    dataIndex: 'leaveApply',
-    key: 'leaveApply',
-    width: 50,
+    width: 30,
   },
   {
     title: '合同状态',
     dataIndex: 'contractFlag',
     key: 'contractFlag',
-    width: 50,
+    fixed: 'left',
+    width: 30,
+  },
+  {
+    title: '签署类型',
+    dataIndex: 'signType',
+    key: 'signType',
+    width: 30,
+  },
+  {
+    title: '签署公司',
+    dataIndex: 'signCompany',
+    key: 'signCompany',
+    width: 30,
+  },
+  {
+    title: '签署日期',
+    dataIndex: 'signDate',
+    key: 'signDate',
+    width: 40,
+  },
+  {
+    title: '合同开始',
+    dataIndex: 'startDate',
+    key: 'startDate',
+    width: 40,
+  },
+  {
+    title: '合同结束',
+    dataIndex: 'endDate',
+    key: 'endDate',
+    width: 40,
+  },
+  {
+    title: '合同周期',
+    dataIndex: 'contractCycle',
+    key: 'contractCycle',
+    width: 30,
+  },
+  {
+    title: '离职申请',
+    dataIndex: 'leaveApply',
+    key: 'leaveApply',
+    width: 30,
+  },
+  {
+    title: '合同状态',
+    dataIndex: 'contractStatus',
+    key: 'contractStatus',
+    width: 30,
   },
   {
     title: '失效原因',
     dataIndex: 'loseReason',
     key: 'loseReason',
-    width: 50,
+    width: 30,
   },
   {
     title: '失效日期',
     dataIndex: 'loseDate',
     key: 'loseDate',
-    width: 50,
+    width: 40,
   },
   {
     title: '操作',
@@ -139,8 +153,7 @@ const columns = ref([
 ])
 
 const handleAddClick = () => {
-  outsourceContractForm.value = {} as PersonContractItem;
-  outsourceContractFlag.value = true;
+  outsourceDetailStore.handleAddPersonContract();
 }
 watch(() => outsourcePersonDetail.value.id, () => {
   outsourceDetailStore.queryOutsourcePersonContract();

@@ -12,12 +12,14 @@
       :columns="columns"
       :data-source="getOutsourceSalaryDetailList"
       :pagination="false"
-      :scroll="{ x: 1900 }"
+      :scroll="{ x: 1500 }"
     >
   <template #bodyCell="{ column, record }">
-    <a-tag v-if="column.key === 'bankCard'" :title="record.bankCard">
+    <a-tag v-if="column.key === 'bankCard' && record.bankCard" :title="record.bankCard">
       查看
     </a-tag>
+    <!-- 添加类型断言和存在性检查以修复TypeScript索引类型错误 -->
+      <span v-if="record[column.dataIndex] === null || record[column.dataIndex] === ''">-</span>
     <span v-if="column.key == 'operation'">
         <FormOutlined @click="handleEditClick(record)"/>
       </span>
@@ -41,14 +43,14 @@ const columns = ref([
     dataIndex: 'index',
     key: 'index',
     fixed: 'left',
-    width: 20,
+    width: 15,
   },
   {
     title: '生效日期',
     dataIndex: 'changeTime',
     key: 'changeTime',
     fixed: 'left',
-    width: 40,
+    width: 30,
     ellipsis: true,
   },
   {
@@ -56,7 +58,7 @@ const columns = ref([
     dataIndex: 'changeReason',
     key: 'changeReason',
     fixed: 'left',
-    width: 40,
+    width: 30,
     ellipsis: true,
   },
   {
@@ -114,70 +116,70 @@ const columns = ref([
     title: '个人奖金',
     dataIndex: 'geti',
     key: 'geti',
-    width: 50,
+    width: 30,
     ellipsis: true,
   },
   {
     title: '团队奖金',
     dataIndex: 'tuanti',
     key: 'tuanti',
-    width: 50,
+    width: 30,
     ellipsis: true,
   },
   {
     title: '企业社保',
     dataIndex: 'companyShebao',
     key: 'companyShebao',
-    width: 50,
+    width: 30,
     ellipsis: true,
   },
   {
     title: '个人社保',
     dataIndex: 'personShebao',
     key: 'personShebao',
-    width: 50,
+    width: 30,
     ellipsis: true,
   },
   {
     title: '企业一金',
     dataIndex: 'companyYijin',
     key: 'companyYijin',
-    width: 50,
+    width: 30,
     ellipsis: true,
   },
   {
     title: '个人一金',
     dataIndex: 'personYijin',
     key: 'personYijin',
-    width: 50,
+    width: 30,
     ellipsis: true,
   },
   {
     title: '客商',
     dataIndex: 'keShangbao',
     key: 'keShangbao',
-    width: 50,
+    width: 30,
     ellipsis: true,
   },
   {
     title: '实商',
     dataIndex: 'shiShangbao',
     key: 'shiShangbao',
-    width: 50,
+    width: 30,
     ellipsis: true,
   },
   {
     title: '银行名称',
     dataIndex: 'bankName',
     key: 'bankName',
-    width: 50,
+    width: 30,
     ellipsis: true,
   },
   {
     title: '卡号',
     dataIndex: 'bankCard',
     key: 'bankCard',
-    width: 30,
+    width: 22,
     ellipsis: true,
   },
   {
@@ -185,7 +187,7 @@ const columns = ref([
     dataIndex: 'operation',
     key: 'operation',
     fixed: 'right',
-    width: 20,
+    width: 15,
   },
 ])
 watch(() => outsourcePersonDetail.value.id, () => {

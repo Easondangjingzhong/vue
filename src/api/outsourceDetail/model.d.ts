@@ -49,6 +49,8 @@ export interface OutsourcePersonItem {
   annualLeaveBalance: number;
   yujiaoTime: string;
   yutingTime: string;
+  paymentYearMonth: string;
+  preStopYearMonth: string;
   phoneNumber: string;
   email: string;
   idCard: string;
@@ -70,7 +72,20 @@ export interface OutsourcePersonItem {
 export interface SearchPersonItem {
   city: string;
   bId: string;
+  currentStatus: string;
   positionId: string;
+  userName: string;
+  companyArrange: string;
+}
+/**
+ * 外包外包月度薪资
+ */
+export interface SearchSalaryItem {
+  city: string;
+  bId: string;
+  currentStatus: string;
+  positionId: string;
+  userName: string;
 }
 /**
  * 外包薪资
@@ -125,6 +140,16 @@ export interface OutsourceSalaryItem {
   shiShangbao: string;
   bankName: string;
   bankCard: string; 
+}
+/**
+ * 外包外包社保
+ */
+export interface SearchSheBaoItem {
+  city: string;
+  bId: string;
+  currentStatus: string;
+  positionId: string;
+  userName: string;
 }
 /**
  * 外包社保
@@ -208,6 +233,16 @@ export interface OutsourceSheBaoItem {
   shengyuCompanyRate?: number;
   yijinCompanyJishu?: number;
   yijinCompanyRate?: number;
+}
+/**
+ * 外包外包月度薪资
+ */
+export interface SearchMonthSalaryItem {
+  city: string;
+  bId: string;
+  currentStatus: string;
+  positionId: string;
+  userName: string;
 }
 /**
  * 外包月度薪资

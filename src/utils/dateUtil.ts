@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 const DATE_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 const DATE_MINUTE_FORMAT = 'YYYY-MM-DD HH:mm';
 const DATE_FORMAT = 'YYYY-MM-DD';
+const DATE_MONTH_FORMAT = 'YYYY-MM';
 /**
  * 格式化日期
  * @param date 
@@ -29,6 +30,15 @@ export function formatToDateMinute(
   date: dayjs.ConfigType = undefined,
   format = DATE_MINUTE_FORMAT,
 ): string {
+  return date ? dayjs(date).format(format) : '';
+}
+/**
+ * 格式化日期
+ * @param date 
+ * @param format 'YYYY-MM'
+ * @returns 
+ */
+export function formatToMonth(date: dayjs.ConfigType = undefined, format = DATE_MONTH_FORMAT): string {
   return date ? dayjs(date).format(format) : '';
 }
 /**

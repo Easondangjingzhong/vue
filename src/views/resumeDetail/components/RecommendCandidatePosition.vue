@@ -50,7 +50,7 @@
               ></a-select>
             </a-form-item>
           </a-col>
-          <a-col :span="6" v-if="outOpenFlag">
+          <a-col :span="6">
             <a-form-item name="positionsId" label="职位">
               <a-select
                 v-model:value="formState.positionsId"
@@ -105,7 +105,7 @@
             </a-form-item>
           </a-col>
         </a-row>
-        <a-row :gutter="24" v-if="outOpenFlag">
+        <a-row :gutter="24">
           <a-col :span="spanCol">
             <a-form-item name="brand" label="品牌">
               <a-select
@@ -117,7 +117,13 @@
               ></a-select>
             </a-form-item>
           </a-col>
-          <a-col :span="spanCol">
+          <a-col :span="18" style="text-align: right" v-if="!outOpenFlag">
+            <a-form-item>
+              <a-button type="primary" style="margin-right: 8px" htmlType="submit">搜索</a-button>
+              <a-button @click="handleClearSearch">清空</a-button>
+            </a-form-item>
+          </a-col>
+          <a-col :span="spanCol" v-if="outOpenFlag">
             <a-form-item name="market" label="商场">
               <a-select
                 v-model:value="formState.market"
@@ -134,7 +140,7 @@
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :span="spanCol">
+          <a-col :span="spanCol" v-if="outOpenFlag">
             <a-form-item name="year" label="顾问">
               <a-select
                 v-model:value="formState.companyRecruitId"
@@ -145,7 +151,7 @@
               ></a-select>
             </a-form-item>
           </a-col>
-          <a-col :span="spanCol">
+          <a-col :span="spanCol" v-if="outOpenFlag">
             <a-form-item name="jobType" label="类型">
               <a-select
                 v-model:value="formState.jobType"
@@ -188,14 +194,14 @@
               </a-form-item>
             </a-space>
           </a-col>
-          <a-col :span="6">
+          <a-col :span="6" v-if="outOpenFlag">
             <a-form-item>
               <a-button type="primary" style="margin-right: 8px" htmlType="submit">搜索</a-button>
               <a-button @click="handleClearSearch">清空</a-button>
             </a-form-item>
           </a-col>
         </a-row>
-        <a-row v-if="!outOpenFlag" :gutter="24">
+        <!-- <a-row v-if="!outOpenFlag" :gutter="24">
           <a-col :span="18"></a-col>
           <a-col :span="6">
             <a-form-item>
@@ -203,7 +209,7 @@
               <a-button @click="handleClearSearch">清空</a-button>
             </a-form-item>
           </a-col>
-        </a-row>
+        </a-row> -->
       </a-form>
       <a-table
         :columns="columns"

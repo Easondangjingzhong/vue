@@ -8,35 +8,35 @@
             <FormOutlined @click="handleComprehensiveBasicUpdate" style="cursor: pointer;"/>
           </div>
         </template>
-      <a-descriptions-item label="中文">{{ outsourcePersonDetail.userNameCn }}</a-descriptions-item>
-      <a-descriptions-item label="工号">{{ outsourcePersonDetail.jobNumber }}</a-descriptions-item>
-      <a-descriptions-item label="手机">{{ outsourcePersonDetail.phoneNumber }}</a-descriptions-item>
-      <a-descriptions-item label="邮箱">{{ outsourcePersonDetail.email }}</a-descriptions-item>
+      <a-descriptions-item label="中文">{{ outsourcePersonDetail.userNameCn ? outsourcePersonDetail.userNameCn : "-" }}</a-descriptions-item>
+      <a-descriptions-item label="工号">{{ outsourcePersonDetail.jobNumber ? outsourcePersonDetail.jobNumber : "-" }}</a-descriptions-item>
+      <a-descriptions-item label="手机">{{ outsourcePersonDetail.phoneNumber ? outsourcePersonDetail.phoneNumber : "-" }}</a-descriptions-item>
+      <a-descriptions-item label="邮箱">{{ outsourcePersonDetail.email ? outsourcePersonDetail.email : "-" }}</a-descriptions-item>
       
-      <a-descriptions-item label="英文">{{ outsourcePersonDetail.userNameEn }}</a-descriptions-item>
-      <a-descriptions-item label="公司">{{ outsourcePersonDetail.companyName }}</a-descriptions-item>
-      <a-descriptions-item label="OFFER日期">{{ outsourcePersonDetail.offerTime }}</a-descriptions-item>
-      <a-descriptions-item label="身份证">{{ outsourcePersonDetail.idCard }}</a-descriptions-item>
+      <a-descriptions-item label="英文">{{ outsourcePersonDetail.userNameEn ? outsourcePersonDetail.userNameEn : "-" }}</a-descriptions-item>
+      <a-descriptions-item label="公司">{{ outsourcePersonDetail.companyName ? outsourcePersonDetail.companyName : "-" }}</a-descriptions-item>
+      <a-descriptions-item label="OFFER日期">{{ outsourcePersonDetail.offerTime ? outsourcePersonDetail.offerTime : "-" }}</a-descriptions-item>
+      <a-descriptions-item label="身份证">{{ outsourcePersonDetail.idCard ? outsourcePersonDetail.idCard : "-" }}</a-descriptions-item>
 
-      <a-descriptions-item label="年龄">{{ outsourcePersonDetail.age }}</a-descriptions-item>
-      <a-descriptions-item label="品牌">{{ outsourcePersonDetail.brand }}</a-descriptions-item>
-      <a-descriptions-item label="预计入职">{{ outsourcePersonDetail.planEntryTime }}</a-descriptions-item>
-      <a-descriptions-item label="无犯罪">{{ outsourcePersonDetail.noCriminal }}</a-descriptions-item>
+      <a-descriptions-item label="年龄">{{ outsourcePersonDetail.age ? outsourcePersonDetail.age : "-" }}</a-descriptions-item>
+      <a-descriptions-item label="品牌">{{ outsourcePersonDetail.brand ? outsourcePersonDetail.brand : "-" }}</a-descriptions-item>
+      <a-descriptions-item label="预计入职">{{ outsourcePersonDetail.planEntryTime ? outsourcePersonDetail.planEntryTime : "-" }}</a-descriptions-item>
+      <a-descriptions-item label="无犯罪">{{ outsourcePersonDetail.noCriminal ? outsourcePersonDetail.noCriminal : "-" }}</a-descriptions-item>
 
-      <a-descriptions-item label="性别">{{ outsourcePersonDetail.sex }}</a-descriptions-item>
-      <a-descriptions-item label="店铺">{{ outsourcePersonDetail.market }}</a-descriptions-item>
-      <a-descriptions-item label="实际入职">{{ outsourcePersonDetail.realEntryTime }}</a-descriptions-item>
-      <a-descriptions-item label="信息表">{{ outsourcePersonDetail.infoTableFlag }}</a-descriptions-item>
+      <a-descriptions-item label="性别">{{ outsourcePersonDetail.sex ? outsourcePersonDetail.sex : "-"  }}</a-descriptions-item>
+      <a-descriptions-item label="店铺">{{ outsourcePersonDetail.market ? outsourcePersonDetail.market : "-"  }}</a-descriptions-item>
+      <a-descriptions-item label="实际入职">{{ outsourcePersonDetail.realEntryTime ? outsourcePersonDetail.realEntryTime : "-"  }}</a-descriptions-item>
+      <a-descriptions-item label="信息表">{{ outsourcePersonDetail.infoTableFlag ? outsourcePersonDetail.infoTableFlag : "-"  }}</a-descriptions-item>
 
-      <a-descriptions-item label="城市">{{ outsourcePersonDetail.city }}</a-descriptions-item>
-      <a-descriptions-item label="职位">{{ outsourcePersonDetail.positions }}</a-descriptions-item>
-      <a-descriptions-item label="预计离职">{{ outsourcePersonDetail.planLeaveTime }}</a-descriptions-item>
-      <a-descriptions-item label="OFFER">{{ outsourcePersonDetail.offerFlag }}</a-descriptions-item>
+      <a-descriptions-item label="城市">{{ outsourcePersonDetail.city ? outsourcePersonDetail.city : "-"  }}</a-descriptions-item>
+      <a-descriptions-item label="职位">{{ outsourcePersonDetail.positions ? outsourcePersonDetail.positions : "-"  }}</a-descriptions-item>
+      <a-descriptions-item label="预计离职">{{ outsourcePersonDetail.planLeaveTime ? outsourcePersonDetail.planLeaveTime : "-"  }}</a-descriptions-item>
+      <a-descriptions-item label="OFFER">{{ outsourcePersonDetail.offerFlag ? outsourcePersonDetail.offerFlag : "-"  }}</a-descriptions-item>
       
-      <a-descriptions-item label="招聘">{{ outsourcePersonDetail.recruitParty }}</a-descriptions-item>
-      <a-descriptions-item label="性质">{{ outsourcePersonDetail.jobType }}</a-descriptions-item>
-      <a-descriptions-item label="实际离职">{{ outsourcePersonDetail.realLeaveTime }}</a-descriptions-item>
-      <a-descriptions-item label="离职证明">{{ outsourcePersonDetail.proofFlag }}</a-descriptions-item>
+      <a-descriptions-item label="招聘">{{ outsourcePersonDetail.recruitParty  ? outsourcePersonDetail.recruitParty : "-" }}</a-descriptions-item>
+      <a-descriptions-item label="性质">{{ outsourcePersonDetail.jobType  ? outsourcePersonDetail.jobType : "-" }}</a-descriptions-item>
+      <a-descriptions-item label="实际离职">{{ outsourcePersonDetail.realLeaveTime  ? outsourcePersonDetail.realLeaveTime : "-" }}</a-descriptions-item>
+      <a-descriptions-item label="离职证明">{{ outsourcePersonDetail.proofFlag ? outsourcePersonDetail.proofFlag : "-" }}</a-descriptions-item>
     </a-descriptions>
   </a-col>
 </a-row>
@@ -47,7 +47,6 @@
       :columns="columns"
       :data-source="getOutsourcePersonByPhoneList"
       :pagination="false"
-      :scroll="{ x: 1600 }"
     >
    <template #bodyCell="{ column, record }">
     <a-tag v-if="column.key === 'currentStatus' && record.currentStatus === '1'" color="orange">
@@ -62,6 +61,8 @@
      <a-tag v-if="column.key === 'currentStatus' && record.currentStatus === '4'" color="red">
       未入
     </a-tag>
+    <!-- 添加类型断言和存在性检查以修复TypeScript索引类型错误 -->
+      <span v-if="record[column.dataIndex] === null || record[column.dataIndex] === ''">-</span>
   </template>
   </a-table>
   </a-col>
@@ -84,33 +85,32 @@ const columns = [
     title: '编号',
     dataIndex: 'index',
     key: 'index',
-    fixed: 'left',
-    width: 20,
+    width: 15,
   },
-  {
-    title: '中文姓名',
-    dataIndex: 'userNameCn',
-    key: 'userNameCn',
-    fixed: 'left',
-    width: 30,
-    ellipsis: true,
-  },
-  {
-    title: '英文姓名',
-    dataIndex: 'userNameEn',
-    key: 'userNameEn',
-    fixed: 'left',
-    width: 30,
-    ellipsis: true,
-  },
-  {
-    title: '性别',
-    dataIndex: 'sex',
-    key: 'sex',
-    fixed: 'left',
-    width: 20,
-    ellipsis: true,
-  },
+  // {
+  //   title: '中文姓名',
+  //   dataIndex: 'userNameCn',
+  //   key: 'userNameCn',
+  //   fixed: 'left',
+  //   width: 20,
+  //   ellipsis: true,
+  // },
+  // {
+  //   title: '英文姓名',
+  //   dataIndex: 'userNameEn',
+  //   key: 'userNameEn',
+  //   fixed: 'left',
+  //   width: 20,
+  //   ellipsis: true,
+  // },
+  // {
+  //   title: '性别',
+  //   dataIndex: 'sex',
+  //   key: 'sex',
+  //   fixed: 'left',
+  //   width: 10,
+  //   ellipsis: true,
+  // },
   {
     title: '状态',
     dataIndex: 'currentStatus',
@@ -123,88 +123,88 @@ const columns = [
     title: '公司',
     dataIndex: 'companyName',
     key: 'companyName',
-    width: 40,
+    width: 30,
     ellipsis: true,
   },
-  {
-    title: '品牌',
-    dataIndex: 'brand',
-    key: 'brand',
-    width: 40,
-    ellipsis: true,
-  },
+  // {
+  //   title: '品牌',
+  //   dataIndex: 'brand',
+  //   key: 'brand',
+  //   width: 30,
+  //   ellipsis: true,
+  // },
   {
     title: '城市',
     dataIndex: 'city',
     key: 'city',
-    width: 20,
+    width: 15,
     ellipsis: true,
   },
   {
     title: '店铺',
     dataIndex: 'market',
     key: 'market',
-    width: 50,
+    width: 30,
     ellipsis: true,
   },
   {
     title: '职位',
     dataIndex: 'positions',
     key: 'positions',
-    width: 70,
+    width: 50,
     ellipsis: true,
   },
   {
     title: '性质',
     dataIndex: 'jobType',
     key: 'jobType',
-    width: 30,
+    width: 20,
     ellipsis: true,
   },
   {
     title: '招聘',
     dataIndex: 'recruitParty',
     key: 'recruitParty',
-    width: 30,
+    width: 20,
     ellipsis: true,
   },
   {
-    title: '推顾',
+    title: '推顾/企顾',
     dataIndex: 'enterprise',
     key: 'enterprise',
-    width: 60,
+    width: 50,
     ellipsis: true,
   },
   {
     title: 'OFFER日期',
     dataIndex: 'offerTime',
     key: 'offerTime',
-    width: 40,
+    width: 30,
     ellipsis: true,
   },
   {
     title: '入职日期',
     dataIndex: 'realEntryTime',
     key: 'realEntryTime',
-    width: 40,
+    width: 30,
     ellipsis: true,
   },
   {
     title: '预计离职',
     dataIndex: 'planLeaveTime',
     key: 'planLeaveTime',
-    width: 40,
+    width: 30,
     ellipsis: true,
   },
   {
     title: '实际离职',
     dataIndex: 'realLeaveTime',
     key: 'realLeaveTime',
-    width: 40,
+    width: 30,
     ellipsis: true,
   },
 ]
-watch(() => outsourcePersonDetail.value.id, (newVal, oldVal) => {
+watch(() => outsourcePersonDetail.value.id, () => {
   outsourceDetailStore.queryOutsourcePersonByPhone(outsourcePersonDetail.value.phoneNumber);
 });
 outsourceDetailStore.queryOutsourcePersonByPhone(outsourcePersonDetail.value.phoneNumber);

@@ -2,8 +2,13 @@
   <div class="resume-content-search">
     <a-form :model="formStateSalary" @finish="onSearch">
       <a-row :gutter="24">
-        <a-col :span="6">
-          <a-form-item name="city" label="公司">
+        <a-col :span="4">
+          <a-form-item name="userName" label="姓名">
+            <a-input v-model:value="formStateSalary.userName"/>
+          </a-form-item>
+        </a-col>
+        <a-col :span="4">
+          <a-form-item name="city" label="城市">
             <a-select
               optionFilterProp="label"
               v-model:value="formStateSalary.city"
@@ -12,8 +17,8 @@
             ></a-select>
           </a-form-item>
         </a-col>
-        <a-col :span="3">
-          <a-form-item name="bId" label="类型">
+        <a-col :span="4">
+          <a-form-item name="bId" label="品牌">
             <a-select
               optionFilterProp="label"
               v-model:value="formStateSalary.bId"
@@ -22,8 +27,8 @@
             ></a-select>
           </a-form-item>
         </a-col>
-        <a-col :span="3">
-          <a-form-item name="positionId" label="状态">
+        <a-col :span="4">
+          <a-form-item name="positionId" label="职位">
             <a-select
               optionFilterProp="label"
               v-model:value="formStateSalary.positionId"
@@ -40,6 +45,13 @@
      </a-form>
   </div>
   <div class="resume-content">
+    <a-row style="justify-content: space-between;margin-bottom: 5px;">
+        <span>
+          <a-button @click="handleSearchOutsourcePerson('2')" :class="{'active': formStateSalary.currentStatus === '2'}" style="margin-right: 5px;" size="small">在职</a-button>
+          <a-button @click="handleSearchOutsourcePerson('3')" :class="{'active': formStateSalary.currentStatus === '3'}" style="margin-right: 5px;" size="small">离职</a-button>
+          <a-button @click="handleSearchOutsourcePerson('1')" :class="{'active': formStateSalary.currentStatus === ''}" style="margin-right: 5px;" size="small">全部</a-button>
+        </span>
+    </a-row>
     <a-row>
     <a-table
       size="small"
@@ -47,8 +59,24 @@
       rowKey="key"
       :loading="salaryIsLoading"
       :columns="columnsOutsourceDetail"
+      :dataSource="getOutsourceSalaryList"
       :scroll="{ x: 1800 }"
-    ></a-table>
+    >
+   <template #bodyCell="{ column, record }">
+    <a-tag v-if="column.key === 'currentStatus' && record.currentStatus === '1'" color="orange">待入</a-tag>
+     <a-tag v-if="column.key === 'currentStatus' && record.currentStatus === '2'" color="green">在职</a-tag>
+     <a-tag v-if="column.key === 'currentStatus' && record.currentStatus === '3'" color="red">离职</a-tag>
+     <a-tag v-if="column.key === 'currentStatus' && record.currentStatus === '4'" color="red">未入</a-tag>
+      <span v-if="column.key === 'shebaoStandard' && record.shebaoStandard === '1'">最低基数</span>
+      <span v-if="column.key === 'shebaoStandard' && record.shebaoStandard === '2'">基本工资</span>
+      <span v-if="column.key === 'shebaoStandard' && record.shebaoStandard === '3'">特殊基数</span>
+      <span v-if="column.key === 'yijinStandard' && record.yijinStandard === 1">最低基数</span>
+      <span v-if="column.key === 'yijinStandard' && record.yijinStandard === 2">基本工资</span>
+      <span v-if="column.key === 'yijinStandard' && record.yijinStandard === 3">特殊基数</span>
+       <!-- 添加类型断言和存在性检查以修复TypeScript索引类型错误 -->
+      <span v-if="record[column.dataIndex] === null || record[column.dataIndex] === ''">-</span>
+    </template>
+  </a-table>
     </a-row>
     <a-row style="justify-content: end; margin-top: 10px">
       <a-pagination
@@ -75,52 +103,69 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
+import { SearchSalaryItem } from '/@/api/outsourceDetail/model';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { salaryIsLoading, pageOutsourceSalaryList, formStateSalary } = storeToRefs(outsourceDetailStore);
+const { salaryIsLoading, pageOutsourceSalaryList, formStateSalary, getOutsourceSalaryList } = storeToRefs(outsourceDetailStore);
 const columnsOutsourceDetail = [
-  { title: '编号', dataIndex: 'index', key: 'index', fixed: 'left' as const, width: 30, },
-  { title: '中文姓名', dataIndex: 'cnName', key: 'cnName', fixed: 'left' as const, width: 50, },
-  { title: '英文姓名', dataIndex: 'enName', key: 'enName', fixed: 'left' as const, width: 50, },
-  { title: '公司', dataIndex: 'company', key: 'company', fixed: 'left' as const, width: 30, },
-  { title: '城市', dataIndex: 'city', key: 'city', fixed: 'left' as const, width: 30, },
-  { title: '性质', dataIndex: 'nature', key: 'nature', fixed: 'left' as const, width: 30, },
-  { title: '状态', dataIndex: 'status', key: 'status', fixed: 'left' as const, width: 30, },
-  { title: '周期', dataIndex: 'period', key: 'period', fixed: 'left' as const, width: 30, },
-  { title: '基础工资', dataIndex: 'basicSalary', key: 'basicSalary', width: 50 },
-  { title: '餐补', dataIndex: 'mealAllowance', key: 'mealAllowance', width: 30 },
-  { title: '津贴', dataIndex: 'allowance', key: 'allowance', width: 30 },
-  { title: '全勤', dataIndex: 'fullAttendance', key: 'fullAttendance', width: 30 },
-  { title: '工资总计', dataIndex: 'totalSalary', key: 'totalSalary', width: 50 },
-  { title: '个人奖金', dataIndex: 'personalBonus', key: 'personalBonus', width: 50 },
-  { title: '团队奖金', dataIndex: 'teamBonus', key: 'teamBonus', width: 50 },
-  { title: '特殊奖金', dataIndex: 'specialBonus', key: 'specialBonus', width: 50 },
-  { title: '激励奖金', dataIndex: 'incentiveBonus', key: 'incentiveBonus', width: 50 },
-  { title: '达成奖金', dataIndex: 'achievementBonus', key: 'achievementBonus', width: 50 },
-  { title: '商保', dataIndex: 'commercialInsurance', key: 'commercialInsurance', width: 30 },
-  { title: '单位合计', dataIndex: 'companyTotal', key: 'companyTotal', width: 50 },
-  { title: '个人合计', dataIndex: 'personalTotal', key: 'personalTotal', width: 50 },
-  { title: '社保标准', dataIndex: 'socialSecurityStandard', key: 'socialSecurityStandard', width: 50  },
-  { title: '养老基数', dataIndex: 'pensionBase', key: 'pensionBase', width: 50 },
-  { title: '失业基数', dataIndex: 'unemploymentBase', key: 'unemploymentBase', width: 50 },
-  { title: '医疗基数', dataIndex: 'medicalBase', key: 'medicalBase', width: 50 },
-  { title: '大病基数', dataIndex: 'criticalIllnessBase', key: 'criticalIllnessBase', width: 50 },
-  { title: '工伤基数', dataIndex: 'workInjuryBase', key: 'workInjuryBase', width: 50 },
-  { title: '生育基数', dataIndex: 'maternityBase', key: 'maternityBase', width: 50 },
-  { title: '一金标准', dataIndex: 'housingFundStandard', key: 'housingFundStandard', width: 50 },
-  { title: '一金基数', dataIndex: 'housingFundBase', key: 'housingFundBase', width: 50 },
+  { title: '编号', dataIndex: 'index', key: 'index', fixed: 'left' as const, width: 30, ellipsis: true },
+  { title: '中文姓名', dataIndex: 'userNameCn', key: 'userNameCn', fixed: 'left' as const, width: 50, ellipsis: true },
+  { title: '英文姓名', dataIndex: 'userNameEn', key: 'userNameEn', fixed: 'left' as const, width: 50, ellipsis: true },
+  { title: '公司', dataIndex: 'companyName', key: 'companyName', fixed: 'left' as const, width: 50, ellipsis: true },
+  { title: '城市', dataIndex: 'city', key: 'city', fixed: 'left' as const, width: 40, ellipsis: true },
+  { title: '性质', dataIndex: 'jobType', key: 'jobType', fixed: 'left' as const, width: 30, ellipsis: true },
+  { title: '状态', dataIndex: 'currentStatus', key: 'currentStatus', fixed: 'left' as const, width: 30, ellipsis: true },
+  { title: '周期', dataIndex: 'changeTime', key: 'changeTime', fixed: 'left' as const, width: 60, ellipsis: true },
+  { title: '基础工资', dataIndex: 'dixin', key: 'dixin', width: 50, ellipsis: true },
+  { title: '餐补', dataIndex: 'canbu', key: 'canbu', width: 30, ellipsis: true },
+  { title: '津贴', dataIndex: 'jintie', key: 'jintie', width: 30, ellipsis: true },
+  { title: '全勤', dataIndex: 'quanqin', key: 'quanqin', width: 30, ellipsis: true },
+  { title: '工资总计', dataIndex: 'zonghe', key: 'zonghe', width: 50, ellipsis: true },
+  { title: '个人奖金', dataIndex: 'geti', key: 'geti', width: 50, ellipsis: true },
+  { title: '团队奖金', dataIndex: 'tuanti', key: 'tuanti', width: 50, ellipsis: true },
+  { title: '特殊奖金', dataIndex: 'teshu', key: 'teshu', width: 50, ellipsis: true },
+  { title: '激励奖金', dataIndex: 'jili', key: 'jili', width: 50, ellipsis: true },
+  { title: '达成奖金', dataIndex: 'dacheng', key: 'dacheng', width: 50, ellipsis: true },
+  { title: '商保', dataIndex: 'shangbao', key: 'shangbao', width: 30, ellipsis: true },
+  { title: '单位合计', dataIndex: 'companyTotal', key: 'companyTotal', width: 50, ellipsis: true },
+  { title: '个人合计', dataIndex: 'personTotal', key: 'personTotal', width: 50, ellipsis: true },
+  { title: '社保标准', dataIndex: 'shebaoStandard', key: 'shebaoStandard', width: 50, ellipsis: true },
+  { title: '养老基数', dataIndex: 'yanglaoJishu', key: 'yanglaoJishu', width: 50, ellipsis: true },
+  { title: '失业基数', dataIndex: 'shiyeJishu', key: 'shiyeJishu', width: 50, ellipsis: true },
+  { title: '医疗基数', dataIndex: 'yiliaoJishu', key: 'yiliaoJishu', width: 50, ellipsis: true },
+  { title: '大病基数', dataIndex: 'dabingJishu', key: 'dabingJishu', width: 50, ellipsis: true },
+  { title: '工伤基数', dataIndex: 'gongshangJishu', key: 'gongshangJishu', width: 50, ellipsis: true },
+  { title: '生育基数', dataIndex: 'shengyuJishu', key: 'shengyuJishu', width: 50, ellipsis: true },
+  { title: '一金标准', dataIndex: 'yijinStandard', key: 'yijinStandard', width: 50, ellipsis: true },
+  { title: '一金基数', dataIndex: 'yijinJishu', key: 'yijinJishu', width: 50, ellipsis: true },
 ];
 const clearFromState = () => {
   formStateSalary.value = {
-    city: '',
-    bId: '',
-    positionId: '',
-  }
+    currentStatus: '2',
+  } as SearchSalaryItem
 }
-const onSearch = () => {}
-const handleOutsourceSalaryListData = () => {}
+ const handleSearchOutsourcePerson = (status) => {
+    formStateSalary.value.currentStatus = status;
+    onSearch();
+  }
+const onSearch = () => {
+  pageOutsourceSalaryList.value = {
+      ...pageOutsourceSalaryList.value,
+      pageNumber: 1,
+    }
+  outsourceDetailStore.queryOutsourceSalary();
+}
+onSearch();
+const handleOutsourceSalaryListData = () => {
+  outsourceDetailStore.queryOutsourceSalary();
+}
 </script>
 
 <style lang="less" scoped>
+.active {
+    color: #389e0d;
+    background: #f6ffed;
+    border-color: #b7eb8f;
+  }
   .tag {
     cursor: pointer;
   }
@@ -130,7 +175,7 @@ const handleOutsourceSalaryListData = () => {}
     box-shadow: 0 0 2px #ccc;
     border-radius: 5px;
     overflow: hidden;
-    padding: 20px;
+    padding: 10px;
   }
   .resume-content-search {
     margin-bottom: 10px;

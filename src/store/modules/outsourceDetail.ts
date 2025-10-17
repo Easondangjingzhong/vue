@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { store } from '/@/store';
-import { formatToDate,currentDate } from '/@/utils/dateUtil';
+import { formatToDate, currentDate, formatToMonth } from '/@/utils/dateUtil';
 import fetchApi from '/@/api/outsourceDetail';
 import fetchCityApi from '/@/api/city';
 import {
@@ -11,6 +11,9 @@ import {
   OutsourceMonthSalaryItem,
   PageItem,
   SearchPersonItem,
+  SearchSheBaoItem,
+  SearchSalaryItem,
+  SearchMonthSalaryItem,
   OutsourceSheBaoContractRatesItem,
 } from '/@/api/outsourceDetail/model';
 // const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: '' } = JSON.parse(
@@ -38,24 +41,24 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       total: 0,
     } as PageItem,
     outsourceSalaryList: [] as OutsourceSalaryItem[], //外包薪资列表
-    formStateSalary: {} as SearchPersonItem,
+    formStateSalary: {} as SearchSalaryItem,
     pageOutsourceSalaryList: {
       pageNumber: 1,
-      pageSize: 10,
+      pageSize: 13,
       total: 0,
     } as PageItem,
     outsourceSheBaoList: [] as OutsourceSheBaoItem[], //外包社保列表
-    formStateSheBao: {} as SearchPersonItem,
+    formStateSheBao: {} as SearchSheBaoItem,
     pageOutsourceSheBaoList: {
       pageNumber: 1,
-      pageSize: 10,
+      pageSize: 13,
       total: 0,
     } as PageItem,
     outsourceMonthSalaryList: [] as OutsourceMonthSalaryItem[], //外包月度薪资列表
-    formStateMonthSalary: {} as SearchPersonItem,
+    formStateMonthSalary: {} as SearchMonthSalaryItem,
     pageOutsourceMonthSalaryList: {
       pageNumber: 1,
-      pageSize: 10,
+      pageSize: 13,
       total: 0,
     } as PageItem,
     province: [] as any[],
@@ -90,9 +93,25 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         endTime: item.endTime ? formatToDate(item.endTime) : '',
         yujiaoTime: item.yujiaoTime ? formatToDate(item.yujiaoTime) : '',
         yutingTime: item.yutingTime ? formatToDate(item.yutingTime) : '',
+        paymentYearMonth: item.paymentYearMonth ? formatToMonth(item.paymentYearMonth) : '',
+        preStopYearMonth: item.preStopYearMonth ? formatToMonth(item.preStopYearMonth) : '',
       })),
-    getOutsourceSalaryList: (state) => state.outsourceSalaryList,
-    getOutsourceSheBaoList: (state) => state.outsourceSheBaoList,
+    getOutsourceSalaryList: (state) => state.outsourceSalaryList.map((item, index) => ({
+      ...item,
+      index: 
+          state.pageOutsourceSalaryList.pageSize * (state.pageOutsourceSalaryList.pageNumber - 1) +
+          (index + 1),
+      startTime: item.startTime ? formatToDate(item.startTime) : '',
+      endTime: item.endTime ? formatToDate(item.endTime) : '',
+      changeTime: item.changeTime ? formatToDate(item.changeTime) : '',
+    })),
+    getOutsourceSheBaoList: (state) => state.outsourceSheBaoList.map((item, index) => ({
+      ...item,
+      index: 
+          state.pageOutsourceSheBaoList.pageSize * (state.pageOutsourceSheBaoList.pageNumber - 1) +
+          (index + 1),
+      shebaoShijiaoTime: item.shebaoShijiaoTime ? formatToMonth(item.shebaoShijiaoTime) : '',
+    })),
     getOutsourceMonthSalaryList: (state) => state.outsourceMonthSalaryList,
     getOutsourcePersonByPhoneList: (state) => state.outsourcePersonByPhoneList.map((item, index) => ({
       ...item,
@@ -150,12 +169,21 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       if (this.personIsLoading) {
         return;
       }
+      if (!this.formStatePerson.currentStatus) {
+        this.formStatePerson.currentStatus = '2'
+      }
+      if (this.formStatePerson.currentStatus == '1') {
+        this.formStatePerson.currentStatus = ''
+      }
       const params = new FormData();
       params.append('pageNumber', this.pageOutsourcePersonList.pageNumber.toString());
       params.append('pageSize', this.pageOutsourcePersonList.pageSize.toString());
       params.append('city', this.formStatePerson.city || '');
       params.append('bId', this.formStatePerson.bId || '');
+      params.append('currentStatus', this.formStatePerson.currentStatus);
       params.append('positionId', this.formStatePerson.positionId || '');
+      params.append('userName', this.formStatePerson.userName || '');
+      params.append('companyArrange', this.formStatePerson.companyArrange || '');
       this.personIsLoading = true;
       try {
         const res = await fetchApi.queryOutsourcePerson(params);
@@ -181,12 +209,20 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       if (this.salaryIsLoading) {
         return;
       }
+        if (!this.formStateSalary.currentStatus) {
+        this.formStateSalary.currentStatus = '2'
+      }
+      if (this.formStateSalary.currentStatus == '1') {
+        this.formStateSalary.currentStatus = ''
+      }
       const params = new FormData();
       params.append('pageNumber', this.pageOutsourceSalaryList.pageNumber.toString());
       params.append('pageSize', this.pageOutsourceSalaryList.pageSize.toString());
       params.append('city', this.formStateSalary.city || '');
       params.append('bId', this.formStateSalary.bId || '');
       params.append('positionId', this.formStateSalary.positionId || '');
+      params.append('currentStatus', this.formStateSalary.currentStatus);
+      params.append('userName', this.formStateSalary.userName || '');
       this.salaryIsLoading = true;
       try {
         const res = await fetchApi.queryOutsourceSalary(params);
@@ -212,12 +248,20 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       if (this.sheBaoIsLoading) {
         return;
       }
+      if (!this.formStateSheBao.currentStatus) {
+        this.formStateSheBao.currentStatus = '2'
+      }
+      if (this.formStateSheBao.currentStatus == '1') {
+        this.formStateSheBao.currentStatus = ''
+      }
       const params = new FormData();
       params.append('pageNumber', this.pageOutsourceSheBaoList.pageNumber.toString());
       params.append('pageSize', this.pageOutsourceSheBaoList.pageSize.toString());
       params.append('city', this.formStateSheBao.city || '');
       params.append('bId', this.formStateSheBao.bId || '');
       params.append('positionId', this.formStateSheBao.positionId || '');
+      params.append('currentStatus', this.formStateSheBao.currentStatus);
+      params.append('userName', this.formStateSheBao.userName || '');
       this.sheBaoIsLoading = true;
       try {
         const res = await fetchApi.queryOutsourceSheBao(params);
@@ -298,6 +342,10 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         return null;
       }
     },
+    handleAddPersonContract() {
+      this.outsourceContractForm = {...this.outsourceContractForm, offerTime: this.outsourcePersonDetail.offerTime} as PersonContractItem;
+      this.outsourceContractFlag = true;
+    },
     /**
      * 新增外包人员合同
      */
@@ -313,6 +361,12 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         formData.append("startDate", this.outsourceContractForm.startDate || '');
         formData.append("endDate", this.outsourceContractForm.endDate || '');
         formData.append("contractCycle", this.outsourceContractForm.contractCycle || '');
+        formData.append("offerTime", this.outsourceContractForm.offerTime || '');
+        formData.append("offerSign", this.outsourceContractForm.offerSign || '');
+        formData.append("contractFlag", this.outsourceContractForm.contractFlag || '');
+        formData.append("contractStatus", this.outsourceContractForm.contractStatus || '');
+        formData.append("loseReason", this.outsourceContractForm.loseReason || '');
+        formData.append("loseDate", this.outsourceContractForm.loseDate || '');
         const res = await fetchApi.addOutsourcePersonContract(formData);
         if (res.code == 1) {
           this.queryOutsourcePersonContract();
@@ -414,11 +468,18 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
      */
     async addOutsourceSalaryByPerson() {
       try {
+        const shebaoDetail = this.outsourceSocialSecurityDetailList.length > 0 ? this.outsourceSocialSecurityDetailList[0] : {};
         this.outsourceSalaryForm = {
           ...this.outsourceSalaryForm,
           personId: this.outsourceSalaryForm.personId || this.outsourcePersonDetail.id?.toString() || '',
           currentPositionId: this.outsourceSalaryForm.currentPositionId || this.outsourcePersonDetail.positionId?.toString() || '',
           currentPosition: this.outsourceSalaryForm.currentPosition || this.outsourcePersonDetail.positions || '',
+          companyShebao: shebaoDetail?.companyTotal?.toString() || '',
+          personShebao: shebaoDetail?.personTotal?.toString() || '',
+          companyYijin: shebaoDetail?.yijinCompany?.toString() || '',
+          personYijin: shebaoDetail?.yijinPerson?.toString() || '',
+          keShangbao: shebaoDetail?.keShangbao?.toString() || '',
+          shiShangbao: shebaoDetail?.shiShangbao?.toString() || '',
         }
         const res = await fetchApi.addOutsourceSalaryByPerson(this.outsourceSalaryForm);
         if (res.code == 1) {

@@ -58,8 +58,8 @@
   </a-drawer>
   <ComprehensiveContractInfoUpdate />
   <ComprehensiveBasicUpdate />
-  <ComprehensiveSalaryInfoUpdate />
   <ComprehensiveSocialSecurityInfoUpdate />
+  <ComprehensiveSalaryInfoUpdate />
 </template>
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';

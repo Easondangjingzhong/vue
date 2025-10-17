@@ -808,6 +808,7 @@ export const useResumeDetailStore = defineStore('app-Resume',{
       formData.append('industry', formState.retail || "");
       formData.append('jobcategory2', formState.jobcategory2 || "");
       formData.append('management2', formState.management2 || "");
+      formData.append('SystemRecruitId', loginVueUser.loginId);
       const res = await fetchApi.searchFormState(formData);
       return res;
     },

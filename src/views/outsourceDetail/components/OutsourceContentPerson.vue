@@ -3,12 +3,18 @@
     <a-form :model="formStatePerson" @finish="onSearch">
       <a-row :gutter="24">
         <a-col :span="4">
+          <a-form-item name="userName" label="姓名">
+            <a-input v-model:value="formStatePerson.userName"/>
+          </a-form-item>
+        </a-col>
+        <a-col :span="4">
           <a-form-item name="city" label="城市">
             <a-select
               optionFilterProp="label"
               v-model:value="formStatePerson.city"
               :options="getProvince"
               :showArrow="false"
+              showSearch
               allowClear
             ></a-select>
           </a-form-item>
@@ -41,8 +47,16 @@
      </a-form>
   </div>
   <div class="resume-content">
-    <a-row style="justify-content: end;margin-bottom: 10px;">
-       <a-button @click="handleToAddOutsourcePerson" style="background-color: #eee" size="small">新增</a-button>
+    <a-row style="justify-content: space-between;margin-bottom: 5px;">
+        <span>
+          <a-button @click="handleSearchOutsourcePerson('2')" :class="{'active': formStatePerson.currentStatus === '2'}" style="margin-right: 5px;" size="small">在职</a-button>
+          <a-button @click="handleSearchOutsourcePerson('3')" :class="{'active': formStatePerson.currentStatus === '3'}" style="margin-right: 5px;" size="small">离职</a-button>
+          <a-button @click="handleSearchOutsourcePerson('1')" :class="{'active': formStatePerson.currentStatus === ''}" style="margin-right: 5px;" size="small">全部</a-button>
+          <a-button @click="handleSearchOutsourcePerson('4')" :class="{'active': formStatePerson.companyArrange === '1'}" style="margin-right: 5px;" size="small" title="按公司排序">排序</a-button>
+        </span>
+        <span>
+           <a-button @click="handleToAddOutsourcePerson" style="background-color: #eee" size="small">新增</a-button>
+        </span>
     </a-row>
     <a-row>
     <a-table
@@ -70,8 +84,54 @@
      <a-tag v-if="column.key === 'currentStatus' && record.currentStatus === '4'" color="red">
       未入
     </a-tag>
+
+    <a-tag v-if="column.key === 'offerFlag' && record.offerFlag == '等待发起'" color="red">等待发起</a-tag>
+    <a-tag v-if="column.key === 'offerFlag' && record.offerFlag == '已经发起'" color="orange">已经发起</a-tag>
+    <a-tag v-if="column.key === 'offerFlag' && record.offerFlag == '签署完成'" color="green">签署完成</a-tag>
+    <a-tag v-if="column.key === 'contractCompany' && record.contractCompany == '等待发起'" color="red">等待发起</a-tag>
+    <a-tag v-if="column.key === 'contractCompany' && record.contractCompany == '已经发起'" color="orange">已经发起</a-tag>
+    <a-tag v-if="column.key === 'contractCompany' && record.contractCompany == '签署完成'" color="green">签署完成</a-tag>
+
     <a-tag v-if="column.key === 'enterprise'" :title="record.enterprise">
       查看
+    </a-tag>
+    <a-tag v-if="column.key === 'socialFlag' && record.socialFlag === '1'" color="green">
+      不缴
+    </a-tag>
+    <a-tag v-if="column.key === 'socialFlag' && record.socialFlag === '2'" color="green">
+      待缴
+    </a-tag>
+     <a-tag v-if="column.key === 'socialFlag' && record.socialFlag === '3'" color="green">
+      已缴
+    </a-tag>
+    <a-tag v-if="column.key === 'socialFlag' && record.socialFlag === '4'" color="red">
+      待停
+    </a-tag>
+    <a-tag v-if="column.key === 'socialFlag' && record.socialFlag === '5'" color="red">
+      已停
+    </a-tag>
+
+    <a-tag v-if="column.key === 'yijinFlag' && record.yijinFlag === '1'" color="green">
+      不缴
+    </a-tag>
+    <a-tag v-if="column.key === 'yijinFlag' && record.yijinFlag === '2'" color="green">
+      待缴
+    </a-tag>
+     <a-tag v-if="column.key === 'yijinFlag' && record.yijinFlag === '3'" color="green">
+      已缴
+    </a-tag>
+    <a-tag v-if="column.key === 'yijinFlag' && record.yijinFlag === '4'" color="red">
+      待停
+    </a-tag>
+    <a-tag v-if="column.key === 'yijinFlag' && record.yijinFlag === '5'" color="red">
+      已停
+    </a-tag>
+
+    <a-tag v-if="column.key === 'shangbaoFlag' && record.shangbaoFlag === '1'" color="green">
+      缴纳
+    </a-tag>
+    <a-tag v-if="column.key === 'shangbaoFlag' && record.shangbaoFlag === '2'" color="red">
+      不缴
     </a-tag>
   </template>
   </a-table>
@@ -122,12 +182,12 @@ const columnsOutsourceDetail = [
   { title: '招聘', dataIndex: 'recruitParty', key: 'recruitParty', width: 50, ellipsis: true },
   { title: '推企', dataIndex: 'enterprise', key: 'enterprise', width: 40, ellipsis: true,},
   { title: '信息表', dataIndex: 'infoTableFlag', key: 'infoTableFlag', width: 40, ellipsis: true,},
-  { title: 'OFFER', dataIndex: 'offerFlag', key: 'offerFlag', width: 40, ellipsis: true,},
-  { title: '薪资', dataIndex: 'salaryStructure', key: 'salaryStructure', width: 30, ellipsis: true,},
-  { title: '合同签署', dataIndex: 'contractCompany', key: 'contractCompany', width: 50, ellipsis: true,},
+  { title: 'OFFER', dataIndex: 'offerFlag', key: 'offerFlag', width: 55, ellipsis: true,},
+  { title: '薪资', dataIndex: 'salaryStructure', key: 'salaryStructure', width: 50, ellipsis: true,},
+  { title: '合同签署', dataIndex: 'contractCompany', key: 'contractCompany', width: 55, ellipsis: true,},
   { title: '生效日期', dataIndex: 'startTime', key: 'startTime', width: 60, ellipsis: true,},
   { title: '终止日期', dataIndex: 'endTime', key: 'endTime', width: 60, ellipsis: true,},
-  { title: '周期', dataIndex: 'contractPeriod', key: 'contractPeriod', width: 30, ellipsis: true,},
+  { title: '周期', dataIndex: 'contractPeriod', key: 'contractPeriod', width: 40, ellipsis: true,},
   { title: '预计入职', dataIndex: 'planEntryTime', key: 'planEntryTime', width: 60, ellipsis: true,},
   { title: '实际日期', dataIndex: 'realEntryTime', key: 'realEntryTime', width: 60, ellipsis: true,},
   { title: '预计离职', dataIndex: 'planLeaveTime', key: 'planLeaveTime', width: 60, ellipsis: true,},
@@ -146,8 +206,16 @@ const columnsOutsourceDetail = [
   { title: '已休', dataIndex: 'annualLeaveUsed', key: 'annualLeaveUsed', width: 30, ellipsis: true,},
   { title: '剩余', dataIndex: 'annualLeaveBalance', key: 'annualLeaveBalance', width: 30, ellipsis: true,},
 ];
+  const handleSearchOutsourcePerson = (status) => {
+    if (status != '4') {
+      formStatePerson.value.currentStatus = status;
+    } else {
+      formStatePerson.value.companyArrange = '1';
+    }
+    onSearch();
+  }
  const clearFromState = () => {
-    formStatePerson.value = {} as SearchPersonItem;
+    formStatePerson.value = {currentStatus: '2',} as SearchPersonItem;
  }
   const onSearch = () => {
     pageOutsourcePersonList.value = {
@@ -169,6 +237,11 @@ const columnsOutsourceDetail = [
 </script>
 
 <style lang="less" scoped>
+  .active {
+    color: #389e0d;
+    background: #f6ffed;
+    border-color: #b7eb8f;
+  }
   .tag {
     cursor: pointer;
   }

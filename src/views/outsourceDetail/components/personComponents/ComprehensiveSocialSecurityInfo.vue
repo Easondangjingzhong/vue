@@ -12,9 +12,13 @@
       :columns="columns"
       :data-source="getOutsourceSocialSecurityDetailList"
       :pagination="false"
-      :scroll="{ x: 1600 }"
+      :scroll="{ x: 1800 }"
     >
   <template #bodyCell="{ column, record }">
+      <span v-if="column.key == 'yijinRate'">{{ parseFloat((record.yijinRate * 100).toFixed(2)) }}%</span>
+      <a-tag v-if="column.key == 'shangbaoProject' && record.shangbaoStatus == '2'" color="red">不缴</a-tag>
+      <span v-if="column.key == 'keShangbao' && record.shangbaoStatus == '2'">-</span>
+      <span v-if="column.key == 'shiShangbao' && record.shangbaoStatus == '2'">-</span>
       <span v-if="column.key == 'operation'">
         <FormOutlined @click="handleEditClick(record)"/>
       </span>
@@ -40,30 +44,35 @@ const columns = ref([
         dataIndex: 'index',
         key: 'index',
         fixed: 'left',
+        width: 40,
       },
       {
         title: '生效日期',
-        dataIndex: 'effectiveDate',
-        key: 'effectiveDate',
+        dataIndex: 'shebaoShijiaoTime',
+        key: 'shebaoShijiaoTime',
         fixed: 'left',
+        width: 80,
       },
       {
         title: '城市',
         dataIndex: 'shebaoCity',
         key: 'shebaoCity',
         fixed: 'left',
+        width: 60,
       },
       {
         title: '缴纳单位',
         dataIndex: 'shebaoCompany',
         key: 'shebaoCompany',
         fixed: 'left',
+        width: 60,
       },
       {
         title: '手续费',
-        dataIndex: 'fee',
-        key: 'fee',
+        dataIndex: 'serviceMoney',
+        key: 'serviceMoney',
         fixed: 'left',
+        width: 60,
       },
     ]
   },
@@ -74,16 +83,19 @@ const columns = ref([
         title: '基数',
         dataIndex: 'yanglaoJishu',
         key: 'yanglaoJishu',
+        width: 60,
       },
       {
         title: '企业',
         dataIndex: 'yanglaoCompany',
         key: 'yanglaoCompany',
+        width: 60,
       },
        {
         title: '个人',
         dataIndex: 'yanglaoPerson',
         key: 'yanglaoPerson',
+        width: 60,
       },
     ]
   },
@@ -94,31 +106,37 @@ const columns = ref([
         title: '基数',
         dataIndex: 'yiliaoJishu',
         key: 'yiliaoJishu',
+        width: 60,
       },
       {
         title: '企医',
         dataIndex: 'yiliaoCompany',
         key: 'yiliaoCompany',
+        width: 60,
       },
        {
         title: '个医',
         dataIndex: 'yiliaoPerson',
         key: 'yiliaoPerson',
+        width: 60,
       },
        {
         title: '企病',
         dataIndex: 'dabingCompany',
         key: 'dabingCompany',
+        width: 60,
       },
        {
         title: '个病',
         dataIndex: 'dabingPerson',
         key: 'dabingPerson',
+        width: 60,
       },
        {
         title: '企育',
         dataIndex: 'shengyuCompany',
         key: 'shengyuCompany',
+        width: 60,
       },
     ]
   },
@@ -129,21 +147,25 @@ const columns = ref([
         title: '基数',
         dataIndex: 'shiyeJishu',
         key: 'shiyeJishu',
+        width: 60,
       },
       {
         title: '企失',
         dataIndex: 'shiyeCompany',
         key: 'shiyeCompany',
+        width: 60,
       },
        {
         title: '个失',
         dataIndex: 'shiyePerson',
         key: 'shiyePerson',
+        width: 60,
       },
        {
         title: '企工',
         dataIndex: 'gongshangCompany',
         key: 'gongshangCompany',
+        width: 60,
       },
     ]
   },
@@ -154,11 +176,13 @@ const columns = ref([
         title: '企业',
         dataIndex: 'companyTotal',
         key: 'companyTotal',
+        width: 60,
       },
       {
         title: '个人',
         dataIndex: 'personTotal',
         key: 'personTotal',
+        width: 60,
       },
     ]
   },
@@ -169,21 +193,25 @@ const columns = ref([
         title: '基数',
         dataIndex: 'yijinJishu',
         key: 'yijinJishu',
+        width: 60,
       },
       {
         title: '比例',
         dataIndex: 'yijinRate',
         key: 'yijinRate',
+        width: 60,
       },
        {
         title: '企业',
         dataIndex: 'yijinCompany',
         key: 'yijinCompany',
+        width: 60,
       },
        {
         title: '个人',
         dataIndex: 'yijinPerson',
         key: 'yijinPerson',
+        width: 60,
       },
     ]
   },
@@ -194,16 +222,19 @@ const columns = ref([
         title: '项目',
         dataIndex: 'shangbaoProject',
         key: 'shangbaoProject',
+        width: 60,
       },
       {
         title: '客户',
         dataIndex: 'keShangbao',
         key: 'keShangbao',
+        width: 60,
       },
        {
         title: '实际',
         dataIndex: 'shiShangbao',
         key: 'shiShangbao',
+        width: 60,
       },
     ]
   },
@@ -215,6 +246,7 @@ const columns = ref([
         dataIndex: 'operation',
         key: 'operation',
         fixed: 'right',
+        width: 37,
       },
     ]
   },

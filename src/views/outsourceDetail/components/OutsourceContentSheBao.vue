@@ -2,8 +2,13 @@
   <div class="resume-content-search">
     <a-form :model="formStateSheBao" @finish="onSearch">
       <a-row :gutter="24">
-        <a-col :span="6">
-          <a-form-item name="city" label="公司">
+         <a-col :span="4">
+          <a-form-item name="userName" label="姓名">
+            <a-input v-model:value="formStateSheBao.userName"/>
+          </a-form-item>
+        </a-col>
+        <a-col :span="4">
+          <a-form-item name="city" label="城市">
             <a-select
               optionFilterProp="label"
               v-model:value="formStateSheBao.city"
@@ -12,8 +17,8 @@
             ></a-select>
           </a-form-item>
         </a-col>
-        <a-col :span="3">
-          <a-form-item name="bId" label="类型">
+        <a-col :span="4">
+          <a-form-item name="bId" label="品牌">
             <a-select
               optionFilterProp="label"
               v-model:value="formStateSheBao.bId"
@@ -22,8 +27,8 @@
             ></a-select>
           </a-form-item>
         </a-col>
-        <a-col :span="3">
-          <a-form-item name="positionId" label="状态">
+        <a-col :span="4">
+          <a-form-item name="positionId" label="职位">
             <a-select
               optionFilterProp="label"
               v-model:value="formStateSheBao.positionId"
@@ -40,15 +45,39 @@
      </a-form>
   </div>
   <div class="resume-content">
+    <a-row style="justify-content: space-between;margin-bottom: 5px;">
+        <span>
+          <a-button @click="handleSearchOutsourcePerson('2')" :class="{'active': formStateSheBao.currentStatus === '2'}" style="margin-right: 5px;" size="small">在职</a-button>
+          <a-button @click="handleSearchOutsourcePerson('3')" :class="{'active': formStateSheBao.currentStatus === '3'}" style="margin-right: 5px;" size="small">离职</a-button>
+          <a-button @click="handleSearchOutsourcePerson('1')" :class="{'active': formStateSheBao.currentStatus === ''}" style="margin-right: 5px;" size="small">全部</a-button>
+        </span>
+    </a-row>
     <a-row>
     <a-table
       size="small"
       :pagination="false"
       rowKey="key"
+      :dataSource="getOutsourceSheBaoList"
       :loading="sheBaoIsLoading"
       :columns="columnsOutsourceDetail"
-      :scroll="{ x: 1700 }"
-    ></a-table>
+      :scroll="{ x: 1900 }"
+    >
+    <template #bodyCell="{ column, record }">
+    <a-tag v-if="column.key === 'currentStatus' && record.currentStatus === '1'" color="orange">待入</a-tag>
+     <a-tag v-if="column.key === 'currentStatus' && record.currentStatus === '2'" color="green">在职</a-tag>
+     <a-tag v-if="column.key === 'currentStatus' && record.currentStatus === '3'" color="red">离职</a-tag>
+     <a-tag v-if="column.key === 'currentStatus' && record.currentStatus === '4'" color="red">未入</a-tag>
+      <span v-if="column.key === 'shebaoStandard' && record.shebaoStandard === '1'">最低基数</span>
+      <span v-if="column.key === 'shebaoStandard' && record.shebaoStandard === '2'">基本工资</span>
+      <span v-if="column.key === 'shebaoStandard' && record.shebaoStandard === '3'">特殊基数</span>
+      <span v-if="column.key === 'yijinStandard' && record.yijinStandard === '1'">最低基数</span>
+      <span v-if="column.key === 'yijinStandard' && record.yijinStandard === '2'">基本工资</span>
+      <span v-if="column.key === 'yijinStandard' && record.yijinStandard === '3'">特殊基数</span>
+      <!-- 添加类型断言和存在性检查以修复TypeScript索引类型错误 -->
+      <span v-if="(record[column.dataIndex] === null || record[column.dataIndex] === '')">-</span>
+    </template>
+  
+  </a-table>
     </a-row>
     <a-row style="justify-content: end; margin-top: 10px">
       <a-pagination
@@ -75,55 +104,70 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
+import { SearchSheBaoItem } from '/@/api/outsourceDetail/model';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { sheBaoIsLoading,pageOutsourceSheBaoList,formStateSheBao } = storeToRefs(outsourceDetailStore);
+const { sheBaoIsLoading,pageOutsourceSheBaoList,formStateSheBao,getOutsourceSheBaoList } = storeToRefs(outsourceDetailStore);
 const columnsOutsourceDetail = [
-  { title: '编号', dataIndex: 'index', key: 'index', fixed: 'left' as const, width: 30, },
-  { title: '中文姓名', dataIndex: 'chineseName', key: 'chineseName', fixed: 'left' as const, width: 50, },
-  { title: '英文姓名', dataIndex: 'englishName', key: 'englishName', fixed: 'left' as const, width: 50, },
-  { title: '公司', dataIndex: 'company', key: 'company', fixed: 'left' as const, width: 30, },
-  { title: '城市', dataIndex: 'city', key: 'city', fixed: 'left' as const, width: 30, },
-  { title: '性质', dataIndex: 'nature', key: 'nature', fixed: 'left' as const, width: 30, },
-  { title: '状态', dataIndex: 'status', key: 'status', fixed: 'left' as const, width: 30, },
-  { title: '周期', dataIndex: 'period', key: 'period', fixed: 'left' as const, width: 30, },
-  { title: '单位合计', dataIndex: 'totalUnit', key: 'totalUnit', width: 50, },
-  { title: '个人合计', dataIndex: 'totalPersonal', key: 'totalPersonal', width: 50, },
-  { title: '商保', dataIndex: 'commercialInsurance', key: 'commercialInsurance', width: 30, },
-  { title: '社保标准', dataIndex: 'socialSecurityStandard', key: 'socialSecurityStandard', width: 50, },
-  { title: '养老基数', dataIndex: 'pensionBase', key: 'pensionBase', width: 50, },
-  { title: '单位', dataIndex: 'pensionUnit', key: 'pensionUnit', width: 30, },
-  { title: '个人', dataIndex: 'pensionPersonal', key: 'pensionPersonal', width: 30, },
-  { title: '失业基数', dataIndex: 'unemploymentBase', key: 'unemploymentBase', width: 50, },
-  { title: '单位', dataIndex: 'unemploymentUnit', key: 'unemploymentUnit', width: 30, },
-  { title: '个人', dataIndex: 'unemploymentPersonal', key: 'unemploymentPersonal', width: 30, },
-  { title: '医疗基数', dataIndex: 'medicalBase', key: 'medicalBase', width: 50, },
-  { title: '单位', dataIndex: 'medicalUnit', key: 'medicalUnit', width: 30, },
-  { title: '个人', dataIndex: 'medicalPersonal', key: 'medicalPersonal', width: 30, },
-  { title: '大病基数', dataIndex: 'criticalIllnessBase', key: 'criticalIllnessBase', width: 50, },
-  { title: '单位', dataIndex: 'criticalIllnessUnit', key: 'criticalIllnessUnit', width: 30, },
-  { title: '个人', dataIndex: 'criticalIllnessPersonal', key: 'criticalIllnessPersonal', width: 30, },
-  { title: '工商基数', dataIndex: 'industrialInjuryBase', key: 'industrialInjuryBase', width: 50, },
-  { title: '单位', dataIndex: 'industrialInjuryUnit', key: 'industrialInjuryUnit', width: 30, },
-  { title: '生育基数', dataIndex: 'maternityBase', key: 'maternityBase', width: 50, },
-  { title: '单位', dataIndex: 'maternityUnit', key: 'maternityUnit', width: 30, },
-  { title: '一金标准', dataIndex: 'housingFundStandard', key: 'housingFundStandard', width: 50, },
-  { title: '一金基数', dataIndex: 'housingFundBase', key: 'housingFundBase', width: 50, },
-  { title: '比例', dataIndex: 'housingFundRatio', key: 'housingFundRatio', width: 30, },
-  { title: '单位', dataIndex: 'housingFundUnit', key: 'housingFundUnit', width: 30, },
-  { title: '个人', dataIndex: 'housingFundPersonal', key: 'housingFundPersonal', width: 30, },
+  { title: '编号', dataIndex: 'index', key: 'index', fixed: 'left' as const, width: 30, ellipsis: true },
+  { title: '中文姓名', dataIndex: 'userNameCn', key: 'userNameCn', fixed: 'left' as const, width: 50, ellipsis: true },
+  { title: '英文姓名', dataIndex: 'userNameEn', key: 'userNameEn', fixed: 'left' as const, width: 50, ellipsis: true },
+  { title: '公司', dataIndex: 'companyName', key: 'companyName', fixed: 'left' as const, width: 50, ellipsis: true },
+  { title: '城市', dataIndex: 'city', key: 'city', fixed: 'left' as const, width: 40, ellipsis: true },
+  { title: '性质', dataIndex: 'jobType', key: 'jobType', fixed: 'left' as const, width: 30, ellipsis: true },
+  { title: '状态', dataIndex: 'currentStatus', key: 'currentStatus', fixed: 'left' as const, width: 30, },
+  { title: '周期', dataIndex: 'shebaoShijiaoTime', key: 'shebaoShijiaoTime', fixed: 'left' as const, width: 40, ellipsis: true },
+  { title: '单位合计', dataIndex: 'companyTotal', key: 'companyTotal', width: 50, ellipsis: true },
+  { title: '个人合计', dataIndex: 'personTotal', key: 'personTotal', width: 50, ellipsis: true },
+  { title: '商保', dataIndex: 'shangbao', key: 'shangbao', width: 30, ellipsis: true },
+  { title: '社保标准', dataIndex: 'shebaoStandard', key: 'shebaoStandard', width: 50, ellipsis: true },
+  { title: '养老基数', dataIndex: 'yanglaoJishu', key: 'yanglaoJishu', width: 40, ellipsis: true },
+  { title: '单位', dataIndex: 'yanglaoCompany', key: 'yanglaoCompany', width: 40, ellipsis: true },
+  { title: '个人', dataIndex: 'yanglaoPerson', key: 'yanglaoPerson', width: 40, ellipsis: true },
+  { title: '失业基数', dataIndex: 'shiyeJishu', key: 'shiyeJishu', width: 40, ellipsis: true },
+  { title: '单位', dataIndex: 'shiyeCompany', key: 'shiyeCompany', width: 30, ellipsis: true },
+  { title: '个人', dataIndex: 'shiyePerson', key: 'shiyePerson', width: 30, ellipsis: true },
+  { title: '医疗基数', dataIndex: 'yanglaoJishu', key: 'yanglaoJishu', width: 40, ellipsis: true },
+  { title: '单位', dataIndex: 'yanglaoCompany', key: 'yanglaoCompany', width: 40, ellipsis: true },
+  { title: '个人', dataIndex: 'yanglaoPerson', key: 'yanglaoPerson', width: 40, ellipsis: true },
+  { title: '大病基数', dataIndex: 'dabingJishu', key: 'dabingJishu', width: 40, ellipsis: true },
+  { title: '单位', dataIndex: 'dabingCompany', key: 'dabingCompany', width: 30, ellipsis: true },
+  { title: '个人', dataIndex: 'dabingPerson', key: 'dabingPerson', width: 30, ellipsis: true },
+  { title: '工商基数', dataIndex: 'gongshangJishu', key: 'gongshangJishu', width: 40, ellipsis: true },
+  { title: '单位', dataIndex: 'gongshangCompany', key: 'gongshangCompany', width: 30, ellipsis: true },
+  { title: '生育基数', dataIndex: 'shengyuJishu', key: 'shengyuJishu', width: 40, ellipsis: true },
+  { title: '单位', dataIndex: 'shengyuCompany', key: 'shengyuCompany', width: 30, ellipsis: true },
+  { title: '一金标准', dataIndex: 'yijinStandard', key: 'yijinStandard', width: 50, ellipsis: true },
+  { title: '一金基数', dataIndex: 'yijinShijiJishu', key: 'yijinShijiJishu', width: 40, ellipsis: true },
+  { title: '比例', dataIndex: 'yijinRate', key: 'yijinRate', width: 30, ellipsis: true },
+  { title: '单位', dataIndex: 'yijinCompany', key: 'yijinCompany', width: 40, ellipsis: true },
+  { title: '个人', dataIndex: 'yijinPerson', key: 'yijinPerson', width: 40, ellipsis: true },
 ]
 const clearFromState = () => {
-  formStateSheBao.value = {
-    city: '',
-    bId: '',
-    positionId: '',
-  }
+  formStateSheBao.value = {currentStatus: '2',} as SearchSheBaoItem;
 }
-const onSearch = () => {}
-const handleOutsourceSheBaoListData = () => {}
+ const handleSearchOutsourcePerson = (status) => {
+    formStateSheBao.value.currentStatus = status;
+    onSearch();
+  }
+const onSearch = () => {
+  pageOutsourceSheBaoList.value = {
+      ...pageOutsourceSheBaoList.value,
+      pageNumber: 1,
+    }
+  outsourceDetailStore.queryOutsourceSheBao();
+}
+onSearch();
+const handleOutsourceSheBaoListData = () => {
+  outsourceDetailStore.queryOutsourceSheBao();
+}
 </script>
 
 <style lang="less" scoped>
+.active {
+    color: #389e0d;
+    background: #f6ffed;
+    border-color: #b7eb8f;
+  }
   .tag {
     cursor: pointer;
   }
@@ -133,7 +177,7 @@ const handleOutsourceSheBaoListData = () => {}
     box-shadow: 0 0 2px #ccc;
     border-radius: 5px;
     overflow: hidden;
-    padding: 20px;
+    padding: 10px;
   }
   .resume-content-search {
     margin-bottom: 10px;
