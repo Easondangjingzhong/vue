@@ -148,6 +148,14 @@
           </a-col>
         </a-row>
          <a-row :gutter="24">
+          <a-col :span="12" v-if="outsourceSocialSecurityForm.shebaoStatus != '1'">
+            <a-form-item name="serviceMoney" label="手续费" :rules="[{ required: true, message: '请填写手续费' }]">
+               <a-input v-model:value="outsourceSocialSecurityForm.serviceMoney" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-divider style="margin-bottom: 12px;margin-top: 0;" />
+         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item name="shangbaoStatus" label="商保" :rules="[{ required: true, message: '请填写商保' }]">
                <a-select 
@@ -156,13 +164,8 @@
               ></a-select>
             </a-form-item>
           </a-col>
-          <a-col :span="12" v-if="outsourceSocialSecurityForm.shebaoStatus != '1'">
-            <a-form-item name="serviceMoney" label="手续费" :rules="[{ required: true, message: '请填写手续费' }]">
-               <a-input v-model:value="outsourceSocialSecurityForm.serviceMoney" />
-            </a-form-item>
-          </a-col>
         </a-row>
-         <a-row :gutter="24" v-if="outsourceSocialSecurityForm.shangbaoStatus === '1'">
+         <a-row :gutter="24" v-if="outsourceSocialSecurityForm.shangbaoStatus === '2'">
           <a-col :span="12">
             <a-form-item name="shangbaoProject" label="项目" :rules="[{ required: true, message: '请填写项目' }]">
                <a-input v-model:value="outsourceSocialSecurityForm.shangbaoProject" />
@@ -174,7 +177,7 @@
             </a-form-item>
           </a-col>
         </a-row>
-         <a-row :gutter="24" v-if="outsourceSocialSecurityForm.shangbaoStatus === '1'">
+         <a-row :gutter="24" v-if="outsourceSocialSecurityForm.shangbaoStatus === '2'">
           <a-col :span="12">
             <a-form-item name="shiShangbao" label="实际支出" :rules="[{ required: true, message: '请填写实际支出' }]">
                 <a-input v-model:value="outsourceSocialSecurityForm.shiShangbao" />
@@ -189,7 +192,7 @@
             </a-form-item>
           </a-col>
         </a-row>
-        <a-row :gutter="24" v-if="outsourceSocialSecurityForm.shangbaoStatus === '1'">
+        <a-row :gutter="24" v-if="outsourceSocialSecurityForm.shangbaoStatus === '2'">
           <a-col :span="12">
             <a-form-item name="shangbaoYujiaoTime" label="商保预缴" :rules="[{ required: false, message: '请填写商保预缴' }]">
               <a-date-picker v-model:value="outsourceSocialSecurityForm.shangbaoYujiaoTime" value-format="YYYY-MM-DD" />
@@ -201,7 +204,7 @@
             </a-form-item>
           </a-col>
         </a-row>
-         <a-row :gutter="24" v-if="outsourceSocialSecurityForm.shangbaoStatus === '1'">
+         <a-row :gutter="24" v-if="outsourceSocialSecurityForm.shangbaoStatus === '2'">
           <a-col :span="12">
             <a-form-item name="shangbaoYutingTime" label="商保预停" :rules="[{ required: false, message: '请填写商保预停' }]">
               <a-date-picker v-model:value="outsourceSocialSecurityForm.shangbaoYutingTime" value-format="YYYY-MM-DD" />
@@ -494,8 +497,8 @@ const shebaoStandardOption = ref([
 ]);
 
 const shangbaoStatusOption = ref([
-  { label: '缴纳', value: '1' },
-  { label: '不缴', value: '2' },
+  { label: '不缴', value: '1' },
+  { label: '缴纳', value: '2' },
 ]);
 
 const companyNameOption = ref([

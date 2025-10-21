@@ -19,7 +19,7 @@
       查看
     </a-tag>
     <!-- 添加类型断言和存在性检查以修复TypeScript索引类型错误 -->
-      <span v-if="record[column.dataIndex] === null || record[column.dataIndex] === ''">-</span>
+    <span v-if="typeof column.dataIndex === 'string' && (record[column.dataIndex] === null || record[column.dataIndex] === '')">-</span>
     <span v-if="column.key == 'operation'">
         <FormOutlined @click="handleEditClick(record)"/>
       </span>
@@ -31,19 +31,28 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
+import type { TableColumnsType } from 'ant-design-vue';
 import { FormOutlined } from '@ant-design/icons-vue';
 import { OutsourceSalaryItem } from '/@/api/outsourceDetail/model';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
 const { outsourceSalaryFlag, getOutsourceSalaryDetailList, outsourceSalaryForm,outsourcePersonDetail } = storeToRefs(outsourceDetailStore);
 
-const columns = ref([
+const columns:TableColumnsType = [
   {
     title: '编号',
     dataIndex: 'index',
     key: 'index',
     fixed: 'left',
     width: 15,
+  },
+  {
+    title: '公司',
+    dataIndex: 'companyName',
+    key: 'companyName',
+    fixed: 'left',
+    width: 30,
+    ellipsis: true,
   },
   {
     title: '生效日期',
@@ -66,7 +75,7 @@ const columns = ref([
     dataIndex: 'currentPosition',
     key: 'currentPosition',
     fixed: 'left',
-    width: 60,
+    width: 40,
     ellipsis: true,
   },
   {
@@ -189,16 +198,18 @@ const columns = ref([
     fixed: 'right',
     width: 15,
   },
-])
+]
 watch(() => outsourcePersonDetail.value.id, () => {
   outsourceDetailStore.queryOutsourceSalaryByPersonId();
 })
 outsourceDetailStore.queryOutsourceSalaryByPersonId();
 const handleComprehensiveSalaryInfoUpdate = () => {
+  outsourceDetailStore.queryOutsourceBankName();
   outsourceSalaryForm.value = {} as OutsourceSalaryItem;
   outsourceSalaryFlag.value = true;
 }
 const handleEditClick = (record) => {
+  outsourceDetailStore.queryOutsourceBankName();
   outsourceSalaryForm.value = record;
   outsourceSalaryFlag.value = true;
 }

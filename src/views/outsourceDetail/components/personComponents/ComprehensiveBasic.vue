@@ -34,7 +34,11 @@
       <a-descriptions-item label="OFFER">{{ outsourcePersonDetail.offerFlag ? outsourcePersonDetail.offerFlag : "-"  }}</a-descriptions-item>
       
       <a-descriptions-item label="招聘">{{ outsourcePersonDetail.recruitParty  ? outsourcePersonDetail.recruitParty : "-" }}</a-descriptions-item>
-      <a-descriptions-item label="性质">{{ outsourcePersonDetail.jobType  ? outsourcePersonDetail.jobType : "-" }}</a-descriptions-item>
+      <a-descriptions-item label="性质">
+        <a-tag v-if="outsourcePersonDetail.jobType == '兼职'" color="orange">兼职</a-tag>
+        <a-tag v-else-if="outsourcePersonDetail.jobType == '全职'" color="green">全职</a-tag>
+        <a-tag v-else>-</a-tag>
+      </a-descriptions-item>
       <a-descriptions-item label="实际离职">{{ outsourcePersonDetail.realLeaveTime  ? outsourcePersonDetail.realLeaveTime : "-" }}</a-descriptions-item>
       <a-descriptions-item label="离职证明">{{ outsourcePersonDetail.proofFlag ? outsourcePersonDetail.proofFlag : "-" }}</a-descriptions-item>
     </a-descriptions>
@@ -62,7 +66,7 @@
       未入
     </a-tag>
     <!-- 添加类型断言和存在性检查以修复TypeScript索引类型错误 -->
-      <span v-if="record[column.dataIndex] === null || record[column.dataIndex] === ''">-</span>
+    <span v-if="(typeof column.dataIndex === 'string' && (record[column.dataIndex] === null || record[column.dataIndex] === ''))">-</span>
   </template>
   </a-table>
   </a-col>
@@ -71,6 +75,7 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
+import type { TableColumnsType } from 'ant-design-vue';
 import { FormOutlined } from '@ant-design/icons-vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
@@ -80,7 +85,7 @@ const handleComprehensiveBasicUpdate = () => {
   outsourceDetailStore.handleComprehensiveBasicUpdate();
 }
 
-const columns = [
+const columns:TableColumnsType = [
   {
     title: '编号',
     dataIndex: 'index',
@@ -112,18 +117,18 @@ const columns = [
   //   ellipsis: true,
   // },
   {
+    title: '公司',
+    dataIndex: 'companyName',
+    key: 'companyName',
+    width: 25,
+    ellipsis: true,
+  },
+  {
     title: '状态',
     dataIndex: 'currentStatus',
     key: 'currentStatus',
     fixed: 'left',
     width: 20,
-    ellipsis: true,
-  },
-  {
-    title: '公司',
-    dataIndex: 'companyName',
-    key: 'companyName',
-    width: 30,
     ellipsis: true,
   },
   // {

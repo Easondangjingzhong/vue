@@ -64,7 +64,7 @@ export const brandCategoryArr = [
   { category: '家具家居', leibie: ['家具', '家居', '家具卖场'] },
   { category: '酒类', leibie: ['洋酒', '红酒', '白酒', '啤酒', '集合店'] },
   { category: '商超', leibie: ['购物中心', '仓储式会员店', '超市', '便利店'] },
-  { category: '汽车摩托', leibie: ['新能源', '传统汽车', '摩托车', '集合店'] },
+  { category: '汽车摩托', leibie: ['新能源', '传统汽车', '摩托车', '集合店', '汽车用品'] },
   { category: '房产别墅', leibie: ['房产别墅'] },
   { category: '服务', leibie: ['酒店', '餐饮酒吧', '咖啡茶饮', '烘焙'], title: '酒店' },
   { category: '服务', leibie: ['航空', '邮轮', '高铁', '旅行服务'], title: '出行' },

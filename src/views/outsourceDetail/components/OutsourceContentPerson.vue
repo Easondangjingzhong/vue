@@ -2,12 +2,12 @@
   <div class="resume-content-search">
     <a-form :model="formStatePerson" @finish="onSearch">
       <a-row :gutter="24">
-        <a-col :span="4">
+        <a-col :span="3">
           <a-form-item name="userName" label="姓名">
             <a-input v-model:value="formStatePerson.userName"/>
           </a-form-item>
         </a-col>
-        <a-col :span="4">
+        <a-col :span="3">
           <a-form-item name="city" label="城市">
             <a-select
               optionFilterProp="label"
@@ -19,27 +19,45 @@
             ></a-select>
           </a-form-item>
         </a-col>
-        <a-col :span="4">
+        <a-col :span="3">
           <a-form-item name="bId" label="品牌">
             <a-select
               optionFilterProp="label"
               v-model:value="formStatePerson.bId"
+              :options="getOutsourceBrand"
               :showArrow="false"
+              showSearch
               allowClear
             ></a-select>
           </a-form-item>
         </a-col>
-        <a-col :span="4">
+        <a-col :span="3">
           <a-form-item name="positionId" label="职位">
             <a-select
               optionFilterProp="label"
               v-model:value="formStatePerson.positionId"
+              :options="getOutsourcePosition"
               :showArrow="false"
+              showSearch
               allowClear
             ></a-select>
           </a-form-item>
         </a-col>
-         <a-col :span="6">
+        <a-col :span="3">
+          <a-form-item name="jobType" label="性质">
+            <a-select
+              optionFilterProp="label"
+              v-model:value="formStatePerson.jobType"
+              :showArrow="false"
+              showSearch
+              allowClear
+            >
+              <a-select-option value="兼职">兼职</a-select-option>
+              <a-select-option value="全职">全职</a-select-option>
+          </a-select>
+          </a-form-item>
+        </a-col>
+         <a-col :span="4">
           <a-button style="margin: 0 0 0 8px" type="primary" html-type="submit">搜索</a-button>
           <a-button style="margin: 0 8px" @click="clearFromState">清空</a-button>
          </a-col>
@@ -61,8 +79,8 @@
     <a-row>
     <a-table
       size="small"
-      :pagination="false"
       rowKey="key"
+      :pagination="false"
       :loading="personIsLoading"
       :columns="columnsOutsourceDetail"
       :data-source="getOutsourcePersonList"
@@ -72,6 +90,14 @@
     <a v-if="column.key === 'userNameCn'" @click="handleOutsourcePersonDetail(record)">
       {{ record.userNameCn }}
     </a>
+
+    <a-tag v-if="column.key === 'jobType' && record.jobType === '兼职'" color="orange">
+      兼职
+    </a-tag>
+     <a-tag v-if="column.key === 'jobType' && record.jobType === '全职'" color="green">
+      全职
+    </a-tag>
+
     <a-tag v-if="column.key === 'currentStatus' && record.currentStatus === '1'" color="orange">
       待入
     </a-tag>
@@ -95,44 +121,47 @@
     <a-tag v-if="column.key === 'enterprise'" :title="record.enterprise">
       查看
     </a-tag>
-    <a-tag v-if="column.key === 'socialFlag' && record.socialFlag === '1'" color="green">
+    <a-tag v-if="column.key === 'socialFlag' && record.socialFlag === '1'" color="red">
       不缴
     </a-tag>
-    <a-tag v-if="column.key === 'socialFlag' && record.socialFlag === '2'" color="green">
+    <a-tag v-if="column.key === 'socialFlag' && record.socialFlag === '2'" color="orange">
       待缴
     </a-tag>
      <a-tag v-if="column.key === 'socialFlag' && record.socialFlag === '3'" color="green">
       已缴
     </a-tag>
-    <a-tag v-if="column.key === 'socialFlag' && record.socialFlag === '4'" color="red">
+    <a-tag v-if="column.key === 'socialFlag' && record.socialFlag === '4'" color="orange">
       待停
     </a-tag>
     <a-tag v-if="column.key === 'socialFlag' && record.socialFlag === '5'" color="red">
       已停
     </a-tag>
 
-    <a-tag v-if="column.key === 'yijinFlag' && record.yijinFlag === '1'" color="green">
+    <a-tag v-if="column.key === 'yijinFlag' && record.yijinFlag === '1'" color="red">
       不缴
     </a-tag>
-    <a-tag v-if="column.key === 'yijinFlag' && record.yijinFlag === '2'" color="green">
+    <a-tag v-if="column.key === 'yijinFlag' && record.yijinFlag === '2'" color="orange">
       待缴
     </a-tag>
      <a-tag v-if="column.key === 'yijinFlag' && record.yijinFlag === '3'" color="green">
       已缴
     </a-tag>
-    <a-tag v-if="column.key === 'yijinFlag' && record.yijinFlag === '4'" color="red">
+    <a-tag v-if="column.key === 'yijinFlag' && record.yijinFlag === '4'" color="orange">
       待停
     </a-tag>
     <a-tag v-if="column.key === 'yijinFlag' && record.yijinFlag === '5'" color="red">
       已停
     </a-tag>
 
-    <a-tag v-if="column.key === 'shangbaoFlag' && record.shangbaoFlag === '1'" color="green">
+    <a-tag v-if="column.key === 'shangbaoFlag' && record.shangbaoFlag === '2'" color="green">
       缴纳
     </a-tag>
-    <a-tag v-if="column.key === 'shangbaoFlag' && record.shangbaoFlag === '2'" color="red">
+    <a-tag v-if="column.key === 'shangbaoFlag' && record.shangbaoFlag === '1'" color="red">
       不缴
     </a-tag>
+
+    <!-- 添加类型断言和存在性检查以修复TypeScript索引类型错误 -->
+    <span v-if="(typeof column.dataIndex === 'string' && (record[column.dataIndex] === null || record[column.dataIndex] === ''))">-</span>
   </template>
   </a-table>
     </a-row>
@@ -156,34 +185,35 @@
       </a-pagination>
     </a-row>
   </div>
-  <NewJoinerPersonalInformationForm/>
+  <AddOutsourcePerson/>
 </template>
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import NewJoinerPersonalInformationForm from '/@/views/outsourceDetail/components/personComponents/NewJoinerPersonalInformationForm.vue';
+import type { TableColumnsType } from 'ant-design-vue';
+import AddOutsourcePerson from '/@/views/outsourceDetail/components/AddOutsourcePerson.vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 import { SearchPersonItem,OutsourcePersonItem } from '/@/api/outsourceDetail/model';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { personIsLoading, formStatePerson, getOutsourcePersonList, pageOutsourcePersonList, getProvince, newJoinerPersonalInformationFlag} = storeToRefs(outsourceDetailStore);
-const columnsOutsourceDetail = [
-  { title: '编号', dataIndex: 'index', key: 'index', fixed: 'left' as const, width: 30, ellipsis: true,},
-  { title: '中文姓名', dataIndex: 'userNameCn', key: 'userNameCn', fixed: 'left' as const, width: 50, ellipsis: true,},
-  { title: '英文姓名', dataIndex: 'userNameEn', key: 'userNameEn', fixed: 'left' as const, width: 50, ellipsis: true,},
-  { title: '性别', dataIndex: 'sex', key: 'sex', fixed: 'left' as const, width: 30, ellipsis: true,},
-  { title: '状态', dataIndex: 'currentStatus', key: 'currentStatus', fixed: 'left' as const, width: 30, ellipsis: true,},
-  { title: '工号', dataIndex: 'jobNumber', key: 'jobNumber', fixed: 'left' as const, width: 35, ellipsis: true,},
-  { title: '公司', dataIndex: 'companyName', key: 'companyName', fixed: 'left' as const, width: 50, ellipsis: true,},
-  { title: '品牌', dataIndex: 'brand', key: 'brand', fixed: 'left' as const, width: 60, ellipsis: true,},
-  { title: '城市', dataIndex: 'city', key: 'city', fixed: 'left' as const, width: 30, ellipsis: true,},
-  { title: '店铺', dataIndex: 'market', key: 'market', fixed: 'left' as const, width: 80, ellipsis: true },
-  { title: '职位', dataIndex: 'positions', key: 'positions', fixed: 'left' as const, width: 100, ellipsis: true },
-  { title: '性质', dataIndex: 'jobType', key: 'jobType', fixed: 'left' as const, width: 40, ellipsis: true },
+const { personIsLoading, formStatePerson, getOutsourcePersonList, pageOutsourcePersonList, getProvince, getOutsourceBrand, getOutsourcePosition, addOutsourcePersonFlag} = storeToRefs(outsourceDetailStore);
+const columnsOutsourceDetail: TableColumnsType = [
+  { title: '编号', dataIndex: 'index', key: 'index', fixed: 'left', width: 30, ellipsis: true,},
+  { title: '中文', dataIndex: 'userNameCn', key: 'userNameCn', fixed: 'left', width: 40, ellipsis: true,},
+  { title: '英文', dataIndex: 'userNameEn', key: 'userNameEn', fixed: 'left', width: 40, ellipsis: true,},
+  { title: '性别', dataIndex: 'sex', key: 'sex', fixed: 'left', width: 30, ellipsis: true,},
+  { title: '状态', dataIndex: 'currentStatus', key: 'currentStatus', fixed: 'left', width: 30, ellipsis: true,},
+  { title: '工号', dataIndex: 'jobNumber', key: 'jobNumber', fixed: 'left', width: 35, ellipsis: true,},
+  { title: '公司', dataIndex: 'companyName', key: 'companyName', fixed: 'left', width: 50, ellipsis: true,},
+  { title: '品牌', dataIndex: 'brand', key: 'brand', fixed: 'left', width: 60, ellipsis: true,},
+  { title: '城市', dataIndex: 'city', key: 'city', fixed: 'left', width: 30, ellipsis: true,},
+  { title: '店铺', dataIndex: 'market', key: 'market', fixed: 'left', width: 80, ellipsis: true },
+  { title: '职位', dataIndex: 'positions', key: 'positions', fixed: 'left', width: 100, ellipsis: true },
+  { title: '性质', dataIndex: 'jobType', key: 'jobType', fixed: 'left', width: 40, ellipsis: true },
   { title: '招聘', dataIndex: 'recruitParty', key: 'recruitParty', width: 50, ellipsis: true },
   { title: '推企', dataIndex: 'enterprise', key: 'enterprise', width: 40, ellipsis: true,},
   { title: '信息表', dataIndex: 'infoTableFlag', key: 'infoTableFlag', width: 40, ellipsis: true,},
   { title: 'OFFER', dataIndex: 'offerFlag', key: 'offerFlag', width: 55, ellipsis: true,},
-  { title: '薪资', dataIndex: 'salaryStructure', key: 'salaryStructure', width: 50, ellipsis: true,},
+  { title: '薪资', dataIndex: 'salaryStructure', key: 'salaryStructure', width: 55, ellipsis: true,},
   { title: '合同签署', dataIndex: 'contractCompany', key: 'contractCompany', width: 55, ellipsis: true,},
   { title: '生效日期', dataIndex: 'startTime', key: 'startTime', width: 60, ellipsis: true,},
   { title: '终止日期', dataIndex: 'endTime', key: 'endTime', width: 60, ellipsis: true,},
@@ -192,7 +222,7 @@ const columnsOutsourceDetail = [
   { title: '实际日期', dataIndex: 'realEntryTime', key: 'realEntryTime', width: 60, ellipsis: true,},
   { title: '预计离职', dataIndex: 'planLeaveTime', key: 'planLeaveTime', width: 60, ellipsis: true,},
   { title: '实际离职', dataIndex: 'realLeaveTime', key: 'realLeaveTime', width: 60, ellipsis: true,},
-  { title: '证明', dataIndex: 'proofFlag', key: 'proofFlag', width: 30, ellipsis: true,},
+  { title: '离申', dataIndex: 'proofFlag', key: 'proofFlag', width: 30, ellipsis: true,},
   { title: '社保', dataIndex: 'socialFlag', key: 'socialFlag', width: 30, ellipsis: true,},
   { title: '一金', dataIndex: 'yijinFlag', key: 'yijinFlag', width: 30, ellipsis: true,},
   { title: '商保', dataIndex: 'shangbaoFlag', key: 'shangbaoFlag', width: 30, ellipsis: true,},
@@ -229,7 +259,7 @@ const columnsOutsourceDetail = [
   }
   onSearch();
   const handleToAddOutsourcePerson = () => {
-    newJoinerPersonalInformationFlag.value = true;
+    addOutsourcePersonFlag.value = true;
   }
   const handleOutsourcePersonDetail = (record) => {
     outsourceDetailStore.handleOutsourcePersonDetail(record as OutsourcePersonItem);

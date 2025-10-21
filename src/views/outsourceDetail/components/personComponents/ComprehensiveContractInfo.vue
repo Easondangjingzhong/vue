@@ -12,7 +12,7 @@
       :columns="columns"
       :data-source="getOutsourceContractList"
       :pagination="false"
-      :scroll="{ x: 1000 }"
+      :scroll="{ x: 1100 }"
     >
     <template #bodyCell="{ column, record }">
       <a-tag v-if="column.key === 'offerSign' && record.offerSign == '等待发起'" color="red">等待发起</a-tag>
@@ -26,9 +26,9 @@
       <a-tag v-if="column.key === 'contractStatus' && record.contractStatus == '生效中'" color="green">生效中</a-tag>
       <a-tag v-if="column.key === 'contractStatus' && record.contractStatus == '已失效'" color="red">已失效</a-tag>
 
-      <!-- 添加类型断言和存在性检查以修复TypeScript索引类型错误 -->
-      <span v-if="record[column.dataIndex] === null || record[column.dataIndex] === ''">-</span>
-      
+       <!-- 添加类型断言和存在性检查以修复TypeScript索引类型错误 -->
+      <span v-if="(typeof column.dataIndex === 'string' && (record[column.dataIndex] === null || record[column.dataIndex] === ''))">-</span>
+ 
       <span v-if="column.key == 'operation'">
         <FormOutlined @click="handleEditClick(record)"/>
       </span>
@@ -41,19 +41,28 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
+import type { TableColumnsType } from 'ant-design-vue';
 import { FormOutlined } from '@ant-design/icons-vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 import { PersonContractItem } from '/@/api/outsourceDetail/model';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
 const { outsourceContractForm, outsourceContractFlag, getOutsourceContractList,outsourcePersonDetail } = storeToRefs(outsourceDetailStore);
 
-const columns = ref([
+const columns:TableColumnsType = [
   {
     title: '编号',
     dataIndex: 'index',
     key: 'index',
     fixed: 'left',
     width: 20,
+  },
+   {
+    title: '公司',
+    dataIndex: 'companyName',
+    key: 'companyName',
+    fixed: 'left',
+    width: 30,
+    ellipsis: true,
   },
   {
     title: 'OFFER日期',
@@ -150,7 +159,7 @@ const columns = ref([
     fixed: 'right',
     width: 20,
   },
-])
+]
 
 const handleAddClick = () => {
   outsourceDetailStore.handleAddPersonContract();

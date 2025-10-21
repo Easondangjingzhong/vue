@@ -30,7 +30,7 @@
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item name="contractType" label="合同类型"
-            :rules="[{ required: true, message: '请选择合同类型' }]">
+            :rules="[{ required: false, message: '请选择合同类型' }]">
               <a-select 
               v-model:value="outsourceContractForm.contractType" 
               :options="contractTypeOption"
@@ -38,19 +38,19 @@
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item name="signType" label="签署类型" :rules="[{ required: true, message: '请选择签署类型' }]">
+            <a-form-item name="signType" label="签署类型" :rules="[{ required: false, message: '请选择签署类型' }]">
               <a-select v-model:value="outsourceContractForm.signType" :options="signTypeOption"></a-select>
             </a-form-item>
           </a-col>
          </a-row>
         <a-row :gutter="24">
            <a-col :span="12">
-            <a-form-item name="contractFlag" label="签署状态" :rules="[{ required: true, message: '请选择签署状态' }]">
+            <a-form-item name="contractFlag" label="签署状态" :rules="[{ required: false, message: '请选择签署状态' }]">
               <a-select v-model:value="outsourceContractForm.contractFlag" :options="contractFlagOption"></a-select>
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item name="contractStatus" label="合同状态" :rules="[{ required: true, message: '请选择合同状态' }]">
+            <a-form-item name="contractStatus" label="合同状态" :rules="[{ required: false, message: '请选择合同状态' }]">
               <a-select v-model:value="outsourceContractForm.contractStatus" :options="contractStatusOption"></a-select>
             </a-form-item>
           </a-col>
@@ -69,12 +69,12 @@
         </a-row>
         <a-row :gutter="24">
            <a-col :span="12">
-            <a-form-item name="signCompany" label="签署公司" :rules="[{ required: true, message: '请选择签署公司' }]">
+            <a-form-item name="signCompany" label="签署公司" :rules="[{ required: false, message: '请选择签署公司' }]">
               <a-select v-model:value="outsourceContractForm.signCompany" :options="signCompanyOption"></a-select>
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item name="signDate" label="签署日期" :rules="[{ required: true, message: '请选择签署日期' }]">
+            <a-form-item name="signDate" label="签署日期" :rules="[{ required: false, message: '请选择签署日期' }]">
               <a-date-picker v-model:value="outsourceContractForm.signDate"  value-format="YYYY-MM-DD"/>
             </a-form-item>
           </a-col>
@@ -86,22 +86,23 @@
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item name="endDate" label="合同结束" :rules="[{ required: false, message: '请选择合同结束' }]">
-               <a-date-picker v-model:value="outsourceContractForm.endDate"  @change="handleStartDateChange" value-format="YYYY-MM-DD"/>
+            <a-form-item name="contractCycle" label="合同周期" :rules="[{ required: false, message: '请选择合同周期' }]">
+              <a-select v-model:value="outsourceContractForm.contractCycle" :options="contractCycleOption" @change="handleContractCycleChange"></a-select>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row :gutter="24">
           <a-col :span="12">
-            <a-form-item name="contractCycle" label="合同周期" :rules="[{ required: false, message: '请选择合同周期' }]">
-              <a-input v-model:value="outsourceContractForm.contractCycle" :readonly="true"/>
+            <a-form-item name="endDate" label="合同结束" :rules="[{ required: false, message: '请选择合同结束' }]">
+              <a-input v-if="outsourceContractForm.contractCycle == '长期'" disabled v-model:value="outsourceContractForm.endDate" placeholder="长期" />
+              <a-date-picker v-else v-model:value="outsourceContractForm.endDate"  @change="handleEndDateChange" value-format="YYYY-MM-DD"/> 
             </a-form-item>
           </a-col>
           <a-col :span="12" style="text-align: right;">
             <a-button type="primary" :loading="iconLoading" html-type="submit">
               保存
             </a-button>
-            <a-button style="margin-left: 10px" @click="outsourceContractFlag = false">
+            <a-button style="margin-left: 10px" @click="handleColseContract">
               取消
             </a-button>
           </a-col>
@@ -206,16 +207,98 @@ const signCompanyOption = ref([
     value: '北京我推',
   },
 ]);
+const contractCycleOption = ref([
+  {
+    label: '长期',
+    value: '长期',
+  },
+  {
+    label: '1个月',
+    value: '1个月',
+  },
+  {
+    label: '2个月',
+    value: '2个月',
+  },
+  {
+    label: '3个月',
+    value: '3个月',
+  },
+  {
+    label: '6个月',
+    value: '6个月',
+  },
+  {
+    label: '1年',
+    value: '1年',
+  },
+]);
+
+const handleContractCycleChange = () => {
+  if (outsourceContractForm.value.contractCycle && outsourceContractForm.value.contractCycle != '长期' && outsourceContractForm.value.startDate) {
+    const cycle = outsourceContractForm.value.contractCycle;
+    const startDate = new Date(outsourceContractForm.value.startDate);
+    
+    // 深拷贝一个新的日期对象以避免修改原始日期
+    const endDate = new Date(startDate.getTime());
+    
+    // 根据合同周期类型计算结束日期
+    if (cycle.includes('天')) {
+      // 处理天数
+      const days = parseInt(cycle);
+      endDate.setDate(endDate.getDate() + days); // 减1是因为当天算在内
+    } else if (cycle.includes('月')) {
+      // 处理月数
+      const months = parseInt(cycle);
+      endDate.setMonth(endDate.getMonth() + months);
+      // 处理月底边界情况（例如从3月31日加1个月不应是4月31日，而应是4月30日）
+      if (endDate.getDate() !== startDate.getDate()) {
+        endDate.setDate(0); // 设置为前一个月的最后一天
+      }
+    } else if (cycle.includes('年')) {
+      // 处理年数
+      const years = parseInt(cycle);
+      endDate.setFullYear(endDate.getFullYear() + years);
+    }
+    // 格式化为YYYY-MM-DD格式并更新表单
+    endDate.setDate(endDate.getDate() - 1);
+    const formattedEndDate = endDate.toISOString().split('T')[0];
+    outsourceContractForm.value.endDate = formattedEndDate;
+  } else if (outsourceContractForm.value.contractCycle == '长期') {
+    outsourceContractForm.value.endDate = '长期';
+  }
+}
+watch(() => outsourceContractForm.value.contractCycle, (newVal, oldVal) => {
+  if (newVal != oldVal) {
+    hasDiffDays(outsourceContractForm.value.contractCycle);
+  }
+});
 const handleStartDateChange = () => {
+  if (outsourceContractForm.value.contractCycle != '长期') {
+    handleContractCycleChange();
+  }
+}
+const handleEndDateChange = () => {
   if (outsourceContractForm.value.startDate && outsourceContractForm.value.endDate) {
     const startDate = new Date(outsourceContractForm.value.startDate);
     const endDate = new Date(outsourceContractForm.value.endDate);
     const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    outsourceContractForm.value.contractCycle = diffDays + " 天";
-  } else {
-    outsourceContractForm.value.contractCycle = "";
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    outsourceContractForm.value.contractCycle = diffDays + "天";
+    hasDiffDays(diffDays + "天");
   }
+}
+const hasDiffDays = (diffDays) => {
+  // 添加以下代码，检查并添加选项
+    // 1. 检查contractCycleOption是否已包含diffDays + "天"选项
+    const hasDiffDaysOption = contractCycleOption.value.some(option => option.value === diffDays);
+    // 2. 如果不存在，则添加到contractCycleOption中
+    if (!hasDiffDaysOption) {
+      contractCycleOption.value.push({
+        label: diffDays,
+        value: diffDays,
+      });
+    }
 }
 const handleColseContract = () => {
   outsourceContractFlag.value = false;

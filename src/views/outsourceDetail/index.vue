@@ -44,7 +44,9 @@ import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
 const { outsourceDetailSider } = storeToRefs(outsourceDetailStore);
 outsourceDetailStore.queryProvince();
-
+outsourceDetailStore.queryOutsourceBrand();
+outsourceDetailStore.queryOutsourcePosition();
+outsourceDetailStore.queryCompanyAll();
 </script>
 
 <style lang="less" scoped>

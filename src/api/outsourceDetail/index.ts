@@ -1,4 +1,4 @@
-import { post } from '/@/utils/http';
+import { post, get } from '/@/utils/http';
 enum URL {
   query_outsource_person = '/candidateRecommend/resume-vue-select-out-person.action',
   query_outsource_salary = '/candidateRecommend/resume-vue-select-out-Salary.action',
@@ -14,7 +14,60 @@ enum URL {
   add_outsource_shebao_by_person = '/candidateRecommend/resume-vue-insert-out-Shebao-byperson.action',
   add_update_outsource_basic = '/candidateRecommend/resume-vue-update-out-person-base.action',
   query_outsource_shebao_contractRates = '/contractRates/resume-vue-query-contractRates-out-shebao.action',
+  query_outsource_brand = '/candidateRecommend/resume-vue-query-out-brand.action',
+  query_outsource_city = '/candidateRecommend/resume-vue-query-out-city.action',
+  query_outsource_position = '/candidateRecommend/resume-vue-query-out-position.action',
+  query_outsource_company = '/candidateRecommend/resume-vue-query-out-company.action',
+  query_company_all = '/companyBrand/resume-vue-query-company-all.action',
+  query_company_brand = '/companyBrand/rusume-vue-query-brand-for-cid.action',
+  query_outsource_bankName = '/candidateRecommend/resume-vue-select-out-bankName.action',
 }
+/**
+ * 查询外包银行名称
+ * @param data personId
+ * @returns 
+ */
+const queryOutsourceBankName = async () =>
+  post<any>({ url: URL.query_outsource_bankName, });
+
+/**
+ * 查询所有外包公司品牌
+ * @param data companyName
+ * @returns 
+ */
+const queryCompanyBrand = async (data: any) =>
+  post<any>({ url: URL.query_company_brand, data});
+/**
+ * 查询所有公司
+ * @param data jobType
+ * @returns 
+ */
+const queryCompanyAll = async (data: any) =>
+  post<any>({ url: URL.query_company_all, data});
+/**
+ * 搜索条件外包公司
+ * @returns 
+ */
+const queryOutsourceCompany = async () =>
+  get<any>({ url: URL.query_outsource_company}); 
+/**
+ * 搜索条件岗位
+ * @returns 
+ */
+const queryOutsourcePosition = async () =>
+  get<any>({ url: URL.query_outsource_position}); 
+/**
+ * 搜索条件城市
+ * @returns 
+ */
+const queryOutsourceCity = async () =>
+  get<any>({ url: URL.query_outsource_city}); 
+/**
+ * 搜索条件品牌
+ * @returns 
+ */
+const queryOutsourceBrand = async () =>
+  get<any>({ url: URL.query_outsource_brand});  
 /**
  * 查询外包社保合同费率
  * @param data personId
@@ -117,6 +170,13 @@ const queryOutsourceMonthSalary = async (data: any) =>
   post<any>({ url: URL.query_outsource_month_salary, data});
 
 export default { 
+  queryOutsourceBankName,
+  queryCompanyBrand,
+  queryCompanyAll,
+  queryOutsourceCity, 
+  queryOutsourceBrand, 
+  queryOutsourceCompany,
+  queryOutsourcePosition, 
   queryOutsourceShebaoContractRates, 
   addOutsourcePersonContract, 
   addUpdateOutsourceBasic,

@@ -76,6 +76,7 @@ export interface SearchPersonItem {
   positionId: string;
   userName: string;
   companyArrange: string;
+  jobType: string;
 }
 /**
  * 外包外包月度薪资
@@ -86,6 +87,8 @@ export interface SearchSalaryItem {
   currentStatus: string;
   positionId: string;
   userName: string;
+  jobType: string;
+  companyArrange: string;
 }
 /**
  * 外包薪资
@@ -150,6 +153,8 @@ export interface SearchSheBaoItem {
   currentStatus: string;
   positionId: string;
   userName: string;
+  jobType: string;
+  companyArrange: string;
 }
 /**
  * 外包社保
@@ -192,7 +197,7 @@ export interface OutsourceSheBaoItem {
   effectiveDate?: Date;
   shebaoCity?: string;
   shebaoCompany?: string;
-  serviceMoney?: number;
+  serviceMoney?: string;
   shangbaoProject?: string;
   keShangbao?: number;
   shiShangbao?: number;

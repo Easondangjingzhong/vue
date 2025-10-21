@@ -419,7 +419,7 @@
   watch(() => enterpriseConsultant,()=>{
     optionsCompanyRecruitId.value = enterpriseConsultant.value?.map((item) => ({ value: item.id, label: item.realNameEn }));
   })
-
+  optionsCompanyRecruitId.value = enterpriseConsultant.value?.map((item) => ({ value: item.id, label: item.realNameEn }));
   const selectWeekNum = (weekNum) => {
     let week = '';
     switch (weekNum) {

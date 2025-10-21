@@ -16,6 +16,23 @@
     <div>
       
       <a-form :label-col="labelCol" :model="outsourceBasicForm" @finish="handleSubmit">
+         <a-row :gutter="24">
+          <a-col :span="12">
+            <a-form-item name="offerTime" label="OFFER时间" :rules="[{ required: true, message: '请选择OFFER时间' }]">
+              <a-date-picker v-model:value="outsourceBasicForm.offerTime" value-format="YYYY-MM-DD"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">
+           <a-form-item name="currentStatus" label="当前状态" :rules="[{ required: true, message: '请选择当前状态' }]">
+              <a-select v-model:value="outsourceBasicForm.currentStatus">
+                <a-select-option value="1">待入</a-select-option>
+                <a-select-option value="2">在职</a-select-option>
+                <a-select-option value="3">离职</a-select-option>
+                <a-select-option value="4">未入</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item name="jobNumber" label="工号"
@@ -55,12 +72,7 @@
           </a-col>
         </a-row>
         <a-row :gutter="24">
-          <a-col :span="12">
-            <a-form-item name="offerTime" label="OFFER时间" :rules="[{ required: true, message: '请选择OFFER时间' }]">
-              <a-date-picker v-model:value="outsourceBasicForm.offerTime" value-format="YYYY-MM-DD"/>
-            </a-form-item>
-          </a-col>
-          <a-col :span="12" style="text-align: right;">
+          <a-col :span="24" style="text-align: right;">
             <a-button type="primary" :loading="iconLoading" html-type="submit">
               保存
             </a-button>

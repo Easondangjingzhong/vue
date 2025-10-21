@@ -86,10 +86,25 @@
           <a-col :span="12">
             <a-form-item name="bankName" label="银行名称"
             :rules="[{ required: true, message: '请选择银行名称' }]">
-              <a-select 
-              v-model:value="outsourceSalaryForm.bankName" 
-              :options="bankNameOption"
-              ></a-select>
+              <a-select
+                v-model:value="outsourceSalaryForm.bankName"
+                placeholder="请选择银行名称"
+                :options="bankNameOption.map(item => ({ value: item.value, label: item.label }))"
+              >
+                <template #dropdownRender="{ menuNode: menu }">
+                  <v-nodes :vnodes="menu" />
+                  <a-divider style="margin: 4px 0" />
+                  <a-space style="padding: 4px 8px">
+                  <a-input ref="addBankNameRef" v-model:value="addBankNameOption" placeholder="请输入银行名称" />
+                  <a-button type="text" @click="addItemBankName">
+                  <template #icon>
+                  <plus-outlined />
+                </template>
+                  新增
+                </a-button>
+                </a-space>
+                </template>
+              </a-select>
             </a-form-item>
           </a-col>
            <a-col :span="12">
@@ -115,11 +130,12 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { message } from 'ant-design-vue';
-import { CloseOutlined } from '@ant-design/icons-vue';
+import { defineComponent } from 'vue';
+import { CloseOutlined, PlusOutlined } from '@ant-design/icons-vue';
 import { OutsourceSalaryItem } from '/@/api/outsourceDetail/model';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { outsourceSalaryFlag, outsourceSalaryForm } = storeToRefs(outsourceDetailStore);
+const { outsourceSalaryFlag, outsourceSalaryForm, getOutsourceBankName } = storeToRefs(outsourceDetailStore);
 const drawerWidth = ref(Math.max(600, window.innerWidth * 0.5));
 const labelCol = ref({
   span: 5,
@@ -135,16 +151,44 @@ const changeReasonOption = ref([
     value: '入职薪资',
   },
 ]);
-const bankNameOption = ref([
-  {
-    label: '浦发银行',
-    value: '浦发银行',
+const bankNameOption = ref(getOutsourceBankName.value);
+watch(getOutsourceBankName, (newVal) => {
+  bankNameOption.value = newVal;
+});
+const VNodes = defineComponent({
+  props: {
+    vnodes: {
+      type: Object,
+      required: true,
+    },
   },
-  {
-    label: '工商银行',
-    value: '工商银行',
+  render() {
+    return this.vnodes;
   },
-]);
+});
+const addBankNameRef = ref();
+const addBankNameOption = ref("");
+const addItemBankName = e => {
+  e.preventDefault();
+  hasDiffDays(addBankNameOption.value);
+  outsourceSalaryForm.value.bankName = addBankNameOption.value;
+  addBankNameOption.value = '';
+  setTimeout(() => {
+    addBankNameRef.value?.focus();
+  }, 0);
+};
+const hasDiffDays = (diffDays) => {
+  // 添加以下代码，检查并添加选项
+    // 1. 检查contractCycleOption是否已包含diffDays + "天"选项
+    const hasDiffDaysOption = bankNameOption.value.some(option => option.value === diffDays);
+    // 2. 如果不存在，则添加到contractCycleOption中
+    if (!hasDiffDaysOption) {
+      bankNameOption.value.push({
+        label: diffDays,
+        value: diffDays,
+      });
+    }
+}
 const unitOption = ref([
   {
     label: '月',
