@@ -18,7 +18,10 @@
               <a-tab-pane key="3" tab="外包社保">
                 <OutsourceContentSheBao/>
               </a-tab-pane>
-              <a-tab-pane key="4" tab="月度薪资">
+              <a-tab-pane key="4" tab="外包考勤">
+                <OutsourceContentAttend/>
+              </a-tab-pane>
+              <a-tab-pane key="5" tab="月度薪资">
                 <OutsourceContentMonthSalary/>
               </a-tab-pane>
           </a-tabs>
@@ -37,6 +40,8 @@ import OutsourceContentPerson from './components/OutsourceContentPerson.vue';
 import OutsourceContentSalary from './components/OutsourceContentSalary.vue';
 import OutsourceContentSheBao from './components/OutsourceContentSheBao.vue';
 import OutsourceContentMonthSalary from './components/OutsourceContentMonthSalary.vue';
+import OutsourceContentAttend from './components/OutsourceContentAttend.vue';
+
 import AddOutsourcePerson from './components/AddOutsourcePerson.vue';
 import OutsourcePersonDetail from './components/OutsourcePersonDetail.vue';
 import { storeToRefs } from 'pinia';

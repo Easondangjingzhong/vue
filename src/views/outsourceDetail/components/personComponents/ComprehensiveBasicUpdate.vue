@@ -33,7 +33,7 @@
             </a-form-item>
           </a-col>
         </a-row>
-        <a-row :gutter="24">
+        <a-row :gutter="24" v-if="outsourceBasicForm.currentStatus != '4'">
           <a-col :span="12">
             <a-form-item name="jobNumber" label="工号"
             :rules="[{ required: false, message: '请填写工号' }]">
@@ -46,7 +46,7 @@
             </a-form-item>
           </a-col>
          </a-row>
-        <a-row :gutter="24">
+        <a-row :gutter="24" v-if="outsourceBasicForm.currentStatus != '4'">
          <a-col :span="12">
             <a-form-item name="planEntryTime" label="预计入职" :rules="[{ required: true, message: '请选择预计入职' }]">
                <a-date-picker 
@@ -59,7 +59,7 @@
             </a-form-item>
           </a-col>
         </a-row>
-         <a-row :gutter="24">
+         <a-row :gutter="24" v-if="outsourceBasicForm.currentStatus != '4'">
          <a-col :span="12">
             <a-form-item name="planLeaveTime" label="预计离职" :rules="[{ required: false, message: '请选择预计离职' }]">
                <a-date-picker v-model:value="outsourceBasicForm.planLeaveTime" value-format="YYYY-MM-DD"/>

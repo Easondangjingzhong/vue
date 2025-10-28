@@ -20,6 +20,18 @@
           </a-form-item>
         </a-col>
         <a-col :span="3">
+          <a-form-item name="companyName" label="公司">
+            <a-select
+              optionFilterProp="label"
+              v-model:value="formStatePerson.companyName"
+              :options="getOutsourceCompanyAll"
+              :showArrow="false"
+              showSearch
+              allowClear
+            ></a-select>
+          </a-form-item>
+        </a-col>
+        <a-col :span="3">
           <a-form-item name="bId" label="品牌">
             <a-select
               optionFilterProp="label"
@@ -90,14 +102,18 @@
     <a v-if="column.key === 'userNameCn'" @click="handleOutsourcePersonDetail(record)">
       {{ record.userNameCn }}
     </a>
-
+    <a-tag v-if="column.key === 'salaryStructure' && record.salaryStructure === '0.00/月'" color="orange">
+      待录
+    </a-tag>
     <a-tag v-if="column.key === 'jobType' && record.jobType === '兼职'" color="orange">
       兼职
     </a-tag>
      <a-tag v-if="column.key === 'jobType' && record.jobType === '全职'" color="green">
       全职
     </a-tag>
-
+    <a-tag v-if="column.key === 'jobType' && !record.jobType">
+      待录
+    </a-tag>
     <a-tag v-if="column.key === 'currentStatus' && record.currentStatus === '1'" color="orange">
       待入
     </a-tag>
@@ -195,7 +211,7 @@ import AddOutsourcePerson from '/@/views/outsourceDetail/components/AddOutsource
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 import { SearchPersonItem,OutsourcePersonItem } from '/@/api/outsourceDetail/model';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { personIsLoading, formStatePerson, getOutsourcePersonList, pageOutsourcePersonList, getProvince, getOutsourceBrand, getOutsourcePosition, addOutsourcePersonFlag} = storeToRefs(outsourceDetailStore);
+const { personIsLoading, formStatePerson, getOutsourcePersonList, pageOutsourcePersonList, getProvince, getOutsourceBrand, getOutsourceCompanyAll, getOutsourcePosition, addOutsourcePersonFlag} = storeToRefs(outsourceDetailStore);
 const columnsOutsourceDetail: TableColumnsType = [
   { title: '编号', dataIndex: 'index', key: 'index', fixed: 'left', width: 30, ellipsis: true,},
   { title: '中文', dataIndex: 'userNameCn', key: 'userNameCn', fixed: 'left', width: 40, ellipsis: true,},

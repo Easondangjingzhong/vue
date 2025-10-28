@@ -130,6 +130,7 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
+import _ from 'lodash';
 import type { TableColumnsType } from 'ant-design-vue';
 import { FormOutlined } from '@ant-design/icons-vue';
 import { OutsourceSheBaoItem } from '/@/api/outsourceDetail/model';
@@ -377,7 +378,7 @@ const addSocialSecurityInfo = () => {
 }
 const handleEditClick = (record) => {
   outsourceSocialSecurityFlag.value = true;
-  outsourceSocialSecurityForm.value = record;
+  outsourceSocialSecurityForm.value = _.cloneDeep(record);
 }
 </script>
 

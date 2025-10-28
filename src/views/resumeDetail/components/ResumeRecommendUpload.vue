@@ -76,7 +76,7 @@
             <strong v-else>国籍：</strong>
             {{ resume.nationality ? resume.nationality : '' }}</p
           >
-          <p>
+          <p v-if="resume.currentCity != '香港' && resume.currentCity != '澳门'">
             <strong v-if="resumeTypeEnglish == '1'">Place of Origin：</strong>
             <strong v-else>户籍：</strong>
             {{ resume.province ? resume.province : '' }}</p
@@ -91,6 +91,7 @@
             <strong v-else>手机：</strong>
             {{ resume.phoneNum ? resume.phoneNum : '' }}</p
           >
+          <p v-if="resume.currentCity == '香港' || resume.currentCity == '澳门'">&nbsp;</p>
         </div>
         <div
           class="info-right"
@@ -101,12 +102,17 @@
             <strong v-else>性别：</strong>
             {{ resume.gender ? (resume.gender == 'M' ? '男' : '女') : '' }}</p
           >
-          <p>
+          <p v-if="resume.currentCity == '香港' || resume.currentCity == '澳门'">
+            <strong v-if="resumeTypeEnglish == '1'">Place of Origin：</strong>
+            <strong v-else>户籍：</strong>
+            {{ resume.province ? resume.province : '' }}</p
+          >
+          <p v-if="resume.currentCity != '香港' && resume.currentCity != '澳门'">
             <strong v-if="resumeTypeEnglish == '1'">Height：</strong>
             <strong v-else>身高：</strong>
             {{ resume.height ? resume.height + 'cm' : '' }}</p
           >
-          <p>
+          <p v-if="resume.currentCity != '香港' && resume.currentCity != '澳门'">
             <strong v-if="resumeTypeEnglish == '1'">Weight：</strong>
             <strong v-else>体重：</strong>
             {{ resume.weight ? resume.weight + 'kg' : '' }}</p
@@ -121,6 +127,7 @@
             <strong v-else>邮箱：</strong>
             {{ resume.email ? resume.email : '' }}</p
           >
+          <p v-if="resume.currentCity == '香港' || resume.currentCity == '澳门'">&nbsp;</p>
         </div>
         <div class="photo">
           <img :src="resume.photoPath" alt="照片" />
@@ -163,7 +170,7 @@
             <strong v-else>国籍：</strong>
             {{ resume.nationality ? resume.nationality : '' }}</p
           >
-           <p>
+           <p v-if="resume.currentCity != 'Hong Kong' && resume.currentCity != 'Macao'">
             <strong v-if="resumeTypeEnglish == '1'">Height：</strong>
             <strong v-else>身高：</strong>
             {{ resume.height ? resume.height + 'cm' : '' }}</p
@@ -173,7 +180,7 @@
             <strong v-else>户籍：</strong>
             {{ resume.province ? resume.province : '' }}</p
           >
-           <p>
+           <p v-if="resume.currentCity != 'Hong Kong' && resume.currentCity != 'Macao'">
             <strong v-if="resumeTypeEnglish == '1'">Weight：</strong>
             <strong v-else>体重：</strong>
             {{ resume.weight ? resume.weight + 'kg' : '' }}</p

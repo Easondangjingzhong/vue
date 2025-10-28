@@ -51,7 +51,7 @@
           </a-col>
           <a-col :span="12">
             <a-form-item name="contractStatus" label="合同状态" :rules="[{ required: false, message: '请选择合同状态' }]">
-              <a-select v-model:value="outsourceContractForm.contractStatus" :options="contractStatusOption"></a-select>
+              <a-select v-model:value="outsourceContractForm.contractStatus" @change="handleContractStatus" :options="contractStatusOption"></a-select>
             </a-form-item>
           </a-col>
         </a-row>
@@ -273,6 +273,12 @@ watch(() => outsourceContractForm.value.contractCycle, (newVal, oldVal) => {
     hasDiffDays(outsourceContractForm.value.contractCycle);
   }
 });
+const handleContractStatus = () => {
+  if (outsourceContractForm.value.contractStatus == '生效中') {
+    outsourceContractForm.value.loseReason = '';
+    outsourceContractForm.value.loseDate = '';
+  }
+}
 const handleStartDateChange = () => {
   if (outsourceContractForm.value.contractCycle != '长期') {
     handleContractCycleChange();

@@ -31,6 +31,7 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
+import _ from 'lodash';
 import type { TableColumnsType } from 'ant-design-vue';
 import { FormOutlined } from '@ant-design/icons-vue';
 import { OutsourceSalaryItem } from '/@/api/outsourceDetail/model';
@@ -210,7 +211,7 @@ const handleComprehensiveSalaryInfoUpdate = () => {
 }
 const handleEditClick = (record) => {
   outsourceDetailStore.queryOutsourceBankName();
-  outsourceSalaryForm.value = record;
+  outsourceSalaryForm.value = _.cloneDeep(record);
   outsourceSalaryFlag.value = true;
 }
 </script>

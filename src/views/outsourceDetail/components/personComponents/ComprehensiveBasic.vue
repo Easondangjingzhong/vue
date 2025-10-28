@@ -75,7 +75,6 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import type { TableColumnsType } from 'ant-design-vue';
 import { FormOutlined } from '@ant-design/icons-vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
@@ -85,7 +84,7 @@ const handleComprehensiveBasicUpdate = () => {
   outsourceDetailStore.handleComprehensiveBasicUpdate();
 }
 
-const columns:TableColumnsType = [
+const columns = [
   {
     title: '编号',
     dataIndex: 'index',
@@ -127,7 +126,6 @@ const columns:TableColumnsType = [
     title: '状态',
     dataIndex: 'currentStatus',
     key: 'currentStatus',
-    fixed: 'left',
     width: 20,
     ellipsis: true,
   },

@@ -19,6 +19,18 @@
             ></a-select>
           </a-form-item>
         </a-col>
+         <a-col :span="3">
+          <a-form-item name="companyName" label="公司">
+            <a-select
+              optionFilterProp="label"
+              v-model:value="formStateSalary.companyName"
+              :options="getOutsourceCompanyAll"
+              :showArrow="false"
+              showSearch
+              allowClear
+            ></a-select>
+          </a-form-item>
+        </a-col>
         <a-col :span="3">
           <a-form-item name="bId" label="品牌">
             <a-select
@@ -135,7 +147,7 @@ import type { TableColumnsType } from 'ant-design-vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 import { SearchSalaryItem } from '/@/api/outsourceDetail/model';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { salaryIsLoading, pageOutsourceSalaryList, formStateSalary, getOutsourceSalaryList, getProvince, getOutsourceBrand, getOutsourcePosition, } = storeToRefs(outsourceDetailStore);
+const { salaryIsLoading, pageOutsourceSalaryList, formStateSalary, getOutsourceSalaryList, getProvince, getOutsourceBrand, getOutsourceCompanyAll, getOutsourcePosition, } = storeToRefs(outsourceDetailStore);
 const columnsOutsourceDetail:TableColumnsType = [
   { title: '编号', dataIndex: 'index', key: 'index', fixed: 'left', width: 30, ellipsis: true },
   { title: '中文', dataIndex: 'userNameCn', key: 'userNameCn', fixed: 'left', width: 40, ellipsis: true },

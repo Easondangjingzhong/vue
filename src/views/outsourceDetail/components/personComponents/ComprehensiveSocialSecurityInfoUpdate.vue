@@ -50,7 +50,7 @@
              <a-form-item name="shebaoCompany" label="缴纳单位" :rules="[{ required: true, message: '请填写缴纳单位' }]">
                <a-select 
               v-model:value="outsourceSocialSecurityForm.shebaoCompany" 
-              :options="companyNameOption"
+              :options="shebaoCompanyOption"
               @change="handleCompanyNameOption"
               ></a-select>
             </a-form-item>
@@ -106,7 +106,7 @@
              <a-form-item name="yijinJiaoCompany" label="缴纳单位" :rules="[{ required: true, message: '请填写缴纳单位' }]">
                <a-select 
               v-model:value="outsourceSocialSecurityForm.yijinJiaoCompany" 
-              :options="companyNameOption"
+              :options="shebaoCompanyOption"
               ></a-select>
             </a-form-item>
           </a-col>
@@ -187,7 +187,7 @@
              <a-form-item name="shangbaoJiaoCompany" label="缴纳单位" :rules="[{ required: true, message: '请填写缴纳单位' }]">
                <a-select 
               v-model:value="outsourceSocialSecurityForm.shangbaoJiaoCompany" 
-              :options="companyNameOption"
+              :options="shebaoCompanyOption"
               ></a-select>
             </a-form-item>
           </a-col>
@@ -325,6 +325,7 @@ import { storeToRefs } from 'pinia';
 import { message } from 'ant-design-vue';
 import { CloseOutlined } from '@ant-design/icons-vue';
 import { OutsourceSheBaoItem } from '/@/api/outsourceDetail/model';
+import { shebaoCompanyOption } from '/@/api/outsourceDetail/constants';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
 const { outsourceSocialSecurityFlag, outsourceSocialSecurityForm } = storeToRefs(outsourceDetailStore);
@@ -501,12 +502,6 @@ const shangbaoStatusOption = ref([
   { label: '缴纳', value: '2' },
 ]);
 
-const companyNameOption = ref([
-  { label: '北京博瑞', value: '北京博瑞' },
-  { label: '51社保', value: '51社保' },
-  { label: '江苏今元', value: '江苏今元' },
-  { label: '北京我推', value: '北京我推' },
-]);
 const companyNameObj = {
   "1": "北京博瑞",
   "2": "51社保",

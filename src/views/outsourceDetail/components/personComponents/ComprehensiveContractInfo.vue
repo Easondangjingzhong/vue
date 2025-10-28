@@ -41,6 +41,7 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
+import _ from 'lodash';
 import type { TableColumnsType } from 'ant-design-vue';
 import { FormOutlined } from '@ant-design/icons-vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
@@ -169,7 +170,7 @@ watch(() => outsourcePersonDetail.value.id, () => {
 })
 outsourceDetailStore.queryOutsourcePersonContract();
 const handleEditClick = (record: PersonContractItem) => {
-  outsourceContractForm.value = record;
+  outsourceContractForm.value = _.cloneDeep(record);
   outsourceContractFlag.value = true;
 }
 </script>

@@ -77,6 +77,7 @@ export interface SearchPersonItem {
   userName: string;
   companyArrange: string;
   jobType: string;
+  companyName: string;
 }
 /**
  * 外包外包月度薪资
@@ -89,6 +90,7 @@ export interface SearchSalaryItem {
   userName: string;
   jobType: string;
   companyArrange: string;
+  companyName: string;
 }
 /**
  * 外包薪资
@@ -155,6 +157,9 @@ export interface SearchSheBaoItem {
   userName: string;
   jobType: string;
   companyArrange: string;
+  companyName: string;
+  shebaoCompany: string;
+  yearAndMonth: string;
 }
 /**
  * 外包社保
@@ -171,6 +176,7 @@ export interface OutsourceSheBaoItem {
   personId?: number;
   companyTotal?: number;
   personTotal?: number;
+  buchaMoney?: number;
   shangbao?: number;
   shebaoStandard?: string;
   yanglaoJishu?: number;
@@ -238,6 +244,43 @@ export interface OutsourceSheBaoItem {
   shengyuCompanyRate?: number;
   yijinCompanyJishu?: number;
   yijinCompanyRate?: number;
+  yearAndMonth?: string;
+  checkFlag?: string;
+  checkTime?: string;
+  checkUser?: string;
+}
+/**
+ * 外包社保汇总详情项
+ */
+export interface OutsourceSheBaoDetailItem {
+  yijinCompany: number;
+  shebaoCompany: number;
+  shebaoPerson: number;
+  yearAndMonth: string;
+  companyTotal: number;
+  personNum: number;
+  personTotal: number;
+  serviceMoney: string | number;
+  shebaoCompany?: string;
+  yijinPerson: number;
+  checkFlag: string;
+}
+
+/**
+ * 外包社保汇总信息
+ */
+export interface OutsourceSheBaoCollectItem {
+  companyTotal: number;
+  detaillist: OutsourceSheBaoDetailItem[];
+  personNum: number;
+  personTotal: number;
+  serviceMoney: string | number;
+  shebaoCompany: number;
+  shebaoPerson: number;
+  yearAndMonth: string;
+  yijinCompany: number;
+  yijinPerson: number;
+  checkFlag: string;
 }
 /**
  * 外包外包月度薪资
@@ -339,6 +382,7 @@ export interface PersonContractItem {
   contractStatus?: string;
   loseReason?: string;
   loseDate?: string;
+  companyName?: string;
 }
 
 export interface OutsourceSheBaoContractRatesItem {
@@ -405,3 +449,133 @@ export interface OutsourceSheBaoContractRatesItem {
   yijinBase?: number;
   yiliaoBase?: number;
 }
+/**
+ * 外包考勤搜索
+ */
+export interface SearchAttendItem {
+  city: string;
+  bId: string;
+  currentStatus: string;
+  positionId: string;
+  userName: string;
+  jobType: string;
+  companyArrange: string;
+  companyName: string;
+}
+/**
+ * 外包考勤
+ */
+export interface OutsourceAttendItem {
+  // 基本信息字段
+  id?: number;
+  userNameCn?: string;
+  userNameEn?: string | null;
+  currentStatus?: string;
+  city?: string;
+  companyName?: string;
+  jobType?: string;
+  recruitParty?: string;
+  personId?: number;
+  
+  // 品牌和时间信息
+  brand?: string;
+  yearAndMonth?: string;
+  flag?: string;
+  
+  // 工时相关字段
+  currentMonthShiHours?: string;
+  currentMonthYuHours?: string;
+  lastMonthShiHours?: string;
+  lastMonthYuHours?: string;
+  
+  // 加班相关字段
+  overHours?: string;
+  overDouble?: string;
+  holidayOverHours?: string;
+  holidayOverDouble?: string;
+  restOverHours?: string;
+  restOverDouble?: string;
+  otherDaixinHours?: string;
+  otherDaixinDouble?: string;
+  
+  // 假期相关字段
+  hunjiaHours?: string;
+  hunjiaDouble?: string;
+  nianjianHours?: string;
+  nianjianDouble?: string;
+  daixinBingjiaHours?: string;
+  daixinBingjiaDouble?: string;
+  kouxinBingjiaHours?: string;
+  kouxinBingjiaDouble?: string;
+  sanjiaHours?: string;
+  sanjiaDouble?: string;
+  shijiaHours?: string;
+  shijiaDouble?: string;
+  
+  // 其他考勤相关字段
+  utHours?: string;
+  utDouble?: string;
+  lateHours?: string;
+  quanqinHours?: string;
+  totalChaHours?: string;
+  isQuanqin?: string;
+  isYugu?: string;
+  
+  // 入职相关字段
+  newOfferTime?: string;
+  newPredictEntryTime?: string;
+}
+/**
+ * 外包 shebao 基础信息
+ */
+export interface OutsourceShebaoInfoItem {
+  id?: number;
+  addDeleteDay?: string;
+  addMonth?: string;
+  bujiao?: string;
+  city?: string;
+  cityNum?: string;
+  companyDabingBase?: string;
+  companyDabingRate?: string;
+  companyGongshangBase?: string;
+  companyGongshangRate?: string;
+  companyJiao?: string;
+  companyShengyuBase?: string;
+  companyShengyuRate?: string;
+  companyShiyeBase?: string;
+  companyShiyeRate?: string;
+  companyYanglaoBase?: string;
+  companyYanglaoRate?: string;
+  companyYijinBase?: string;
+  companyYijinRate?: string;
+  companyYiliaoBase?: string;
+  companyYiliaoRate?: string;
+  deleteMonth?: string;
+  issueTime?: string;
+  endTime?: string;
+  flag?: string;
+  handingFee?: string;
+  isEffect?: string;
+  personDabingBase?: string;
+  personDabingRate?: string;
+  personShiyeBase?: string;
+  personShiyeRate?: string;
+  personYanglaoBase?: string;
+  personYanglaoRate?: string;
+  personYijinBase?: string;
+  personYijinRate?: string;
+  personYiliaoBase?: string;
+  personYiliaoRate?: string;
+  remark?: string;
+  shangBao?: string;
+  shebaoBase?: string;
+  shebaoSign?: string;
+  shiShangBao?: string;
+  showIndex?: string;
+  startTime?: string;
+  yijinBase?: string;
+  yiliaoBase?: string;
+  updateTime?: string;
+  updateUser?: string;
+}
+

@@ -7,12 +7,24 @@
             <a-input v-model:value="formStateSheBao.userName"/>
           </a-form-item>
         </a-col>
-        <a-col :span="3">
+        <a-col :span="2">
           <a-form-item name="city" label="城市">
             <a-select
               optionFilterProp="label"
               v-model:value="formStateSheBao.city"
               :options="getProvince"
+              :showArrow="false"
+              showSearch
+              allowClear
+            ></a-select>
+          </a-form-item>
+        </a-col>
+         <a-col :span="3">
+          <a-form-item name="companyName" label="公司">
+            <a-select
+              optionFilterProp="label"
+              v-model:value="formStateSheBao.companyName"
+              :options="getOutsourceCompanyAll"
               :showArrow="false"
               showSearch
               allowClear
@@ -43,7 +55,7 @@
             ></a-select>
           </a-form-item>
         </a-col>
-        <a-col :span="3">
+        <a-col :span="2">
           <a-form-item name="jobType" label="性质">
             <a-select
               optionFilterProp="label"
@@ -57,10 +69,33 @@
           </a-select>
           </a-form-item>
         </a-col>
-         <a-col :span="4">
+         <a-col :span="3">
+          <a-form-item name="shebaoCompany" label="缴纳公司">
+            <a-select
+              optionFilterProp="label"
+              v-model:value="formStateSheBao.shebaoCompany"
+              :options="shebaoCompanyOption"
+              :showArrow="false"
+              showSearch
+              allowClear
+            ></a-select>
+          </a-form-item>
+        </a-col>
+         <a-col :span="3">
           <a-button style="margin: 0 0 0 8px" type="primary" html-type="submit">搜索</a-button>
           <a-button style="margin: 0 8px" @click="clearFromState">清空</a-button>
          </a-col>
+      </a-row>
+      <a-row :gutter="24">
+        <a-col :span="3">
+          <a-form-item name="yearAndMonth" label="周期">
+            <a-date-picker
+                  v-model:value="formStateSheBao.yearAndMonth"
+                  value-format="YYYY-MM"
+                  picker="month"
+                />
+          </a-form-item>
+        </a-col>
       </a-row>
      </a-form>
   </div>
@@ -72,6 +107,10 @@
           <a-button @click="handleSearchOutsourcePerson('1')" :class="{'active': formStateSheBao.currentStatus === ''}" style="margin-right: 5px;" size="small">全部</a-button>
           <a-button @click="handleSearchOutsourcePerson('4')" :class="{'active': formStateSheBao.companyArrange === '1'}" style="margin-right: 5px;" size="small" title="按公司排序">排序</a-button>
         </span>
+        <span>
+          <a-button style="margin-right: 5px;" @click="handleSheBaoInfo" size="small">社保基数</a-button>
+          <a-button @click="handleSheBaoCollect" size="small">社保汇总</a-button>
+        </span>
     </a-row>
     <a-row>
     <a-table
@@ -81,7 +120,7 @@
       :dataSource="getOutsourceSheBaoList"
       :loading="sheBaoIsLoading"
       :columns="columnsOutsourceDetail"
-      :scroll="{ x: 1900 }"
+      :scroll="{ x: 2200 }"
     >
     <template #bodyCell="{ column, record }">
     <a-tag v-if="column.key === 'currentStatus' && record.currentStatus === '1'" color="orange">待入</a-tag>
@@ -128,28 +167,39 @@
       </a-pagination>
     </a-row>
   </div>
+  <OutsourceSocialSecurityCollect/>
+  <OutsourceSocialSecurityInfo/>
 </template>
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import type { TableColumnsType } from 'ant-design-vue';
+import { currentDate } from '/@/utils/dateUtil';
+import OutsourceSocialSecurityCollect from '/@/views/outsourceDetail/components/personComponents/OutsourceSocialSecurityCollect.vue';
+import OutsourceSocialSecurityInfo from '/@/views/outsourceDetail/components/personComponents/OutsourceSocialSecurityInfo.vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 import { SearchSheBaoItem } from '/@/api/outsourceDetail/model';
+import { shebaoCompanyOption } from '/@/api/outsourceDetail/constants';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { sheBaoIsLoading,pageOutsourceSheBaoList,formStateSheBao,getOutsourceSheBaoList, getProvince, getOutsourceBrand, getOutsourcePosition, } = storeToRefs(outsourceDetailStore);
+const { outsourceSocialSecuritInfoFlag, outsourceSocialSecurityCollectFlag,sheBaoIsLoading,pageOutsourceSheBaoList,formStateSheBao,getOutsourceSheBaoList, getProvince, getOutsourceBrand, getOutsourceCompanyAll, getOutsourcePosition, } = storeToRefs(outsourceDetailStore);
 const columnsOutsourceDetail:TableColumnsType = [
   { title: '编号', dataIndex: 'index', key: 'index', fixed: 'left', width: 30, ellipsis: true },
+  { title: '周期', dataIndex: 'yearAndMonth', key: 'yearAndMonth', fixed: 'left', width: 40, ellipsis: true },
   { title: '中文', dataIndex: 'userNameCn', key: 'userNameCn', fixed: 'left', width: 40, ellipsis: true },
   { title: '英文', dataIndex: 'userNameEn', key: 'userNameEn', fixed: 'left', width: 40, ellipsis: true },
   { title: '公司', dataIndex: 'companyName', key: 'companyName', fixed: 'left', width: 50, ellipsis: true },
   { title: '城市', dataIndex: 'city', key: 'city', fixed: 'left', width: 30, ellipsis: true },
   { title: '性质', dataIndex: 'jobType', key: 'jobType', fixed: 'left', width: 30,},
   { title: '状态', dataIndex: 'currentStatus', key: 'currentStatus', fixed: 'left', width: 30, },
-  { title: '周期', dataIndex: 'shebaoShijiaoTime', key: 'shebaoShijiaoTime', fixed: 'left', width: 40, ellipsis: true },
+  { title: '缴纳单位', dataIndex: 'shebaoCompany', key: 'shebaoCompany', fixed: 'left', width: 40, ellipsis: true },
   { title: '单位合计', dataIndex: 'companyTotal', key: 'companyTotal', width: 40, ellipsis: true },
   { title: '个人合计', dataIndex: 'personTotal', key: 'personTotal', width: 40, ellipsis: true },
-  { title: '商保', dataIndex: 'shangbao', key: 'shangbao', width: 30, ellipsis: true },
-  { title: '社保标准', dataIndex: 'shebaoStandard', key: 'shebaoStandard', width: 40, ellipsis: true },
+  { title: '补差', dataIndex: 'buchaMoney', key: 'buchaMoney', width: 30, ellipsis: true },
+  { title: '手续', dataIndex: 'serviceMoney', key: 'serviceMoney', width: 30, ellipsis: true },
+  { title: '社保总计', dataIndex: 'shangbaoTotal', key: 'shangbaoTotal', width: 40, ellipsis: true },
+  { title: '客商', dataIndex: 'keShangbao', key: 'keShangbao', width: 30, ellipsis: true },
+  { title: '实商', dataIndex: 'shangbao', key: 'shangbao', width: 30, ellipsis: true },
+  { title: '社保标准', dataIndex: 'shebaoStandard', key: 'shebaoStandard', width: 40, },
   { title: '养老基数', dataIndex: 'yanglaoJishu', key: 'yanglaoJishu', width: 40, ellipsis: true },
   { title: '单位', dataIndex: 'yanglaoCompany', key: 'yanglaoCompany', width: 40, ellipsis: true },
   { title: '个人', dataIndex: 'yanglaoPerson', key: 'yanglaoPerson', width: 40, ellipsis: true },
@@ -166,14 +216,14 @@ const columnsOutsourceDetail:TableColumnsType = [
   { title: '单位', dataIndex: 'gongshangCompany', key: 'gongshangCompany', width: 30, ellipsis: true },
   { title: '生育基数', dataIndex: 'shengyuJishu', key: 'shengyuJishu', width: 40, ellipsis: true },
   { title: '单位', dataIndex: 'shengyuCompany', key: 'shengyuCompany', width: 30, ellipsis: true },
-  { title: '一金标准', dataIndex: 'yijinStandard', key: 'yijinStandard', width: 40, ellipsis: true },
+  { title: '一金标准', dataIndex: 'yijinStandard', key: 'yijinStandard', width: 40, },
   { title: '一金基数', dataIndex: 'yijinShijiJishu', key: 'yijinShijiJishu', width: 40, ellipsis: true },
   { title: '比例', dataIndex: 'yijinRate', key: 'yijinRate', width: 30, ellipsis: true },
   { title: '单位', dataIndex: 'yijinCompany', key: 'yijinCompany', width: 40, ellipsis: true },
   { title: '个人', dataIndex: 'yijinPerson', key: 'yijinPerson', width: 40, ellipsis: true },
 ]
 const clearFromState = () => {
-  formStateSheBao.value = {currentStatus: '2',} as SearchSheBaoItem;
+  formStateSheBao.value = {currentStatus: '',yearAndMonth: currentDate('YYYY-MM')} as SearchSheBaoItem;
 }
  const handleSearchOutsourcePerson = (status) => {
     if (status != '4') {
@@ -194,10 +244,18 @@ onSearch();
 const handleOutsourceSheBaoListData = () => {
   outsourceDetailStore.queryOutsourceSheBao();
 }
+const handleSheBaoCollect = () => {
+  outsourceSocialSecurityCollectFlag.value = true;
+  outsourceDetailStore.queryOutsourceShebaoCollect();
+}
+const handleSheBaoInfo = () => {
+  outsourceSocialSecuritInfoFlag.value = true;
+  outsourceDetailStore.queryOutsourceShebaoInfo();
+}
 </script>
 
 <style lang="less" scoped>
-.active {
+  .active {
     color: #389e0d;
     background: #f6ffed;
     border-color: #b7eb8f;

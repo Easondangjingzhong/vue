@@ -119,7 +119,7 @@
       <a-divider :dashed="true" style="background-color: #ccc; margin-top: 0" />
     </a-row>
     <a-form
-      :label-col="{ span: resumeTypeEnglish == '1' ? 10 : 0 }"
+      :label-col="{ span: resumeTypeEnglish == '1' ? 10 : 4 }"
       ref="formRef"
       :model="formState"
       @finish="onFinish"
@@ -294,7 +294,7 @@
         <a-col :span="spancol">
           <a-form-item
             name="height"
-            :rules="[{ required: true, message: themeLanguage?.height?.message }]"
+            :rules="[{ required: (formState.currentCity == '香港' || formState.currentCity == '澳门' || formState.currentCity == 'Hong Kong' || formState.currentCity == 'Macao') ? false : true, message: themeLanguage?.height?.message }]"
             :label="themeLanguage?.height?.label"
           >
             <a-input-number
@@ -318,7 +318,7 @@
         <a-col :span="spancol">
           <a-form-item
             name="weight"
-            :rules="[{ required: true, message: themeLanguage?.weight?.message }]"
+            :rules="[{ required: (formState.currentCity == '香港' || formState.currentCity == '澳门' || formState.currentCity == 'Hong Kong' || formState.currentCity == 'Macao') ? false : true, message: themeLanguage?.weight?.message }]"
             :label="themeLanguage?.weight?.label"
           >
             <a-input-number
@@ -437,12 +437,12 @@
     !props.resumeData.gender ||
     !props.resumeData.photoPath ||
     !props.resumeData.nationality ||
-    !props.resumeData.height ||
+    (props.resumeData.currentCity != '香港' && props.resumeData.currentCity != '澳门' && props.resumeData.currentCity != 'Hong Kong' && props.resumeData.currentCity != 'Macao' && !props.resumeData.height) ||
     !props.resumeData.birthYear ||
     !props.resumeData.bornMonth ||
     !props.resumeData.bornDay ||
     !props.resumeData.email ||
-    !props.resumeData.weight ||
+    (props.resumeData.currentCity != '香港' && props.resumeData.currentCity != '澳门' && props.resumeData.currentCity != 'Hong Kong' && props.resumeData.currentCity != 'Macao' && !props.resumeData.weight) ||
     !props.resumeData.positionName ||
     !props.resumeData.marriageStatus
   ) {
@@ -467,12 +467,12 @@
         !newProps.gender ||
         !newProps.photoPath ||
         !newProps.nationality ||
-        !newProps.height ||
+        (newProps.currentCity != '香港' && newProps.currentCity != '澳门' && newProps.currentCity != 'Hong Kong' && newProps.currentCity != 'Macao' && !newProps.height) ||
         !newProps.birthYear ||
         !newProps.bornMonth ||
         !newProps.bornDay ||
         !newProps.email ||
-        !newProps.weight ||
+        (newProps.currentCity != '香港' && newProps.currentCity != '澳门' && newProps.currentCity != 'Hong Kong' && newProps.currentCity != 'Macao' && !newProps.weight) ||
         !newProps.positionName ||
         !newProps.marriageStatus
       ) {
