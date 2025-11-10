@@ -13,7 +13,8 @@ enum URL {
   add_outsource_salary_by_person = '/candidateRecommend/resume-vue-insert-out-Salary-byperson.action',
   query_outsource_shebao_by_person = '/candidateRecommend/resume-vue-select-out-SheBao-person.action',
   add_outsource_shebao_by_person = '/candidateRecommend/resume-vue-insert-out-Shebao-byperson.action',
-  add_update_outsource_basic = '/candidateRecommend/resume-vue-update-out-person-base.action',
+  update_outsource_basic = '/candidateRecommend/resume-vue-update-out-person-base.action',
+  add_outsource_basic = '/candidateRecommend/resume-vue-insert-out-person-base.action',
   query_outsource_shebao_contractRates = '/contractRates/resume-vue-query-contractRates-out-shebao.action',
   query_outsource_brand = '/candidateRecommend/resume-vue-query-out-brand.action',
   query_outsource_city = '/candidateRecommend/resume-vue-query-out-city.action',
@@ -30,7 +31,38 @@ enum URL {
   query_outsource_shebao_info = '/contractRates/resune-vue-query-contractRates-out-shebao-page.action',
   update_outsource_info = '/contractRates/resume-vue-update-contractRates-out-shebao_page.action',
   add_outsource_info = '/contractRates/resume-vue-insert-contractRates-out-shebao_page.action',
+  query_outsource_person_msg = '/candidateRecommend/resume-vue-query-person-msg-out.action',
+  query_work__by_resumeId = '/candidateRecommend/resume-vue-select-out-work-byreusmeId.action',
+  query_mark_list = '/candidate/rusume-vue-query-market-addcity.action',
+  query_counselor_list = '/candidate/rusume-vue-query-left-teamperson-admin-qie.action',
 }
+/**
+ * 查询顾问列表
+ * @returns 
+ */
+const queryCounselorList = async () =>
+  post<any>({ url: URL.query_counselor_list});
+/**
+ * 根据城市和店铺名称查询店铺列表
+ * @param data city marketName
+ * @returns 
+ */
+const queryMarkList = async (data: any) =>
+  post<any>({ url: URL.query_mark_list, data});
+/**
+ * 根据resumeId查询工作经历
+ * @param data resumeId
+ * @returns 
+ */
+const handleQueryWorkByResumeId = async (data: any) =>
+  post<any>({ url: URL.query_work__by_resumeId, data});
+/**
+ * 根据手机号查询简历基础信息
+ * @param data phoneNumber
+ * @returns 
+ */
+const queryOutsourcePersonMsg = async (data: any) =>
+  post<any>({ url: URL.query_outsource_person_msg, data});
 /**
  * 新增外包社保基数信息
  * @param data id
@@ -149,8 +181,14 @@ const queryOutsourceShebaoContractRates = async (data: any) =>
  * @returns 
  */
 const addUpdateOutsourceBasic = async (data: any) =>
-  post<any>({ url: URL.add_update_outsource_basic, data});
-
+  post<any>({ url: URL.update_outsource_basic, data});
+/**
+ * 新增修改外包信息
+ * @param data personId
+ * @returns 
+ */
+const addOutsourceBasic = async (data: any) =>
+  post<any>({ url: URL.add_outsource_basic, data});
 /**
  * 新增外包社保
  * @param data personId
@@ -244,6 +282,11 @@ const queryOutsourceMonthSalary = async (data: any) =>
   post<any>({ url: URL.query_outsource_month_salary, data});
 
 export default { 
+  queryCounselorList,
+  addOutsourceBasic,
+  queryMarkList,
+  handleQueryWorkByResumeId,
+  queryOutsourcePersonMsg,
   addOutsourceInfo,
   updateOutsourceInfo,
   deleteOutsourceAttendById,

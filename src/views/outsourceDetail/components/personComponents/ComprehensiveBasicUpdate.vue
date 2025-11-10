@@ -54,7 +54,7 @@
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item name="realEntryTime" label="实际日期" :rules="[{ required: true, message: '请选择实际日期' }]">
+            <a-form-item name="realEntryTime" label="实际日期" :rules="[{ required: false, message: '请选择实际日期' }]">
                <a-date-picker v-model:value="outsourceBasicForm.realEntryTime" value-format="YYYY-MM-DD"/>
             </a-form-item>
           </a-col>
@@ -112,7 +112,7 @@ const jobTypeOption = ref([
 
 const handleSubmit = () => {
   iconLoading.value = true;
-  outsourceDetailStore.addOutsourceBasic().then(res => {
+  outsourceDetailStore.addUpdateOutsourceBasic().then(res => {
     if (res.code == 1) {
       message.success('操作成功');
       outsourceBasicFlag.value = false;

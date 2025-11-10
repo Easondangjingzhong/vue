@@ -7,7 +7,7 @@
             <a-input v-model:value="formStateSheBao.userName"/>
           </a-form-item>
         </a-col>
-        <a-col :span="2">
+        <a-col :span="3">
           <a-form-item name="city" label="城市">
             <a-select
               optionFilterProp="label"
@@ -55,7 +55,7 @@
             ></a-select>
           </a-form-item>
         </a-col>
-        <a-col :span="2">
+        <a-col :span="3">
           <a-form-item name="jobType" label="性质">
             <a-select
               optionFilterProp="label"
@@ -134,6 +134,12 @@
      <a-tag v-if="column.key === 'jobType' && record.jobType === '全职'" color="green">
       全职
     </a-tag>
+
+     <a-tag v-if="column.key === 'shebaoCompany' && record.shebaoCompany === '江苏今元'" color="orange">江苏今元</a-tag>
+     <a-tag v-if="column.key === 'shebaoCompany' && record.shebaoCompany === '北京博瑞'" color="blue">北京博瑞</a-tag>
+     <a-tag v-if="column.key === 'shebaoCompany' && record.shebaoCompany === '51社保'" color="pink">51社保</a-tag>
+     <a-tag v-if="column.key === 'shebaoCompany' && record.shebaoCompany === '北京我推'" color="cyan">北京我推</a-tag>
+     <a-tag v-if="column.key === 'shebaoCompany' && record.shebaoCompany === '苏州锐特'" color="purple">苏州锐特</a-tag>
 
       <a-tag v-if="column.key === 'shebaoStandard' && record.shebaoStandard === '1'" color="green">最低基数</a-tag>
       <a-tag v-if="column.key === 'shebaoStandard' && record.shebaoStandard === '2'" color="orange">基本工资</a-tag>

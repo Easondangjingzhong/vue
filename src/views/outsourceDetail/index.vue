@@ -52,6 +52,7 @@ outsourceDetailStore.queryProvince();
 outsourceDetailStore.queryOutsourceBrand();
 outsourceDetailStore.queryOutsourcePosition();
 outsourceDetailStore.queryCompanyAll();
+outsourceDetailStore.queryCounselorList();
 </script>
 
 <style lang="less" scoped>

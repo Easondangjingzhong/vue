@@ -22,6 +22,7 @@
       :expandedRowKeys="expandedRowKeys"
        :row-expandable="(record) => record.detaillist && record.detaillist.length > 0"
        @expand="onExpand"
+       rowClassName="even-row"
     >
     <template #bodyCell="{ column, record }">
       <a-popconfirm v-if="column.key === 'checkFlag' && record.checkFlag === '1'" title="社保核对" :overlay-style="{ width: '130px' }" @confirm="handleChecked(1,record)">
@@ -30,6 +31,7 @@
       <a-tag v-if="column.key === 'checkFlag' && record.checkFlag === '2'" color="green">已核</a-tag>
     </template>
     <template #expandedRowRender="{ record }">
+      <div style="background-color: #fafafa; padding: 8px 8px 8px 0;">
       <a-table :columns="innerColumns" :data-source="record.detaillist" :pagination="false">
         <template #bodyCell="{ column, record }">
           <!-- <a-popconfirm v-if="column.key === 'checkFlag' && record.checkFlag === '1'" title="社保核对" :overlay-style="{ width: '130px' }" @confirm="handleChecked(2,record)">
@@ -39,6 +41,7 @@
           <a-tag v-if="column.key === 'checkFlag' && record.checkFlag === '2'" color="green">已核</a-tag>
         </template>
       </a-table>
+      </div>
     </template>
   </a-table>
   </a-drawer>
@@ -194,5 +197,10 @@ const onExpand = (expanded: boolean, record: OutsourceSheBaoCollectItem) => {
 </script>
 
 <style lang="less" scoped>
-
+:deep(.even-row) {
+    background-color: #f0f8ff;
+  }
+  :deep(.even-row .ant-table-cell-row-hover) {
+    background-color: #f0f8ff;
+  }
 </style>

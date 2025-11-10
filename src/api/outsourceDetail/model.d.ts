@@ -25,6 +25,8 @@ export interface OutsourcePersonItem {
   counselor: string;
   recommendRecruitId: number;
   recruitId: number;
+  serviceRecruitId: number;
+  serviceCounselor: string;
   offerPic: string;
   offerFlag: string;
   infoTableFlag: string;
@@ -291,6 +293,9 @@ export interface SearchMonthSalaryItem {
   currentStatus: string;
   positionId: string;
   userName: string;
+  jobType: string;
+  companyArrange: string;
+  companyName: string;
 }
 /**
  * 外包月度薪资
@@ -298,60 +303,128 @@ export interface SearchMonthSalaryItem {
 export interface OutsourceMonthSalaryItem {
   id?: number;
   userNameCn?: string;
-  userNameEn?: string;
+  userNameEn?: string | null;
   currentStatus?: string;
   city?: string;
   companyName?: string;
   jobType?: string;
   recruitParty?: string;
   personId?: number;
-  jinxinMonth?: Date;
-  entryTime?: Date;
-  leaveTime?: Date;
-  biaozhunSalary?: number;
-  biaozhunGongshi?: number;
-  yuguGongshi?: number;
-  chuqinSalary?: number;
-  canbu?: number;
-  jintie?: number;
-  quanqin?: number;
-  zhengchangJiaban?: number;
-  fadingJiaban?: number;
-  jiabanSalary?: number;
-  shangyueYugu?: number;
-  chidao?: number;
-  shijia?: number;
-  bingjia?: number;
-  daixin?: number;
-  geti?: number;
-  tuanti?: number;
-  teshu?: number;
-  jili?: number;
-  dacheng?: number;
-  salaryTiaocha?: number;
-  canbuTiaocha?: number;
-  tiaochaTotal?: number;
-  monthTax?: number;
-  yearTax?: number;
-  yanglao?: number;
-  shiye?: number;
-  yiliao?: number;
-  dabing?: number;
-  yijin?: number;
-  monthShebao?: number;
-  yearShebao?: number;
-  zinvJiaoyu?: number;
-  jixuJiaoyu?: number;
-  fangdaiLixi?: number;
-  fangzu?: number;
-  shangyangFumu?: number;
-  monthZhuankou?: number;
-  yearZhuankou?: number;
-  yearMianzheng?: number;
-  monthGeshui?: number;
-  yearGeshui?: number;
-  shouxuMoney?: number;
-  salaryAfterTax?: number;
+  
+  // 品牌和时间信息
+  brand?: string;
+  yearAndMonth?: string;
+  flag?: string;
+  
+  // 工时相关字段
+  currentMonthShiHours?: string;
+  currentMonthYuHours?: string;
+  lastMonthShiHours?: string;
+  lastMonthYuHours?: string;
+  
+  // 加班相关字段
+  overHours?: string;
+  overDouble?: string;
+  holidayOverHours?: string;
+  holidayOverDouble?: string;
+  restOverHours?: string;
+  restOverDouble?: string;
+  otherDaixinHours?: string;
+  otherDaixinDouble?: string;
+  
+  // 假期相关字段
+  hunjiaHours?: string;
+  hunjiaDouble?: string;
+  nianjianHours?: string;
+  nianjianDouble?: string;
+  daixinBingjiaHours?: string;
+  daixinBingjiaDouble?: string;
+  kouxinBingjiaHours?: string;
+  kouxinBingjiaDouble?: string;
+  sanjiaHours?: string;
+  sanjiaDouble?: string;
+  shijiaHours?: string;
+  shijiaDouble?: string;
+  
+  // 其他考勤相关字段
+  utHours?: string;
+  utDouble?: string;
+  lateHours?: string;
+  quanqinHours?: string;
+  totalChaHours?: string;
+  isQuanqin?: string;
+  isYugu?: string;
+  
+  // 入职相关字段
+  newOfferTime?: string;
+  newPredictEntryTime?: string;
+  
+  // 新增字段 - 奖金相关
+  baodiBouns?: string;
+  dachengBouns?: string;
+  jiliBouns?: string;
+  personBouns?: string;
+  specialBouns?: string;
+  teamBouns?: string;
+  totalBouns?: string;
+  
+  // 新增字段 - 假期和考勤扩展
+  bingjia?: string;
+  chidao?: string;
+  daixinjia?: string;
+  fadingJiaban?: string;
+  quanqin?: string;
+  quanqinCha?: string;
+  restJiaban?: string;
+  zhengchangJiaban?: string;
+  totalJiaban?: string;
+  
+  // 新增字段 - 薪资相关
+  chuqinSalary?: string;
+  monthSalary?: string;
+  monthShebao?: string;
+  monthTax?: string;
+  monthZhuankou?: string;
+  personIncome?: string;
+  personTarget?: string;
+  personTidian?: string;
+  salaryTiaocha?: string;
+  shifaSalary?: string;
+  yearSalary?: string;
+  yearShebao?: string;
+  yearTax?: string;
+  yearZhuankou?: string;
+  
+  // 新增字段 - 社保公积金相关
+  shiyeMoney?: string;
+  yanglaoMoney?: string;
+  yijinMoney?: string;
+  yiliaoMoney?: string;
+  
+  // 新增字段 - 津贴和福利
+  canbu?: string;
+  canbuTiaocha?: string;
+  fandaiLixi?: string;
+  fangzu?: string;
+  jintie?: string;
+  jintieTiaocha?: string;
+  serviceMoney?: string;
+  shanyangFumu?: string;
+  totalTiaocha?: string;
+  
+  // 新增字段 - 其他
+  jixuEdu?: string;
+  shopDacheng?: string;
+  shopIncome?: string;
+  shopTarget?: string;
+  shopTidian?: string;
+  yearMianzheng?: string;
+  zinvEdu?: string;
+  positions?: string;
+  realEntryTime?: string;
+  realLeaveTime?: string;
+  isCheck?: string;
+  dixin?: string;
 }
 /**
  * 外包分页

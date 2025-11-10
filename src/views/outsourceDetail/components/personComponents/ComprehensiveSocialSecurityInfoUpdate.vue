@@ -106,7 +106,7 @@
              <a-form-item name="yijinJiaoCompany" label="缴纳单位" :rules="[{ required: true, message: '请填写缴纳单位' }]">
                <a-select 
               v-model:value="outsourceSocialSecurityForm.yijinJiaoCompany" 
-              :options="shebaoCompanyOption"
+              :options="shebaoCompanyOption" disabled
               ></a-select>
             </a-form-item>
           </a-col>
@@ -325,7 +325,7 @@ import { storeToRefs } from 'pinia';
 import { message } from 'ant-design-vue';
 import { CloseOutlined } from '@ant-design/icons-vue';
 import { OutsourceSheBaoItem } from '/@/api/outsourceDetail/model';
-import { shebaoCompanyOption } from '/@/api/outsourceDetail/constants';
+import { shebaoCompanyOption,companyJiaoOption } from '/@/api/outsourceDetail/constants';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
 const { outsourceSocialSecurityFlag, outsourceSocialSecurityForm } = storeToRefs(outsourceDetailStore);
@@ -437,7 +437,10 @@ const yijinPersonDisplay = computed(() => {
     return rateCalc(rate);  
 });
 const yijinPerson = computed(() => {
-  return parseFloat(((outsourceSocialSecurityForm.value?.yijinJishu || 0) * (outsourceSocialSecurityForm.value?.yijinRate || 0)).toFixed(2));
+  if (outsourceSocialSecurityForm.value?.shebaoCity == '苏州') {
+    return parseFloat(((outsourceSocialSecurityForm.value?.yijinJishu || 0) * (outsourceSocialSecurityForm.value?.yijinRate || 0)).toFixed(2));
+  }
+  return parseFloat(((outsourceSocialSecurityForm.value?.yijinJishu || 0) * (outsourceSocialSecurityForm.value?.yijinRate || 0)).toFixed(0));
 });
 
 // 计算属性 - 企业一金金额
@@ -447,7 +450,10 @@ const yijinCompanyDisplay = computed(() => {
     return rateCalc(rate);  
 });
 const yijinCompany = computed(() => {
-  return parseFloat(((outsourceSocialSecurityForm.value?.yijinCompanyJishu || 0) * (outsourceSocialSecurityForm.value?.yijinCompanyRate || 0)).toFixed(2));
+  if (outsourceSocialSecurityForm.value?.shebaoCity == '苏州') {
+    return parseFloat(((outsourceSocialSecurityForm.value?.yijinCompanyJishu || 0) * (outsourceSocialSecurityForm.value?.yijinCompanyRate || 0)).toFixed(2));
+  }
+  return parseFloat(((outsourceSocialSecurityForm.value?.yijinCompanyJishu || 0) * (outsourceSocialSecurityForm.value?.yijinCompanyRate || 0)).toFixed(0));
 });
 
 // 计算属性 - 企业工伤金额
@@ -502,12 +508,6 @@ const shangbaoStatusOption = ref([
   { label: '缴纳', value: '2' },
 ]);
 
-const companyNameObj = {
-  "1": "北京博瑞",
-  "2": "51社保",
-  "3": "江苏今元",
-  "4": "北京我推",
-}
 const handleChangeShebaoStatus = () => {
   outsourceSocialSecurityForm.value.yijinStatus = outsourceSocialSecurityForm.value.shebaoStatus;
   outsourceSocialSecurityForm.value.yijinStandard = outsourceSocialSecurityForm.value.shebaoStandard;
@@ -515,12 +515,21 @@ const handleChangeShebaoStatus = () => {
     outsourceDetailStore.queryOutsourceShebaoContractRates().then(res => {
       if (res.code == 1 && res.info.length > 0) {
         // 只存储原始数据，不直接计算
-        contractRates.value = res.info[0];
+        contractRates.value = res.info;
         const p = res.info[0];
-        outsourceSocialSecurityForm.value.serviceMoney = p.handingFee;
-        outsourceSocialSecurityForm.value.shebaoCompany = companyNameObj[p.companyJiao];
-        outsourceSocialSecurityForm.value.yijinJiaoCompany = companyNameObj[p.companyJiao];
-        // 设置基础数据
+        outsourceSocialSecurityForm.value.shebaoCompany = companyJiaoOption.find(item => item.value === p.companyJiao)?.label || '';
+        outsourceSocialSecurityForm.value.yijinJiaoCompany = companyJiaoOption.find(item => item.value === p.companyJiao)?.label || '';
+        handleChangeShebaoCalc(p);
+      }
+    });
+  }
+  if (outsourceSocialSecurityForm.value.shebaoStatus == '1') {
+    outsourceSocialSecurityForm.value = {yijinStatus:'1',shebaoStatus: '1', shebaoCity: outsourceSocialSecurityForm.value.shebaoCity, personId: outsourceSocialSecurityForm.value.personId} as OutsourceSheBaoItem
+  }
+}
+const handleChangeShebaoCalc = (p) => {
+  outsourceSocialSecurityForm.value.serviceMoney = p.handingFee;
+       // 设置基础数据
         outsourceSocialSecurityForm.value.shebaoZuidiJishu = p.shebaoBase;
         outsourceSocialSecurityForm.value.shebaoShijiJishu = p.shebaoBase;
         outsourceSocialSecurityForm.value.yijinZuidiJishu = p.yijinBase;
@@ -581,12 +590,6 @@ const handleChangeShebaoStatus = () => {
         outsourceSocialSecurityForm.value.shengyuCompany = shengyuCompany.value;
         outsourceSocialSecurityForm.value.personTotal = personTotal.value;
         outsourceSocialSecurityForm.value.companyTotal = companyTotal.value;
-      }
-    });
-  }
-  if (outsourceSocialSecurityForm.value.shebaoStatus == '1') {
-    outsourceSocialSecurityForm.value = {yijinStatus:'1',shebaoStatus: '1', shebaoCity: outsourceSocialSecurityForm.value.shebaoCity} as OutsourceSheBaoItem
-  }
 }
 const handleChangeShebaoShijiJishu = () => {
   outsourceSocialSecurityForm.value.yanglaoJishu = outsourceSocialSecurityForm.value.shebaoShijiJishu;
@@ -627,6 +630,11 @@ const handleChangeYijinShijiJishu = () => {
 }
 const handleCompanyNameOption = () => {
   outsourceSocialSecurityForm.value.yijinJiaoCompany = outsourceSocialSecurityForm.value.shebaoCompany;
+  const p = contractRates.value.find(item => item.companyJiao === companyJiaoOption.find(item => item.label === outsourceSocialSecurityForm.value.shebaoCompany)?.value);
+  if (p) {
+    handleChangeShebaoCalc(p);
+  }
+  
 }
 
 const handleSubmit = () => {

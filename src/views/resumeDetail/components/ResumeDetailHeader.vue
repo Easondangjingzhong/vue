@@ -656,18 +656,18 @@
     handleCloseResumeUploadeManage();
   }
   //根据登录人的ID判断是否是NR38不能推荐
-  const isNR38 = ref(true);
-  const queryNrPositionId = () => {
-    resumeDetailStore.queryNrPositionId().then(res => {
-      if(res.code === 1){
-        const resd = res.info[0];
-        if (!resd || (resd.currentPositionId != 38 && resd.currentPositionId != 'NR/寻访员')) {
-          isNR38.value = false;
-        }
-      }
-    })
-  }
-  queryNrPositionId();
+  const isNR38 = ref(false);
+  // const queryNrPositionId = () => {
+  //   resumeDetailStore.queryNrPositionId().then(res => {
+  //     if(res.code === 1){
+  //       const resd = res.info[0];
+  //       if (!resd || (resd.currentPositionId != 38 && resd.currentPositionId != 'NR/寻访员')) {
+  //         isNR38.value = false;
+  //       }
+  //     }
+  //   })
+  // }
+  //queryNrPositionId();
   const limitFlagRecommend = ref(true);
   const queryLimitFlagRecommend = () =>{
     if ((props.resumeData.limitFlag == 'OFFER' && props.resumeData.resumeStatus != '保证期中') ||

@@ -126,7 +126,9 @@
      <a-tag v-if="column.key === 'currentStatus' && record.currentStatus === '4'" color="red">
       未入
     </a-tag>
-
+    <a-tag v-if="column.key === 'infoTableFlag' && record.infoTableFlag == '等待发起'" style="cursor: pointer;" color="red" @click="handleNewJoinerPersonalInformationForm(record)">等待发起</a-tag>
+    <a-tag v-if="column.key === 'infoTableFlag' && record.infoTableFlag == '已经发起'" color="orange">已经发起</a-tag>
+    <a-tag v-if="column.key === 'infoTableFlag' && record.infoTableFlag == '签署完成'" color="green">签署完成</a-tag>
     <a-tag v-if="column.key === 'offerFlag' && record.offerFlag == '等待发起'" color="red">等待发起</a-tag>
     <a-tag v-if="column.key === 'offerFlag' && record.offerFlag == '已经发起'" color="orange">已经发起</a-tag>
     <a-tag v-if="column.key === 'offerFlag' && record.offerFlag == '签署完成'" color="green">签署完成</a-tag>
@@ -202,16 +204,18 @@
     </a-row>
   </div>
   <AddOutsourcePerson/>
+  <NewJoinerPersonalInformationForm/>
 </template>
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import type { TableColumnsType } from 'ant-design-vue';
 import AddOutsourcePerson from '/@/views/outsourceDetail/components/AddOutsourcePerson.vue';
+import NewJoinerPersonalInformationForm from '/@/views/outsourceDetail/components/personComponents/NewJoinerPersonalInformationForm.vue'
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 import { SearchPersonItem,OutsourcePersonItem } from '/@/api/outsourceDetail/model';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { personIsLoading, formStatePerson, getOutsourcePersonList, pageOutsourcePersonList, getProvince, getOutsourceBrand, getOutsourceCompanyAll, getOutsourcePosition, addOutsourcePersonFlag} = storeToRefs(outsourceDetailStore);
+const { personIsLoading, formStatePerson, getOutsourcePersonList, pageOutsourcePersonList, getProvince, getOutsourceBrand, getOutsourceCompanyAll, getOutsourcePosition, addOutsourcePersonFlag, newJoinerPersonalInformationFlag} = storeToRefs(outsourceDetailStore);
 const columnsOutsourceDetail: TableColumnsType = [
   { title: '编号', dataIndex: 'index', key: 'index', fixed: 'left', width: 30, ellipsis: true,},
   { title: '中文', dataIndex: 'userNameCn', key: 'userNameCn', fixed: 'left', width: 40, ellipsis: true,},
@@ -227,7 +231,7 @@ const columnsOutsourceDetail: TableColumnsType = [
   { title: '性质', dataIndex: 'jobType', key: 'jobType', fixed: 'left', width: 40, ellipsis: true },
   { title: '招聘', dataIndex: 'recruitParty', key: 'recruitParty', width: 50, ellipsis: true },
   { title: '推企', dataIndex: 'enterprise', key: 'enterprise', width: 40, ellipsis: true,},
-  { title: '信息表', dataIndex: 'infoTableFlag', key: 'infoTableFlag', width: 40, ellipsis: true,},
+  { title: '信息表', dataIndex: 'infoTableFlag', key: 'infoTableFlag', width: 55, ellipsis: true,},
   { title: 'OFFER', dataIndex: 'offerFlag', key: 'offerFlag', width: 55, ellipsis: true,},
   { title: '薪资', dataIndex: 'salaryStructure', key: 'salaryStructure', width: 55, ellipsis: true,},
   { title: '合同签署', dataIndex: 'contractCompany', key: 'contractCompany', width: 55, ellipsis: true,},
@@ -279,6 +283,10 @@ const columnsOutsourceDetail: TableColumnsType = [
   }
   const handleOutsourcePersonDetail = (record) => {
     outsourceDetailStore.handleOutsourcePersonDetail(record as OutsourcePersonItem);
+  }
+  const handleNewJoinerPersonalInformationForm = (record) => {
+    newJoinerPersonalInformationFlag.value = true;
+    outsourceDetailStore.handleNewJoinerPersonalInformationForm(record as OutsourcePersonItem);
   }
 </script>
 

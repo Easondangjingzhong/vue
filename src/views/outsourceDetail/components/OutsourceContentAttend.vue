@@ -96,6 +96,8 @@
       :scroll="{ x: 1900 }"
     >
     <template #bodyCell="{ column, record }">
+      <a-tag v-if="column.key === 'flag' && record.flag === '1'" color="orange">待录</a-tag>
+      <a-tag v-if="column.key === 'flag' && record.flag === '2'" color="green">已录</a-tag>
       <span v-if="column.key == 'operation'">
         <FormOutlined @click="handleEditClick(record)"/>
       </span>
@@ -139,6 +141,7 @@ const { attendIsLoading,pageOutsourceAttendList,formStateAttend,getOutsourceAtte
 const columnsOutsourceDetail = [
   { title: '编号', dataIndex: 'index', key: 'index', fixed: 'left' as const, width: 20, },
   { title: '计薪月', dataIndex: 'yearAndMonth', key: 'yearAndMonth', fixed: 'left' as const, width: 30, },
+  { title: '标识', dataIndex: 'flag', key: 'flag', fixed: 'left' as const, width: 30, },
   { title: '姓名', dataIndex: 'userNameCn', key: 'userNameCn', fixed: 'left' as const, width: 50, },
   { title: '公司', dataIndex: 'companyName', key: 'companyName', fixed: 'left' as const, width: 40, ellipsis: true },
   { title: '品牌', dataIndex: 'brand', key: 'brand', fixed: 'left' as const, width: 50, ellipsis: true },
