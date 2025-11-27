@@ -99,8 +99,14 @@
       :scroll="{ x: 2200 }"
     >
   <template #bodyCell="{ column, record }">
-    <a v-if="column.key === 'userNameCn'" @click="handleOutsourcePersonDetail(record)">
+    <a v-if="column.key === 'userNameCn'">
+      <a-popover placement="topLeft">
+      <template #content>
+        <a-button size="small" @click="handleOutsourcePersonToResume(record)">简历跳转</a-button>
+        <a-button size="small" style="margin-left: 5px;" @click="handleOutsourcePersonDetail(record)">个人信息</a-button>
+      </template>
       {{ record.userNameCn }}
+      </a-popover>  
     </a>
     <a-tag v-if="column.key === 'salaryStructure' && record.salaryStructure === '0.00/月'" color="orange">
       待录
@@ -132,7 +138,7 @@
     <a-tag v-if="column.key === 'offerFlag' && record.offerFlag == '等待发起'" color="red">等待发起</a-tag>
     <a-tag v-if="column.key === 'offerFlag' && record.offerFlag == '已经发起'" color="orange">已经发起</a-tag>
     <a-tag v-if="column.key === 'offerFlag' && record.offerFlag == '签署完成'" color="green">签署完成</a-tag>
-    <a-tag v-if="column.key === 'contractCompany' && record.contractCompany == '等待发起'" color="red">等待发起</a-tag>
+    <a-tag v-if="column.key === 'contractCompany' && record.contractCompany == '等待发起'" style="cursor: pointer;" color="red" @click="handleContractInfomationForm(record)">等待发起</a-tag>
     <a-tag v-if="column.key === 'contractCompany' && record.contractCompany == '已经发起'" color="orange">已经发起</a-tag>
     <a-tag v-if="column.key === 'contractCompany' && record.contractCompany == '签署完成'" color="green">签署完成</a-tag>
 
@@ -204,18 +210,33 @@
     </a-row>
   </div>
   <AddOutsourcePerson/>
+  <ContractInfomationForm/>
   <NewJoinerPersonalInformationForm/>
 </template>
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
+import { handleToResumeDetails } from '/@/router/index';
 import type { TableColumnsType } from 'ant-design-vue';
 import AddOutsourcePerson from '/@/views/outsourceDetail/components/AddOutsourcePerson.vue';
+import ContractInfomationForm from '/@/views/outsourceDetail/components/personComponents/ContractInfomationForm.vue'
 import NewJoinerPersonalInformationForm from '/@/views/outsourceDetail/components/personComponents/NewJoinerPersonalInformationForm.vue'
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 import { SearchPersonItem,OutsourcePersonItem } from '/@/api/outsourceDetail/model';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { personIsLoading, formStatePerson, getOutsourcePersonList, pageOutsourcePersonList, getProvince, getOutsourceBrand, getOutsourceCompanyAll, getOutsourcePosition, addOutsourcePersonFlag, newJoinerPersonalInformationFlag} = storeToRefs(outsourceDetailStore);
+const { 
+  personIsLoading, 
+  formStatePerson, 
+  getOutsourcePersonList, 
+  pageOutsourcePersonList, 
+  getProvince, 
+  getOutsourceBrand, 
+  getOutsourceCompanyAll, 
+  getOutsourcePosition, 
+  addOutsourcePersonFlag, 
+  newJoinerPersonalInformationFlag,
+  contractInfomatiomFlag
+} = storeToRefs(outsourceDetailStore);
 const columnsOutsourceDetail: TableColumnsType = [
   { title: '编号', dataIndex: 'index', key: 'index', fixed: 'left', width: 30, ellipsis: true,},
   { title: '中文', dataIndex: 'userNameCn', key: 'userNameCn', fixed: 'left', width: 40, ellipsis: true,},
@@ -239,7 +260,7 @@ const columnsOutsourceDetail: TableColumnsType = [
   { title: '终止日期', dataIndex: 'endTime', key: 'endTime', width: 60, ellipsis: true,},
   { title: '周期', dataIndex: 'contractPeriod', key: 'contractPeriod', width: 40, ellipsis: true,},
   { title: '预计入职', dataIndex: 'planEntryTime', key: 'planEntryTime', width: 60, ellipsis: true,},
-  { title: '实际日期', dataIndex: 'realEntryTime', key: 'realEntryTime', width: 60, ellipsis: true,},
+  { title: '实际入职', dataIndex: 'realEntryTime', key: 'realEntryTime', width: 60, ellipsis: true,},
   { title: '预计离职', dataIndex: 'planLeaveTime', key: 'planLeaveTime', width: 60, ellipsis: true,},
   { title: '实际离职', dataIndex: 'realLeaveTime', key: 'realLeaveTime', width: 60, ellipsis: true,},
   { title: '离申', dataIndex: 'proofFlag', key: 'proofFlag', width: 30, ellipsis: true,},
@@ -284,9 +305,16 @@ const columnsOutsourceDetail: TableColumnsType = [
   const handleOutsourcePersonDetail = (record) => {
     outsourceDetailStore.handleOutsourcePersonDetail(record as OutsourcePersonItem);
   }
+  const handleOutsourcePersonToResume = (record) => {
+    handleToResumeDetails(record.resumeId, '');
+  }
   const handleNewJoinerPersonalInformationForm = (record) => {
     newJoinerPersonalInformationFlag.value = true;
     outsourceDetailStore.handleNewJoinerPersonalInformationForm(record as OutsourcePersonItem);
+  }
+  const handleContractInfomationForm = (record) => {
+    contractInfomatiomFlag.value = true;
+    outsourceDetailStore.handleContractInfomationForm(record as OutsourcePersonItem);
   }
 </script>
 

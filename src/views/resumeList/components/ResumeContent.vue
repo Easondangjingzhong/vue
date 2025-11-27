@@ -63,7 +63,7 @@
           >
             <a-input
               v-model:value="formState.keyWords"
-              placeholder="可搜索姓名,手机,公司,邮箱,用逗号隔开"
+              placeholder="可搜索姓名,手机,公司,邮箱,专业,用逗号隔开"
             />
           </a-form-item>
           <a-form-item

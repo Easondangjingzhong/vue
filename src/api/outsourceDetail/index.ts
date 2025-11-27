@@ -35,7 +35,47 @@ enum URL {
   query_work__by_resumeId = '/candidateRecommend/resume-vue-select-out-work-byreusmeId.action',
   query_mark_list = '/candidate/rusume-vue-query-market-addcity.action',
   query_counselor_list = '/candidate/rusume-vue-query-left-teamperson-admin-qie.action',
+  query_esign_template_list = '/employee-group/resume-vue-esign-query-template-list.action',
+  query_esign_template_detail = '/employee-group/resume-vue-esign-query-template-detail.action',
+  query_esign_template_by_sign = '/employee-group/resume-vue-esign-create-template-bysign.action',
+  query_esign_personId_by_phone = '/employee-group/resume-vue-esign-query-personId-info.action',
+  update_outsource_person_msg = '/candidateRecommend/resume-vue-update-out-person-msg.action',
 }
+/**
+ * 更新外包人员信息表
+ * @param data 
+ * @returns 
+ */
+const updateOutsourcePersonMsg = async (data: any) => 
+  post<any>({ url: URL.update_outsource_person_msg, data});
+/**
+ * 查询经办人信息
+ * @param data psnAccount ruCompanyName
+ * @returns 
+ */
+const handleChangePsnAccount = async (data: any) => 
+  post<any>({ url: URL.query_esign_personId_by_phone, data});
+/**
+ * 查询签署模板列表
+ * @param data pageNumber pageSize ruCompanyName status  //1启用 2未启用
+ * @returns 
+ */
+const queryEsignTemplateList = async (data: any) => 
+  post<any>({ url: URL.query_esign_template_list, data});
+/**
+ * 查询签署模板详情
+ * @param data templateId ruCompanyName
+ * @returns 
+ */
+const queryEsignTemplateDetail = async (data: any) => 
+  post<any>({ url: URL.query_esign_template_detail, data});
+/**
+ * 查询签署模板拟定合同
+ * @param data TemplateDetail
+ * @returns 
+ */
+const queryEsignTemplateBySign = async (data: any) => 
+  post<any>({ url: URL.query_esign_template_by_sign, data});
 /**
  * 查询顾问列表
  * @returns 
@@ -282,6 +322,11 @@ const queryOutsourceMonthSalary = async (data: any) =>
   post<any>({ url: URL.query_outsource_month_salary, data});
 
 export default { 
+  updateOutsourcePersonMsg,
+  handleChangePsnAccount,
+  queryEsignTemplateList,
+  queryEsignTemplateDetail,
+  queryEsignTemplateBySign,
   queryCounselorList,
   addOutsourceBasic,
   queryMarkList,

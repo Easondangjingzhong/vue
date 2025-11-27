@@ -13,7 +13,7 @@
         <tr>
           <td>社保</td>
           <td>
-             <a-tag v-if="getOutsourceSocialSecurityDetailList.length === 0" color="red">不缴</a-tag>
+             <a-tag v-if="getOutsourceSocialSecurityDetailList.length === 0" color="orange">待录</a-tag>
              <a-tag v-if="socialSecurity.shebaoStatus === '1'" color="red">不缴</a-tag>
              <a-tag v-if="socialSecurity.shebaoStatus === '2'" color="orange">待缴</a-tag>
              <a-tag v-if="socialSecurity.shebaoStatus === '3'" color="green">已缴</a-tag>
@@ -45,7 +45,7 @@
         <tr>
           <td>一金</td>
           <td>
-            <a-tag v-if="getOutsourceSocialSecurityDetailList.length === 0" color="red">不缴</a-tag>
+            <a-tag v-if="getOutsourceSocialSecurityDetailList.length === 0" color="orange">待录</a-tag>
              <a-tag v-if="socialSecurity.yijinStatus === '1'" color="red">不缴</a-tag>
              <a-tag v-if="socialSecurity.yijinStatus === '2'" color="orange">待缴</a-tag>
              <a-tag v-if="socialSecurity.yijinStatus === '3'" color="green">已缴</a-tag>
@@ -77,9 +77,9 @@
          <tr>
           <td>商保</td>
           <td>
-            <a-tag v-if="getOutsourceSocialSecurityDetailList.length === 0" color="red">不缴</a-tag>
+            <a-tag v-if="getOutsourceSocialSecurityDetailList.length === 0" color="orange">待录</a-tag>
              <a-tag v-if="socialSecurity.shangbaoStatus === '1'" color="red">不缴</a-tag>
-             <a-tag v-if="socialSecurity.shangbaoStatus === '2'" color="orange">缴纳</a-tag>
+             <a-tag v-if="socialSecurity.shangbaoStatus === '2'" color="green">缴纳</a-tag>
           </td>
           <td>客户收费</td>
           <td>{{ socialSecurity.keShangbao ? socialSecurity.keShangbao : '-' }}</td>
@@ -103,7 +103,7 @@
     </div>
   </a-col>
 </a-row>
-<a-row :gutter="24" v-if="getOutsourceSocialSecurityDetailList.length > 0">
+<a-row :gutter="24" v-if="getOutsourceSocialSecurityDetailList.length > 0 && (socialSecurity.shebaoStatus !== '1' || socialSecurity.yijinStatus !== '1' || socialSecurity.shangbaoStatus !== '1')">
   <a-col :span="24">
     <a-table
       size="small"

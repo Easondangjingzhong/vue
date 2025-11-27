@@ -11,7 +11,7 @@
     placement="right"
   >
     <template #extra>
-      <CloseOutlined @click="addOutsourcePersonFlag = false" />
+      <CloseOutlined @click="closeDrawer" />
     </template>
     <div>
       <a-form :model="addOutsourcePersonForm" :label-col="labelCol"  @finish="handleSubmit">
@@ -230,7 +230,7 @@
             <a-button type="primary" :loading="iconLoading" html-type="submit">
               保存
             </a-button>
-            <a-button style="margin-left: 10px" @click="addOutsourcePersonFlag = false">
+            <a-button style="margin-left: 10px" @click="closeDrawer">
               取消
             </a-button>
           </a-col>
@@ -244,6 +244,7 @@ import { storeToRefs } from 'pinia';
 import { message } from 'ant-design-vue';
 import { debounce } from 'lodash-es';
 import { CloseOutlined } from '@ant-design/icons-vue';
+import { OutsourcePersonItem } from '/@/api/outsourceDetail/model';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
 const { addOutsourcePersonFlag, addOutsourcePersonForm, getOutsourceCompanyAll, getOutsourceCompanyBrand, getProvince, getOutsourcePosition, getOutsourceMarkList, getOutsourceRecruitList } = storeToRefs(outsourceDetailStore);
@@ -263,6 +264,7 @@ const handlePhoneNumberChange = () => {
       addOutsourcePersonForm.value.email = info.EMAIL || '';
       addOutsourcePersonForm.value.sex = info.GENDER || '';
       addOutsourcePersonForm.value.userNameCn = info.USER_NAME || '';
+      addOutsourcePersonForm.value.resumeId = info.ID || '';
       // 处理USER_NAME，提取中文和英文部分
       if (info.USER_NAME) {
         const userName = info.USER_NAME;
@@ -306,6 +308,7 @@ const handleCitySearch = () => {
 }
 const iconLoading = ref(false);
 const handleSubmit = () => {
+  iconLoading.value = true;
   addOutsourcePersonForm.value.market = getOutsourceMarkList.value.find(item => item.value === addOutsourcePersonForm.value.mId)?.label || '';
   addOutsourcePersonForm.value.brand = getOutsourceCompanyBrand.value.find(item => item.value === addOutsourcePersonForm.value.bId)?.label || '';
   addOutsourcePersonForm.value.positions = getOutsourcePosition.value.find(item => item.value === addOutsourcePersonForm.value.positionId)?.label || '';
@@ -315,13 +318,17 @@ const handleSubmit = () => {
   outsourceDetailStore.addOutsourceBasic().then(res => {
     if (res.code == 1) {
       message.success('操作成功');
-      addOutsourcePersonFlag.value = false;
-      iconLoading.value = false;
+      closeDrawer();
     } else {
       message.error('操作失败');
       iconLoading.value = false;
     }
   });
+}
+const closeDrawer = () => {
+  iconLoading.value = false;
+  addOutsourcePersonFlag.value = false;
+  addOutsourcePersonForm.value = {} as OutsourcePersonItem;
 }
 </script>
 

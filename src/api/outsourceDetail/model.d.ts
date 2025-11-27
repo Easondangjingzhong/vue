@@ -168,6 +168,7 @@ export interface SearchSheBaoItem {
  */
 export interface OutsourceSheBaoItem {
   id?: number;
+  shebaoSign?: string;
   userNameCn?: string;
   userNameEn?: string;
   currentStatus?: string;
@@ -650,5 +651,56 @@ export interface OutsourceShebaoInfoItem {
   yiliaoBase?: string;
   updateTime?: string;
   updateUser?: string;
+}
+
+export interface OfferOutsourceFamilyItem {
+  id?: number;
+  personId?: number;
+  relationship?: string;
+  name?: string;
+  age?: string;
+  companyName?: string;
+  position?: string;
+  mobile?: string;
+}
+export interface OfferOutsourceWorkItem {
+  id?: number;
+  personId?: number;
+  startDate?: string;
+  endDate?: string;
+  companyName?: string;
+  position?: string;
+  demissionReason?: string;
+}
+export interface NewJoinerPersonalInfoItem {
+  id?: number;
+  userNameCn?: string;
+  userNameEn?: string;
+  idCard?: string;
+  sex?: string;
+  phoneNumber?: string;
+  email?: string;
+
+  department?: string;
+  placeOfBirth?: string;
+  ethnic?: string;
+  politicsStatus?: string;
+  highestStandard?: string;
+  martialStatus?: string;
+  healthCondition?: string;
+  placeOfDomicile?: string;
+  censusRegister?: string;
+  criminalRecord?: string;
+  emergencyContact?: string;
+  emergencyMobile?: string;
+  emergencyRelationshiip?: string;
+  isDismissed?: string;
+  dismissedReason?: string;
+  isNonCompete?: string;
+  documentAddress?: string;
+  livingAddress?: string;
+
+  offerOutsourceFamilies: OfferOutsourceFamilyItem[];
+  offerOutsourceWorks?: OfferOutsourceWorkItem[];
 }
 

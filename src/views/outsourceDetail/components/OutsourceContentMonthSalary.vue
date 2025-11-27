@@ -84,6 +84,9 @@
           <a-button @click="handleSearchOutsourcePerson('1')" :class="{'active': formStateMonthSalary.currentStatus === ''}" style="margin-right: 5px;" size="small">全部</a-button>
           <a-button @click="handleSearchOutsourcePerson('4')" :class="{'active': formStateMonthSalary.companyArrange === '1'}" style="margin-right: 5px;" size="small" title="按公司排序">排序</a-button>
         </span>
+         <span>
+           <a-button @click="handleOutsourceFormula" style="background-color: #eee" size="small">公司公式</a-button>
+        </span>
     </a-row>
     <a-row>
     <a-table
@@ -218,6 +221,10 @@ const onSearch = () => {
 onSearch();
 const handleOutsourceMonthSalaryListData = () => {
   outsourceDetailStore.queryOutsourceMonthSalary();
+}
+
+const handleOutsourceFormula = () => {
+  
 }
 </script>
 

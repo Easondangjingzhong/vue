@@ -19,6 +19,7 @@ import {
   OutsourceSheBaoContractRatesItem,
   OutsourceShebaoInfoItem,
 } from '/@/api/outsourceDetail/model';
+import { get } from '/@/utils/http';
 //import { get } from 'http';
 const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: '' } = JSON.parse(
   localStorage.getItem('loginVueUser') || '{}',
@@ -105,6 +106,11 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     outsourceSocialSecurityInfoForm: {} as OutsourceShebaoInfoItem, //外包社保基数详情 社保信息表单
     markIdList: [] as any[], //外包店铺列表
     counselorList: [] as any[], //外包顾问列表
+    contractInfomatiomFlag: false, //合同信息
+    esignTemplateList: [] as any[], //电子合同模板列表
+    esignTemplateDetail: {} as any, //电子合同模板详情
+    contractInfomationFormTemp: {} as OutsourcePersonItem, //合同信息
+    esignTemplatePsnAccount: {} as any, //电子合同模板 经办人信息
   }),
   getters: {
     getOutsourcePersonList: (state) =>
@@ -143,7 +149,9 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           (index + 1),
       shebaoShijiaoTime: item.shebaoShijiaoTime ? formatToMonth(item.shebaoShijiaoTime) : '',
       serviceMoney: item.serviceMoney != '公式' ? parseFloat(item.serviceMoney || '0').toFixed(2) : item.serviceMoney,
-      shangbaoTotal: parseFloat((parseFloat(item.personTotal?.toString() || '0') + parseFloat(item.companyTotal?.toString() || '0') + parseFloat(item.serviceMoney != '公式' ? (item.serviceMoney?.toString() || '0') : '0')).toString()).toFixed(2),
+      companyTotal: parseFloat(((item?.companyTotal|| 0) - (item.yijinCompany || 0)).toFixed(2)),
+      personTotal: parseFloat(((item?.personTotal|| 0) - (item.yijinPerson || 0)).toFixed(2)),
+      shangbaoTotal: parseFloat((parseFloat(((item?.companyTotal || 0) - (item.yijinCompany || 0)).toFixed(2)) + parseFloat(((item?.personTotal || 0) - (item.yijinPerson || 0)).toFixed(2)) + parseFloat(item.serviceMoney != '公式' ? (item.serviceMoney?.toString() || '0') : '0')).toString()).toFixed(2),
     })),
     getOutsourceAttendList: (state) => state.outsourceAttendList.map((item, index) => ({
       ...item,
@@ -239,6 +247,8 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       ...item,
       index: index + 1,
       changeTime: item.changeTime ? formatToDate(item.changeTime) : '',
+      companyShebao: parseFloat((Number(item.companyShebao || 0) - Number(item.companyYijin || 0)).toFixed(2)),
+      personShebao: parseFloat((Number(item.personShebao || 0) - Number(item.personYijin || 0)).toFixed(2)),
     })),
     getOutsourceSocialSecurityDetailList: (state) => state.outsourceSocialSecurityDetailList.map((item, index) => ({
       ...item,
@@ -256,6 +266,8 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       shebaoShitingTime: item.shebaoShitingTime ? formatToDate(item.shebaoShitingTime) : '',
       yijinShitingTime: item.yijinShitingTime ? formatToDate(item.yijinShitingTime) : '',
       shangbaoShitingTime: item.shangbaoShitingTime ? formatToDate(item.shangbaoShitingTime) : '',
+      companyTotal: parseFloat(((item?.companyTotal || 0) - (item.yijinCompany || 0)).toFixed(2)),
+      personTotal: parseFloat(((item?.personTotal || 0) - (item.yijinPerson || 0)).toFixed(2)),
     })),
     getOutsourceMarkList: (state) =>
       state.markIdList?.map((item) => {
@@ -299,8 +311,20 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           label: recruit.realNameEn, 
         })) || []
       ) || [];
-      // 在数组开头添加固定选项
-      return [{ value: '9999', label: '公司' }, ...recruitList];
+     // 添加固定选项
+      const allOptions = [{ value: '9999', label: '公司' }, ...recruitList];
+      
+      // 去重处理：使用Map来确保value的唯一性
+      const uniqueOptionsMap = new Map();
+      allOptions.forEach(option => {
+        // 只保留首次出现的value对应的选项
+        if (!uniqueOptionsMap.has(option.value)) {
+          uniqueOptionsMap.set(option.value, option);
+        }
+      });
+      
+      // 将Map转换回数组并返回
+      return Array.from(uniqueOptionsMap.values());
     },
     getOutsourceCompanyBrand: (state) =>
         state.outsourceCompanyBrand?.map((item) => {
@@ -319,9 +343,11 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     getOutsourceShebaoCollect: (state) => state.outsourceShebaoCollect.map((item, index) => ({
       ...item,
       index: index + 1,
+      serviceMoney: parseFloat(item.serviceMoney?.toString() || '0').toFixed(2),
       shebaoTotal: parseFloat(((item.companyTotal || 0) + (item.personTotal || 0) + parseFloat(item.serviceMoney?.toString() || '0')).toString()).toFixed(2),
       detaillist: item.detaillist.map((detailItem) => ({
         ...detailItem,
+        serviceMoney: parseFloat(detailItem.serviceMoney?.toString() || '0').toFixed(2),
         shebaoTotal: parseFloat(((detailItem.companyTotal || 0) + (detailItem.personTotal || 0) + parseFloat(detailItem.serviceMoney?.toString() == '公式' ? '0' : detailItem.serviceMoney?.toString() || '0')).toString()).toFixed(2),
       })),
     })),
@@ -343,6 +369,14 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       issueTime: item.issueTime ? formatToMonth(item.issueTime) : '',
       updateTime: item.updateTime ? formatToDate(item.updateTime) : '',
     })),
+    getEsignTemplateList: (state) => state.esignTemplateList.map((item) => {
+          return {
+            label: item.signTemplateName,
+            value: item.signTemplateId,
+          };
+    }),
+    getEsignTemplateDetail: (state) => state.esignTemplateDetail,
+    getEsignTemplatePsnAccount: (state) => state.esignTemplatePsnAccount, //电子合同模板 经办人信息
   },
   actions: {
     /**
@@ -714,6 +748,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       formData.append("planLeaveTime", this.addOutsourcePersonForm.planLeaveTime || '');
       formData.append("offerTime", this.addOutsourcePersonForm.offerTime || '');
       formData.append("currentStatus", this.addOutsourcePersonForm.currentStatus || '');
+      formData.append("resumeId", this.addOutsourcePersonForm.resumeId?.toString() || '');
       const res = await fetchApi.addOutsourceBasic(formData);
       if (res.code == 1) {
         this.addOutsourcePersonForm = {} as OutsourcePersonItem;
@@ -980,6 +1015,11 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         ...record,
       };
     },
+    handleContractInfomationForm(record: OutsourcePersonItem) {
+      this.contractInfomationFormTemp = {
+        ...record,
+      };
+    },
        /**
      * 根据resumeId查询工作经历
      */
@@ -1014,6 +1054,79 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       if (res.info) {
         this.counselorList = res.info;
       }
+      return res;
+    },
+    /**
+     * 查询签署模板列表
+     * @param ruCompanyName 
+     * @returns 
+     */
+     async queryEsignTemplateList(ruCompanyName: string) {
+      const formData = new FormData();
+      formData.append('pageNumber', '1');
+      formData.append('pageSize', '50');
+      formData.append('ruCompanyName', ruCompanyName);
+      formData.append('status', '1');
+      const res = await fetchApi.queryEsignTemplateList(formData);
+      if (res.info) {
+        this.esignTemplateList = res.info?.data?.signTemplates;
+      }
+      return res;
+    },
+     /**
+     * 查询签署模板列表
+     * @param ruCompanyName 
+     * @returns 
+     */
+     async queryEsignTemplateDetail(ruCompanyName: string,templateId: string) {
+      if (!ruCompanyName || !templateId) {
+        this.esignTemplateDetail = {};
+        return;
+      }
+      const formData = new FormData();
+      formData.append('templateId', templateId);
+      formData.append('ruCompanyName', ruCompanyName);
+      const res = await fetchApi.queryEsignTemplateDetail(formData);
+      if (res.info) {
+        this.esignTemplateDetail = res.info?.data;
+      }
+      return res;
+    },
+     /**
+     * 查询经办人信息
+     * @param ruCompanyName 
+     * @returns 
+     */
+     async handleChangePsnAccount(ruCompanyName: string,psnAccount: string) {
+      if (!ruCompanyName || !psnAccount) {
+        this.esignTemplatePsnAccount = {};
+        return;
+      }
+      const formData = new FormData();
+      formData.append('psnAccount', psnAccount);
+      formData.append('ruCompanyName', ruCompanyName);
+      const res = await fetchApi.handleChangePsnAccount(formData);
+      if (res.info) {
+        this.esignTemplatePsnAccount = res.info?.data;
+      }
+      return res;
+    },
+     /**
+     * 查询签署模板拟定合同
+      * @param data TemplateDetail
+     * @returns 
+     */
+     async queryEsignTemplateBySign(TemplateDetail) {
+      const res = await fetchApi.queryEsignTemplateBySign(TemplateDetail);
+      return res;
+    },
+     /**
+     * 更新外包人员信息表
+      * @param data OfferOutsourcePerson
+     * @returns 
+     */
+     async updateOutsourcePersonMsg(TemplateDetail) {
+      const res = await fetchApi.updateOutsourcePersonMsg(TemplateDetail);
       return res;
     },
   },

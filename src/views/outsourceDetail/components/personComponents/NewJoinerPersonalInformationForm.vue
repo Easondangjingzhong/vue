@@ -57,14 +57,14 @@
           身份证号码
         </a-col>
         <a-col :span="4" class="personalInfoContent personalInfoTwoBorder">
-          <input v-model="newJoinerPersonalInformationForm.idCardNumber" name="idCardNumber" placeholder="请输入身份证号码" class="no-border-input"/>
+          <input v-model="newJoinerPersonalInformationForm.idCard" name="idCard" placeholder="请输入身份证号码" class="no-border-input"/>
         </a-col>
          <a-col :span="4" class="personalInfoTwoBorder">
           Gender<br/>
           性别
         </a-col>
         <a-col :span="3" class="personalInfoContent personalInfoTwoBorder">
-          <input v-model="newJoinerPersonalInformationForm.gender" name="gender" placeholder="请输入性别" class="no-border-input"/>
+          <input v-model="newJoinerPersonalInformationForm.sex" name="sex" placeholder="请输入性别" class="no-border-input"/>
         </a-col>
         <a-col :span="3" class="personalInfoRightBorder"></a-col>
       </a-row>
@@ -98,7 +98,7 @@
           手机号码
         </a-col>
         <a-col :span="3" class="personalInfoContent personalInfoTwoBorder">
-          <input v-model="newJoinerPersonalInformationForm.mobile" name="mobile" placeholder="请输入手机号码" class="no-border-input"/>
+          <input v-model="newJoinerPersonalInformationForm.phoneNumber" name="phoneNumber" placeholder="请输入手机号码" class="no-border-input"/>
         </a-col>
         <a-col :span="3" class="personalInfoTwoBorder">
           E-mail<br/>
@@ -121,14 +121,14 @@
           Highest Standard <br/>Attained 最高学历
         </a-col>
         <a-col :span="3" class="personalInfoContent personalInfoTwoBorder">
-          <input v-model="newJoinerPersonalInformationForm.highestStandardAttained" name="highestStandardAttained" placeholder="请输入最高学历" class="no-border-input"/>
+          <input v-model="newJoinerPersonalInformationForm.highestStandard" name="highestStandard" placeholder="请输入最高学历" class="no-border-input"/>
         </a-col>
         <a-col :span="3" class="personalInfoTwoBorder">
           Martial Status<br/>
           婚姻状况
         </a-col>
         <a-col :span="4" class="personalInfoContent personalInfoTwoBorder">
-          <input v-model="newJoinerPersonalInformationForm.maritalStatus" name="maritalStatus" placeholder="请输入婚姻状况" class="no-border-input"/>
+          <input v-model="newJoinerPersonalInformationForm.martialStatus" name="martialStatus" placeholder="请输入婚姻状况" class="no-border-input"/>
         </a-col>
          <a-col :span="4" class="personalInfoTwoBorder">
           Health Condition<br/>
@@ -159,7 +159,7 @@
           是否有过犯罪记录
         </a-col>
         <a-col :span="3" class="personalInfoContent personalInfoTwoBorder">
-          <input v-model="newJoinerPersonalInformationForm.hasCriminalRecord" name="hasCriminalRecord" placeholder="请输入是否有过犯罪记录" class="no-border-input"/>
+          <input v-model="newJoinerPersonalInformationForm.criminalRecord" name="criminalRecord" placeholder="请输入是否有过犯罪记录" class="no-border-input"/>
         </a-col>
         <a-col :span="3" class="personalInfoTwoBorder"></a-col>
       </a-row>
@@ -176,14 +176,14 @@
           紧急联络人联系方式
         </a-col>
         <a-col :span="4" class="personalInfoContent personalInfoTwoBorder">
-          <input v-model="newJoinerPersonalInformationForm.emergencyContactNo" name="emergencyContactNo" placeholder="请输入紧急联络人联系方式" class="no-border-input"/>
+          <input v-model="newJoinerPersonalInformationForm.emergencyMobile" name="emergencyMobile" placeholder="请输入紧急联络人联系方式" class="no-border-input"/>
         </a-col>                       
          <a-col :span="4" class="personalInfoTwoBorder" style="display: flex;align-items: center;">
           Relationship with the emergency contact<br/>
           与紧急联系人的关系
         </a-col>
         <a-col :span="6" class="personalInfoContent personalInfoTwoBorder">
-          <input v-model="newJoinerPersonalInformationForm.relationshipWithEmergencyContact" name="relationshipWithEmergencyContact" placeholder="请输入与紧急联系人的关系" class="no-border-input"/>
+          <input v-model="newJoinerPersonalInformationForm.emergencyRelationshiip" name="emergencyRelationshiip" placeholder="请输入与紧急联系人的关系" class="no-border-input"/>
         </a-col>
       </a-row>
       <a-row :gutter="24">
@@ -192,14 +192,14 @@
           是否被前单位除名/辞退
         </a-col>
         <a-col :span="4" class="personalInfoContent personalInfoTwoBorder">
-          <input v-model="newJoinerPersonalInformationForm.hasDismissedFromPreviousCompany" name="hasDismissedFromPreviousCompany" placeholder="请输入是否被前单位除名/辞退" class="no-border-input"/>
+          <input v-model="newJoinerPersonalInformationForm.isDismissed" name="isDismissed" placeholder="请输入是否被前单位除名/辞退" class="no-border-input"/>
         </a-col>
         <a-col :span="4" class="personalInfoTwoBorder">
           If YES, please list the reason<br/>
           如选是请告知原因
         </a-col>
         <a-col :span="6" class="personalInfoContent personalInfoTwoBorder">
-          <input v-model="newJoinerPersonalInformationForm.hasDismissedFromPreviousCompanyReason" name="hasDismissedFromPreviousCompanyReason" class="no-border-input"/>
+          <input v-model="newJoinerPersonalInformationForm.dismissedReason" name="dismissedReason" class="no-border-input"/>
         </a-col>
       </a-row>
       <a-row :gutter="24">
@@ -208,7 +208,7 @@
           是否与前工作单位签署竞业限制协议
         </a-col>
         <a-col :span="14" class="personalInfoContent personalInfoTwoBorder">
-          <input v-model="newJoinerPersonalInformationForm.hasSignedNonCompeteAgreementWithPreviousEmployer" name="hasSignedNonCompeteAgreementWithPreviousEmployer" placeholder="请输入是否与前工作单位签署竞业限制协议" class="no-border-input"/>
+          <input v-model="newJoinerPersonalInformationForm.isNonCompete" name="isNonCompete" placeholder="请输入是否与前工作单位签署竞业限制协议" class="no-border-input"/>
         </a-col>
       </a-row>
       <a-row :gutter="24">
@@ -217,7 +217,7 @@
           户籍/身份证地址
         </a-col>
         <a-col :span="20" class="personalInfoContent personalInfoTwoBorder">
-          <input v-model="newJoinerPersonalInformationForm.censusRegisterAddress" name="censusRegisterAddress" placeholder="请输入户籍/身份证地址" class="no-border-input"/>
+          <input v-model="newJoinerPersonalInformationForm.documentAddress" name="documentAddress" placeholder="请输入户籍/身份证地址" class="no-border-input"/>
         </a-col>
       </a-row>
        <a-row :gutter="24">
@@ -226,7 +226,7 @@
           本市联系/居住地址
         </a-col>
         <a-col :span="20" class="personalInfoContent personalInfoTwoBorder">
-          <input v-model="newJoinerPersonalInformationForm.currentLivingAddress" name="currentLivingAddress" placeholder="请输入本市联系/居住地址" class="no-border-input"/>
+          <input v-model="newJoinerPersonalInformationForm.livingAddress" name="livingAddress" placeholder="请输入本市联系/居住地址" class="no-border-input"/>
         </a-col>
       </a-row>
 
@@ -259,15 +259,15 @@
           离职原因
         </a-col>
       </a-row>
-      <a-row :gutter="24" v-for="(item, index) in newJoinerPersonalInformationForm.workExperience" :key="index">
+      <a-row :gutter="24" v-for="(item, index) in newJoinerPersonalInformationForm.offerOutsourceWorks" :key="index">
         <a-col :span="6" class="personalInfoThreeBottomBorder personalInfoCenter">
-          {{ startAndEndYearWork(item.startYear, item.startMonth, item.endYear, item.endMonth) }}
+          {{ item.startDate }} - {{ item.endDate == '-1' ? '至今' : item.endDate }}
         </a-col>
         <a-col :span="6" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
           {{ item.companyName }}
         </a-col>
         <a-col :span="6" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          {{ item.positionName }}
+          {{ item.position }}
         </a-col>
         <a-col :span="6" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
           <input v-model="item.demissionReason" name="demissionReason" placeholder="请输入离职原因" class="no-border-input"/>
@@ -286,7 +286,7 @@
       </a-row>
 
       <a-row :gutter="24">
-        <a-col :span="3" class="personalInfoThreeBottomBorder personalInfoCenter">
+        <a-col :span="3" class="personalInfoContent personalInfoThreeBottomBorder personalInfoCenter">
           Relationship<br/>
           称谓
         </a-col>
@@ -298,7 +298,7 @@
           Age<br/>
           年龄
         </a-col>
-        <a-col :span="9" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
+        <a-col :span="8" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
           Company Name<br/>
           工作单位
         </a-col>
@@ -310,68 +310,34 @@
           Contact No.<br/>
           联系方式
         </a-col>
+        <a-col :span="1" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
+          <PlusOutlined style="cursor: pointer;" @click="addFamilyMember()"/>
+        </a-col>
       </a-row>
-      <a-row :gutter="24">
+      <a-row :gutter="24" v-for="(item, index) in newJoinerPersonalInformationForm.offerOutsourceFamilies" :key="index">
         <a-col :span="3" class="personalInfoThreeBottomBorder personalInfoCenter">
-          Father 父亲
+          <a-select v-model:value="item.relationship" name="relationship" style="width: 100%;">
+            <a-select-option value="Father 父亲">Father 父亲</a-select-option>
+            <a-select-option value="Mother 母亲">Mother 母亲</a-select-option>
+            <a-select-option value="Spouse 配偶">Spouse 配偶</a-select-option>
+          </a-select>
         </a-col>
         <a-col :span="3" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          <input v-model="newJoinerPersonalInformationForm.fatherName" name="fatherName" placeholder="请输入父亲姓名" class="no-border-input"/>
+          <input v-model="item.name" name="name" placeholder="请输入姓名" class="no-border-input"/>
         </a-col>
         <a-col :span="3" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          <input v-model="newJoinerPersonalInformationForm.fatherAge" name="fatherAge" placeholder="请输入父亲年龄" class="no-border-input"/>
+          <input v-model="item.age" name="age" placeholder="请输入年龄" class="no-border-input"/>
         </a-col>
-        <a-col :span="9" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          <input v-model="newJoinerPersonalInformationForm.fatherWorkUnit" name="fatherWorkUnit" placeholder="请输入父亲工作单位" class="no-border-input"/>
-        </a-col>
-        <a-col :span="3" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          <input v-model="newJoinerPersonalInformationForm.fatherPosition" name="fatherPosition" placeholder="请输入父亲职位/职务" class="no-border-input"/>
+        <a-col :span="8" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
+          <input v-model="item.companyName" name="companyName" placeholder="请输入工作单位" class="no-border-input"/>
         </a-col>
         <a-col :span="3" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          <input v-model="newJoinerPersonalInformationForm.fatherContact" name="fatherContact" placeholder="请输入父亲联系方式" class="no-border-input"/>
+          <input v-model="item.position" name="position" placeholder="请输入职位/职务" class="no-border-input"/>
+        </a-col>
+        <a-col :span="4" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
+          <input v-model="item.mobile" name="mobile" placeholder="请输入联系方式" class="no-border-input"/>
         </a-col>
       </a-row>
-      <a-row :gutter="24">
-        <a-col :span="3" class="personalInfoThreeBottomBorder personalInfoCenter">
-          Mother 母亲
-        </a-col>
-        <a-col :span="3" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          <input v-model="newJoinerPersonalInformationForm.motherName" name="motherName" placeholder="请输入母亲姓名" class="no-border-input"/>
-        </a-col>
-        <a-col :span="3" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          <input v-model="newJoinerPersonalInformationForm.motherAge" name="motherAge" placeholder="请输入母亲年龄" class="no-border-input"/>
-        </a-col>
-        <a-col :span="9" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          <input v-model="newJoinerPersonalInformationForm.motherWorkUnit" name="motherWorkUnit" placeholder="请输入母亲工作单位" class="no-border-input"/>
-        </a-col>
-        <a-col :span="3" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          <input v-model="newJoinerPersonalInformationForm.motherPosition" name="motherPosition" placeholder="请输入母亲职位/职务" class="no-border-input"/>
-        </a-col>
-        <a-col :span="3" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          <input v-model="newJoinerPersonalInformationForm.motherContact" name="motherContact" placeholder="请输入母亲联系方式" class="no-border-input"/>
-        </a-col>
-      </a-row>
-      <a-row :gutter="24">
-        <a-col :span="3" class="personalInfoThreeBottomBorder personalInfoCenter">
-          Spouse 配偶
-        </a-col>
-        <a-col :span="3" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          <input v-model="newJoinerPersonalInformationForm.spouseName" name="spouseName" placeholder="请输入配偶姓名" class="no-border-input"/>
-        </a-col>
-        <a-col :span="3" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          <input v-model="newJoinerPersonalInformationForm.spouseAge" name="spouseAge" placeholder="请输入配偶年龄" class="no-border-input"/>
-        </a-col>
-        <a-col :span="9" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          <input v-model="newJoinerPersonalInformationForm.spouseWorkUnit" name="spouseWorkUnit" placeholder="请输入配偶工作单位" class="no-border-input"/>
-        </a-col>
-        <a-col :span="3" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          <input v-model="newJoinerPersonalInformationForm.spousePosition" name="spousePosition" placeholder="请输入配偶职位/职务" class="no-border-input"/>
-        </a-col>
-        <a-col :span="3" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          <input v-model="newJoinerPersonalInformationForm.spouseContact" name="spouseContact" placeholder="请输入配偶联系方式" class="no-border-input"/>
-        </a-col>
-      </a-row>
-
        <a-row :gutter="24">
         <a-col :span="24" class="personalInfoThreeBottomBorder personalInfoCenter" style="text-align: left;">
           I hereby authorize U-Talent, ltd and its all subsidiaries or third parties to investigate the relevant information that I have provided in connection with my form for background check is true and complete. Any falsification of information (or any omission of relevant information)of any fact resulted in disqualified for the position, I am willing to assume all the related responsibility. and I waive all claims against such organizations and/or persons for legal liabilities which may occur during the disclosure.
@@ -429,14 +395,14 @@
           身份证号码
         </a-col>
         <a-col :span="4" class="personalInfoContent personalInfoTwoBorder">
-          {{ newJoinerPersonalInformationForm.idCardNumber }}
+          {{ newJoinerPersonalInformationForm.idCard }}
         </a-col>
          <a-col :span="4" class="personalInfoTwoBorder">
           Gender<br/>
           性别
         </a-col>
         <a-col :span="3" class="personalInfoContent personalInfoTwoBorder">
-          {{ newJoinerPersonalInformationForm.gender }}
+          {{ newJoinerPersonalInformationForm.sex }}
         </a-col>
         <a-col :span="3" class="personalInfoRightBorder"></a-col>
       </a-row>
@@ -470,7 +436,7 @@
           手机号码
         </a-col>
         <a-col :span="3" class="personalInfoContent personalInfoTwoBorder">
-          {{ newJoinerPersonalInformationForm.mobile }}
+          {{ newJoinerPersonalInformationForm.phoneNumber }}
         </a-col>
         <a-col :span="3" class="personalInfoTwoBorder">
           E-mail<br/>
@@ -493,14 +459,14 @@
           Highest Standard <br/>Attained 最高学历
         </a-col>
         <a-col :span="3" class="personalInfoContent personalInfoTwoBorder">
-          {{ newJoinerPersonalInformationForm.highestStandardAttained }}
+          {{ newJoinerPersonalInformationForm.highestStandard }}
         </a-col>
         <a-col :span="3" class="personalInfoTwoBorder">
           Martial Status<br/>
           婚姻状况
         </a-col>
         <a-col :span="4" class="personalInfoContent personalInfoTwoBorder">
-          {{ newJoinerPersonalInformationForm.maritalStatus }}
+          {{ newJoinerPersonalInformationForm.martialStatus }}
         </a-col>
          <a-col :span="4" class="personalInfoTwoBorder">
           Health Condition<br/>
@@ -531,7 +497,7 @@
           是否有过犯罪记录
         </a-col>
         <a-col :span="3" class="personalInfoContent personalInfoTwoBorder">
-          {{ newJoinerPersonalInformationForm.hasCriminalRecord }}
+          {{ newJoinerPersonalInformationForm.criminalRecord }}
         </a-col>
         <a-col :span="3" class="personalInfoTwoBorder"></a-col>
       </a-row>
@@ -548,14 +514,14 @@
           紧急联络人联系方式
         </a-col>
         <a-col :span="4" class="personalInfoContent personalInfoTwoBorder">
-          {{ newJoinerPersonalInformationForm.emergencyContactNo }}
+          {{ newJoinerPersonalInformationForm.emergencyMobile }}
         </a-col>                       
          <a-col :span="4" class="personalInfoTwoBorder" style="display: flex;align-items: center;">
           Relationship with the emergency contact<br/>
           与紧急联系人的关系
         </a-col>
         <a-col :span="6" class="personalInfoContent personalInfoTwoBorder">
-          {{ newJoinerPersonalInformationForm.relationshipWithEmergencyContact }}
+          {{ newJoinerPersonalInformationForm.emergencyRelationshiip }}
         </a-col>
       </a-row>
       <a-row :gutter="24">
@@ -564,14 +530,14 @@
           是否被前单位除名/辞退
         </a-col>
         <a-col :span="4" class="personalInfoContent personalInfoTwoBorder">
-          {{ newJoinerPersonalInformationForm.hasDismissedFromPreviousCompany }}
+          {{ newJoinerPersonalInformationForm.isDismissed }}
         </a-col>
         <a-col :span="4" class="personalInfoTwoBorder">
           If YES, please list the reason<br/>
           如选是请告知原因
         </a-col>
         <a-col :span="6" class="personalInfoContent personalInfoTwoBorder">
-          {{ newJoinerPersonalInformationForm.hasDismissedFromPreviousCompanyReason }}
+          {{ newJoinerPersonalInformationForm.dismissedReason }}
         </a-col>
       </a-row>
       <a-row :gutter="24">
@@ -580,7 +546,7 @@
           是否与前工作单位签署竞业限制协议
         </a-col>
         <a-col :span="14" class="personalInfoContent personalInfoTwoBorder">
-          {{ newJoinerPersonalInformationForm.hasSignedNonCompeteAgreementWithPreviousEmployer }}
+          {{ newJoinerPersonalInformationForm.isNonCompete }}
         </a-col>
       </a-row>
       <a-row :gutter="24">
@@ -589,7 +555,7 @@
           户籍/身份证地址
         </a-col>
         <a-col :span="20" class="personalInfoContent personalInfoTwoBorder">
-          {{ newJoinerPersonalInformationForm.censusRegisterAddress }}
+          {{ newJoinerPersonalInformationForm.documentAddress }}
         </a-col>
       </a-row>
        <a-row :gutter="24">
@@ -598,7 +564,7 @@
           本市联系/居住地址
         </a-col>
         <a-col :span="20" class="personalInfoContent personalInfoTwoBorder">
-          {{ newJoinerPersonalInformationForm.currentLivingAddress }}
+          {{ newJoinerPersonalInformationForm.livingAddress }}
         </a-col>
       </a-row>
 
@@ -631,15 +597,15 @@
           离职原因
         </a-col>
       </a-row>
-      <a-row :gutter="24" v-for="(item, index) in newJoinerPersonalInformationForm.workExperience" :key="index">
+      <a-row :gutter="24" v-for="(item, index) in newJoinerPersonalInformationForm.offerOutsourceWorks" :key="index">
         <a-col :span="6" class="personalInfoThreeBottomBorder personalInfoCenter">
-          {{ startAndEndYearWork(item.startYear, item.startMonth, item.endYear, item.endMonth) }}
+          {{ item.startDate }} - {{ item.endDate == '-1' ? '至今' : item.endDate }}
         </a-col>
         <a-col :span="6" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
           {{ item.companyName }}
         </a-col>
         <a-col :span="6" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          {{ item.positionName }}
+          {{ item.position }}
         </a-col>
         <a-col :span="6" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
           {{ item.demissionReason }}
@@ -683,67 +649,27 @@
           联系方式
         </a-col>
       </a-row>
-      <a-row :gutter="24">
+      <a-row :gutter="24" v-for="(item, index) in newJoinerPersonalInformationForm.offerOutsourceFamilies" :key="index">
         <a-col :span="3" class="personalInfoThreeBottomBorder personalInfoCenter">
-          Father 父亲
+          {{ item.relationship }}
         </a-col>
         <a-col :span="3" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          {{ newJoinerPersonalInformationForm.fatherName }}
+          {{ item.name }}
         </a-col>
         <a-col :span="3" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          {{ newJoinerPersonalInformationForm.fatherAge }}
+          {{ item.age }}
         </a-col>
         <a-col :span="9" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          {{ newJoinerPersonalInformationForm.fatherWorkUnit }}
+          {{ item.companyName }}
         </a-col>
         <a-col :span="3" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          {{ newJoinerPersonalInformationForm.fatherPosition }}
+          {{ item.position }}
         </a-col>
         <a-col :span="3" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          {{ newJoinerPersonalInformationForm.fatherContact }}
+          {{ item.mobile }}
         </a-col>
       </a-row>
-      <a-row :gutter="24">
-        <a-col :span="3" class="personalInfoThreeBottomBorder personalInfoCenter">
-          Mother 母亲
-        </a-col>
-        <a-col :span="3" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          {{ newJoinerPersonalInformationForm.motherName }}
-        </a-col>
-        <a-col :span="3" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          {{ newJoinerPersonalInformationForm.motherAge }}
-        </a-col>
-        <a-col :span="9" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          {{ newJoinerPersonalInformationForm.motherWorkUnit }}
-        </a-col>
-        <a-col :span="3" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          {{ newJoinerPersonalInformationForm.motherPosition }}
-        </a-col>
-        <a-col :span="3" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          {{ newJoinerPersonalInformationForm.motherContact }}
-        </a-col>
-      </a-row>
-      <a-row :gutter="24">
-        <a-col :span="3" class="personalInfoThreeBottomBorder personalInfoCenter">
-          Spouse 配偶
-        </a-col>
-        <a-col :span="3" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          {{ newJoinerPersonalInformationForm.spouseName }}
-        </a-col>
-        <a-col :span="3" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          {{ newJoinerPersonalInformationForm.spouseAge }}
-        </a-col>
-        <a-col :span="9" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          {{ newJoinerPersonalInformationForm.spouseWorkUnit }}
-        </a-col>
-        <a-col :span="3" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          {{ newJoinerPersonalInformationForm.spousePosition }}
-        </a-col>
-        <a-col :span="3" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
-          {{ newJoinerPersonalInformationForm.spouseContact }}
-        </a-col>
-      </a-row>
-
+      
        <a-row :gutter="24">
         <a-col :span="24" class="personalInfoThreeBottomBorder personalInfoCenter" style="text-align: left;">
           I hereby authorize U-Talent, ltd and its all subsidiaries or third parties to investigate the relevant information that I have provided in connection with my form for background check is true and complete. Any falsification of information (or any omission of relevant information)of any fact resulted in disqualified for the position, I am willing to assume all the related responsibility. and I waive all claims against such organizations and/or persons for legal liabilities which may occur during the disclosure.
@@ -767,116 +693,95 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import jsPDF from 'jspdf';
+import { message } from 'ant-design-vue';
 import html2canvas from 'html2canvas';
-import { CloseOutlined } from '@ant-design/icons-vue';
-import {OutsourcePersonItem} from '/@/api/outsourceDetail/model';
+import { CloseOutlined, PlusOutlined } from '@ant-design/icons-vue';
+import { OutsourcePersonItem, NewJoinerPersonalInfoItem, } from '/@/api/outsourceDetail/model';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
 const { newJoinerPersonalInformationFlag, newJoinerPersonalInformationFormTemp } = storeToRefs(outsourceDetailStore);
 const drawerWidth = ref(Math.max(600, window.innerWidth * 0.7));
 const isShow = ref(true);
-const newJoinerPersonalInformationForm = ref({
-  department: '',
-  userNameCn: '',
-  userNameEn: '',
-  idCardNumber: '',
-  gender: '',
-  placeOfBirth: '',
-  ethnic: '',
-  mobile: '',
-  email: '',
-  politicsStatus: '',
-  highestStandardAttained: '',
-  maritalStatus: '',
-  healthCondition: '',
-  placeOfDomicile: '',
-  censusRegister: '',
-  hasCriminalRecord: '',
-  emergencyContact: '',
-  emergencyContactNo: '',
-  relationshipWithEmergencyContact: '',
-  hasDismissedFromPreviousCompany: '',
-  hasDismissedFromPreviousCompanyReason: '',
-  hasSignedNonCompeteAgreementWithPreviousEmployer: '',
-  censusRegisterAddress: '',
-  currentLivingAddress: '',
-  fatherName: '',
-  fatherAge: '',
-  fatherWorkUnit: '',
-  fatherPosition: '',
-  fatherContact: '',
-  motherName: '',
-  motherAge: '',
-  motherWorkUnit: '',
-  motherPosition: '',
-  motherContact: '',
-  spouseName: '',
-  spouseAge: '',
-  spouseWorkUnit: '',
-  spousePosition: '',
-  spouseContact: '',
-  workExperience: [{
-    startYear: '',
-    startMonth: '',
-    endYear: '',
-    endMonth: '',
-    companyName: '',
-    positionName: '',
-    demissionReason: '',
-  }],
-});
+const newJoinerPersonalInformationForm = ref({} as NewJoinerPersonalInfoItem);
 watch(newJoinerPersonalInformationFormTemp, (newVal) => {
   if (newVal) {
+    newJoinerPersonalInformationForm.value.id = newVal.id;
     newJoinerPersonalInformationForm.value.userNameCn = newVal.userNameCn;
     newJoinerPersonalInformationForm.value.userNameEn = newVal.userNameEn;
-    newJoinerPersonalInformationForm.value.idCardNumber = newVal.idCard;
-    newJoinerPersonalInformationForm.value.gender = newVal.sex;
-    newJoinerPersonalInformationForm.value.mobile = newVal.phoneNumber;
+    newJoinerPersonalInformationForm.value.idCard = newVal.idCard;
+    newJoinerPersonalInformationForm.value.sex = newVal.sex;
+    newJoinerPersonalInformationForm.value.phoneNumber = newVal.phoneNumber;
     newJoinerPersonalInformationForm.value.email = newVal.email;
+    // newJoinerPersonalInformationForm.value.department = newVal.department;
+    // newJoinerPersonalInformationForm.value.placeOfBirth = newVal.placeOfBirth;
+    // newJoinerPersonalInformationForm.value.ethnic = newVal.ethnic;
+
+
+
+    if (!newJoinerPersonalInformationForm.value.offerOutsourceFamilies) {
+      newJoinerPersonalInformationForm.value.offerOutsourceFamilies = [];
+    }
     if (newVal.resumeId) {
       outsourceDetailStore.handleQueryWorkByResumeId(newVal.resumeId).then(res => {
         if (res.code == 1 && res.info?.length > 0) {
-          newJoinerPersonalInformationForm.value.workExperience = res.info;
+          newJoinerPersonalInformationForm.value.offerOutsourceWorks = res.info.map(item => ({
+            startDate: `${item.startYear}/${item.startMonth.padStart(2, '0')}`,
+            endDate: item.endYear != '-1' ? `${item.endYear}/${item.endMonth.padStart(2, '0')}` : '-1',
+            companyName: item.companyName,
+            position: item.positionName,
+            demissionReason: item.demissionReason,
+            personId: newJoinerPersonalInformationFormTemp.value.id,
+          }));
         }
       });
     }
-
   }
 })
+const addFamilyMember = () => {
+  newJoinerPersonalInformationForm.value.offerOutsourceFamilies.push({
+    personId: newJoinerPersonalInformationFormTemp.value.id,
+    relationship: '',
+    name: '',
+    age: '',
+    companyName: '',
+    position: '',
+    mobile: ''
+  });
+}
 const closeDrawer = () => {
   newJoinerPersonalInformationFlag.value = false;
   newJoinerPersonalInformationFormTemp.value = {} as OutsourcePersonItem;
-  newJoinerPersonalInformationForm.value = {};
-}
-const startAndEndYearWork = (startYear,startMonth,endYear,endMonth) => {
-  let startMonthTemp = startMonth.padStart(2, '0');
-  let endMonthTemp = endMonth.padStart(2, '0');
-  if (endYear == '-1') {
-    return `${startYear}/${startMonthTemp} - 至今`;
-  }
-  return `${startYear}/${startMonthTemp} - ${endYear}/${endMonthTemp}`;
+  newJoinerPersonalInformationForm.value = {} as NewJoinerPersonalInfoItem;
 }
 const generatePDF = async () => {
+  console.log(newJoinerPersonalInformationForm.value);
   isShow.value = false;
-  setTimeout(async () => {
+  outsourceDetailStore.updateOutsourcePersonMsg(newJoinerPersonalInformationForm.value).then(res => {
+    if (res.code == 1) {
+      message.success('更新外包人员信息表成功');
+       setTimeout(async () => {
     const element = document.getElementById('personalInfoForm') as HTMLElement;
     const canvas = await html2canvas(element, { scale: 2 });
     const imgData = canvas.toDataURL('image/png');
   
-  const pdf = new jsPDF({
+    const pdf = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
     format: 'a4',
     compress: true // 启用压缩
+    });
+  
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+  
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    pdf.save(`新员工个人信息登记表_${Date.now()}.pdf`);
+    isShow.value = true;
+      }, 500);
+    } else {
+      message.error(res.msg || '更新外包人员个人信息表失败');
+    }
   });
-  
-  const pdfWidth = pdf.internal.pageSize.getWidth();
-  const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-  
-  pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-  pdf.save(`新员工个人信息登记表_${Date.now()}.pdf`);
-   isShow.value = true;
-  }, 500);
 };
 </script>
 

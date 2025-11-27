@@ -1742,7 +1742,7 @@
               });
             }
           }
-          if (item.functionName == 'OFFER背调' && type == 'A') {
+          if (item.functionName == 'OFFER背调' && (rId == 434 || rId == 431 || rId == 444 || rId == 438 || rId == 5485 || rId == 142 || rId == 445)) {
           menuArrTemp.value.push({
             key: 'OutsourceDetail',
             label: '外包',
