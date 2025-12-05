@@ -69,7 +69,16 @@
           </a-select>
           </a-form-item>
         </a-col>
-         <a-col :span="4">
+         <a-col :span="3">
+          <a-form-item name="yearAndMonth" label="计薪">
+            <a-date-picker
+                  v-model:value="formStateAttend.yearAndMonth"
+                  value-format="YYYY-MM"
+                  picker="month"
+                />
+          </a-form-item>
+        </a-col>
+         <a-col :span="3">
           <a-button style="margin: 0 0 0 8px" type="primary" html-type="submit">搜索</a-button>
           <a-button style="margin: 0 8px" @click="clearFromState">清空</a-button>
          </a-col>
@@ -142,7 +151,7 @@ const columnsOutsourceDetail = [
   { title: '编号', dataIndex: 'index', key: 'index', fixed: 'left' as const, width: 20, },
   { title: '计薪月', dataIndex: 'yearAndMonth', key: 'yearAndMonth', fixed: 'left' as const, width: 30, },
   { title: '标识', dataIndex: 'flag', key: 'flag', fixed: 'left' as const, width: 30, },
-  { title: '姓名', dataIndex: 'userNameCn', key: 'userNameCn', fixed: 'left' as const, width: 50, },
+  { title: '姓名', dataIndex: 'userNameCn', key: 'userNameCn', fixed: 'left' as const, width: 50, ellipsis: true },
   { title: '公司', dataIndex: 'companyName', key: 'companyName', fixed: 'left' as const, width: 40, ellipsis: true },
   { title: '品牌', dataIndex: 'brand', key: 'brand', fixed: 'left' as const, width: 50, ellipsis: true },
   { title: '城市', dataIndex: 'city', key: 'city', fixed: 'left' as const, width: 30, },
@@ -193,6 +202,11 @@ const handleOutsourceAttendListData = () => {
 }
 const handleEditClick = (record) => {
   outsourceAttendForm.value = _.cloneDeep(record);
+  outsourceDetailStore.queryOutsourceFormula( outsourceAttendForm.value.companyName,
+    outsourceAttendForm.value.bId,
+    outsourceAttendForm.value.city,
+    outsourceAttendForm.value.jobType,
+    );
   outsourceAttendFlag.value = true;
 }
 </script>

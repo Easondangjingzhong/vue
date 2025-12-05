@@ -146,7 +146,7 @@ export interface OutsourceSalaryItem {
   keShangbao: string;
   shiShangbao: string;
   bankName: string;
-  bankCard: string; 
+  bankCard: string;
 }
 /**
  * 外包外包社保
@@ -297,135 +297,109 @@ export interface SearchMonthSalaryItem {
   jobType: string;
   companyArrange: string;
   companyName: string;
+  shebaoCompany: string;
+  yearAndMonth: string;
 }
 /**
  * 外包月度薪资
  */
 export interface OutsourceMonthSalaryItem {
-  id?: number;
-  userNameCn?: string;
-  userNameEn?: string | null;
-  currentStatus?: string;
-  city?: string;
-  companyName?: string;
-  jobType?: string;
-  recruitParty?: string;
-  personId?: number;
-  
-  // 品牌和时间信息
+  // 基本信息
+  id?: string;
+  bId?: string;
   brand?: string;
-  yearAndMonth?: string;
-  flag?: string;
-  
-  // 工时相关字段
-  currentMonthShiHours?: string;
-  currentMonthYuHours?: string;
-  lastMonthShiHours?: string;
-  lastMonthYuHours?: string;
-  
-  // 加班相关字段
-  overHours?: string;
-  overDouble?: string;
-  holidayOverHours?: string;
-  holidayOverDouble?: string;
-  restOverHours?: string;
-  restOverDouble?: string;
-  otherDaixinHours?: string;
-  otherDaixinDouble?: string;
-  
-  // 假期相关字段
-  hunjiaHours?: string;
-  hunjiaDouble?: string;
-  nianjianHours?: string;
-  nianjianDouble?: string;
-  daixinBingjiaHours?: string;
-  daixinBingjiaDouble?: string;
-  kouxinBingjiaHours?: string;
-  kouxinBingjiaDouble?: string;
-  sanjiaHours?: string;
-  sanjiaDouble?: string;
-  shijiaHours?: string;
-  shijiaDouble?: string;
-  
-  // 其他考勤相关字段
-  utHours?: string;
-  utDouble?: string;
-  lateHours?: string;
-  quanqinHours?: string;
-  totalChaHours?: string;
-  isQuanqin?: string;
-  isYugu?: string;
-  
-  // 入职相关字段
-  newOfferTime?: string;
-  newPredictEntryTime?: string;
-  
-  // 新增字段 - 奖金相关
-  baodiBouns?: string;
-  dachengBouns?: string;
-  jiliBouns?: string;
-  personBouns?: string;
-  specialBouns?: string;
-  teamBouns?: string;
-  totalBouns?: string;
-  
-  // 新增字段 - 假期和考勤扩展
-  bingjia?: string;
-  chidao?: string;
-  daixinjia?: string;
-  fadingJiaban?: string;
-  quanqin?: string;
-  quanqinCha?: string;
-  restJiaban?: string;
-  zhengchangJiaban?: string;
-  totalJiaban?: string;
-  
-  // 新增字段 - 薪资相关
+  companyName?: string;
+  city?: string;
+  jobType?: string;
+  positions?: string;
+  recruitParty?: string;
+  userNameCn?: string;
+  userNameEn?: string;
+  sign?: string;
+  personId?: number;
+  zhanDanMonth?: string;
+
+  // 时间相关
+  jinxinMonth?: string; // 时间戳
+  entryTime?: string; // 可为null
+  leaveTime?: string; // 可为null
+  newOfferTime?: string; // 可为null
+  newPredictEntryTime?: string; // 可为null
+  realEntryTime?: string; // 可为null
+  realLeaveTime?: string; // 可为null
+
+  // 薪资相关
+  biaozhunGongshi?: string;
+  biaozhunSalary?: string;
   chuqinSalary?: string;
-  monthSalary?: string;
-  monthShebao?: string;
-  monthTax?: string;
-  monthZhuankou?: string;
-  personIncome?: string;
-  personTarget?: string;
-  personTidian?: string;
-  salaryTiaocha?: string;
-  shifaSalary?: string;
-  yearSalary?: string;
-  yearShebao?: string;
-  yearTax?: string;
-  yearZhuankou?: string;
-  
-  // 新增字段 - 社保公积金相关
-  shiyeMoney?: string;
-  yanglaoMoney?: string;
-  yijinMoney?: string;
-  yiliaoMoney?: string;
-  
-  // 新增字段 - 津贴和福利
+  jiabanSalary?: string;
+  yuguGongshi?: string;
+  tiaochaTotal?: string;
+
+  // 各项津贴和调整
   canbu?: string;
   canbuTiaocha?: string;
-  fandaiLixi?: string;
-  fangzu?: string;
   jintie?: string;
-  jintieTiaocha?: string;
-  serviceMoney?: string;
-  shanyangFumu?: string;
-  totalTiaocha?: string;
-  
-  // 新增字段 - 其他
-  jixuEdu?: string;
-  shopDacheng?: string;
-  shopIncome?: string;
-  shopTarget?: string;
-  shopTidian?: string;
-  yearMianzheng?: string;
-  zinvEdu?: string;
-  positions?: string;
-  realEntryTime?: string;
-  realLeaveTime?: string;
-  isCheck?: string;
-  dixin?: string;
+  jintieTiaocha?: string; // 可为null
+  quanqin?: string;
+  quanqinTiaocha?: string; // 可为null
+  salaryTiaocha?: string;
+
+  // 加班相关
+  fadingJiaban?: string;
+  zhengchangJiaban?: string;
+  xiuxiJiaban?: string; // 可为null
+
+  // 各项可能为null的值
+  bebyueShiji?: string; // 可为null
+  benyueChae?: string; // 可为null
+  bingjia?: string; // 可为null
+  chidao?: string; // 可为null
+  dabing?: string; // 可为null
+  dacheng?: string; // 可为null
+  daixin?: string; // 可为null
+  fangdaiLixi?: string; // 可为null
+  fangzu?: string; // 可为null
+  geti?: string; // 可为null
+  jili?: string; // 可为null
+  jixuJiaoyu?: string; // 可为null
+  leijiChae?: string; // 可为null
+  jiangjinTotal?: string; // 可为null
+  baodiJiangjin?: string; // 可为null
+  markTarget?: string; // 可为null
+  markTidian?: string; // 可为null
+  markYingshou?: string; // 可为null
+  marketDachengRate?: string; // 可为null
+  monthGeshui?: string; // 可为null
+  monthMianzheng?: string; // 可为null
+  monthShebao?: string; // 可为null
+  monthTax?: string; // 可为null
+  monthZhuankou?: string; // 可为null
+  personDachengRate?: string; // 可为null
+  personTarget?: string; // 可为null
+  personTidian?: string; // 可为null
+  personYingshou?: string; // 可为null
+  salaryAfterTax?: string; // 可为null
+  shangyangFumu?: string; // 可为null
+  shangyueShiji?: string; // 可为null
+  shangyueYugu?: string;
+  shijia?: string; // 可为null
+  shiye?: string; // 可为null
+  shouxuMoney?: string; // 可为null
+  teshu?: string; // 可为null
+  tuanti?: string; // 可为null
+  yanglao?: string; // 可为null
+  yearGeshui?: string; // 可为null
+  yearMianzheng?: string; // 可为null
+  yearShebao?: string; // 可为null
+  yearTax?: string; // 可为null
+  yearZhuankou?: string; // 可为null
+  yijin?: string; // 可为null
+  yiliao?: string; // 可为null
+  zinvJiaoyu?: string; // 可为null
+
+  // 状态
+  currentStatus: string;
 }
 /**
  * 外包分页
@@ -535,6 +509,7 @@ export interface SearchAttendItem {
   jobType: string;
   companyArrange: string;
   companyName: string;
+  yearAndMonth: string;
 }
 /**
  * 外包考勤
@@ -550,18 +525,19 @@ export interface OutsourceAttendItem {
   jobType?: string;
   recruitParty?: string;
   personId?: number;
-  
+
   // 品牌和时间信息
+  bId?: string;
   brand?: string;
   yearAndMonth?: string;
   flag?: string;
-  
+
   // 工时相关字段
   currentMonthShiHours?: string;
   currentMonthYuHours?: string;
   lastMonthShiHours?: string;
   lastMonthYuHours?: string;
-  
+
   // 加班相关字段
   overHours?: string;
   overDouble?: string;
@@ -571,7 +547,7 @@ export interface OutsourceAttendItem {
   restOverDouble?: string;
   otherDaixinHours?: string;
   otherDaixinDouble?: string;
-  
+
   // 假期相关字段
   hunjiaHours?: string;
   hunjiaDouble?: string;
@@ -585,7 +561,7 @@ export interface OutsourceAttendItem {
   sanjiaDouble?: string;
   shijiaHours?: string;
   shijiaDouble?: string;
-  
+
   // 其他考勤相关字段
   utHours?: string;
   utDouble?: string;
@@ -594,7 +570,7 @@ export interface OutsourceAttendItem {
   totalChaHours?: string;
   isQuanqin?: string;
   isYugu?: string;
-  
+
   // 入职相关字段
   newOfferTime?: string;
   newPredictEntryTime?: string;
@@ -704,3 +680,35 @@ export interface NewJoinerPersonalInfoItem {
   offerOutsourceWorks?: OfferOutsourceWorkItem[];
 }
 
+export interface OutsourceFormulaItem {
+  id: number; // private Long id;
+  companyName: string; // private String companyName;
+  bId: number; // private Long bId;
+  brand: string; // private String brand;
+  mId: string; // private Long mId;
+  market: string; // private String market;
+  city: string; // private String city;
+  jobType: string; // private String jobType;
+  startTime: string; // private Date startTime; (使用ISO日期字符串)
+  endTime: string; // private Date endTime; (使用ISO日期字符串)
+  cycle: string; // private String cycle;
+  totalWorkHours: string; // private String totalWorkHours;
+  hoursType: string; // private String hoursType;
+  dangmonthCha: string; // private String dangmonthCha;
+  chuqinSalary: string; // private Double chuqinSalary;
+  canbu: string; // private Double canbu;
+  jintie: string; // private Double jintie;
+  quanqin: string; // private Double quanqin;
+  zhengchangJiaban: string; // private Double zhengchangJiaban;
+  fadingJiaban: string; // private Double fadingJiaban;
+  restJiaban: string; // private Double restJiaban;
+  salaryTiaocha: string; // private Double salaryTiaocha;
+  canbuTiaocha: string; // private Double canbuTiaocha;
+  jintieTiaocha: string; // private Double jintieTiaocha;
+  quanqinTiaocha: string; // private Double quanqinTiaocha;
+  zhanDanMonth: string; // private String zhanDanMonth;
+  kaoQinBiao: string; // private String kaoQinBiao;
+  zhanDanRi: string; // private String zhanDanRi;
+  xinZiRi: string; // private String xinZiRi;
+  nianJia: string; // private String nianJia;
+}

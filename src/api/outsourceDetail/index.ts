@@ -40,7 +40,66 @@ enum URL {
   query_esign_template_by_sign = '/employee-group/resume-vue-esign-create-template-bysign.action',
   query_esign_personId_by_phone = '/employee-group/resume-vue-esign-query-personId-info.action',
   update_outsource_person_msg = '/candidateRecommend/resume-vue-update-out-person-msg.action',
+  query_outsource_formula = '/candidateRecommend/resume-vue-query-out-gongshi.action',
+  delete_outsource_formula = '/candidateRecommend/resume-vue-delete-out-gongshi.action',
+  add_update_outsource_formula = '/candidateRecommend/resume-vue-insert-update-out-gongshi.action',
+  add_update_outsource_salary_month = '/candidateRecommend/resume-vue-insert-update-out-salary-Month.action',
+  query_outsource_leiji_chae = '/candidateRecommend/resume-vue-query-out-pre-leijiChae.action',
+  query_outsource_yearTotalPre = '/candidateRecommend/resume-vue-get-out-salary-yearTotalPre.action',
+  update_outsource_yearTotalPre = '/candidateRecommend/resume-vue-update-out-salary-yearlPre.action',
 }
+/**
+ * 添加修改年度累计
+ * @param data personId jinxinMonth
+ * @returns 
+ */
+const addUpdateOutsourceSalaryMonthYearlPre = async (data: any) =>
+  post<any>({ url: URL.update_outsource_yearTotalPre, data});
+/**
+ * 添加修改月度薪资
+ * @param data personId jinxinMonth
+ * @returns 
+ */
+const queryOutsourceYearTotalPre = async (data: any) =>
+  post<any>({ url: URL.query_outsource_yearTotalPre, data});
+/**
+ * 添加修改月度薪资
+ * @param data personId jinxinMonth
+ * @returns 
+ */
+const queryOutsourceLeijiChae = async (data: any) =>
+  post<any>({ url: URL.query_outsource_leiji_chae, data});
+
+/**
+ * 添加修改月度薪资
+ * @param data OfferOutsourceMonthSalary
+ * @returns 
+ */
+const addUpdateOutsourceSalaryMonth = async (data: any) =>
+  post<any>({ url: URL.add_update_outsource_salary_month, data});
+/**
+ * 查询外包公司公式
+ * @param data companyName
+ * @returns 
+ */
+const queryOutsourceFormula = async (data: any) =>
+  post<any>({ url: URL.query_outsource_formula, data});
+/**
+ * 删除外包公司公式
+ * @param data id
+ * @returns 
+ */
+const deleteOutsourceFormula = async (data: any) =>
+  post<any>({ url: URL.delete_outsource_formula, data});
+
+/**
+ * 新增或更新外包公司公式
+ * @param data OfferOutsourcepGongshi
+ * @returns 
+ */
+const addUpdateOutsourceFormula = async (data: any) =>
+  post<any>({ url: URL.add_update_outsource_formula, data});
+
 /**
  * 更新外包人员信息表
  * @param data 
@@ -322,6 +381,13 @@ const queryOutsourceMonthSalary = async (data: any) =>
   post<any>({ url: URL.query_outsource_month_salary, data});
 
 export default { 
+  addUpdateOutsourceSalaryMonthYearlPre,
+  queryOutsourceYearTotalPre,
+  queryOutsourceLeijiChae,
+  addUpdateOutsourceSalaryMonth,
+  deleteOutsourceFormula,
+  queryOutsourceFormula,
+  addUpdateOutsourceFormula,
   updateOutsourcePersonMsg,
   handleChangePsnAccount,
   queryEsignTemplateList,

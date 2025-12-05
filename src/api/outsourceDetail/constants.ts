@@ -42,3 +42,21 @@ export const shebaoCompanyOption = [
     value: '苏州锐特',
   },
 ]
+export const cycleFormulaOption = [
+  {
+    label: '自然月',
+    value: '1',
+  },
+  {
+    label: '15-14',
+    value: '2',
+  },
+   {
+    label: '21-20',
+    value: '3',
+  },
+   {
+    label: '16-15',
+    value: '4',
+  },
+]
