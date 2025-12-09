@@ -67,6 +67,26 @@ export interface OutsourcePersonItem {
   workCity: string;
   socialCity: string;
   taxCity: string;
+  department: string;
+  placeOfBirth: string;
+  ethnic: string;
+  politicsStatus: string;
+  highestStandard: string;
+  healthCondition: string;
+  placeOfDomicile: string;
+  martialStatus: string;
+  censusRegister: string;
+  criminalRecord: string;
+  emergencyContact: string;
+  emergencyMobile: string;
+  emergencyRelationshiip: string;
+  isDismissed: string;
+  dismissedReason: string;
+  isNonCompete: string;
+  documentAddress: string;
+  livingAddress: string;
+  offerOutsourceWorks: any[];
+  offerOutsourceFamilies: any[];
 }
 /**
  * 外包查询个人信息
@@ -656,6 +676,9 @@ export interface NewJoinerPersonalInfoItem {
   sex?: string;
   phoneNumber?: string;
   email?: string;
+  position?: string;
+  city?: string;
+  jobType?: string;
 
   department?: string;
   placeOfBirth?: string;
