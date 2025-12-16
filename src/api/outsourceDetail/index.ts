@@ -47,7 +47,31 @@ enum URL {
   query_outsource_leiji_chae = '/candidateRecommend/resume-vue-query-out-pre-leijiChae.action',
   query_outsource_yearTotalPre = '/candidateRecommend/resume-vue-get-out-salary-yearTotalPre.action',
   update_outsource_yearTotalPre = '/candidateRecommend/resume-vue-update-out-salary-yearlPre.action',
+  person_msg_esign = '/employee-group/resume-vue-insert-person-msg-esign.action',
+  upload_esign_file = '/employee-group/resume-vue-esign-upload-file.action',
+  update_user_name = '/candidateRecommend/resume-vue-update-outsource_userName.action',
 }
+/**
+ * 同步姓名
+ * @param data rId resumeId
+ * @returns 
+ */
+const updateUserName = async (data: any) =>
+  post<any>({ url: URL.update_user_name, data});
+/**
+ * 信息表签署
+ * @param data personId jinxinMonth
+ * @returns 
+ */
+const uploadMessageEsignFile = async (data: any) =>
+  post<any>({ url: URL.upload_esign_file, data});
+/**
+ * 信息表签署
+ * @param data personId jinxinMonth
+ * @returns 
+ */
+const personMessageEsign = async (data: any) =>
+  post<any>({ url: URL.person_msg_esign, data});
 /**
  * 添加修改年度累计
  * @param data personId jinxinMonth
@@ -381,6 +405,9 @@ const queryOutsourceMonthSalary = async (data: any) =>
   post<any>({ url: URL.query_outsource_month_salary, data});
 
 export default { 
+  updateUserName,
+  uploadMessageEsignFile,
+  personMessageEsign,
   addUpdateOutsourceSalaryMonthYearlPre,
   queryOutsourceYearTotalPre,
   queryOutsourceLeijiChae,

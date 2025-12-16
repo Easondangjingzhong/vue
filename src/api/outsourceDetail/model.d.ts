@@ -8,6 +8,7 @@ export interface OutsourcePersonItem {
   userNameCn: string;
   userNameEn: string;
   currentStatus: string;
+  headPhoto: string;
   city: string;
   companyName: string;
   jobType: string;
@@ -87,6 +88,11 @@ export interface OutsourcePersonItem {
   livingAddress: string;
   offerOutsourceWorks: any[];
   offerOutsourceFamilies: any[];
+  signOfferType: string;
+  shixiStartTime: string;
+  shixiEndTime: string;
+  signBaseMoney: string;
+  signEndTime: string;
 }
 /**
  * 外包查询个人信息
@@ -679,6 +685,7 @@ export interface NewJoinerPersonalInfoItem {
   position?: string;
   city?: string;
   jobType?: string;
+  headPhoto?: string;
 
   department?: string;
   placeOfBirth?: string;
@@ -700,7 +707,13 @@ export interface NewJoinerPersonalInfoItem {
   livingAddress?: string;
 
   offerOutsourceFamilies: OfferOutsourceFamilyItem[];
-  offerOutsourceWorks?: OfferOutsourceWorkItem[];
+  offerOutsourceWorks: OfferOutsourceWorkItem[];
+  
+  signOfferType: string;
+  shixiStartTime: string;
+  shixiEndTime: string;
+  signBaseMoney: string;
+  signEndTime: string;
 }
 
 export interface OutsourceFormulaItem {

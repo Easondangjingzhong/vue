@@ -14,6 +14,9 @@
         <a-col :span="4">
          中英姓名：{{ getDisplayName() }}
         </a-col>
+        <a-col :span="1">
+         <a-tag @click="updateUserName(outsourcePersonDetail.resumeId?.toString(),outsourcePersonDetail.rId?.toString())">刷新</a-tag>
+        </a-col>
         <a-col :span="2">
          城市: {{ outsourcePersonDetail.city }}
         </a-col>
@@ -63,6 +66,7 @@
 </template>
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
+import { message } from 'ant-design-vue';
 import { CloseOutlined } from '@ant-design/icons-vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 import ComprehensiveBasicUpdate from './personComponents/ComprehensiveBasicUpdate.vue'
@@ -104,6 +108,15 @@ const items = ref([
     title: '社保信息',
   },
 ]);
+const updateUserName = async (resumeId:string,rId?:string) => {
+  await outsourceDetailStore.updateUserName(resumeId,rId).then((res) => {
+    if (res.code == 1) {
+      message.success('刷新成功');
+    } else {
+      message.error(res.msg || '刷新失败');
+    }
+  });
+}
 </script>
 
 <style lang="less" scoped>

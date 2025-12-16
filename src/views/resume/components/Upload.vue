@@ -136,6 +136,10 @@
       value: 'Cold Call',
       label: 'Cold Call',
     },
+    {
+      value: '客户招聘',
+      label: '客户招聘',
+    },
   ]);
 
   /**
@@ -190,6 +194,13 @@
       })
       .catch((err) => {
         data.onError(err, err, data.file);
+        const status = err?.response?.status;
+        const body = err?.response?.data ?? err?.message ?? err;
+        const text = typeof body === 'string' ? body : JSON.stringify(body);
+        if (status === 413 || text.includes('413') || text.includes('Request Entity Too Large') || text.includes('Too Large')) {
+          createMessage.error('简历上传文件太大,请调整后重新上传');
+          return;
+        }
         createMessage.error('上传失败');
       });
   };

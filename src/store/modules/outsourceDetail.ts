@@ -1330,6 +1330,55 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       const res = await fetchApi.addUpdateOutsourceSalaryMonthYearlPre(formData);
       return res;
     },
+    /**
+     * 信息表签署
+     */
+    async personMessageEsign(personMessage) {
+      console.log(personMessage);
+      const formData = new FormData();
+      formData.append('personId', personMessage.personId || '');
+      formData.append('createTime', personMessage.createTime || '');
+      formData.append('idCard', personMessage.idCard || '');
+      formData.append('realNameCn', personMessage.realNameCn || '');
+      formData.append('phoneNum', personMessage.phoneNum || '');
+      formData.append('pdfUrl', personMessage.pdfUrl || '');
+      formData.append('ruCompanyName', personMessage.ruCompanyName || '');
+      formData.append('fileName', personMessage.fileName || '');
+      formData.append('fileSize', personMessage.fileSize || '');
+      formData.append('X1', personMessage.X1 || '');
+      formData.append('Y1', personMessage.Y1 || '');
+      formData.append('X2', personMessage.X2 || '');
+      formData.append('Y2', personMessage.Y2 || '');
+      formData.append('X3', personMessage.X3 || '');
+      formData.append('Y3', personMessage.Y3 || '');
+      formData.append('X4', personMessage.X4 || '');
+      formData.append('Y4', personMessage.Y4 || '');
+      formData.append('pageNum1', personMessage.pageNum1 || '');
+      formData.append('pageNum2', personMessage.pageNum2 || '');
+      formData.append('pageNum3', personMessage.pageNum3 || '');
+      formData.append('pageNum4', personMessage.pageNum4 || '');
+      const res = await fetchApi.personMessageEsign(formData);
+      return res;
+    },
+     /**
+     * 信息表签署文件上传
+     */
+    async uploadMessageEsignFile(file) {
+      const formData = new FormData();
+      formData.append('file', file || '');
+      const res = await fetchApi.uploadMessageEsignFile(formData);
+      return res;
+    },
+     /**
+     * 同步简历名称
+     */
+    async updateUserName(resumeId:string,rId?:string) {
+      const formData = new FormData();
+      formData.append('resumeId', resumeId || '');
+      formData.append('rId', rId || '');
+      const res = await fetchApi.updateUserName(formData);
+      return res;
+    },
   },
 });
 
