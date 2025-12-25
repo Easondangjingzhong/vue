@@ -343,7 +343,7 @@
        <a-row :gutter="24">
         <a-col :span="24" class="personalInfoThreeBottomBorder personalInfoCenter" style="text-align: left;">
           I hereby authorize U-Talent, ltd and its all subsidiaries or third parties to investigate the relevant information that I have provided in connection with my form for background check is true and complete. Any falsification of information (or any omission of relevant information)of any fact resulted in disqualified for the position, I am willing to assume all the related responsibility. and I waive all claims against such organizations and/or persons for legal liabilities which may occur during the disclosure.
-<br/>本人特此授权本人授权北京博瑞智捷企业咨询有限公司及其所有关联公司或第三方对我在本表中提供的相关信息进行调查，确认其真实完整。如果有任何虚假信息（或有关事实的遗漏）导致我不能担任该职位，本人愿意承担相关责任。本人放弃对上述组织和/或个人产生的披露过程中可能出现的法律责任提出的任何索赔。以上信息如有变更，本人将在第一时间告知人力资源部，如有违反，一切后果由本人承担。本人已阅读公司管理制度及部门相关制度，并严格遵守执行。此登记表作为劳动合同附件，与劳动合同具有同等法律效力。
+<br/>本人特此授权本人授权{{offerInformationForm.offerSignCompany}}及其所有关联公司或第三方对我在本表中提供的相关信息进行调查，确认其真实完整。如果有任何虚假信息（或有关事实的遗漏）导致我不能担任该职位，本人愿意承担相关责任。本人放弃对上述组织和/或个人产生的披露过程中可能出现的法律责任提出的任何索赔。以上信息如有变更，本人将在第一时间告知人力资源部，如有违反，一切后果由本人承担。本人已阅读公司管理制度及部门相关制度，并严格遵守执行。此登记表作为劳动合同附件，与劳动合同具有同等法律效力。
         </a-col>
       </a-row>
       <a-row :gutter="24" class="personalInfoThreeBottomBorder">
@@ -360,8 +360,37 @@
       </a-row>
       <a-row :gutter="24" style="margin-top: 12px;">
         <a-col :span="12">
+          <a-form-item label="姓名" :label-col="labelCol">
+            <a-input v-model:value="displayName" disabled/>
+          </a-form-item>
+        </a-col>
+        <a-col :span="12">
+          <a-form-item label="证件号码" :label-col="labelCol">
+            <a-input v-model:value="newJoinerPersonalInformationForm.idCard" disabled/>
+          </a-form-item>
+        </a-col>
+      </a-row>
+      <a-row :gutter="24" style="margin-top: 12px;">
+        <a-col :span="12">
+          <a-form-item label="工作地点" :label-col="labelCol">
+            <a-input v-model:value="newJoinerPersonalInformationForm.city" disabled/>
+          </a-form-item>
+        </a-col>
+        <a-col :span="12">
+          <a-form-item label="职位" :label-col="labelCol">
+            <a-input v-model:value="newJoinerPersonalInformationForm.position" disabled/>
+          </a-form-item>
+        </a-col>
+      </a-row>
+      <a-row :gutter="24" style="margin-top: 12px;">
+        <a-col :span="12">
           <a-form-item label="OFFER类型" :label-col="labelCol" :rules="[{ required: true, message: '请选择OFFER类型' }]">
             <a-select v-model:value="offerInformationForm.offerType" name="offerType" :options="offerTypeOptions" placeholder="请选择OFFER类型"></a-select>
+          </a-form-item>
+        </a-col>
+        <a-col :span="12">
+          <a-form-item label="签署公司" :label-col="labelCol" :rules="[{ required: true, message: '请选择签署公司' }]">
+            <a-select v-model:value="offerInformationForm.offerSignCompany" name="offerSignCompany" :options="offerSignCompanyOptions" placeholder="请选择签署公司"></a-select>
           </a-form-item>
         </a-col>
       </a-row>
@@ -377,7 +406,7 @@
           </a-form-item>
         </a-col>
         <a-col :span="12">
-          <a-form-item label="实习结束" :rules="[{ required: true, message: '请选择实习结束' }]">
+          <a-form-item label="实习结束" :label-col="labelCol" :rules="[{ required: true, message: '请选择实习结束' }]">
             <a-date-picker
                 v-model:value="offerInformationForm.endTime"
                 value-format="YYYY-MM-DD"
@@ -393,7 +422,7 @@
           </a-form-item>
         </a-col>
         <a-col :span="12">
-          <a-form-item label="签署截止" :rules="[{ required: true, message: '请选择签署截止' }]">
+          <a-form-item label="签署截止" :label-col="labelCol" :rules="[{ required: true, message: '请选择签署截止' }]">
             <a-date-picker
                 v-model:value="offerInformationForm.signingDeadline"
                 value-format="YYYY-MM-DD"
@@ -415,7 +444,7 @@
           </a-form-item>
         </a-col>
         <a-col :span="12">
-          <a-form-item label="结束时间" :rules="[{ required: true, message: '请选择结束时间' }]">
+          <a-form-item label="结束时间" :label-col="labelCol" :rules="[{ required: true, message: '请选择结束时间' }]">
             <a-date-picker
                 v-model:value="offerInformationForm.endTime"
                 value-format="YYYY-MM-DD"
@@ -431,11 +460,12 @@
           </a-form-item>
         </a-col>
         <a-col :span="12">
-          <a-form-item label="试用薪资" :rules="[{ required: true, message: '请输入试用薪资' }]">
+          <a-form-item :label-col="labelCol" label="试用薪资" :rules="[{ required: true, message: '请输入试用薪资' }]">
             <a-input-number v-model:value="offerInformationForm.basicSalaryAfterRate" name="basicSalaryAfterRate" placeholder="请输入试用薪资" style="width: 100%;"/>
           </a-form-item>
         </a-col>
         </a-row>
+      
         <a-row :gutter="24">
         <a-col :span="12">
           <a-form-item label="签署截止" :label-col="labelCol" :rules="[{ required: true, message: '请选择签署截止' }]">
@@ -450,6 +480,26 @@
      </div>
      <div v-if="offerInformationForm.offerType == '兼职合同'">
       <a-row :gutter="24">
+        <a-col :span="8">
+          <a-form-item label="基本薪资" :label-col="{ span: 8 }" :rules="[{ required: true, message: '请输入基本薪资' }]">
+            <a-input v-model:value="jianzhiSalary" @change="handleJianzhiSalaryChange"/>
+          </a-form-item>
+        </a-col>
+        <a-col :span="4">
+          <a-form-item>
+            <a-select v-model:value="jianzhiUnit"  @change="handleJianzhiSalaryChange">
+              <a-select-option value="元/小时">元/小时</a-select-option>
+              <a-select-option value="元/天">元/天</a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+        <a-col :span="12">
+          <a-form-item label="发薪日" :label-col="labelCol" :rules="[{ required: true, message: '请选择发薪日' }]">
+            <a-select v-model:value="offerInformationForm.faXinDay" name="faXinDay" :options="faXinDayOptions" placeholder="请选择发薪日"></a-select>
+          </a-form-item>
+        </a-col>
+        </a-row>
+      <a-row :gutter="24">
         <a-col :span="12">
           <a-form-item label="合同开始" :label-col="labelCol" :rules="[{ required: true, message: '请选择合同开始' }]">
             <a-date-picker
@@ -460,7 +510,7 @@
           </a-form-item>
         </a-col>
        <a-col :span="12">
-          <a-form-item label="签署截止" :rules="[{ required: true, message: '请选择签署截止' }]">
+          <a-form-item label="签署截止" :label-col="labelCol" :rules="[{ required: true, message: '请选择签署截止' }]">
             <a-date-picker
                 v-model:value="offerInformationForm.signingDeadline"
                 value-format="YYYY-MM-DD"
@@ -495,7 +545,7 @@
         </a-row>
         <a-row :gutter="24" style="margin-top: 15px;">
           <a-col :span="24" class="offerContent">
-            北京博瑞智捷企业咨询有限公司（下称"公司"）非常乐意按以下条件和条款聘用您：
+            {{offerInformationForm.offerSignCompany}}（下称"公司"）非常乐意按以下条件和条款聘用您：
           </a-col>
         </a-row>
         <a-row :gutter="24" style="margin-top: 15px;">
@@ -737,7 +787,7 @@
         </a-row>
         <a-row :gutter="24" style="margin-top: 15px;">
           <a-col :span="24" class="offerContent">
-            北京博瑞智捷企业咨询有限公司（下称"公司"）非常乐意按以下条件和条款聘用您：
+            {{offerInformationForm.offerSignCompany}}（下称"公司"）非常乐意按以下条件和条款聘用您：
           </a-col>
         </a-row>
         <a-row :gutter="24" style="margin-top: 15px;">
@@ -989,7 +1039,7 @@
         </a-row>
         <a-row :gutter="24" style="margin-top: 15px;">
           <a-col :span="24" class="offerContent">
-            北京博瑞智捷企业咨询有限公司（下称"公司"）非常乐意按以下条件和条款聘用您：
+            {{offerInformationForm.offerSignCompany}}（下称"公司"）非常乐意按以下条件和条款聘用您：
           </a-col>
         </a-row>
         <a-row :gutter="24" style="margin-top: 15px;">
@@ -1049,7 +1099,7 @@
         </a-row>
         <a-row :gutter="24">
           <a-col :span="24" class="offerContent">
-            <span class='offerSpanLeft'>a.您的工资（即劳动报酬）为 35 元/小时，每月 15 日为发薪日，以人民币形式支付上月工资。</span>
+            <span class='offerSpanLeft'>a.您的工资（即劳动报酬）为 {{offerInformationForm.basicSalary}}，每月{{offerInformationForm.faXinDay}}为发薪日，以人民币形式支付上月工资。</span>
           </a-col>
         </a-row>
         <a-row :gutter="24">
@@ -1461,7 +1511,7 @@
         </a-col>
       </a-row>
 
-      <a-row :gutter="24" class="personalInfoBasicHeader">
+      <a-row v-if="newJoinerPersonalInformationForm.jobType == '全职'" :gutter="24" class="personalInfoBasicHeader">
         <a-col :span="24">
           Family Situation and Major Social Relations
         </a-col>
@@ -1522,7 +1572,7 @@
        <a-row :gutter="24">
         <a-col :span="24" class="personalInfoThreeBottomBorder personalInfoCenter" style="text-align: left;">
           I hereby authorize U-Talent, ltd and its all subsidiaries or third parties to investigate the relevant information that I have provided in connection with my form for background check is true and complete. Any falsification of information (or any omission of relevant information)of any fact resulted in disqualified for the position, I am willing to assume all the related responsibility. and I waive all claims against such organizations and/or persons for legal liabilities which may occur during the disclosure.
-<br/>本人特此授权本人授权北京博瑞智捷企业咨询有限公司及其所有关联公司或第三方对我在本表中提供的相关信息进行调查，确认其真实完整。如果有任何虚假信息（或有关事实的遗漏）导致我不能担任该职位，本人愿意承担相关责任。本人放弃对上述组织和/或个人产生的披露过程中可能出现的法律责任提出的任何索赔。以上信息如有变更，本人将在第一时间告知人力资源部，如有违反，一切后果由本人承担。本人已阅读公司管理制度及部门相关制度，并严格遵守执行。此登记表作为劳动合同附件，与劳动合同具有同等法律效力。
+<br/>本人特此授权本人授权{{offerInformationForm.offerSignCompany}}及其所有关联公司或第三方对我在本表中提供的相关信息进行调查，确认其真实完整。如果有任何虚假信息（或有关事实的遗漏）导致我不能担任该职位，本人愿意承担相关责任。本人放弃对上述组织和/或个人产生的披露过程中可能出现的法律责任提出的任何索赔。以上信息如有变更，本人将在第一时间告知人力资源部，如有违反，一切后果由本人承担。本人已阅读公司管理制度及部门相关制度，并严格遵守执行。此登记表作为劳动合同附件，与劳动合同具有同等法律效力。
         </a-col>
       </a-row>
       <a-row :gutter="24" class="personalInfoThreeBottomBorder">
@@ -1558,6 +1608,11 @@ const { newJoinerPersonalInformationFlag, newJoinerPersonalInformationFormTemp }
 const drawerWidth = ref(Math.min(900, window.innerWidth * 0.9));
 const isloading = ref(false);
 const labelCol = { span: 5 };
+const jianzhiSalary = ref(0);
+const jianzhiUnit = ref("元/小时");
+const handleJianzhiSalaryChange = () => {
+  offerInformationForm.value.basicSalary = `${jianzhiSalary.value}${jianzhiUnit.value}`;
+};
 const ethnicOptions = ref([
   { value: '汉族', label: '汉族' },
   { value: '蒙古族', label: '蒙古族' },
@@ -1655,7 +1710,7 @@ const censusRegisterOptions = ref([
   // { value: '社区公共户', label: '社区公共户' },
 ]);
 const isShow = ref(true);
-type NewJoinerPersonalInformationFormWithPhoto = NewJoinerPersonalInfoItem & { headPhoto?: string,signOfferType?: string, shixiStartTime?: string, shixiEndTime?: string, signBaseMoney?: string, signEndTime?: string };
+type NewJoinerPersonalInformationFormWithPhoto = NewJoinerPersonalInfoItem & { headPhoto?: string,signOfferType?: string, shixiStartTime?: string, shixiEndTime?: string, signBaseMoney?: string, signEndTime?: string, shixiBaseMoney: string, faxinDay: string};
 const newJoinerPersonalInformationForm = ref({
   offerOutsourceFamilies: [],
   offerOutsourceWorks: [],
@@ -1664,6 +1719,8 @@ const newJoinerPersonalInformationForm = ref({
   shixiEndTime: '',
   signBaseMoney: '',
   signEndTime: '',
+  shixiBaseMoney: '',
+  faxinDay: '',
 } as NewJoinerPersonalInformationFormWithPhoto);
 const headPhotoDataUrl = ref<string>('');
 const generatedPdfFile = ref<File | null>(null);
@@ -1724,6 +1781,17 @@ watch(newJoinerPersonalInformationFormTemp, (newVal) => {
     }
   }
 })
+const offerSignCompanyOptions = ref([
+  {value: '北京博瑞智捷企业咨询有限公司', label: '北京博瑞'},
+  {value: '北京我推天下信息技术有限公司', label: '北京我推'},
+  {value: '锐特精英(苏州)企业咨询有限公司', label: '苏州锐特'},
+])
+const faXinDayOptions = ref([
+  {value: '5日', label: '5日'},
+  {value: '15日', label: '15日'},
+  {value: '30日', label: '30日'},
+  {value: '31日', label: '31日'},
+])
 const addFamilyMember = () => {
   newJoinerPersonalInformationForm.value.offerOutsourceFamilies.push({
     personId: newJoinerPersonalInformationFormTemp.value.id,
@@ -1739,9 +1807,11 @@ interface OfferInformationItem {
   offerType: string;
   startTime: string;
   endTime: string;
-  basicSalary: number;
+  basicSalary: number | string;
   basicSalaryAfterRate: number;
   signingDeadline: string;
+  offerSignCompany: string;
+  faXinDay: string;
 }
 const offerInformationForm = ref({} as OfferInformationItem);
 const startYMD = computed(() => {
@@ -1912,7 +1982,7 @@ const generatePDFText = async() => {
 
       if (logoData) {
           const logoWidth = 40;
-          const logoHeight = 12;
+          const logoHeight = 10;
           const logoX = (pageWidth - logoWidth) / 2;
           doc.addImage(logoData, 'PNG', logoX, currentY, logoWidth, logoHeight);
           currentY += 15;
@@ -1936,7 +2006,7 @@ const generatePDFText = async() => {
 
       doc.setFontSize(10);
       doc.setFont('SimHei', 'normal');
-      const intro = '北京博瑞智捷企业咨询有限公司（下称"公司"）非常乐意按以下条件和条款聘用您：';
+      const intro = offerInformationForm.value.offerSignCompany+'（下称"公司"）非常乐意按以下条件和条款聘用您：';
       doc.text(intro, margin, currentY + 4);
       currentY += 10;
 
@@ -2080,7 +2150,7 @@ const generatePDFText = async() => {
           drawParagraph(`您的工作地点为【${newJoinerPersonalInformationForm.value.city}】。`, true);
 
           drawSectionTitle('5.', '薪酬');
-          drawParagraph('a. 您的工资（即劳动报酬）为 35 元/小时，每月 15 日为发薪日，以人民币形式支付上月工资。', true);
+          drawParagraph(`a. 您的工资（即劳动报酬）为 ${offerInformationForm.value.basicSalary}，每月${offerInformationForm.value.faXinDay}为发薪日，以人民币形式支付上月工资。`, true);
           drawParagraph('b. 公司不承担您的任何劳保福利待遇，并且不负责承担您的社会保险费用。', true);
 
           drawSectionTitle('6.', '个人所得税');
@@ -2168,8 +2238,8 @@ const generatePDFText = async() => {
 
             if (item.isImage && item.imageUrl) {
                 try {
-                  const iw = Math.max(0, w - 4);
-                  const ih = Math.max(0, h - 4);
+                  const iw = Math.max(0, w - 2);
+                  const ih = Math.max(0, h - 2);
                   const xImg = currentX + (w - iw) / 2;
                   const yImg = currentY + (h - ih) / 2;
                   doc.addImage(item.imageUrl, 'JPEG', xImg, yImg, iw, ih);
@@ -2379,7 +2449,7 @@ const generatePDFText = async() => {
     checkPageBreak(30);
     doc.setFontSize(8);
     const authTextEn = "I hereby authorize U-Talent, ltd and its all subsidiaries or third parties to investigate the relevant information that I have provided in connection with my form for background check is true and complete. Any falsification of information (or any omission of relevant information)of any fact resulted in disqualified for the position, I am willing to assume all the related responsibility. and I waive all claims against such organizations and/or persons for legal liabilities which may occur during the disclosure.";
-    const authTextCn = "本人特此授权北京博瑞智捷企业咨询有限公司及其所有关联公司或第三方对我在本表中提供的相关信息进行调查，确认其真实完整。如果有任何虚假信息（或有关事实的遗漏）导致我不能担任该职位，本人愿意承担相关责任。本人放弃对上述组织和/或个人产生的披露过程中可能出现的法律责任提出的任何索赔。以上信息如有变更，本人将在第一时间告知人力资源部，如有违反，一切后果由本人承担。本人已阅读公司管理制度及部门相关制度，并严格遵守执行。此登记表作为劳动合同附件，与劳动合同具有同等法律效力。";
+    const authTextCn = "本人特此授权"+offerInformationForm.value.offerSignCompany+"及其所有关联公司或第三方对我在本表中提供的相关信息进行调查，确认其真实完整。如果有任何虚假信息（或有关事实的遗漏）导致我不能担任该职位，本人愿意承担相关责任。本人放弃对上述组织和/或个人产生的披露过程中可能出现的法律责任提出的任何索赔。以上信息如有变更，本人将在第一时间告知人力资源部，如有违反，一切后果由本人承担。本人已阅读公司管理制度及部门相关制度，并严格遵守执行。此登记表作为劳动合同附件，与劳动合同具有同等法律效力。";
     
     // Use splitTextToSize
     const splitEn = doc.splitTextToSize(authTextEn, contentWidth);
@@ -2400,7 +2470,6 @@ const generatePDFText = async() => {
 
     //doc.save(`新员工个人信息登记表_${f.userNameCn || ''}.pdf`);
     return doc.output('blob');
-
   } catch (e) {
     console.error(e);
     message.error('PDF Generation Failed: ' + (e as any).message);
@@ -2415,6 +2484,8 @@ const generatePDF = async () => {
   newJoinerPersonalInformationForm.value.shixiEndTime = offerInformationForm.value.endTime;
   newJoinerPersonalInformationForm.value.signBaseMoney = offerInformationForm.value.basicSalary?.toString() || '';
   newJoinerPersonalInformationForm.value.signEndTime = offerInformationForm.value.signingDeadline;
+  newJoinerPersonalInformationForm.value.shixiBaseMoney = offerInformationForm.value.basicSalaryAfterRate?.toString() || '';
+  newJoinerPersonalInformationForm.value.faxinDay = offerInformationForm.value.faXinDay || '';
   outsourceDetailStore.updateOutsourcePersonMsg(newJoinerPersonalInformationForm.value).then(async (res) => {
     if (res.code == 1) {
       await nextTick();
@@ -2430,7 +2501,7 @@ const generatePDF = async () => {
             realNameCn: newJoinerPersonalInformationForm.value.userNameCn,
             phoneNum:  newJoinerPersonalInformationForm.value.phoneNumber || '',
             pdfUrl: res.info.pdfUrl,
-            ruCompanyName: '北京博瑞智捷企业咨询有限公司',
+            ruCompanyName: offerInformationForm.value.offerSignCompany,
             fileName: filename,
             fileSize: generatedPdfFile.value?.size || '',
           }).then((res) => {

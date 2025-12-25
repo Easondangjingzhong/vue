@@ -108,6 +108,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     outsourceSocialSecurityInfoForm: {} as OutsourceShebaoInfoItem, //外包社保基数详情 社保信息表单
     markIdList: [] as any[], //外包店铺列表
     counselorList: [] as any[], //外包顾问列表
+    LeaveInfomatiomFlag: false, //离职申请
     contractInfomatiomFlag: false, //合同信息
     esignTemplateList: [] as any[], //电子合同模板列表
     esignTemplateDetail: {} as any, //电子合同模板详情
@@ -122,6 +123,8 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     } as PageItem,
     addOutsourceFormulaFlag: false, //外包公司公式详情 新增公式信息表单控制
     outsourceFormulaForm: {} as OutsourceFormulaItem, //外包公司公式详情 公式信息表单
+    orginalPathBlobPathFlag: false, //文件原路径详情控制
+    orginalPathBlobPath: '' as string, //文件原路径详情
   }),
   getters: {
     getOutsourcePersonList: (state) =>
@@ -439,6 +442,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         endTime: item.endTime ? formatToDate(item.endTime) : '',
         mId: item.mId?.toString(),
       })), //外包公司公式详情 公式信息
+      getOrginalPathBlobPath: (state) => state.orginalPathBlobPath,
   },
   actions: {
     /**
@@ -780,6 +784,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     async addUpdateOutsourceBasic() {
       const formData = new FormData();
       formData.append('id', this.outsourceBasicForm.id?.toString() || '');
+      formData.append('rId', this.outsourceBasicForm.rId?.toString() || '');
       formData.append('jobType', this.outsourceBasicForm.jobType || '');
       formData.append('jobNumber', this.outsourceBasicForm.jobNumber || '');
       formData.append('planEntryTime', this.outsourceBasicForm.planEntryTime || '');
@@ -1230,12 +1235,21 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       return res;
     },
     /**
-     * 查询签署模板拟定合同
+     * 签署模板拟定合同
      * @param data TemplateDetail
      * @returns
      */
     async queryEsignTemplateBySign(TemplateDetail) {
       const res = await fetchApi.queryEsignTemplateBySign(TemplateDetail);
+      return res;
+    },
+     /**
+     * 签署模板离职申请
+     * @param data TemplateDetail
+     * @returns
+     */
+    async queryEsignTemplateBySignLeave(TemplateDetail) {
+      const res = await fetchApi.queryEsignTemplateBySignLeave(TemplateDetail);
       return res;
     },
     /**
@@ -1379,6 +1393,14 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       const res = await fetchApi.updateUserName(formData);
       return res;
     },
+    /**
+     * 文件预览
+     * @param originalPathBlobPath 文件路径
+     */
+    handleFileYulanInfo(originalPathBlobPath: string) {
+      this.orginalPathBlobPathFlag = true;
+      this.orginalPathBlobPath = originalPathBlobPath;
+    }
   },
 });
 

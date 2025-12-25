@@ -83,6 +83,7 @@
           <a-button @click="handleSearchOutsourcePerson('3')" :class="{'active': formStatePerson.currentStatus === '3'}" style="margin-right: 5px;" size="small">离职</a-button>
           <a-button @click="handleSearchOutsourcePerson('1')" :class="{'active': formStatePerson.currentStatus === ''}" style="margin-right: 5px;" size="small">全部</a-button>
           <a-button @click="handleSearchOutsourcePerson('4')" :class="{'active': formStatePerson.companyArrange === '1'}" style="margin-right: 5px;" size="small" title="按公司排序">排序</a-button>
+          <a-button @click="handleSearchOutsourcePerson('5')" :class="{'active': formStatePerson.currentStatus === '4'}" style="margin-right: 5px;" size="small">未入</a-button>
         </span>
         <span>
            <a-button @click="handleToAddOutsourcePerson" style="background-color: #eee" size="small">新增</a-button>
@@ -96,7 +97,7 @@
       :loading="personIsLoading"
       :columns="columnsOutsourceDetail"
       :data-source="getOutsourcePersonList"
-      :scroll="{ x: 2200 }"
+      :scroll="{ x: 2300 }"
     >
   <template #bodyCell="{ column, record }">
     <a v-if="column.key === 'userNameCn'">
@@ -132,15 +133,20 @@
      <a-tag v-if="column.key === 'currentStatus' && record.currentStatus === '4'" color="red">
       未入
     </a-tag>
-    <a-tag v-if="column.key === 'infoTableFlag' && record.infoTableFlag == '等待发起'" style="cursor: pointer;" color="red" @click="handleNewJoinerPersonalInformationForm(record)">等待发起</a-tag>
-    <a-tag v-if="column.key === 'infoTableFlag' && record.infoTableFlag == '已经发起'" color="orange">已经发起</a-tag>
-    <a-tag v-if="column.key === 'infoTableFlag' && record.infoTableFlag == '签署完成'" color="green">签署完成</a-tag>
+    <a-tag v-if="column.key === 'infoTableFlag' && record.infoTableFlag == '信息待填'" style="cursor: pointer;" color="red">信息待填</a-tag>
+    <a-tag v-if="column.key === 'infoTableFlag' && record.infoTableFlag == '等待发起'" style="cursor: pointer;" color="red" @click="handleNewJoinerPersonalInformationForm(record)">信息已填</a-tag>
+    <a-tag v-if="column.key === 'infoTableFlag' && record.infoTableFlag == '等待签署'" color="orange">等待签署</a-tag>
+    <a-tag v-if="column.key === 'infoTableFlag' && record.infoTableFlag == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(record.infoTablePath)">签署完成</a-tag>
     <a-tag v-if="column.key === 'offerFlag' && record.offerFlag == '等待发起'" color="red">等待发起</a-tag>
-    <a-tag v-if="column.key === 'offerFlag' && record.offerFlag == '已经发起'" color="orange">已经发起</a-tag>
-    <a-tag v-if="column.key === 'offerFlag' && record.offerFlag == '签署完成'" color="green">签署完成</a-tag>
-    <a-tag v-if="column.key === 'contractCompany' && record.contractCompany == '等待发起'" style="cursor: pointer;" color="red" @click="handleContractInfomationForm(record)">等待发起</a-tag>
-    <a-tag v-if="column.key === 'contractCompany' && record.contractCompany == '已经发起'" color="orange">已经发起</a-tag>
-    <a-tag v-if="column.key === 'contractCompany' && record.contractCompany == '签署完成'" color="green">签署完成</a-tag>
+    <a-tag v-if="column.key === 'offerFlag' && record.offerFlag == '等待签署'" color="orange">等待签署</a-tag>
+    <a-tag v-if="column.key === 'offerFlag' && record.offerFlag == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(record.offerPic)">签署完成</a-tag>
+    <a-tag v-if="column.key === 'contractCompany' && record.contractCompany == '等待发起'" style="cursor: pointer;" color="red" @click="handleContractInfomationForm(record)">{{ record.currentStatus === '1' ? "未到发起" : "等待发起"}}</a-tag>
+    <a-tag v-if="column.key === 'contractCompany' && record.contractCompany == '等待签署'" color="orange">等待签署</a-tag>
+    <a-tag v-if="column.key === 'contractCompany' && record.contractCompany == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(record.contractPath)">签署完成</a-tag>
+
+    <a-tag v-if="column.key === 'proofFlag' && record.proofFlag == '等待发起'" color="red" style="cursor: pointer;" @click="handleLeaveInfomationForm(record)">等待发起</a-tag>
+    <a-tag v-if="column.key === 'proofFlag' && record.proofFlag == '已经发起'" color="orange">已经发起</a-tag>
+    <a-tag v-if="column.key === 'proofFlag' && record.proofFlag == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(record.leavePath)">签署完成</a-tag>
 
     <a-tag v-if="column.key === 'enterprise'" :title="record.enterprise">
       查看
@@ -209,7 +215,9 @@
       </a-pagination>
     </a-row>
   </div>
+  <FileYuLanInfo/>
   <AddOutsourcePerson/>
+  <LeaveInfomationForm/>
   <ContractInfomationForm/>
   <NewJoinerPersonalInformationForm/>
 </template>
@@ -218,7 +226,9 @@
 import { storeToRefs } from 'pinia';
 import { handleToResumeDetails } from '/@/router/index';
 import type { TableColumnsType } from 'ant-design-vue';
+import FileYuLanInfo from '/@/views/outsourceDetail/components/personComponents/FileYuLanInfo.vue';
 import AddOutsourcePerson from '/@/views/outsourceDetail/components/AddOutsourcePerson.vue';
+import LeaveInfomationForm from '/@/views/outsourceDetail/components/personComponents/LeaveInfomationForm.vue'
 import ContractInfomationForm from '/@/views/outsourceDetail/components/personComponents/ContractInfomationForm.vue'
 import NewJoinerPersonalInformationForm from '/@/views/outsourceDetail/components/personComponents/NewJoinerPersonalInformationForm.vue'
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
@@ -235,7 +245,8 @@ const {
   getOutsourcePosition, 
   addOutsourcePersonFlag, 
   newJoinerPersonalInformationFlag,
-  contractInfomatiomFlag
+  contractInfomatiomFlag,
+  LeaveInfomatiomFlag
 } = storeToRefs(outsourceDetailStore);
 const columnsOutsourceDetail: TableColumnsType = [
   { title: '编号', dataIndex: 'index', key: 'index', fixed: 'left', width: 30, ellipsis: true,},
@@ -251,11 +262,12 @@ const columnsOutsourceDetail: TableColumnsType = [
   { title: '职位', dataIndex: 'positions', key: 'positions', fixed: 'left', width: 100, ellipsis: true },
   { title: '性质', dataIndex: 'jobType', key: 'jobType', fixed: 'left', width: 40, ellipsis: true },
   { title: '招聘', dataIndex: 'recruitParty', key: 'recruitParty', width: 50, ellipsis: true },
-  { title: '推企', dataIndex: 'enterprise', key: 'enterprise', width: 40, ellipsis: true,},
-  { title: '信息表', dataIndex: 'infoTableFlag', key: 'infoTableFlag', width: 55, ellipsis: true,},
-  { title: 'OFFER', dataIndex: 'offerFlag', key: 'offerFlag', width: 55, ellipsis: true,},
+  { title: '推企', dataIndex: 'enterprise', key: 'enterprise', width: 40,},
+  { title: '信息表', dataIndex: 'infoTableFlag', key: 'infoTableFlag', width: 55,},
+  { title: 'OFFER', dataIndex: 'offerFlag', key: 'offerFlag', width: 55,},
   { title: '薪资', dataIndex: 'salaryStructure', key: 'salaryStructure', width: 55, ellipsis: true,},
-  { title: '合同签署', dataIndex: 'contractCompany', key: 'contractCompany', width: 55, ellipsis: true,},
+  { title: '合同签署', dataIndex: 'contractCompany', key: 'contractCompany', width: 55,},
+  { title: '离申', dataIndex: 'proofFlag', key: 'proofFlag', width: 55,},
   { title: '生效日期', dataIndex: 'startTime', key: 'startTime', width: 60, ellipsis: true,},
   { title: '终止日期', dataIndex: 'endTime', key: 'endTime', width: 60, ellipsis: true,},
   { title: '周期', dataIndex: 'contractPeriod', key: 'contractPeriod', width: 40, ellipsis: true,},
@@ -263,7 +275,6 @@ const columnsOutsourceDetail: TableColumnsType = [
   { title: '实际入职', dataIndex: 'realEntryTime', key: 'realEntryTime', width: 60, ellipsis: true,},
   { title: '预计离职', dataIndex: 'planLeaveTime', key: 'planLeaveTime', width: 60, ellipsis: true,},
   { title: '实际离职', dataIndex: 'realLeaveTime', key: 'realLeaveTime', width: 60, ellipsis: true,},
-  { title: '离申', dataIndex: 'proofFlag', key: 'proofFlag', width: 30, ellipsis: true,},
   { title: '社保', dataIndex: 'socialFlag', key: 'socialFlag', width: 30, ellipsis: true,},
   { title: '一金', dataIndex: 'yijinFlag', key: 'yijinFlag', width: 30, ellipsis: true,},
   { title: '商保', dataIndex: 'shangbaoFlag', key: 'shangbaoFlag', width: 30, ellipsis: true,},
@@ -279,7 +290,11 @@ const columnsOutsourceDetail: TableColumnsType = [
 ];
   const handleSearchOutsourcePerson = (status) => {
     if (status != '4') {
-      formStatePerson.value.currentStatus = status;
+      if (status == '5') {
+        formStatePerson.value.currentStatus = '4';
+      } else {
+        formStatePerson.value.currentStatus = status;
+      }
     } else {
       formStatePerson.value.companyArrange = '1';
     }
@@ -315,6 +330,13 @@ const columnsOutsourceDetail: TableColumnsType = [
   const handleContractInfomationForm = (record) => {
     contractInfomatiomFlag.value = true;
     outsourceDetailStore.handleContractInfomationForm(record as OutsourcePersonItem);
+  }
+  const handleLeaveInfomationForm = (record) => {
+    LeaveInfomatiomFlag.value = true;
+    outsourceDetailStore.handleContractInfomationForm(record as OutsourcePersonItem);
+  }
+  const handleFileYulanInfo = (originalPathBlobPath) => {
+    outsourceDetailStore.handleFileYulanInfo(originalPathBlobPath);
   }
 </script>
 

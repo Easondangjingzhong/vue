@@ -93,6 +93,10 @@ export interface OutsourcePersonItem {
   shixiEndTime: string;
   signBaseMoney: string;
   signEndTime: string;
+  shixiBaseMoney: string;
+  faxinDay: string;
+  contractPath: string;
+  leavePath: string;
 }
 /**
  * 外包查询个人信息

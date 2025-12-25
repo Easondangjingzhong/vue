@@ -21,17 +21,28 @@
       <a-descriptions-item label="年龄">{{ outsourcePersonDetail.age ? outsourcePersonDetail.age : "-" }}</a-descriptions-item>
       <a-descriptions-item label="品牌">{{ outsourcePersonDetail.brand ? outsourcePersonDetail.brand : "-" }}</a-descriptions-item>
       <a-descriptions-item label="预计入职">{{ outsourcePersonDetail.planEntryTime ? outsourcePersonDetail.planEntryTime : "-" }}</a-descriptions-item>
-      <a-descriptions-item label="无犯罪">{{ outsourcePersonDetail.noCriminal ? outsourcePersonDetail.noCriminal : "-" }}</a-descriptions-item>
+      <a-descriptions-item label="无犯罪">{{ outsourcePersonDetail.criminalRecord ? (outsourcePersonDetail.criminalRecord == '否' ? '无' : '有') : "-" }}</a-descriptions-item>
 
       <a-descriptions-item label="性别">{{ outsourcePersonDetail.sex ? outsourcePersonDetail.sex : "-"  }}</a-descriptions-item>
       <a-descriptions-item label="店铺">{{ outsourcePersonDetail.market ? outsourcePersonDetail.market : "-"  }}</a-descriptions-item>
       <a-descriptions-item label="实际入职">{{ outsourcePersonDetail.realEntryTime ? outsourcePersonDetail.realEntryTime : "-"  }}</a-descriptions-item>
-      <a-descriptions-item label="信息表">{{ outsourcePersonDetail.infoTableFlag ? outsourcePersonDetail.infoTableFlag : "-"  }}</a-descriptions-item>
+      <a-descriptions-item label="信息表">
+        <a-tag v-if="outsourcePersonDetail.infoTableFlag == '信息待填'" style="cursor: pointer;" color="red">信息待填</a-tag>
+        <a-tag v-else-if="outsourcePersonDetail.infoTableFlag == '等待发起'" style="cursor: pointer;" color="red">信息已填</a-tag>
+        <a-tag v-else-if="outsourcePersonDetail.infoTableFlag == '等待签署'" color="orange">等待签署</a-tag>
+        <a-tag v-else-if="outsourcePersonDetail.infoTableFlag == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(outsourcePersonDetail.infoTablePath)">签署完成</a-tag>
+        <span v-else>-</span>
+      </a-descriptions-item>
 
       <a-descriptions-item label="城市">{{ outsourcePersonDetail.city ? outsourcePersonDetail.city : "-"  }}</a-descriptions-item>
       <a-descriptions-item label="职位">{{ outsourcePersonDetail.positions ? outsourcePersonDetail.positions : "-"  }}</a-descriptions-item>
       <a-descriptions-item label="预计离职">{{ outsourcePersonDetail.planLeaveTime ? outsourcePersonDetail.planLeaveTime : "-"  }}</a-descriptions-item>
-      <a-descriptions-item label="OFFER">{{ outsourcePersonDetail.offerFlag ? outsourcePersonDetail.offerFlag : "-"  }}</a-descriptions-item>
+      <a-descriptions-item label="OFFER">
+        <a-tag v-if="outsourcePersonDetail.offerFlag == '等待发起'" color="red">等待发起</a-tag>
+        <a-tag v-else-if="outsourcePersonDetail.offerFlag == '等待签署'" color="orange">等待签署</a-tag>
+        <a-tag v-else-if="outsourcePersonDetail.offerFlag == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(outsourcePersonDetail.offerPic)">签署完成</a-tag>
+        <span v-else>-</span>
+      </a-descriptions-item>
       
       <a-descriptions-item label="招聘">{{ outsourcePersonDetail.recruitParty  ? outsourcePersonDetail.recruitParty : "-" }}</a-descriptions-item>
       <a-descriptions-item label="性质">
@@ -40,7 +51,12 @@
         <a-tag v-else>-</a-tag>
       </a-descriptions-item>
       <a-descriptions-item label="实际离职">{{ outsourcePersonDetail.realLeaveTime  ? outsourcePersonDetail.realLeaveTime : "-" }}</a-descriptions-item>
-      <a-descriptions-item label="离职证明">{{ outsourcePersonDetail.proofFlag ? outsourcePersonDetail.proofFlag : "-" }}</a-descriptions-item>
+      <a-descriptions-item label="离职证明">
+        <a-tag v-if="outsourcePersonDetail.proofFlag == '等待发起'" color="red">等待发起</a-tag>
+        <a-tag v-else-if="outsourcePersonDetail.proofFlag == '已经发起'" color="orange">已经发起</a-tag>
+        <a-tag v-else-if="outsourcePersonDetail.proofFlag == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(outsourcePersonDetail.leavePath)">签署完成</a-tag>
+        <span v-else>-</span>
+      </a-descriptions-item>
     </a-descriptions>
   </a-col>
 </a-row>
@@ -211,7 +227,9 @@ watch(() => outsourcePersonDetail.value.id, () => {
   outsourceDetailStore.queryOutsourcePersonByPhone(outsourcePersonDetail.value.phoneNumber);
 });
 outsourceDetailStore.queryOutsourcePersonByPhone(outsourcePersonDetail.value.phoneNumber);
-
+const handleFileYulanInfo = (originalPathBlobPath) => {
+  outsourceDetailStore.handleFileYulanInfo(originalPathBlobPath);
+}
 </script>
 
 <style lang="less" scoped>

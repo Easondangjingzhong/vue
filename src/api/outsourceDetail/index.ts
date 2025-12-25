@@ -38,6 +38,7 @@ enum URL {
   query_esign_template_list = '/employee-group/resume-vue-esign-query-template-list.action',
   query_esign_template_detail = '/employee-group/resume-vue-esign-query-template-detail.action',
   query_esign_template_by_sign = '/employee-group/resume-vue-esign-create-template-bysign.action',
+  query_esign_template_by_sign_leave = '/employee-group/resume-vue-esign-create-template-bysign-quit.action',
   query_esign_personId_by_phone = '/employee-group/resume-vue-esign-query-personId-info.action',
   update_outsource_person_msg = '/candidateRecommend/resume-vue-update-out-person-msg.action',
   query_outsource_formula = '/candidateRecommend/resume-vue-query-out-gongshi.action',
@@ -159,6 +160,13 @@ const queryEsignTemplateDetail = async (data: any) =>
  */
 const queryEsignTemplateBySign = async (data: any) => 
   post<any>({ url: URL.query_esign_template_by_sign, data});
+/**
+ * 查询签署模板离职申请
+ * @param data TemplateDetail
+ * @returns 
+ */
+const queryEsignTemplateBySignLeave = async (data: any) => 
+  post<any>({ url: URL.query_esign_template_by_sign_leave, data});
 /**
  * 查询顾问列表
  * @returns 
@@ -419,6 +427,7 @@ export default {
   handleChangePsnAccount,
   queryEsignTemplateList,
   queryEsignTemplateDetail,
+  queryEsignTemplateBySignLeave,
   queryEsignTemplateBySign,
   queryCounselorList,
   addOutsourceBasic,

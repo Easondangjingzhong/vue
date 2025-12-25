@@ -1,7 +1,7 @@
 <template>
  <a-drawer
-    v-model:open="contractInfomatiomFlag"
-    title="合同签署"
+    v-model:open="LeaveInfomatiomFlag"
+    title="离职申请"
     :maskClosable="false"
     :keyboard="false"
     :closable="false"
@@ -27,12 +27,12 @@
             </a-form-item>
           </a-col>
           <a-col :span="12">
-           <a-form-item label="合同模板" name="signTemplate">
+           <a-form-item label="离职模板" name="signTemplate">
             <a-select
               v-model:value="contractInfomatiomForm.signTemplate"
               :options="getEsignTemplateList"
               @change="handleChangeSignTemplate"
-              placeholder="请选择合同模板"
+              placeholder="请选择离职模板"
             />
             </a-form-item>
           </a-col>
@@ -72,13 +72,13 @@ import { debounce } from 'lodash-es';
 import { CloseOutlined } from '@ant-design/icons-vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { contractInfomatiomFlag, getEsignTemplateList, getEsignTemplateDetail, contractInfomationFormTemp, getEsignTemplatePsnAccount} = storeToRefs(outsourceDetailStore);
+const { LeaveInfomatiomFlag, getEsignTemplateList, getEsignTemplateDetail, contractInfomationFormTemp, getEsignTemplatePsnAccount} = storeToRefs(outsourceDetailStore);
 const drawerWidth = ref(Math.max(600, window.innerWidth * 0.6));
 const labelCol = { style: { width: '85px' } };
 const iconLoading = ref(false);
 const closeDrawer = () => {
   components.value = [];
-  contractInfomatiomFlag.value = false;
+  LeaveInfomatiomFlag.value = false;
   contractInfomatiomForm.value = {
   contractCompany: '',
   signTemplate: '',
@@ -208,6 +208,7 @@ const getControlField = (type) => {
     '性别': 'sex',
     '手机': 'phoneNumber',
     '身份证号': 'idCard',
+    '身份证号码': 'idCard',
     '邮箱': 'email',
     '工作城市': 'city',
     '公司名称': 'companyName',
@@ -291,9 +292,9 @@ const handleSubmit = () => {
       {
         participantId: getEsignTemplateDetail.value?.participants?.filter(item => (item.participantFlag === '签署方2' || item.participantFlag === '员工'))[0]?.participantId || '',      
         psnParticipant: {
-          psnAccount: componentsReal().find(item => item.componentName === '联系电话' || item.componentName === '电话' || item.componentName === '手机号' || item.componentName === '手机')?.componentValue || '',
+          psnAccount: '15656120372',
           psnName: componentsReal().find(item => item.componentName === '姓名')?.componentValue || '',
-          psnIDCardNum: componentsReal().find(item => item.componentName === '身份证号')?.componentValue || '',
+          psnIDCardNum: componentsReal().find(item => item.componentName === '身份证号码' || item.componentName === '身份证号')?.componentValue || '',
         }
       }
     ],
@@ -328,7 +329,7 @@ const handleSubmit = () => {
     }
   };
   console.log('提交的数据:', submitData);
-  outsourceDetailStore.queryEsignTemplateBySign(submitData).then(res => {
+  outsourceDetailStore.queryEsignTemplateBySignLeave(submitData).then(res => {
     if (res.code == 1) {
       if (res.info.code === 0) {
         //let signFlowId = res.info.data.signFlowId || '';
