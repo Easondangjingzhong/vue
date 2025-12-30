@@ -16,7 +16,10 @@
       <a-descriptions-item label="英文">{{ outsourcePersonDetail.userNameEn ? outsourcePersonDetail.userNameEn : "-" }}</a-descriptions-item>
       <a-descriptions-item label="公司">{{ outsourcePersonDetail.companyName ? outsourcePersonDetail.companyName : "-" }}</a-descriptions-item>
       <a-descriptions-item label="OFFER日期">{{ outsourcePersonDetail.offerTime ? outsourcePersonDetail.offerTime : "-" }}</a-descriptions-item>
-      <a-descriptions-item label="身份证">{{ outsourcePersonDetail.idCard ? outsourcePersonDetail.idCard : "-" }}</a-descriptions-item>
+      <a-descriptions-item label="身份证">
+        <a-tag v-if="outsourcePersonDetail.idCard" style="cursor: pointer;" color="green" @click="generateIdCardPDF">{{ outsourcePersonDetail.idCard }}</a-tag>
+        <span v-else>-</span>
+      </a-descriptions-item>
 
       <a-descriptions-item label="年龄">{{ outsourcePersonDetail.age ? outsourcePersonDetail.age : "-" }}</a-descriptions-item>
       <a-descriptions-item label="品牌">{{ outsourcePersonDetail.brand ? outsourcePersonDetail.brand : "-" }}</a-descriptions-item>
@@ -93,12 +96,78 @@
 import { storeToRefs } from 'pinia';
 import { FormOutlined } from '@ant-design/icons-vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
+import jsPDF from 'jspdf';
+import { message } from 'ant-design-vue';
+
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
 const { outsourcePersonDetail, getOutsourcePersonByPhoneList} = storeToRefs(outsourceDetailStore);
 
 const handleComprehensiveBasicUpdate = () => {
   outsourceDetailStore.handleComprehensiveBasicUpdate();
 }
+
+const getBase64Image = (url: string) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.setAttribute("crossOrigin", "Anonymous");
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.drawImage(img, 0, 0);
+        const dataURL = canvas.toDataURL("image/png"); // 可改为 image/jpeg
+        resolve(dataURL);
+      } else {
+        reject(new Error("Canvas context is null"));
+      }
+    };
+    img.onerror = error => reject(error);
+    img.src = url;
+  });
+};
+
+const generateIdCardPDF = async () => {
+  try {
+    message.success('PDF 生成开始');
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    //const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 20;
+    let currentY = margin;
+
+    const zhengUrl = outsourcePersonDetail.value.idPhotoZheng;
+    const fanUrl = outsourcePersonDetail.value.idPhotoFan;
+    const zhengBase64 = zhengUrl ? await getBase64Image(zhengUrl).catch(() => null) : null;
+    const fanBase64 = fanUrl ? await getBase64Image(fanUrl).catch(() => null) : null;
+    const gap = 10;
+    if (!zhengBase64 && !fanBase64) {
+      doc.save(`身份证_${outsourcePersonDetail.value.userNameCn || 'unknown'}.pdf`);
+      message.success('PDF 生成成功并开始下载');
+      return;
+    }
+    if (zhengBase64) {
+      const zProps = doc.getImageProperties(zhengBase64 as string);
+      const imgWidth = pageWidth - (margin * 2);
+      const zHeight = (zProps.height * imgWidth) / zProps.width;
+      doc.addImage(zhengBase64 as string, 'PNG', margin, currentY, imgWidth, zHeight);
+      currentY += zHeight + gap;
+    }
+    if (fanBase64) {
+      const fProps = doc.getImageProperties(fanBase64 as string);
+      const imgWidth = pageWidth - (margin * 2);
+      const fHeight = (fProps.height * imgWidth) / fProps.width;
+      doc.addImage(fanBase64 as string, 'PNG', margin, currentY, imgWidth, fHeight);
+      currentY += fHeight + gap;
+    }
+    doc.save(`身份证_${outsourcePersonDetail.value.userNameCn || 'unknown'}.pdf`);
+    message.success('PDF 生成成功并开始下载');
+  } catch (error) {
+    console.error('PDF generation failed:', error);
+    message.error('PDF 生成失败');
+  }
+};
 
 const columns = [
   {

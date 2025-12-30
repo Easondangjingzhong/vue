@@ -97,6 +97,8 @@ export interface OutsourcePersonItem {
   faxinDay: string;
   contractPath: string;
   leavePath: string;
+  idPhotoFan: string;
+  idPhotoZheng: string;
 }
 /**
  * 外包查询个人信息
@@ -657,6 +659,7 @@ export interface OutsourceShebaoInfoItem {
   yiliaoBase?: string;
   updateTime?: string;
   updateUser?: string;
+  jiaoMonth?: string;
 }
 
 export interface OfferOutsourceFamilyItem {

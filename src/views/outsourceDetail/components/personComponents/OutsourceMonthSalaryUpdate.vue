@@ -287,12 +287,16 @@ const monthGeshui = computed(() => {
     // 获取各项收入和扣除数据
     const yearIncomeTotal = parseFloat(yearTaxPre.value || '0') + parseFloat(outsourceMonthSalaryForm.value.monthTax || '0');
     const yearSocialSecurityTotal = parseFloat(outsourceMonthSalaryForm.value.yearShebao || '0');
-    const exemptAmount = parseFloat(outsourceMonthSalaryForm.value.monthMianzheng || '0');
+    const exemptAmount = parseFloat(outsourceMonthSalaryForm.value.yearMianzheng || '0');
     const currentMonthDeductionTotal = parseFloat(outsourceMonthSalaryForm.value.monthZhuankou || '0');
   
     // 计算应纳税所得额
     const taxableIncome = yearIncomeTotal - yearSocialSecurityTotal - exemptAmount - currentMonthDeductionTotal;
-  
+    console.log(yearIncomeTotal);
+    console.log(yearSocialSecurityTotal);
+    console.log(exemptAmount);
+    console.log(currentMonthDeductionTotal);
+    console.log(taxableIncome);
     // 确保应纳税所得额不为负数
     const adjustedTaxableIncome = Math.max(0, taxableIncome);
   

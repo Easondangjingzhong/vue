@@ -349,7 +349,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
             })) || [],
         ) || [];
       // 添加固定选项
-      const allOptions = [{ value: '9999', label: '公司' }, ...recruitList];
+      const allOptions = [{ value: '9999', label: '公司' },{ value: '5485', label: 'Mona Xu' }, ...recruitList];
 
       // 去重处理：使用Map来确保value的唯一性
       const uniqueOptionsMap = new Map();

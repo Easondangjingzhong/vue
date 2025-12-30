@@ -596,6 +596,7 @@ const handleSubmit = () => {
     parseFloat(outsourceAttendForm.value.lastMonthYuHours || '0')).toString();
   }
   outsourceMonthSalaryForm.value.leijiChae = outsourceAttendForm.value.totalChaHours;
+  outsourceMonthSalaryForm.value.monthGeshui = "";
   if (outsourceAttendForm.value.jobType === '全职') {
     outsourceMonthSalaryForm.value.salaryTiaocha = salaryTiaocha.value.toFixed(2).toString();
     outsourceMonthSalaryForm.value.canbuTiaocha = canbuTiaocha.value.toFixed(2).toString();
@@ -603,6 +604,14 @@ const handleSubmit = () => {
     outsourceMonthSalaryForm.value.quanqinTiaocha = quanqinTiaocha.value.toFixed(2).toString();
     outsourceMonthSalaryForm.value.tiaochaTotal = (salaryTiaocha.value + canbuTiaocha.value + jintirTiaocha.value + quanqinTiaocha.value).toFixed(2).toString();
     outsourceMonthSalaryForm.value.monthMianzheng = '5000';
+  } else {
+    const monthTotal = chuqinSalary.value  + canbu.value + jintie.value + quanqin.value + restJiaban.value + fadingJiaban.value + zhengchangJiaban.value;
+    if (monthTotal - 4000 <= 0) {
+      outsourceMonthSalaryForm.value.monthMianzheng = '800';
+    } else {
+      outsourceMonthSalaryForm.value.monthMianzheng = (monthTotal * 0.2).toFixed(2).toString();
+    }
+    
   }
   console.log(outsourceMonthSalaryForm.value);
   iconLoading.value = true;

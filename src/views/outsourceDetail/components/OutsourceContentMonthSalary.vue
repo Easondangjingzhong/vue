@@ -105,14 +105,14 @@
       :loading="monthSalaryIsLoading"
       :columns="columnsOutsourceMonthSalary"
       :dataSource="getOutsourceMonthSalaryList"
-      :scroll="{ x: 3800 }"
+      :scroll="{ x: 4100 }"
     >
     <template #bodyCell="{ column, record }">
        <a-tag v-if="column.key === 'sign' && record.sign === '1'" color="orange">待核</a-tag>
       <a-tag v-if="column.key === 'sign' && record.sign === '2'" color="green">已核</a-tag>
     <!-- 添加类型断言和存在性检查以修复TypeScript索引类型错误 -->
-    <span v-if="(typeof column.dataIndex === 'string' && (record[column.dataIndex] === null || record[column.dataIndex] === '' || record[column.dataIndex] === undefined))">-</span>
-    <template v-if="column.key === 'operation'">
+    <span v-if="(typeof column.dataIndex === 'string' && column.key !== 'operation'  && (record[column.dataIndex] === null || record[column.dataIndex] === '' || record[column.dataIndex] === undefined))">-</span>
+    <template v-if="column.key === 'operation' && record['personId']">
           <a-dropdown>
             <span class="ant-dropdown-link" style="cursor: pointer;" @click.prevent>
               <MenuUnfoldOutlined style="font-size: 15px;"/>
@@ -229,7 +229,7 @@ const columnsOutsourceMonthSalary:TableColumnsType = [
   { title: '年度免征', dataIndex: 'yearMianzheng', key: 'yearMianzheng', width: 50, },
   { title: '月度个税', dataIndex: 'monthGeshui', key: 'monthGeshui', width: 50, },
   { title: '年度个税', dataIndex: 'yearGeshui', key: 'yearGeshui', width: 50, },
-  { title: '手续费', dataIndex: 'shouxuMoney', key: 'shouxuMoney', width: 50, },
+  { title: '手续费', dataIndex: 'shouxuMoney', key: 'shouxuMoney', width: 35, },
   { title: '实发工资', dataIndex: 'salaryAfterTax', key: 'salaryAfterTax', width: 50, fixed: 'right', },
   { title: '操作', dataIndex: 'operation', key: 'operation', width: 30, fixed: 'right', },
 ]

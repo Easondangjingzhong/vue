@@ -217,7 +217,14 @@ const columns:TableColumnsType = [
     title: '补缴',
     dataIndex: 'bujiao',
     key: 'bujiao',
+    width: 30,
+  },
+   {
+    title: '缴纳月',
+    dataIndex: 'jiaoMonth',
+    key: 'jiaoMonth',
     width: 40,
+    fixed: 'right',
   },
    {
     title: '缴纳公司',

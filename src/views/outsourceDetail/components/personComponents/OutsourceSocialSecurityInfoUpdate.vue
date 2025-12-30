@@ -218,13 +218,22 @@
             </a-form-item>
           </a-col>
           <a-col :span="12">
+             <a-form-item label="缴纳月" name="companyJiao">
+              <a-select v-model:value="outsourceSocialSecurityInfoForm.jiaoMonth">
+                <a-select-option value="当月缴纳">当月缴纳</a-select-option>
+                <a-select-option value="次月缴纳">次月缴纳</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
+         <a-row :gutter="24">
+  
+          <a-col :span="12">
             <a-form-item label="备注" name="remark">
               <a-input v-model:value="outsourceSocialSecurityInfoForm.remark"/>
             </a-form-item>
           </a-col>
-        </a-row>
-        <a-row :gutter="24">
-          <a-col :span="24" style="text-align: right;">
+          <a-col :span="12">
             <a-button type="primary" :loading="iconLoading" html-type="submit">
               保存
             </a-button>
