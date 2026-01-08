@@ -90,7 +90,7 @@
         <span>
           <a-button @click="handleSearchOutsourcePerson('2')" :class="{'active': formStateMonthSalary.currentStatus === '2'}" style="margin-right: 5px;" size="small">在职</a-button>
           <a-button @click="handleSearchOutsourcePerson('3')" :class="{'active': formStateMonthSalary.currentStatus === '3'}" style="margin-right: 5px;" size="small">离职</a-button>
-          <a-button @click="handleSearchOutsourcePerson('1')" :class="{'active': formStateMonthSalary.currentStatus === ''}" style="margin-right: 5px;" size="small">全部</a-button>
+          <a-button @click="handleSearchOutsourcePerson('1')" :class="{'active': formStateMonthSalary.currentStatus === '' || formStateMonthSalary.currentStatus === undefined}" style="margin-right: 5px;" size="small">全部</a-button>
           <a-button @click="handleSearchOutsourcePerson('4')" :class="{'active': formStateMonthSalary.companyArrange === '1'}" style="margin-right: 5px;" size="small" title="按公司排序">排序</a-button>
         </span>
          <span>
@@ -112,6 +112,9 @@
       <a-tag v-if="column.key === 'sign' && record.sign === '2'" color="green">已核</a-tag>
     <!-- 添加类型断言和存在性检查以修复TypeScript索引类型错误 -->
     <span v-if="(typeof column.dataIndex === 'string' && column.key !== 'operation'  && (record[column.dataIndex] === null || record[column.dataIndex] === '' || record[column.dataIndex] === undefined))">-</span>
+    <template v-if="column.key === 'salaryAfterTax'">
+      <span style="font-weight: 600;">{{ record.salaryAfterTax }}</span>
+    </template>
     <template v-if="column.key === 'operation' && record['personId']">
           <a-dropdown>
             <span class="ant-dropdown-link" style="cursor: pointer;" @click.prevent>
@@ -171,9 +174,9 @@ const outsourceDetailStore = useOutsourceDetailStoreWithOut();
 const { monthSalaryIsLoading,pageOutsourceMonthSalaryList,getOutsourceMonthSalaryList,formStateMonthSalary, getProvince, getOutsourceBrand, getOutsourceCompanyAll, getOutsourcePosition, outsourceFormulaFlag, outsourceMonthSalaryForm, outsourceMonthSalaryFlag,outsourceMonthSalaryShiJiFlag} = storeToRefs(outsourceDetailStore);
 const columnsOutsourceMonthSalary:TableColumnsType = [
   { title: '编号', dataIndex: 'index', key: 'index', fixed: 'left', width: 30, },
-  { title: '计薪月', dataIndex: 'jinxinMonth', key: 'jinxinMonth', fixed: 'left', width: 50, },
+  { title: '计薪月', dataIndex: 'jinxinMonth', key: 'jinxinMonth', fixed: 'left', width: 40, },
   { title: '标识', dataIndex: 'sign', key: 'sign', fixed: 'left', width: 30, },
-  { title: '姓名', dataIndex: 'userNameCn', key: 'userNameCn', fixed: 'left', width: 60, ellipsis: true, },
+  { title: '姓名', dataIndex: 'userNameCn', key: 'userNameCn', fixed: 'left', width: 55, ellipsis: true, },
   { title: '公司', dataIndex: 'companyName', key: 'companyName', fixed: 'left', width: 45, ellipsis: true, },
   { title: '城市', dataIndex: 'city', key: 'city', fixed: 'left', width: 30, },
   { title: '职位', dataIndex: 'positions', key: 'positions', fixed: 'left', width: 50, ellipsis: true,},
@@ -245,6 +248,7 @@ const clearFromState = () => {
     onSearch();
   }
 const onSearch = () => {
+  console.log(formStateMonthSalary.value);
   pageOutsourceMonthSalaryList.value = {
       ...pageOutsourceMonthSalaryList.value,
       pageNumber: 1,

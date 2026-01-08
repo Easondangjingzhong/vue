@@ -135,7 +135,8 @@
           <a-col :span="12">
             <a-form-item label="薪资日" name="xinZiRi" :labelCol="{span: 4}">
                <a-select v-model:value="outsourceFormulaForm.xinZiRi">
-                <a-select-option value="上月-5日">上月-5日</a-select-option>
+                <a-select-option value="当月-5日">当月-5日</a-select-option>
+                <a-select-option value="当月-15日">当月-15日</a-select-option>
                 <a-select-option value="上月-最后工作日">上月-最后工作日</a-select-option>
               </a-select>
             </a-form-item>
@@ -195,7 +196,7 @@
           <a-col :span="12">         
             <a-form-item label="正常加班" name="zhengchangJiaban" :labelCol="{span: 4}">
               <a-select v-model:value="outsourceFormulaForm.zhengchangJiaban">
-                <a-select-option value="基本工资/全勤工时*0.5*正常加班工时">基本工资/全勤工时*0.5*正常加班工时</a-select-option>
+                <a-select-option value="基本工资/全勤工时*1.5*正常加班工时">基本工资/全勤工时*1.5*正常加班工时</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -204,14 +205,14 @@
           <a-col :span="12">
             <a-form-item label="休息加班" name="restJiaban" :labelCol="{span: 4}">
               <a-select v-model:value="outsourceFormulaForm.restJiaban">
-                <a-select-option value="基本工资/全勤工时*1*休息加班工时">基本工资/全勤工时*1*休息加班工时</a-select-option>
+                <a-select-option value="基本工资/全勤工时*2*休息加班工时">基本工资/全勤工时*2*休息加班工时</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="12">         
             <a-form-item label="国定加班" name="fadingJiaban" :labelCol="{span: 4}">
               <a-select v-model:value="outsourceFormulaForm.fadingJiaban">
-                <a-select-option value="基本工资/全勤工时*2*国定加班工时">基本工资/全勤工时*2*国定加班工时</a-select-option>
+                <a-select-option value="基本工资/全勤工时*3*国定加班工时">基本工资/全勤工时*3*国定加班工时</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>

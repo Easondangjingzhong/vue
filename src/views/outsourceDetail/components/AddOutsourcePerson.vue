@@ -265,6 +265,7 @@ const handlePhoneNumberChange = () => {
       addOutsourcePersonForm.value.sex = info.GENDER || '';
       addOutsourcePersonForm.value.userNameCn = info.USER_NAME || '';
       addOutsourcePersonForm.value.resumeId = info.ID || '';
+      addOutsourcePersonForm.value.headPhoto = info.PHOTO_PATH || '';
       // 处理USER_NAME，提取中文和英文部分
       if (info.USER_NAME) {
         const userName = info.USER_NAME;

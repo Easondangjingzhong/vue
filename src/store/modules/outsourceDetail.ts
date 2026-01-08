@@ -118,13 +118,20 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     outsourceFormulaList: [] as OutsourceFormulaItem[], //外包公司公式详情 公式信息
     pageOutsourceFormulaList: {
       pageNumber: 1,
-      pageSize: 13,
+      pageSize: 16,
       total: 0,
     } as PageItem,
     addOutsourceFormulaFlag: false, //外包公司公式详情 新增公式信息表单控制
     outsourceFormulaForm: {} as OutsourceFormulaItem, //外包公司公式详情 公式信息表单
     orginalPathBlobPathFlag: false, //文件原路径详情控制
     orginalPathBlobPath: '' as string, //文件原路径详情
+    outsourcePersonProcessFlag: false, //外包人员列表入离职流程状态
+    outsourcePersonProcessList: [] as OutsourcePersonItem[], //外包人员列表入离职流程
+    pageOutsourcePersonProcessList: {
+      pageNumber: 1,
+      pageSize: 13,
+      total: 0,
+    } as PageItem,
   }),
   getters: {
     getOutsourcePersonList: (state) =>
@@ -191,17 +198,17 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         currentMonthYuHoursTotal: parseFloat(item.currentMonthYuHours || '0').toFixed(2),
         currentMonthShiHoursTotal: parseFloat(item.currentMonthShiHours || '0').toFixed(2),
         totalChaHoursTotal: parseFloat(item.totalChaHours || '0').toFixed(2),
-        overDouble: item.overDouble || '0.5',
+        overDouble: item.overDouble || '1.5',
         overHoursTotal: (
-          parseFloat(item.overHours || '0') * parseFloat(item.overDouble || '0.5')
+          parseFloat(item.overHours || '0') * parseFloat(item.overDouble || '1.5')
         ).toFixed(2),
-        holidayOverDouble: item.holidayOverDouble || '2',
+        holidayOverDouble: item.holidayOverDouble || '3',
         holidayOverHoursTotal: (
-          parseFloat(item.holidayOverHours || '0') * parseFloat(item.holidayOverDouble || '2')
+          parseFloat(item.holidayOverHours || '0') * parseFloat(item.holidayOverDouble || '3')
         ).toFixed(2),
-        restOverDouble: item.restOverDouble || '1',
+        restOverDouble: item.restOverDouble || '2',
         restOverHoursTotal: (
-          parseFloat(item.restOverHours || '0') * parseFloat(item.restOverDouble || '1')
+          parseFloat(item.restOverHours || '0') * parseFloat(item.restOverDouble || '2')
         ).toFixed(2),
         daixinBingjiaDouble: item.daixinBingjiaDouble || '1',
         daixinBingjiaHoursTotal: (
@@ -807,6 +814,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       const formData = new FormData();
       formData.append('userNameCn', this.addOutsourcePersonForm.userNameCn || '');
       formData.append('userNameEn', this.addOutsourcePersonForm.userNameEn || '');
+      formData.append('headPhoto', this.addOutsourcePersonForm.headPhoto || '');
       formData.append('sex', this.addOutsourcePersonForm.sex || '');
       formData.append('age', this.addOutsourcePersonForm.age || '');
       formData.append('phoneNumber', this.addOutsourcePersonForm.phoneNumber || '');
@@ -1400,7 +1408,41 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     handleFileYulanInfo(originalPathBlobPath: string) {
       this.orginalPathBlobPathFlag = true;
       this.orginalPathBlobPath = originalPathBlobPath;
-    }
+    },
+    /**
+     * 查外包人员入离职流程
+     */
+    async handleSearchOutsourcePersonProcess() {
+      if (this.formStatePerson.currentStatus == '1') {
+        this.formStatePerson.currentStatus = '';
+      }
+      const params = new FormData();
+      params.append('pageNumber', this.pageOutsourcePersonProcessList.pageNumber.toString());
+      params.append('pageSize', this.pageOutsourcePersonProcessList.pageSize.toString());
+      params.append('city', this.formStatePerson.city || '');
+      params.append('bId', this.formStatePerson.bId || '');
+      params.append('currentStatus', this.formStatePerson.currentStatus);
+      params.append('positionId', this.formStatePerson.positionId || '');
+      params.append('userName', this.formStatePerson.userName || '');
+      params.append('companyName', this.formStatePerson.companyName || '');
+      params.append('companyArrange', this.formStatePerson.companyArrange || '');
+      params.append('jobType', this.formStatePerson.jobType || '');
+      try {
+        const res = await fetchApi.queryOutsourcePerson(params);
+        if (res.code == 1) {
+          this.outsourcePersonProcessList = res.info.list as OutsourcePersonItem[];
+          this.pageOutsourcePersonProcessList = {
+            pageNumber: res.info.pageNumber,
+            pageSize: res.info.pageSize,
+            total: res.info.totalCount,
+          } as PageItem;
+        }
+        return res;
+      } catch (error) {
+        this.personIsLoading = false;
+        return null;
+      }
+    },
   },
 });
 

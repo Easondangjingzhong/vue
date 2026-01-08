@@ -84,6 +84,7 @@
           <a-button @click="handleSearchOutsourcePerson('1')" :class="{'active': formStatePerson.currentStatus === ''}" style="margin-right: 5px;" size="small">全部</a-button>
           <a-button @click="handleSearchOutsourcePerson('4')" :class="{'active': formStatePerson.companyArrange === '1'}" style="margin-right: 5px;" size="small" title="按公司排序">排序</a-button>
           <a-button @click="handleSearchOutsourcePerson('5')" :class="{'active': formStatePerson.currentStatus === '4'}" style="margin-right: 5px;" size="small">未入</a-button>
+          <a-button @click="handleSearchOutsourcePersonProcess()" style="margin-right: 5px;" size="small">入离流程</a-button>
         </span>
         <span>
            <a-button @click="handleToAddOutsourcePerson" style="background-color: #eee" size="small">新增</a-button>
@@ -191,7 +192,7 @@
     </a-tag>
 
     <!-- 添加类型断言和存在性检查以修复TypeScript索引类型错误 -->
-    <span v-if="(typeof column.dataIndex === 'string' && (record[column.dataIndex] === null || record[column.dataIndex] === ''))">-</span>
+    <span v-if="(typeof column.dataIndex === 'string' && column.key !== 'jobType' && (record[column.dataIndex] === null || record[column.dataIndex] === ''))">-</span>
   </template>
   </a-table>
     </a-row>
@@ -260,7 +261,7 @@ const columnsOutsourceDetail: TableColumnsType = [
   { title: '城市', dataIndex: 'city', key: 'city', fixed: 'left', width: 30, ellipsis: true,},
   { title: '店铺', dataIndex: 'market', key: 'market', fixed: 'left', width: 80, ellipsis: true },
   { title: '职位', dataIndex: 'positions', key: 'positions', fixed: 'left', width: 100, ellipsis: true },
-  { title: '性质', dataIndex: 'jobType', key: 'jobType', fixed: 'left', width: 40, ellipsis: true },
+  { title: '性质', dataIndex: 'jobType', key: 'jobType', fixed: 'left', width: 40 },
   { title: '招聘', dataIndex: 'recruitParty', key: 'recruitParty', width: 50, ellipsis: true },
   { title: '推企', dataIndex: 'enterprise', key: 'enterprise', width: 40,},
   { title: '信息表', dataIndex: 'infoTableFlag', key: 'infoTableFlag', width: 55,},
@@ -337,6 +338,9 @@ const columnsOutsourceDetail: TableColumnsType = [
   }
   const handleFileYulanInfo = (originalPathBlobPath) => {
     outsourceDetailStore.handleFileYulanInfo(originalPathBlobPath);
+  }
+  const handleSearchOutsourcePersonProcess = () => {
+    outsourceDetailStore.handleSearchOutsourcePersonProcess();
   }
 </script>
 

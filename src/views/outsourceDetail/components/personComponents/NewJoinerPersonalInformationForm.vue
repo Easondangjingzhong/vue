@@ -1981,7 +1981,7 @@ const generatePDFText = async() => {
       }
 
       if (logoData) {
-          const logoWidth = 40;
+          const logoWidth = 60;
           const logoHeight = 10;
           const logoX = (pageWidth - logoWidth) / 2;
           doc.addImage(logoData, 'PNG', logoX, currentY, logoWidth, logoHeight);
