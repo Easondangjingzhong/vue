@@ -84,7 +84,7 @@
           <a-button @click="handleSearchOutsourcePerson('1')" :class="{'active': formStatePerson.currentStatus === ''}" style="margin-right: 5px;" size="small">全部</a-button>
           <a-button @click="handleSearchOutsourcePerson('4')" :class="{'active': formStatePerson.companyArrange === '1'}" style="margin-right: 5px;" size="small" title="按公司排序">排序</a-button>
           <a-button @click="handleSearchOutsourcePerson('5')" :class="{'active': formStatePerson.currentStatus === '4'}" style="margin-right: 5px;" size="small">未入</a-button>
-          <a-button @click="handleSearchOutsourcePersonProcess()" style="margin-right: 5px;" size="small">入离流程</a-button>
+          <a-button @click="handleSearchOutsourcePersonProcess()" style="margin-right: 5px;" size="small">入离流程 {{ getOutsourcePersonProcessNum }}</a-button>
         </span>
         <span>
            <a-button @click="handleToAddOutsourcePerson" style="background-color: #eee" size="small">新增</a-button>
@@ -134,18 +134,18 @@
      <a-tag v-if="column.key === 'currentStatus' && record.currentStatus === '4'" color="red">
       未入
     </a-tag>
-    <a-tag v-if="column.key === 'infoTableFlag' && record.infoTableFlag == '信息待填'" style="cursor: pointer;" color="red">信息待填</a-tag>
-    <a-tag v-if="column.key === 'infoTableFlag' && record.infoTableFlag == '等待发起'" style="cursor: pointer;" color="red" @click="handleNewJoinerPersonalInformationForm(record)">信息已填</a-tag>
+    <a-tag v-if="column.key === 'infoTableFlag' && record.infoTableFlag == '信息待填'" color="red">信息待填</a-tag>
+    <a-tag v-if="column.key === 'infoTableFlag' && record.infoTableFlag == '等待发起'" color="red">信息已填</a-tag>
     <a-tag v-if="column.key === 'infoTableFlag' && record.infoTableFlag == '等待签署'" color="orange">等待签署</a-tag>
     <a-tag v-if="column.key === 'infoTableFlag' && record.infoTableFlag == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(record.infoTablePath)">签署完成</a-tag>
     <a-tag v-if="column.key === 'offerFlag' && record.offerFlag == '等待发起'" color="red">等待发起</a-tag>
     <a-tag v-if="column.key === 'offerFlag' && record.offerFlag == '等待签署'" color="orange">等待签署</a-tag>
     <a-tag v-if="column.key === 'offerFlag' && record.offerFlag == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(record.offerPic)">签署完成</a-tag>
-    <a-tag v-if="column.key === 'contractCompany' && record.contractCompany == '等待发起'" style="cursor: pointer;" color="red" @click="handleContractInfomationForm(record)">{{ record.currentStatus === '1' ? "未到发起" : "等待发起"}}</a-tag>
+    <a-tag v-if="column.key === 'contractCompany' && record.contractCompany == '等待发起'" :color="record.currentStatus === '1' ? 'orange' : 'red'">{{ record.currentStatus === '1' ? "未到发起" : "等待发起"}}</a-tag>
     <a-tag v-if="column.key === 'contractCompany' && record.contractCompany == '等待签署'" color="orange">等待签署</a-tag>
     <a-tag v-if="column.key === 'contractCompany' && record.contractCompany == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(record.contractPath)">签署完成</a-tag>
 
-    <a-tag v-if="column.key === 'proofFlag' && record.proofFlag == '等待发起'" color="red" style="cursor: pointer;" @click="handleLeaveInfomationForm(record)">等待发起</a-tag>
+    <a-tag v-if="column.key === 'proofFlag' && record.proofFlag == '等待发起'" color="red">等待发起</a-tag>
     <a-tag v-if="column.key === 'proofFlag' && record.proofFlag == '已经发起'" color="orange">已经发起</a-tag>
     <a-tag v-if="column.key === 'proofFlag' && record.proofFlag == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(record.leavePath)">签署完成</a-tag>
 
@@ -221,6 +221,7 @@
   <LeaveInfomationForm/>
   <ContractInfomationForm/>
   <NewJoinerPersonalInformationForm/>
+  <OutsourcePersonProcess/>
 </template>
 
 <script setup lang="ts">
@@ -229,6 +230,7 @@ import { handleToResumeDetails } from '/@/router/index';
 import type { TableColumnsType } from 'ant-design-vue';
 import FileYuLanInfo from '/@/views/outsourceDetail/components/personComponents/FileYuLanInfo.vue';
 import AddOutsourcePerson from '/@/views/outsourceDetail/components/AddOutsourcePerson.vue';
+import OutsourcePersonProcess from '/@/views/outsourceDetail/components/personComponents/OutsourcePersonProcess.vue'
 import LeaveInfomationForm from '/@/views/outsourceDetail/components/personComponents/LeaveInfomationForm.vue'
 import ContractInfomationForm from '/@/views/outsourceDetail/components/personComponents/ContractInfomationForm.vue'
 import NewJoinerPersonalInformationForm from '/@/views/outsourceDetail/components/personComponents/NewJoinerPersonalInformationForm.vue'
@@ -247,6 +249,8 @@ const {
   addOutsourcePersonFlag, 
   newJoinerPersonalInformationFlag,
   contractInfomatiomFlag,
+  outsourcePersonProcessFlag,
+  getOutsourcePersonProcessNum,
   LeaveInfomatiomFlag
 } = storeToRefs(outsourceDetailStore);
 const columnsOutsourceDetail: TableColumnsType = [
@@ -324,22 +328,23 @@ const columnsOutsourceDetail: TableColumnsType = [
   const handleOutsourcePersonToResume = (record) => {
     handleToResumeDetails(record.resumeId, '');
   }
-  const handleNewJoinerPersonalInformationForm = (record) => {
-    newJoinerPersonalInformationFlag.value = true;
-    outsourceDetailStore.handleNewJoinerPersonalInformationForm(record as OutsourcePersonItem);
-  }
-  const handleContractInfomationForm = (record) => {
-    contractInfomatiomFlag.value = true;
-    outsourceDetailStore.handleContractInfomationForm(record as OutsourcePersonItem);
-  }
-  const handleLeaveInfomationForm = (record) => {
-    LeaveInfomatiomFlag.value = true;
-    outsourceDetailStore.handleContractInfomationForm(record as OutsourcePersonItem);
-  }
+  // const handleNewJoinerPersonalInformationForm = (record) => {
+  //   newJoinerPersonalInformationFlag.value = true;
+  //   outsourceDetailStore.handleNewJoinerPersonalInformationForm(record as OutsourcePersonItem);
+  // }
+  // const handleContractInfomationForm = (record) => {
+  //   contractInfomatiomFlag.value = true;
+  //   outsourceDetailStore.handleContractInfomationForm(record as OutsourcePersonItem);
+  // }
+  // const handleLeaveInfomationForm = (record) => {
+  //   LeaveInfomatiomFlag.value = true;
+  //   outsourceDetailStore.handleContractInfomationForm(record as OutsourcePersonItem);
+  // }
   const handleFileYulanInfo = (originalPathBlobPath) => {
     outsourceDetailStore.handleFileYulanInfo(originalPathBlobPath);
   }
   const handleSearchOutsourcePersonProcess = () => {
+    outsourcePersonProcessFlag.value = true;
     outsourceDetailStore.handleSearchOutsourcePersonProcess();
   }
 </script>

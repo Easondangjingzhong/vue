@@ -96,6 +96,29 @@
                 <span style="padding-left: 5px; display: block"> {{ description }} </span>
               </a-col>
             </a-row>
+            <a-row :gutter="24" class="resume_row" style="margin-top: 10px" v-if="loginVueUser.loginId == 444 || loginVueUser.loginId == 448">
+              <a-col :span="24" class="resume_col">
+                <h4 class="resume_h4"> 推荐分顾: </h4>
+                <a-select
+                  v-model:value="supportRecruitFlag"
+                  style="width: 10%;margin-left: 5px"
+                  :allowClear="true"
+                  placeholder="请选择是否分单"
+                  @change="handleSupportRecruitFlagChange"
+                  :options="[{ value: '1', label: '是' }, { value: '2', label: '否' }]"
+                >
+              </a-select>
+                <a-select
+                  v-model:value="supportRecruitId"
+                  v-if="supportRecruitFlag == '1'"
+                  style="width: 15%;margin-left: 10px"
+                  :allowClear="true"
+                  :options="supportRecruitOptions"
+                  placeholder="请选择推荐分顾"
+                >
+              </a-select>
+              </a-col>
+            </a-row>
           </div>
           <!-- <a-divider :dashed="true" style="background-color: #0505050f; margin-top: 5px" /> -->
           <div class="resume_row_div" v-if="repeatFlag == 1">
@@ -352,7 +375,20 @@
   import ResumeRecommendUpload from './ResumeRecommendUpload.vue';
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   const drawerWidth = ref(window.innerWidth * 1);
-
+const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: '' } = JSON.parse(
+  localStorage.getItem('loginVueUser') || '{}',
+);
+  const supportRecruitFlag = ref("");
+  const supportRecruitId = ref("");
+  const supportRecruitOptions = ref([
+    {
+      label: 'Jane Lyu',
+      value: '8220',
+    },
+  ]);
+  const handleSupportRecruitFlagChange = () => {
+    supportRecruitId.value = '';
+  };
   // Optional: Add window resize listener if you need dynamic updates
   const handleResize = () => {
     drawerWidth.value = window.innerWidth * 1;
@@ -935,8 +971,8 @@
       message.warning('请填写申诉理由');
       return;
     }
-    if (isVideo.value && videoFile?.value.length == 0) {
-      if (isVideoTemp == '1') {
+    if (isVideo.value && videoFile?.value?.length == 0) {
+      if (isVideoTemp.value == '1') {
         message.warning('请上传视频面试截图');
       } else {
         message.warning('请上传生活照片');
@@ -944,7 +980,7 @@
       return;
     }
     if (isVideo.value && !/\.(jpg|png|jpeg)$/.test(videoFile?.value[0]?.name.toLowerCase())) {
-      if (isVideoTemp == '1') {
+      if (isVideoTemp.value == '1') {
         message.warning('请上传图片格式的视频面试截图');
       } else {
         message.warning('请上传图片格式的生活照片');
@@ -952,7 +988,7 @@
       videoFile.value = [];
       return;
     }
-   if (isExcelTemp.value == '1' && excelFile?.value.length == 0) {
+   if (isExcelTemp.value == '1' && excelFile?.value?.length == 0) {
       message.warning('请上传表格');
       return;
     }
@@ -972,12 +1008,22 @@
       appealRemark = conflictRemarkShow.value;
       appealType = '客户限制';
     }
+    if ((loginVueUser.loginId == '448' || loginVueUser.loginId == '444') && !supportRecruitFlag.value) {
+      message.warning('请选择是否分单');
+      return;
+    }
+    if ((loginVueUser.loginId == '448' || loginVueUser.loginId == '444') && supportRecruitFlag.value == '1' && !supportRecruitId.value) {
+      message.warning('请选择推荐分顾');
+      return;
+    }
     let tt = 'youtai';
     if (templateType.value != '0') {
         tt = 'wotui';
     }
     let formData = {
       template: tt,
+      supportRecruitId: supportRecruitId.value,
+      supportRealNameEn: supportRecruitOptions.value.find(item => item.value == supportRecruitId.value)?.label,
       id: recommendPerson.value?.id,
       brand: recommendPerson.value?.brand,
       bId: recommendPerson.value?.bId,
@@ -1003,6 +1049,8 @@
         recommendConfirmReason.value = '';
         recommendConfirmReasonOther.value = '';
         recommendConfirmReasonFlag.value = false;
+        supportRecruitId.value = '';
+        supportRecruitFlag.value = '';
  message.success({
     icon: () => null, // 隐藏默认图标
     content: () => h('div', [
@@ -1070,7 +1118,7 @@
       } else if (res.code == 2) {
         message.error('此候选人已在申诉中未审核');
       } else {
-        message.error(data.info);
+        message.error(res.info);
       }
       isloading.value = false;
       spinning.value = false;
@@ -1078,8 +1126,8 @@
   };
   const handleAddRecommend = () => {
     //console.log(videoFile.value[0]);
-    if (isVideo.value && videoFile?.value.length == 0) {
-      if (isVideoTemp == '1') {
+    if (isVideo.value && videoFile?.value?.length == 0) {
+      if (isVideoTemp.value == '1') {
         message.warning('请上传视频面试截图');
       } else {
         message.warning('请上传生活照片');
@@ -1087,7 +1135,7 @@
       return;
     }
     if (isVideo.value && !/\.(jpg|png|jpeg)$/.test(videoFile?.value[0]?.name.toLowerCase())) {
-      if (isVideoTemp == '1') {
+      if (isVideoTemp.value == '1') {
         message.warning('请上传图片格式的视频面试截图');
       } else {
         message.warning('请上传图片格式的生活照片');
@@ -1104,11 +1152,21 @@
       excelFile.value = [];
       return;
     }
+    if ((loginVueUser.loginId == '448' || loginVueUser.loginId == '444') && !supportRecruitFlag.value) {
+      message.warning('请选择是否分单');
+      return;
+    }
+    if ((loginVueUser.loginId == '448' || loginVueUser.loginId == '444') && supportRecruitFlag.value == '1' && !supportRecruitId.value) {
+      message.warning('请选择推荐分顾');
+      return;
+    }
     let tt = 'youtai';
     if (templateType.value != '0') {
         tt = 'wotui';
     }
     let formData = {
+      supportRecruitId: supportRecruitId.value,
+      supportRealNameEn: supportRecruitOptions.value.find(item => item.value == supportRecruitId.value)?.label,
       template: tt,
       id: recommendPerson.value?.id,
       brand: recommendPerson.value?.brand,
@@ -1131,6 +1189,8 @@
       if (res.code == 1) {
         // message.success('推荐成功');
         doHandlePagination();
+        supportRecruitId.value = '';
+        supportRecruitFlag.value = '';
          message.success({
     icon: () => null, // 隐藏默认图标
     content: () => h('div', [
@@ -1226,7 +1286,7 @@
   
   const handleResumeRecommendRepeat = () => {
     if (videoFile?.value?.length && !/\.(jpg|png|jpeg)$/.test(videoFile?.value[0]?.name.toLowerCase())) {
-      if (isVideoTemp == '1') {
+      if (isVideoTemp.value == '1') {
         message.warning('请上传图片格式的视频面试截图');
       } else {
         message.warning('请上传图片格式的生活照片');

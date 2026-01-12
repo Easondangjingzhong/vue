@@ -125,11 +125,12 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     outsourceFormulaForm: {} as OutsourceFormulaItem, //外包公司公式详情 公式信息表单
     orginalPathBlobPathFlag: false, //文件原路径详情控制
     orginalPathBlobPath: '' as string, //文件原路径详情
+    outsourcePersonProcessNum: 0, //外包人员列表入离职流程状态
     outsourcePersonProcessFlag: false, //外包人员列表入离职流程状态
     outsourcePersonProcessList: [] as OutsourcePersonItem[], //外包人员列表入离职流程
     pageOutsourcePersonProcessList: {
       pageNumber: 1,
-      pageSize: 13,
+      pageSize: 17,
       total: 0,
     } as PageItem,
   }),
@@ -139,6 +140,28 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         ...item,
         index:
           state.pageOutsourcePersonList.pageSize * (state.pageOutsourcePersonList.pageNumber - 1) +
+          (index + 1),
+        enterprise: `${item.recommendCounselor}/${item.counselor}`,
+        planEntryTime: item.planEntryTime ? formatToDate(item.planEntryTime) : '',
+        age: item.birthYear ? (new Date().getFullYear() - Number(item.birthYear)).toString() : '',
+        offerTime: item.offerTime ? formatToDate(item.offerTime) : '',
+        realEntryTime: item.realEntryTime ? formatToDate(item.realEntryTime) : '',
+        planLeaveTime: item.planLeaveTime ? formatToDate(item.planLeaveTime) : '',
+        realLeaveTime: item.realLeaveTime ? formatToDate(item.realLeaveTime) : '',
+        startTime: item.startTime ? formatToDate(item.startTime) : '',
+        endTime:
+          item.contractPeriod == '长期' ? '长期' : item.endTime ? formatToDate(item.endTime) : '',
+        yujiaoTime: item.yujiaoTime ? formatToDate(item.yujiaoTime) : '',
+        yutingTime: item.yutingTime ? formatToDate(item.yutingTime) : '',
+        paymentYearMonth: item.paymentYearMonth ? formatToMonth(item.paymentYearMonth) : '',
+        preStopYearMonth: item.preStopYearMonth ? formatToMonth(item.preStopYearMonth) : '',
+      })),
+      getOutsourcePersonProcessNum: (state) => state.outsourcePersonProcessNum,
+    getOutsourcePersonProcessList: (state) =>
+      state.outsourcePersonProcessList.map((item, index) => ({
+        ...item,
+        index:
+          state.pageOutsourcePersonProcessList.pageSize * (state.pageOutsourcePersonProcessList.pageNumber - 1) +
           (index + 1),
         enterprise: `${item.recommendCounselor}/${item.counselor}`,
         planEntryTime: item.planEntryTime ? formatToDate(item.planEntryTime) : '',
@@ -481,11 +504,12 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         const res = await fetchApi.queryOutsourcePerson(params);
         if (res.code == 1) {
           this.personIsLoading = false;
-          this.outsourcePersonList = res.info.list as OutsourcePersonItem[];
+          this.outsourcePersonProcessNum = res.info.liucheng;
+          this.outsourcePersonList = res.info.pager.list as OutsourcePersonItem[];
           this.pageOutsourcePersonList = {
-            pageNumber: res.info.pageNumber,
-            pageSize: res.info.pageSize,
-            total: res.info.totalCount,
+            pageNumber: res.info.pager.pageNumber,
+            pageSize: res.info.pager.pageSize,
+            total: res.info.pager.totalCount,
           } as PageItem;
         }
         return res;
@@ -806,6 +830,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           ...this.outsourceBasicForm,
         };
         this.queryOutsourcePerson();
+        this.handleSearchOutsourcePersonProcess();
         this.queryOutsourcePersonByPhone(this.outsourceBasicForm.phoneNumber);
       }
       return res;
@@ -931,6 +956,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         const res = await fetchApi.addOutsourceSalaryByPerson(this.outsourceSalaryForm);
         if (res.code == 1) {
           this.queryOutsourceSalaryByPersonId();
+          this.handleSearchOutsourcePersonProcess();
         }
         return res;
       } catch (error) {
@@ -957,6 +983,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         const res = await fetchApi.addOutsourceShebaoByPerson(this.outsourceSocialSecurityForm);
         if (res.code == 1) {
           this.queryOutsourceSheBaoByPersonId();
+          this.handleSearchOutsourcePersonProcess();
         }
         return res;
       } catch (error) {
@@ -1380,6 +1407,9 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       formData.append('pageNum3', personMessage.pageNum3 || '');
       formData.append('pageNum4', personMessage.pageNum4 || '');
       const res = await fetchApi.personMessageEsign(formData);
+      if (res.code === 1) {
+        this.handleSearchOutsourcePersonProcess();
+      }
       return res;
     },
      /**
@@ -1413,28 +1443,18 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
      * 查外包人员入离职流程
      */
     async handleSearchOutsourcePersonProcess() {
-      if (this.formStatePerson.currentStatus == '1') {
-        this.formStatePerson.currentStatus = '';
-      }
       const params = new FormData();
       params.append('pageNumber', this.pageOutsourcePersonProcessList.pageNumber.toString());
       params.append('pageSize', this.pageOutsourcePersonProcessList.pageSize.toString());
-      params.append('city', this.formStatePerson.city || '');
-      params.append('bId', this.formStatePerson.bId || '');
-      params.append('currentStatus', this.formStatePerson.currentStatus);
-      params.append('positionId', this.formStatePerson.positionId || '');
-      params.append('userName', this.formStatePerson.userName || '');
-      params.append('companyName', this.formStatePerson.companyName || '');
-      params.append('companyArrange', this.formStatePerson.companyArrange || '');
-      params.append('jobType', this.formStatePerson.jobType || '');
+      params.append('liucheng ', '1');
       try {
         const res = await fetchApi.queryOutsourcePerson(params);
         if (res.code == 1) {
-          this.outsourcePersonProcessList = res.info.list as OutsourcePersonItem[];
+          this.outsourcePersonProcessList = res.info.pager.list as OutsourcePersonItem[];
           this.pageOutsourcePersonProcessList = {
-            pageNumber: res.info.pageNumber,
-            pageSize: res.info.pageSize,
-            total: res.info.totalCount,
+            pageNumber: res.info.pager.pageNumber,
+            pageSize: res.info.pager.pageSize,
+            total: res.info.pager.totalCount,
           } as PageItem;
         }
         return res;

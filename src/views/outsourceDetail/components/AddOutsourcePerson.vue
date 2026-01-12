@@ -33,8 +33,8 @@
             </a-form-item>
           </a-col>
           <a-col :span="8">
-            <a-form-item name="age" label="年龄">
-              <a-date-picker v-model:value="addOutsourcePersonForm.age" placeholder="请选择年龄" value-format="YYYY-MM-DD" />
+            <a-form-item name="age" label="出生年月">
+              <a-date-picker v-model:value="addOutsourcePersonForm.age" placeholder="请选择出生年月" value-format="YYYY-MM-DD" />
             </a-form-item>
           </a-col>
         </a-row>

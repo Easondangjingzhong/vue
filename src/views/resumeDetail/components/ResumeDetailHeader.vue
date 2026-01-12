@@ -60,7 +60,7 @@
           color="orange"
           class="resume_tag_checked_top"
           v-if="props.showResumeRightOutFlag &&resumeData.limitFlag == '限制'"
-          :title="limitRemarkDetail ? limitRemarkDetail : `${formatToDateMinute(resumeData.offerTime)}  OFFER推荐禁止`"
+          :title="limitRemarkDetail ? limitRemarkDetail : `${formatToDateMinute(resumeData.offerTime)}  OFFER推荐禁止 ${zaibaoPerson}`"
           >限制</a-tag
         >
         <a-tag
@@ -354,6 +354,11 @@
       ? props.resumeData.limitRemarkDetail  : (props.resumeData.resumeStatus == '保证期中'
        ? `${formatToDateMinute(props.resumeData.shiRuTime)} - ${formatToDateMinute(props.resumeData.guoBaoTime)}  保证期推荐禁止`
         : props.resumeData.resumeStatus == '保证期中'? "外包保护期中" :""),
+  )
+  const zaibaoPerson = ref(
+    props.resumeData.zaibaoRecruitId
+      ? `激活顾问: ${props.resumeData.zaibaoName} 激活时间${formatToDateMinute(props.resumeData.zaibaoStartTime)} - ${formatToDateMinute(props.resumeData.zaibaoEndTime)}`
+        : "",
   )
   const offerTime = ref(
     props.resumeData.offerTime

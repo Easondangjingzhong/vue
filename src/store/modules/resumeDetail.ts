@@ -76,7 +76,7 @@ interface ResumeDetailState {
   resumeContainerIndexBtnFlag: boolean; //简历层级设置
 }
 const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: '' } = JSON.parse(
-  localStorage.getItem('loginVueUser'),
+  localStorage.getItem('loginVueUser') || '{}',
 );
 export const useResumeDetailStore = defineStore('app-Resume',{
   state: (): ResumeDetailState => ({
@@ -561,6 +561,8 @@ export const useResumeDetailStore = defineStore('app-Resume',{
     async addCandidateRecommendAppeal(data) {
       const formData = new FormData();
       formData.append('id', data.id);
+      formData.append('supportRecruitId', data.supportRecruitId || "");
+      formData.append('supportRealNameEn', data.supportRealNameEn || "");
       formData.append('brand', data.brand);
       formData.append('bId', data.bId);
       formData.append('mId', data.mId);
@@ -595,6 +597,8 @@ export const useResumeDetailStore = defineStore('app-Resume',{
      */
     async addCandidateRecommend(data) {
       const formData = new FormData();
+      formData.append('supportRecruitId', data.supportRecruitId || "");
+      formData.append('supportRealNameEn', data.supportRealNameEn || "");
       formData.append('id', data.id);
       formData.append('brand', data.brand);
       formData.append('bId', data.bId);
