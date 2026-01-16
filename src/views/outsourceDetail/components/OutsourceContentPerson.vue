@@ -141,7 +141,7 @@
     <a-tag v-if="column.key === 'offerFlag' && record.offerFlag == '等待发起'" color="red">等待发起</a-tag>
     <a-tag v-if="column.key === 'offerFlag' && record.offerFlag == '等待签署'" color="orange">等待签署</a-tag>
     <a-tag v-if="column.key === 'offerFlag' && record.offerFlag == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(record.offerPic)">签署完成</a-tag>
-    <a-tag v-if="column.key === 'contractCompany' && record.contractCompany == '等待发起'" :color="record.currentStatus === '1' ? 'orange' : 'red'">{{ record.currentStatus === '1' ? "未到发起" : "等待发起"}}</a-tag>
+    <a-tag v-if="column.key === 'contractCompany' && record.contractCompany == '等待发起'" :color="record.planEntryTime && dayjs(record.planEntryTime).isAfter(dayjs()) ? 'orange' : 'red'">{{ record.planEntryTime && dayjs(record.planEntryTime).isAfter(dayjs()) ? "未到发起" : "等待发起"}}</a-tag>
     <a-tag v-if="column.key === 'contractCompany' && record.contractCompany == '等待签署'" color="orange">等待签署</a-tag>
     <a-tag v-if="column.key === 'contractCompany' && record.contractCompany == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(record.contractPath)">签署完成</a-tag>
 
@@ -225,6 +225,7 @@
 </template>
 
 <script setup lang="ts">
+import dayjs from 'dayjs';
 import { storeToRefs } from 'pinia';
 import { handleToResumeDetails } from '/@/router/index';
 import type { TableColumnsType } from 'ant-design-vue';

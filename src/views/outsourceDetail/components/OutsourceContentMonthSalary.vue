@@ -94,7 +94,8 @@
           <a-button @click="handleSearchOutsourcePerson('4')" :class="{'active': formStateMonthSalary.companyArrange === '1'}" style="margin-right: 5px;" size="small" title="按公司排序">排序</a-button>
         </span>
          <span>
-           <a-button @click="handleOutsourceFormula" style="background-color: #eee" size="small">公司公式</a-button>
+           <a-button @click="handleOutsourceMoney" style="background-color: #eee;margin-right: 5px;" size="small">请款单</a-button>
+           <a-button @click="handleOutsourceFormula" style="background-color: #eee;" size="small">公司公式</a-button>
         </span>
     </a-row>
     <a-row>
@@ -158,6 +159,7 @@
   <OutsourceCompanyFormula/>
   <OutsourceMonthSalaryUpdate/>
   <OutsourceMonthSalaryShiJiUpdate/>
+  <OutsourcePersonMoney/>
 </template>
 
 <script setup lang="ts">
@@ -166,6 +168,7 @@ import _ from 'lodash';
 import { MenuUnfoldOutlined } from '@ant-design/icons-vue';
 import type { TableColumnsType } from 'ant-design-vue';
 import { SearchMonthSalaryItem } from '/@/api/outsourceDetail/model';
+import OutsourcePersonMoney from '/@/views/outsourceDetail/components/personComponents/OutsourcePersonMoney.vue';
 import OutsourceCompanyFormula from '/@/views/outsourceDetail/components/personComponents/OutsourceCompanyFormula.vue';
 import OutsourceMonthSalaryUpdate from '/@/views/outsourceDetail/components/personComponents/OutsourceMonthSalaryUpdate.vue';
 import OutsourceMonthSalaryShiJiUpdate from '/@/views/outsourceDetail/components/personComponents/OutsourceMonthSalaryShiJiUpdate.vue';
@@ -270,6 +273,9 @@ const handleEditClick = (record) => {
 const handleEditYearClick = (record) => {
   outsourceMonthSalaryForm.value = _.cloneDeep(record);
   outsourceMonthSalaryShiJiFlag.value = true;
+}
+const handleOutsourceMoney = () => {
+  outsourceDetailStore.outsourcePersonMoneyFlag = true;
 }
 </script>
 

@@ -400,6 +400,7 @@
           <a-form-item label="实习开始" :label-col="labelCol" :rules="[{ required: true, message: '请选择实习开始' }]">
             <a-date-picker
                 v-model:value="offerInformationForm.startTime"
+                @change="handleStartTimeChange"
                 value-format="YYYY-MM-DD"
                 placeholder="请选择实习开始"
               />
@@ -421,6 +422,13 @@
             <a-input-number v-model:value="offerInformationForm.basicSalary" name="basicSalary" placeholder="请输入基本薪资" style="width: 100%;"/>
           </a-form-item>
         </a-col>
+       <a-col :span="12">
+          <a-form-item label="补助津贴" :label-col="labelCol" :rules="[{ required: true, message: '请输入补助津贴' }]">
+            <a-input-number v-model:value="offerInformationForm.allowance" name="allowance" placeholder="请输入补助津贴" style="width: 100%;"/>
+          </a-form-item>
+        </a-col>
+      </a-row>
+      <a-row :gutter="24">
         <a-col :span="12">
           <a-form-item label="签署截止" :label-col="labelCol" :rules="[{ required: true, message: '请选择签署截止' }]">
             <a-date-picker
@@ -438,6 +446,7 @@
           <a-form-item label="开始时间" :label-col="labelCol" :rules="[{ required: true, message: '请选择开始时间' }]">
             <a-date-picker
                 v-model:value="offerInformationForm.startTime"
+                @change="handleStartTimeChange"
                 value-format="YYYY-MM-DD"
                 placeholder="请选择开始时间"
               />
@@ -467,6 +476,11 @@
         </a-row>
       
         <a-row :gutter="24">
+          <a-col :span="12">
+          <a-form-item :label-col="labelCol" label="补助津贴" :rules="[{ required: true, message: '请输入补助津贴' }]">
+            <a-input-number v-model:value="offerInformationForm.allowance" name="allowance" placeholder="请输入补助津贴" style="width: 100%;"/>
+          </a-form-item>
+        </a-col>
         <a-col :span="12">
           <a-form-item label="签署截止" :label-col="labelCol" :rules="[{ required: true, message: '请选择签署截止' }]">
             <a-date-picker
@@ -504,6 +518,7 @@
           <a-form-item label="合同开始" :label-col="labelCol" :rules="[{ required: true, message: '请选择合同开始' }]">
             <a-date-picker
                 v-model:value="offerInformationForm.startTime"
+                @change="handleStartTimeChange"
                 value-format="YYYY-MM-DD"
                 placeholder="请选择合同开始"
               />
@@ -610,7 +625,7 @@
         </a-row>
         <a-row :gutter="24">
           <a-col :span="24" class="offerContent">
-            <span class='offerSpanLeft'>您的基本工资为每月（税前）【{{ offerInformationForm.basicSalary }}】人民币。</span>
+            <span class='offerSpanLeft'>您的基本工资为每月（税前）【{{ offerInformationForm.basicSalary }}】人民币；补助及津贴为每月（税前）【{{ offerInformationForm.allowance }}】人民币。</span>
           </a-col>
         </a-row>
         <a-row :gutter="24">
@@ -852,7 +867,12 @@
         </a-row>
         <a-row :gutter="24">
           <a-col :span="24" class="offerContent">
-            <span class='offerSpanLeft'>您的基本工资为每月（税前）【{{ offerInformationForm.basicSalary }}】人民币；试用期基本工资为每月（税前）【{{ offerInformationForm.basicSalaryAfterRate }}】人民币。</span>
+            <span class='offerSpanLeft'>您的基本工资为每月（税前）【{{ offerInformationForm.basicSalary }}】人民币；补助及津贴为每月（税前）【{{ offerInformationForm.allowance }}】人民币；</span>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent">
+            <span class='offerSpanLeft'>试用期基本工资为每月（税前）【{{ offerInformationForm.basicSalaryAfterRate }}】人民币；补助及津贴为每月（税前）【{{ offerInformationForm.allowance }}】人民币。</span>
           </a-col>
         </a-row>
         <a-row :gutter="24">
@@ -1812,6 +1832,19 @@ interface OfferInformationItem {
   signingDeadline: string;
   offerSignCompany: string;
   faXinDay: string;
+  allowance: number | string;
+}
+const handleStartTimeChange = (_: any, dateString: string) => {
+  if (!dateString) {
+    offerInformationForm.value.signingDeadline = '';
+    return;
+  }
+  const d = dayjs(dateString);
+  if (!d.isValid()) {
+    offerInformationForm.value.signingDeadline = '';
+    return;
+  }
+  offerInformationForm.value.signingDeadline = d.subtract(1, 'day').format('YYYY-MM-DD');
 }
 const offerInformationForm = ref({} as OfferInformationItem);
 const startYMD = computed(() => {
@@ -2056,7 +2089,7 @@ const generatePDFText = async() => {
 
           drawSectionTitle('5.', '薪酬');
           drawParagraph('基本工资', true);
-          drawParagraph(`您的基本工资为每月（税前）【${offerInformationForm.value.basicSalary}】人民币。`, true);
+          drawParagraph(`您的基本工资为每月（税前）【${ offerInformationForm.value.basicSalary }】人民币；补助及津贴为每月（税前）【${ offerInformationForm.value.allowance }】人民币。`, true);
 
           drawSectionTitle('6.', '个人所得税');
           drawParagraph('您需承担缴纳个人所得税，公司将直接从税前工资中扣除并由指定的机构缴纳至税务部门。', true);
@@ -2102,7 +2135,8 @@ const generatePDFText = async() => {
 
           drawSectionTitle('5.', '薪酬');
           drawParagraph('基本工资', true);
-          drawParagraph(`您的基本工资为每月（税前）【${offerInformationForm.value.basicSalary}】人民币；试用期基本工资为每月（税前）【${offerInformationForm.value.basicSalaryAfterRate}】人民币。`, true);
+          drawParagraph(`您的基本工资为每月（税前）【${offerInformationForm.value.basicSalary}】人民币；补助及津贴为每月（税前）【${offerInformationForm.value.allowance}】人民币；`, true);
+          drawParagraph(`试用期基本工资为每月（税前）【${offerInformationForm.value.basicSalaryAfterRate}】人民币；补助及津贴为每月（税前）【${ offerInformationForm.value.allowance }】人民币。`, true);
 
           drawSectionTitle('6.', '福利');
           drawParagraph('公司将根据国家及本市的规定为您缴纳社会保险和公积金.您将承担其中的个人部分，相关金额将直接从每月的工资中扣除。', true);
@@ -2486,6 +2520,7 @@ const generatePDF = async () => {
   newJoinerPersonalInformationForm.value.signEndTime = offerInformationForm.value.signingDeadline;
   newJoinerPersonalInformationForm.value.shixiBaseMoney = offerInformationForm.value.basicSalaryAfterRate?.toString() || '';
   newJoinerPersonalInformationForm.value.faxinDay = offerInformationForm.value.faXinDay || '';
+  newJoinerPersonalInformationForm.value.allowance = offerInformationForm.value.allowance || '';
   outsourceDetailStore.updateOutsourcePersonMsg(newJoinerPersonalInformationForm.value).then(async (res) => {
     if (res.code == 1) {
       await nextTick();

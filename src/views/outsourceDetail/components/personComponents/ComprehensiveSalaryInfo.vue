@@ -2,7 +2,7 @@
 <a-row :gutter="24">
   <a-col :span="24" class="comprehensive-contract-info">
     <div class="comprehensive-contract-info-title">薪资信息</div>
-    <a-button class="comprehensive-contract-info-btn" size="small" @click="handleComprehensiveSalaryInfoUpdate">新增</a-button>
+    <!-- <a-button class="comprehensive-contract-info-btn" size="small" @click="handleComprehensiveSalaryInfoUpdate">新增</a-button> -->
   </a-col>
 </a-row>
 <a-row :gutter="24">

@@ -99,6 +99,7 @@ export interface OutsourcePersonItem {
   leavePath: string;
   idPhotoFan: string;
   idPhotoZheng: string;
+  allowance: string;
 }
 /**
  * 外包查询个人信息

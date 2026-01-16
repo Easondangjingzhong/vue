@@ -213,6 +213,7 @@ const getControlField = (type) => {
     '公司名称': 'companyName',
     '岗位名称': 'positions',
     '职位名称': 'positions',
+    '合同开始日期': 'realEntryTime',
     '部门': 'department',
     '签署日期': 'signDate',
     '合同编号': 'contractNo',

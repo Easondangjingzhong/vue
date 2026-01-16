@@ -34,7 +34,12 @@
       未入
     </a-tag>
     <template v-if="column.key === 'xinXi'">
-      <a-tag v-if="record.infoTableFlag === '信息待填'" color="orange">信息表</a-tag>
+      <a-tag
+        v-if="record.infoTableFlag === '信息待填'"
+        :color="Number(record.infoTableEndTime) >= Date.now() ? 'orange' : 'red'"
+      >
+        信息表
+      </a-tag>
       <a-tag v-else color="green">信息表</a-tag>
     </template>
     
@@ -45,7 +50,14 @@
     </template>
     
     <template v-if="column.key === 'faQi'">
-      <a-tag v-if="record.salaryStructure !== null && record.offerFlag === '等待发起'" color="orange" style="cursor: pointer;" @click="handleNewJoinerPersonalInformationForm(record)">OFFER发起</a-tag>
+      <a-tag
+        v-if="record.salaryStructure !== null && record.offerFlag === '等待发起'"
+        :color="Number(record.offerEndTime) >= Date.now() ? 'orange' : 'red'"
+        style="cursor: pointer;"
+        @click="handleNewJoinerPersonalInformationForm(record)"
+      >
+        OFFER发起
+      </a-tag>
       <a-tag v-else-if="record.offerFlag !== '等待发起'" color="green">OFFER发起</a-tag>
       <a-tag v-else color="default" style="cursor: not-allowed;">OFFER发起</a-tag>
     </template>
@@ -69,7 +81,22 @@
     </template>
     
     <template v-if="column.key === 'heTong'">
-      <a-tag v-if="record.socialFlag !== null && record.contractCompany === '等待发起'" color="orange" style="cursor: pointer;" @click="handleContractInfomationForm(record)">合同签署</a-tag>
+      <a-tag
+        v-if="!record.contractPeriod && record.currentStatus !== '1' && record.socialFlag !== null && record.contractCompany === '等待发起'"
+        color="orange"
+        style="cursor: pointer;"
+        @click="handleAddPersonContractDetail(record)"
+      >
+        合同签署
+      </a-tag>
+      <a-tag
+        v-if="record.contractPeriod && record.currentStatus !== '1' && record.socialFlag !== null && record.contractCompany === '等待发起'"
+        :color="Number(record.contractEndTime) >= Date.now() ? 'orange' : 'red'"
+        style="cursor: pointer;"
+        @click="handleContractInfomationForm(record)"
+      >
+        合同签署
+      </a-tag>
       <a-tag v-else-if="record.contractCompany === '等待签署'" color="red">合同签署</a-tag>
       <a-tag v-else-if="record.contractCompany === '签署完成'" color="green">合同签署</a-tag>
       <a-tag v-else color="default" style="cursor: not-allowed;">合同签署</a-tag>
@@ -118,6 +145,7 @@ import _ from 'lodash';
 import { storeToRefs } from 'pinia';
 import { CloseOutlined } from '@ant-design/icons-vue';
 import type { TableColumnsType } from 'ant-design-vue';
+import { formatToDate } from '/@/utils/dateUtil';
 import { OutsourcePersonItem, OutsourceSalaryItem } from '/@/api/outsourceDetail/model';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
@@ -297,7 +325,7 @@ const handleClose = () => {
 const handleComprehensiveSalaryInfoUpdate = (record) => {
   outsourcePersonDetail.value = _.cloneDeep(record);
   outsourceDetailStore.queryOutsourceBankName();
-  outsourceSalaryForm.value = {} as OutsourceSalaryItem;
+  outsourceSalaryForm.value = {changeReason:'入职薪资',changeTime: record.planEntryTime ? formatToDate(record.planEntryTime) : ''} as OutsourceSalaryItem;
   outsourceSalaryFlag.value = true;
 }
 //入职信息
@@ -309,6 +337,11 @@ const handleComprehensiveBasicUpdate = (record) => {
 const handleComprehensiveSocialSecurityUpdate = (record) => {
   outsourcePersonDetail.value = _.cloneDeep(record);
   outsourceDetailStore.addSocialSecurityInfo();
+}
+//新增合同信息
+const handleAddPersonContractDetail = (record) => {
+  outsourcePersonDetail.value = _.cloneDeep(record);
+  outsourceDetailStore.handleAddPersonContract();
 }
 //合同信息
 const handleContractInfomationForm = (record) => {

@@ -98,25 +98,13 @@
             </a-row>
             <a-row :gutter="24" class="resume_row" style="margin-top: 10px" v-if="loginVueUser.loginId == 444 || loginVueUser.loginId == 448">
               <a-col :span="24" class="resume_col">
-                <h4 class="resume_h4"> 推荐分顾: </h4>
-                <a-select
+                <h4 class="resume_h4"> 推荐顾问: </h4>
+                <a-radio-group
                   v-model:value="supportRecruitFlag"
-                  style="width: 10%;margin-left: 5px"
-                  :allowClear="true"
-                  placeholder="请选择是否分单"
+                  style="margin-left: 5px;"
                   @change="handleSupportRecruitFlagChange"
-                  :options="[{ value: '1', label: '是' }, { value: '2', label: '否' }]"
-                >
-              </a-select>
-                <a-select
-                  v-model:value="supportRecruitId"
-                  v-if="supportRecruitFlag == '1'"
-                  style="width: 15%;margin-left: 10px"
-                  :allowClear="true"
-                  :options="supportRecruitOptions"
-                  placeholder="请选择推荐分顾"
-                >
-              </a-select>
+                  :options="[{ value: '2', label: '本人推荐' }, { value: '1', label: '他人推荐 Jane Lyu' }]"
+                />
               </a-col>
             </a-row>
           </div>
@@ -290,7 +278,9 @@
                   </template>
                 </a-table>
               </a-col>
-              <a-col :span="24" style="margin-top: 10px">
+            </a-row>
+            <a-row :gutter="24" class="resume_row" style='overflow-y: auto;height: 295px;overflow-x: hidden;margin-top: 10px' v-if="repeatFlag == 2">
+              <a-col :span="24">
                 <h4 class="resume_h4"> 申诉理由 </h4>
               </a-col>
               <a-radio-group
@@ -298,19 +288,43 @@
                 @change="handleRecommendConfirmReason"
               >
                 <a-col :span="24">
-                  <a-radio :value="1">{{ recommendConfirmReasonObjDetails[1] }}</a-radio>
+                  <div style='border: 1px solid #ccc;padding: 5px;border-radius: 5px;margin: 5px 0;'>
+                  <div>{{ recommendConfirmReasonObjDetails[6] }}</div>
+                  <div style="padding-left: 20px;">1）A公司a职位有2位以上的企顾对接 （企顾1和企顾2）；</div>
+                  <div style="padding-left: 20px;">2）企顾1推荐流程终止；</div>
+                  <div style="padding-left: 20px;">3）首次推荐顾问未在企顾1流程终止后1个工作日内重新推荐至企顾2；</div>
+                  <div style="padding-left: 20px;">以上3点必须同时满足，方可选择此条理由申诉。</div>
+                  <div style="font-weight: 700;"><a-radio :value="6">我的申诉同时满足以上3条内容，我选择此条申诉。</a-radio></div>
+                  </div>
                 </a-col>
                 <a-col :span="24">
-                  <a-radio :value="2">{{ recommendConfirmReasonObjDetails[2] }}</a-radio>
+                  <div style='border: 1px solid #ccc;padding: 5px;border-radius: 5px;margin: 5px 0;'>
+                  <div>{{ recommendConfirmReasonObjDetails[1] }}</div>
+                  <div style="padding-left: 20px;">1）若同一个HR负责单个品牌或多个品牌；或同一品牌多个HR负责；</div>
+                  <div style="padding-left: 20px;">2）申诉的职位在不同的城市；</div>
+                  <div style="padding-left: 20px;">以上2点必须同时满足，方可选择此条理由申诉。</div>
+                  <div style="font-weight: 700;"><a-radio :value="1">我的申诉同时满足以上2条内容，我选择此条申诉。</a-radio></div>
+                  </div>
                 </a-col>
                 <a-col :span="24">
-                  <a-radio :value="3">{{ recommendConfirmReasonObjDetails[3] }}</a-radio>
+                  <div style='border: 1px solid #ccc;padding: 5px;border-radius: 5px;margin: 5px 0;'>
+                  <div>{{ recommendConfirmReasonObjDetails[3] }}</div>
+                  <div style="padding-left: 20px;">1）若a顾问推荐某候选人至A公司a职位，流程终止；</div>
+                  <div style="padding-left: 20px;">2）流程终止时间大于10个自然日；</div>
+                  <div style="padding-left: 20px;">3）申诉职位不能是a职位（指职位名称相同职位）；</div>
+                  <div style="padding-left: 20px;">以上3点必须同时满足，方可选择此条理由申诉。</div>
+                  <div style="font-weight: 700;"><a-radio :value="3">我的申诉同时满足以上3条内容，我选择此条申诉。</a-radio></div>
+                  </div>
                 </a-col>
                 <a-col :span="24">
-                  <a-radio :value="6">{{ recommendConfirmReasonObjDetails[6] }}</a-radio>
-                </a-col>
-                <a-col :span="24">
-                  <a-radio :value="5">{{ recommendConfirmReasonObjDetails[5] }}</a-radio>
+                  <div style='border: 1px solid #ccc;padding: 5px;border-radius: 5px;margin: 5px 0;'>
+                  <div>{{ recommendConfirmReasonObjDetails[2] }}</div>
+                  <div style="padding-left: 20px;">1）若A公司若存在多个品牌，并且由不同的HR负责；</div>
+                  <div style="padding-left: 20px;">2）若A公司同一个品牌分为奥莱线和精品线，并且由不同的HR负责；</div>
+                  <div style="padding-left: 20px;">以上2点满足任意1点，可选择此条理由申诉。</div>
+                  <div style="font-weight: 700;"><a-radio :value="2">我的申诉满足以上第1条内容，我选择此条申诉。</a-radio></div>
+                  <div style="font-weight: 700;"><a-radio :value="21">我的申诉满足以上第2条内容，我选择此条申诉。</a-radio></div>
+                  </div>
                 </a-col>
               </a-radio-group>
               <a-col v-if="recommendConfirmReasonFlag" :span="24">
@@ -378,7 +392,7 @@
 const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: '' } = JSON.parse(
   localStorage.getItem('loginVueUser') || '{}',
 );
-  const supportRecruitFlag = ref("");
+  const supportRecruitFlag = ref("2");
   const supportRecruitId = ref("");
   const supportRecruitOptions = ref([
     {
@@ -387,7 +401,11 @@ const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: ''
     },
   ]);
   const handleSupportRecruitFlagChange = () => {
-    supportRecruitId.value = '';
+    if (supportRecruitFlag.value === '1') {
+      supportRecruitId.value = '8220';
+    } else {
+      supportRecruitId.value = '';
+    }
   };
   // Optional: Add window resize listener if you need dynamic updates
   const handleResize = () => {
@@ -921,19 +939,25 @@ const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: ''
   };
 
   const recommendConfirmReasonObjDetails = ref({
-    '1': '1.若同一个HR负责单个品牌或多个品牌，或同一品牌多个HR负责，职位在不同的城市，a顾问推荐候选人至a城市a品牌a职位，则其他顾问可以推荐此候选人至其它城市任意品牌的任意职位；',
-    '2': '2.若A公司若存在多个品牌，并且由不同的HR负责，则其他顾问可推荐此候选人至A公司其他HR负责的品牌任何职位；（若同品牌分为奥莱线和精品线，由不同的HR负责，也适用此条规则）；',
+    '1': '2.若同一个HR负责单个品牌或多个品牌，或同一品牌多个HR负责，职位在不同的城市，a顾问推荐候选人至a城市a品牌a职位，则其他顾问可以推荐此候选人至其它城市任意品牌的任意职位；',
+    '2': '4.若A公司若存在多个品牌，并且由不同的HR负责，则其他顾问可推荐此候选人至A公司其他HR负责的品牌任何职位；（若同品牌分为奥莱线和精品线，由不同的HR负责，也适用此条规则）；',
     '3': '3.若a顾问推荐某候选人至A公司a职位，出现流程终止且流程终止时间大于10个自然日，则其他顾问可以推荐此候选人至A公司除a职位外的任何职位；',
-    '6': '4.若A公司a职位有2位或以上的企业顾问共同对接（企顾1和企顾2），企顾1推荐流程终止后（企顾1推荐流程未终止前，a顾问无法推荐此候选人至企顾2），a顾问可以将此候选人推荐至企顾2，若a顾问超过1个工作日未将此候选人推荐至企顾2，则其他顾问可以推荐此候选人至企顾2；',
-    '5': '5.其他；(填写理由时，请注意确认是否可以申诉，申诉失败将提醒原推荐顾问跟进)；',
+    '6': '1.若A公司a职位有2位或以上的企业顾问共同对接（企顾1和企顾2），企顾1推荐流程终止后（企顾1推荐流程未终止前，a顾问无法推荐此候选人至企顾2），a顾问可以将此候选人推荐至企顾2，若a顾问超过1个工作日未将此候选人推荐至企顾2，则其他顾问可以推荐此候选人至企顾2；',
   });
-  const recommendConfirmReasonObjDetailsTemp = ref({
-    '1': '若同一个HR负责单个品牌或多个品牌，或同一品牌多个HR负责，职位在不同的城市，a顾问推荐候选人至a城市a品牌a职位，则其他顾问可以推荐此候选人至其它城市任意品牌的任意职位；',
-    '2': '若A公司若存在多个品牌，并且由不同的HR负责，则其他顾问可推荐此候选人至A公司其他HR负责的品牌任何职位；（若同品牌分为奥莱线和精品线，由不同的HR负责，也适用此条规则）；',
-    '3': '若a顾问推荐某候选人至A公司a职位，出现流程终止且流程终止时间大于10个自然日，则其他顾问可以推荐此候选人至A公司除a职位外的任何职位；',
-    '6': '若A公司a职位有2位或以上的企业顾问共同对接（企顾1和企顾2），企顾1推荐流程终止后（企顾1推荐流程未终止前，a顾问无法推荐此候选人至企顾2），a顾问可以将此候选人推荐至企顾2，若a顾问超过1个工作日未将此候选人推荐至企顾2，则其他顾问可以推荐此候选人至企顾2；',
-    '5': '其他；(填写理由时，请注意确认是否可以申诉，申诉失败将提醒原推荐顾问跟进)；',
+   const recommendConfirmReasonObjDetailsTemp = ref({
+    '1': '若同一个HR负责单个品牌或多个品牌，或同一品牌多个HR负责，职位在不同的城市，a顾问推荐候选人至a城市a品牌a职位，则其他顾问可以推荐此候选人至其它城市任意品牌的任意职位；1）若同一个HR负责单个品牌或多个品牌；或同一品牌多个HR负责；2）申诉的职位在不同的城市；以上2点必须同时满足，方可选择此条理由申诉。我的申诉同时满足以上2条内容，我选择此条申诉。',
+    '2': '若A公司若存在多个品牌，并且由不同的HR负责，则其他顾问可推荐此候选人至A公司其他HR负责的品牌任何职位；（若同品牌分为奥莱线和精品线，由不同的HR负责，也适用此条规则）；1）若A公司若存在多个品牌，并且由不同的HR负责；2）若A公司同一个品牌分为奥莱线和精品线，并且由不同的HR负责；以上2点满足任意1点，可选择此条理由申诉。我的申诉满足以上第1条内容，我选择此条申诉。',
+    '21': '若A公司若存在多个品牌，并且由不同的HR负责，则其他顾问可推荐此候选人至A公司其他HR负责的品牌任何职位；（若同品牌分为奥莱线和精品线，由不同的HR负责，也适用此条规则）；1）若A公司若存在多个品牌，并且由不同的HR负责；2）若A公司同一个品牌分为奥莱线和精品线，并且由不同的HR负责；以上2点满足任意1点，可选择此条理由申诉。我的申诉满足以上第2条内容，我选择此条申诉。',
+    '3': '若a顾问推荐某候选人至A公司a职位，出现流程终止且流程终止时间大于10个自然日，则其他顾问可以推荐此候选人至A公司除a职位外的任何职位；1）若a顾问推荐某候选人至A公司a职位，流程终止；2）流程终止时间大于10个自然日；3）申诉职位不能是a职位（指职位名称相同职位）；以上3点必须同时满足，方可选择此条理由申诉。我的申诉同时满足以上3条内容，我选择此条申诉。',
+    '6': '若A公司a职位有2位或以上的企业顾问共同对接（企顾1和企顾2），企顾1推荐流程终止后（企顾1推荐流程未终止前，a顾问无法推荐此候选人至企顾2），a顾问可以将此候选人推荐至企顾2，若a顾问超过1个工作日未将此候选人推荐至企顾2，则其他顾问可以推荐此候选人至企顾2；1）A公司a职位有2位以上的企顾对接 （企顾1和企顾2）；2）企顾1推荐流程终止；3）首次推荐顾问未在企顾1流程终止后1个工作日内重新推荐至企顾2；以上3点必须同时满足，方可选择此条理由申诉。我的申诉同时满足以上3条内容，我选择此条申诉。',
   });
+  // const recommendConfirmReasonObjDetailsTemp = ref({
+  //   '1': '若同一个HR负责单个品牌或多个品牌，或同一品牌多个HR负责，职位在不同的城市，a顾问推荐候选人至a城市a品牌a职位，则其他顾问可以推荐此候选人至其它城市任意品牌的任意职位；',
+  //   '2': '若A公司若存在多个品牌，并且由不同的HR负责，则其他顾问可推荐此候选人至A公司其他HR负责的品牌任何职位；（若同品牌分为奥莱线和精品线，由不同的HR负责，也适用此条规则）；',
+  //   '3': '若a顾问推荐某候选人至A公司a职位，出现流程终止且流程终止时间大于10个自然日，则其他顾问可以推荐此候选人至A公司除a职位外的任何职位；',
+  //   '6': '若A公司a职位有2位或以上的企业顾问共同对接（企顾1和企顾2），企顾1推荐流程终止后（企顾1推荐流程未终止前，a顾问无法推荐此候选人至企顾2），a顾问可以将此候选人推荐至企顾2，若a顾问超过1个工作日未将此候选人推荐至企顾2，则其他顾问可以推荐此候选人至企顾2；',
+  //   '5': '其他；(填写理由时，请注意确认是否可以申诉，申诉失败将提醒原推荐顾问跟进)；',
+  // });
   const recommendConfirmReason = ref('');
   const recommendConfirmReasonOther = ref('');
   const recommendConfirmReasonFlag = ref(false);
@@ -1008,14 +1032,6 @@ const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: ''
       appealRemark = conflictRemarkShow.value;
       appealType = '客户限制';
     }
-    if ((loginVueUser.loginId == '448' || loginVueUser.loginId == '444') && !supportRecruitFlag.value) {
-      message.warning('请选择是否分单');
-      return;
-    }
-    if ((loginVueUser.loginId == '448' || loginVueUser.loginId == '444') && supportRecruitFlag.value == '1' && !supportRecruitId.value) {
-      message.warning('请选择推荐分顾');
-      return;
-    }
     let tt = 'youtai';
     if (templateType.value != '0') {
         tt = 'wotui';
@@ -1050,7 +1066,7 @@ const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: ''
         recommendConfirmReasonOther.value = '';
         recommendConfirmReasonFlag.value = false;
         supportRecruitId.value = '';
-        supportRecruitFlag.value = '';
+        supportRecruitFlag.value = '2';
  message.success({
     icon: () => null, // 隐藏默认图标
     content: () => h('div', [
@@ -1152,14 +1168,6 @@ const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: ''
       excelFile.value = [];
       return;
     }
-    if ((loginVueUser.loginId == '448' || loginVueUser.loginId == '444') && !supportRecruitFlag.value) {
-      message.warning('请选择是否分单');
-      return;
-    }
-    if ((loginVueUser.loginId == '448' || loginVueUser.loginId == '444') && supportRecruitFlag.value == '1' && !supportRecruitId.value) {
-      message.warning('请选择推荐分顾');
-      return;
-    }
     let tt = 'youtai';
     if (templateType.value != '0') {
         tt = 'wotui';
@@ -1190,7 +1198,7 @@ const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: ''
         // message.success('推荐成功');
         doHandlePagination();
         supportRecruitId.value = '';
-        supportRecruitFlag.value = '';
+        supportRecruitFlag.value = '2';
          message.success({
     icon: () => null, // 隐藏默认图标
     content: () => h('div', [

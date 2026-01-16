@@ -133,6 +133,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       pageSize: 17,
       total: 0,
     } as PageItem,
+    outsourcePersonMoneyFlag: false, //外包人员请款单
   }),
   getters: {
     getOutsourcePersonList: (state) =>
@@ -807,6 +808,8 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       this.outsourceBasicFlag = true;
       this.outsourceBasicForm = {
         ...this.outsourcePersonDetail,
+        currentStatus: '2',
+        realEntryTime: this.outsourcePersonDetail.planEntryTime ? formatToDate(this.outsourcePersonDetail.planEntryTime) : '',
       };
     },
     /**
