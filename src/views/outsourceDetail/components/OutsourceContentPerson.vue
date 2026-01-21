@@ -110,6 +110,24 @@
       {{ record.userNameCn }}
       </a-popover>  
     </a>
+
+    <template v-if="column.key === 'market'">
+      <div v-if="editableData[record.id]" style="display: flex; align-items: center;">
+        <a-input
+          v-model:value="editableData[record.id].mkName"
+          size="small"
+          autofocus
+          style="margin-right: 4px;"
+        />
+        <CheckOutlined @click="save(record.id)" style="color: #52c41a; margin-right: 6px; cursor: pointer;" />
+        <CloseOutlined @click="cancel(record.id)" style="color: #ff4d4f; cursor: pointer;" />
+      </div>
+      <div v-else-if="record.mkName" @dblclick="edit(record.id)" style="cursor: pointer; min-height: 20px;background: linear-gradient(45deg, transparent 95%, #f90202 0);" :title="record.mkName">{{ record.market }}</div>
+      <div v-else @dblclick="edit(record.id)" style="cursor: pointer; min-height: 20px;">
+        {{ record.market }}
+      </div>
+    </template>
+
     <a-tag v-if="column.key === 'salaryStructure' && record.salaryStructure === '0.00/月'" color="orange">
       待录
     </a-tag>
@@ -137,17 +155,17 @@
     <a-tag v-if="column.key === 'infoTableFlag' && record.infoTableFlag == '信息待填'" color="red">信息待填</a-tag>
     <a-tag v-if="column.key === 'infoTableFlag' && record.infoTableFlag == '等待发起'" color="red">信息已填</a-tag>
     <a-tag v-if="column.key === 'infoTableFlag' && record.infoTableFlag == '等待签署'" color="orange">等待签署</a-tag>
-    <a-tag v-if="column.key === 'infoTableFlag' && record.infoTableFlag == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(record.infoTablePath)">签署完成</a-tag>
+    <a-tag v-if="column.key === 'infoTableFlag' && record.infoTableFlag == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(record.infoTablePath,1)">签署完成</a-tag>
     <a-tag v-if="column.key === 'offerFlag' && record.offerFlag == '等待发起'" color="red">等待发起</a-tag>
     <a-tag v-if="column.key === 'offerFlag' && record.offerFlag == '等待签署'" color="orange">等待签署</a-tag>
-    <a-tag v-if="column.key === 'offerFlag' && record.offerFlag == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(record.offerPic)">签署完成</a-tag>
+    <a-tag v-if="column.key === 'offerFlag' && record.offerFlag == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(record.offerPic,1)">签署完成</a-tag>
     <a-tag v-if="column.key === 'contractCompany' && record.contractCompany == '等待发起'" :color="record.planEntryTime && dayjs(record.planEntryTime).isAfter(dayjs()) ? 'orange' : 'red'">{{ record.planEntryTime && dayjs(record.planEntryTime).isAfter(dayjs()) ? "未到发起" : "等待发起"}}</a-tag>
     <a-tag v-if="column.key === 'contractCompany' && record.contractCompany == '等待签署'" color="orange">等待签署</a-tag>
-    <a-tag v-if="column.key === 'contractCompany' && record.contractCompany == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(record.contractPath)">签署完成</a-tag>
+    <a-tag v-if="column.key === 'contractCompany' && record.contractCompany == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(record.contractPath,2)">签署完成</a-tag>
 
     <a-tag v-if="column.key === 'proofFlag' && record.proofFlag == '等待发起'" color="red">等待发起</a-tag>
     <a-tag v-if="column.key === 'proofFlag' && record.proofFlag == '已经发起'" color="orange">已经发起</a-tag>
-    <a-tag v-if="column.key === 'proofFlag' && record.proofFlag == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(record.leavePath)">签署完成</a-tag>
+    <a-tag v-if="column.key === 'proofFlag' && record.proofFlag == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(record.leavePath,3)">签署完成</a-tag>
 
     <a-tag v-if="column.key === 'enterprise'" :title="record.enterprise">
       查看
@@ -192,7 +210,7 @@
     </a-tag>
 
     <!-- 添加类型断言和存在性检查以修复TypeScript索引类型错误 -->
-    <span v-if="(typeof column.dataIndex === 'string' && column.key !== 'jobType' && (record[column.dataIndex] === null || record[column.dataIndex] === ''))">-</span>
+    <span v-if="(typeof column.dataIndex === 'string' && column.key !== 'jobType' && column.key !== 'market' && (record[column.dataIndex] === null || record[column.dataIndex] === ''))">-</span>
   </template>
   </a-table>
     </a-row>
@@ -225,8 +243,11 @@
 </template>
 
 <script setup lang="ts">
+import { reactive } from 'vue';
 import dayjs from 'dayjs';
+import { CheckOutlined, CloseOutlined } from '@ant-design/icons-vue';
 import { storeToRefs } from 'pinia';
+import { message } from 'ant-design-vue';
 import { handleToResumeDetails } from '/@/router/index';
 import type { TableColumnsType } from 'ant-design-vue';
 import FileYuLanInfo from '/@/views/outsourceDetail/components/personComponents/FileYuLanInfo.vue';
@@ -329,6 +350,33 @@ const columnsOutsourceDetail: TableColumnsType = [
   const handleOutsourcePersonToResume = (record) => {
     handleToResumeDetails(record.resumeId, '');
   }
+  
+  const editableData: Record<number, OutsourcePersonItem> = reactive({});
+  const edit = (key: number) => {
+    const record = getOutsourcePersonList.value.find((item) => item.id === key);
+    if (record) {
+      editableData[key] = { ...record, mkName: record.mkName || '' };
+    }
+  };
+  const cancel = (key: number) => {
+    delete editableData[key];
+  };
+  const save = async (key: number) => {
+    const record = editableData[key];
+    if (!record) return;
+    if (!record.mkName) {
+      message.warning('店铺简称不能为空');
+      return;
+    }
+    const res = await outsourceDetailStore.updateOutsourcePersonMarketName(record);
+    if (res && res.code == 1) {
+      message.success('保存成功');
+      delete editableData[key];
+      outsourceDetailStore.queryOutsourcePerson();
+    } else {
+      message.error(res?.msg || '保存失败');
+    }
+  };
   // const handleNewJoinerPersonalInformationForm = (record) => {
   //   newJoinerPersonalInformationFlag.value = true;
   //   outsourceDetailStore.handleNewJoinerPersonalInformationForm(record as OutsourcePersonItem);
@@ -341,8 +389,12 @@ const columnsOutsourceDetail: TableColumnsType = [
   //   LeaveInfomatiomFlag.value = true;
   //   outsourceDetailStore.handleContractInfomationForm(record as OutsourcePersonItem);
   // }
-  const handleFileYulanInfo = (originalPathBlobPath) => {
-    outsourceDetailStore.handleFileYulanInfo(originalPathBlobPath);
+  const handleFileYulanInfo = (originalPathBlobPath,type) => {
+    if (!originalPathBlobPath) {
+      message.error('文件不存在');
+      return;
+    }
+    outsourceDetailStore.handleFileYulanInfo(originalPathBlobPath,type);
   }
   const handleSearchOutsourcePersonProcess = () => {
     outsourcePersonProcessFlag.value = true;

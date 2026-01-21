@@ -19,6 +19,7 @@ export interface OutsourcePersonItem {
   jobNumber: string;
   mId: number;
   market: string;
+  mkName: string;
   positionId: string;
   positions: string;
   pId: number;
@@ -351,6 +352,7 @@ export interface OutsourceMonthSalaryItem {
   sign?: string;
   personId?: number;
   zhanDanMonth?: string;
+  mkName?: string;
 
   // 时间相关
   jinxinMonth?: string; // 时间戳
@@ -755,4 +757,9 @@ export interface OutsourceFormulaItem {
   zhanDanRi: string; // private String zhanDanRi;
   xinZiRi: string; // private String xinZiRi;
   nianJia: string; // private String nianJia;
+}
+
+export interface OutsourcePersonMoneyItem {
+  companyName?: string;
+  yearAndMonth?: string;
 }

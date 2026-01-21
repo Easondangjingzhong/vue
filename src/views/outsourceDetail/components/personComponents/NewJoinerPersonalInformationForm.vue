@@ -384,6 +384,13 @@
       </a-row>
       <a-row :gutter="24" style="margin-top: 12px;">
         <a-col :span="12">
+          <a-form-item label="性质" :label-col="labelCol" :rules="[{ required: true, message: '请选择性质' }]">
+            <a-select v-model:value="newJoinerPersonalInformationForm.jobType" name="jobType" :options="jobTypeOptions" placeholder="请选择性质"></a-select>
+          </a-form-item>
+        </a-col>
+      </a-row>
+      <a-row :gutter="24" style="margin-top: 12px;">
+        <a-col :span="12">
           <a-form-item label="OFFER类型" :label-col="labelCol" :rules="[{ required: true, message: '请选择OFFER类型' }]">
             <a-select v-model:value="offerInformationForm.offerType" name="offerType" :options="offerTypeOptions" placeholder="请选择OFFER类型"></a-select>
           </a-form-item>
@@ -1730,7 +1737,7 @@ const censusRegisterOptions = ref([
   // { value: '社区公共户', label: '社区公共户' },
 ]);
 const isShow = ref(true);
-type NewJoinerPersonalInformationFormWithPhoto = NewJoinerPersonalInfoItem & { headPhoto?: string,signOfferType?: string, shixiStartTime?: string, shixiEndTime?: string, signBaseMoney?: string, signEndTime?: string, shixiBaseMoney: string, faxinDay: string};
+type NewJoinerPersonalInformationFormWithPhoto = NewJoinerPersonalInfoItem & { headPhoto?: string,signOfferType?: string, shixiStartTime?: string, shixiEndTime?: string, signBaseMoney?: string, signEndTime?: string, shixiBaseMoney: string, faxinDay: string, allowance: string};
 const newJoinerPersonalInformationForm = ref({
   offerOutsourceFamilies: [],
   offerOutsourceWorks: [],
@@ -1741,6 +1748,7 @@ const newJoinerPersonalInformationForm = ref({
   signEndTime: '',
   shixiBaseMoney: '',
   faxinDay: '',
+  allowance: '',
 } as NewJoinerPersonalInformationFormWithPhoto);
 const headPhotoDataUrl = ref<string>('');
 const generatedPdfFile = ref<File | null>(null);
@@ -1832,7 +1840,7 @@ interface OfferInformationItem {
   signingDeadline: string;
   offerSignCompany: string;
   faXinDay: string;
-  allowance: number | string;
+  allowance: string;
 }
 const handleStartTimeChange = (_: any, dateString: string) => {
   if (!dateString) {
@@ -1883,6 +1891,10 @@ const signingYMD = computed(() => {
 const signingY = computed(() => signingYMD.value.y);
 const signingM = computed(() => signingYMD.value.m);
 const signingD = computed(() => signingYMD.value.d);
+const jobTypeOptions = [
+  {value: '兼职', label: '兼职'},
+  {value: '全职', label: '全职'},
+];
 const offerTypeOptions = [
   { value: '全职实习合同', label: '全职实习合同' },
   { value: '兼职合同', label: '兼职合同' },

@@ -84,7 +84,7 @@ const columns:TableColumnsType = [
     dataIndex: 'shebaoSign',
     key: 'shebaoSign',
     fixed: 'left',
-    width: 30,
+    width: 48,
   },
    {
     title: '状态',

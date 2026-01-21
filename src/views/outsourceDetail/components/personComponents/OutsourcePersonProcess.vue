@@ -40,12 +40,12 @@
       >
         信息表
       </a-tag>
-      <a-tag v-else color="green">信息表</a-tag>
+      <a-tag v-else style="cursor: pointer;" color="green" @click="handleFileYulanInfo(record.infoTablePath,1)">信息表</a-tag>
     </template>
     
     <template v-if="column.key === 'xinZi'">
       <a-tag v-if="record.infoTableFlag !== '信息待填' && record.salaryStructure === null" color="orange" style="cursor: pointer;" @click="handleComprehensiveSalaryInfoUpdate(record)">薪资信息</a-tag>
-      <a-tag v-else-if="record.salaryStructure !== null" color="green">薪资信息</a-tag>
+      <a-tag v-else-if="record.salaryStructure !== null" color="green" style="cursor: pointer;" @click="handleOutsourcePersonDetail(record)">薪资信息</a-tag>
       <a-tag v-else color="default" style="cursor: not-allowed;">薪资信息</a-tag>
     </template>
     
@@ -64,19 +64,19 @@
     
     <template v-if="column.key === 'qianShu'">
       <a-tag v-if="record.offerFlag === '等待签署'" color="orange">OFFER签署</a-tag>
-      <a-tag v-else-if="record.offerFlag === '签署完成'" color="green">OFFER签署</a-tag>
+      <a-tag v-else-if="record.offerFlag === '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(record.infoTablePath,1)">OFFER签署</a-tag>
       <a-tag v-else color="default" style="cursor: not-allowed;">OFFER签署</a-tag>
     </template>
     
     <template v-if="column.key === 'ruZhi'">
       <a-tag v-if="record.offerFlag === '签署完成' && record.currentStatus === '1'" color="orange" style="cursor: pointer;" @click="handleComprehensiveBasicUpdate(record)">入职信息</a-tag>
-      <a-tag v-else-if="record.currentStatus !== '1'" color="green">入职信息</a-tag>
+      <a-tag v-else-if="record.currentStatus !== '1'" color="green" style="cursor: pointer;" @click="handleOutsourcePersonDetail(record)">入职信息</a-tag>
       <a-tag v-else color="default" style="cursor: not-allowed;">入职信息</a-tag>
     </template>
     
     <template v-if="column.key === 'sheBao'">
       <a-tag v-if="record.currentStatus !== '1' && record.socialFlag === null" color="orange" style="cursor: pointer;" @click="handleComprehensiveSocialSecurityUpdate(record)">社保信息</a-tag>
-      <a-tag v-else-if="record.socialFlag !== null" color="green">社保信息</a-tag>
+      <a-tag v-else-if="record.socialFlag !== null" color="green" style="cursor: pointer;" @click="handleOutsourcePersonDetail(record)">社保信息</a-tag>
       <a-tag v-else color="default" style="cursor: not-allowed;">社保信息</a-tag>
     </template>
     
@@ -98,14 +98,14 @@
         合同签署
       </a-tag>
       <a-tag v-else-if="record.contractCompany === '等待签署'" color="red">合同签署</a-tag>
-      <a-tag v-else-if="record.contractCompany === '签署完成'" color="green">合同签署</a-tag>
+      <a-tag v-else-if="record.contractCompany === '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(record.contractPath,2)">合同签署</a-tag>
       <a-tag v-else color="default" style="cursor: not-allowed;">合同签署</a-tag>
     </template>
     
     <template v-if="column.key === 'liShen'">
       <a-tag v-if="record.contractCompany === '签署完成' && record.proofFlag === '等待发起'" color="orange" style="cursor: pointer;" @click="handleLeaveInfomationForm(record)">离申签署</a-tag>
       <a-tag v-else-if="record.proofFlag === '等待签署'" color="red">离申签署</a-tag>
-      <a-tag v-else-if="record.proofFlag === '签署完成'" color="green">离申签署</a-tag>
+      <a-tag v-else-if="record.proofFlag === '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(record.leavePath,3)">离申签署</a-tag>
       <a-tag v-else color="default" style="cursor: not-allowed;">离申签署</a-tag>
     </template>
     
@@ -143,6 +143,7 @@
 <script setup lang="ts">
 import _ from 'lodash';
 import { storeToRefs } from 'pinia';
+import { message } from 'ant-design-vue';
 import { CloseOutlined } from '@ant-design/icons-vue';
 import type { TableColumnsType } from 'ant-design-vue';
 import { formatToDate } from '/@/utils/dateUtil';
@@ -171,7 +172,6 @@ const columns: TableColumnsType<any> = [
     title: '中文名',
     dataIndex: 'userNameCn',
     key: 'userNameCn',
-    fixed: 'left',
     width: 20,
     ellipsis: true,
   },
@@ -179,7 +179,6 @@ const columns: TableColumnsType<any> = [
     title: '英文名',
     dataIndex: 'userNameEn',
     key: 'userNameEn',
-    fixed: 'left',
     width: 20,
     ellipsis: true,
   },
@@ -352,6 +351,18 @@ const handleContractInfomationForm = (record) => {
   const handleLeaveInfomationForm = (record) => {
     LeaveInfomatiomFlag.value = true;
     outsourceDetailStore.handleContractInfomationForm(record as OutsourcePersonItem);
+  }
+  //文件预览
+   const handleFileYulanInfo = (originalPathBlobPath,type) => {
+    if (!originalPathBlobPath) {
+      message.error('文件不存在');
+      return;
+    }
+    outsourceDetailStore.handleFileYulanInfo(originalPathBlobPath,type);
+  }
+  //个人信息查询
+   const handleOutsourcePersonDetail = (record) => {
+    outsourceDetailStore.handleOutsourcePersonDetail(record as OutsourcePersonItem);
   }
 </script>
 

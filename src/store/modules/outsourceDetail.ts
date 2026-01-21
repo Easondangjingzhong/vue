@@ -19,6 +19,7 @@ import {
   OutsourceSheBaoContractRatesItem,
   OutsourceShebaoInfoItem,
   OutsourceFormulaItem,
+  OutsourcePersonMoneyItem, //外包人员请款单 表单信息
 } from '/@/api/outsourceDetail/model';
 const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: '' } = JSON.parse(
   localStorage.getItem('loginVueUser') || '{}',
@@ -125,6 +126,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     outsourceFormulaForm: {} as OutsourceFormulaItem, //外包公司公式详情 公式信息表单
     orginalPathBlobPathFlag: false, //文件原路径详情控制
     orginalPathBlobPath: '' as string, //文件原路径详情
+    orginalPathBlobType: 0, //文件原路径详情类型
     outsourcePersonProcessNum: 0, //外包人员列表入离职流程状态
     outsourcePersonProcessFlag: false, //外包人员列表入离职流程状态
     outsourcePersonProcessList: [] as OutsourcePersonItem[], //外包人员列表入离职流程
@@ -134,6 +136,9 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       total: 0,
     } as PageItem,
     outsourcePersonMoneyFlag: false, //外包人员请款单
+    formStatePersonMoney: {} as OutsourcePersonMoneyItem, //外包人员请款单 表单信息
+    offerOutsourceMonthSalary: [] as OutsourceMonthSalaryItem[], //外包人员请款单 请款单
+    offerOutsourceSheBao: [] as OutsourceSheBaoItem[], //外包人员请款单 社保信息
   }),
   getters: {
     getOutsourcePersonList: (state) =>
@@ -474,6 +479,54 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         mId: item.mId?.toString(),
       })), //外包公司公式详情 公式信息
       getOrginalPathBlobPath: (state) => state.orginalPathBlobPath,
+      getOrginalPathBlobType: (state) => {
+        const orginalPathBlobTypeList = ['文件预览', '信息OFFER文件', '合同文件', '离职申请文件', '其他文件']
+        return orginalPathBlobTypeList[state.orginalPathBlobType] || '其他文件'
+      },
+      getOfferOutsourceSheBao: (state) => state.offerOutsourceSheBao.map((item, index) => ({
+        ...item,
+        index: index + 1,
+      })), //外包人员请款单 社保信息
+      getOfferOutsourceMonthSalary: (state) => state.offerOutsourceMonthSalary.map((item, index) => {
+        const monthStr = item.jinxinMonth ? formatToMonth(item.jinxinMonth) : '';
+        let jinxinMonth = '';
+        if (monthStr) {
+          const [yearStr, monthPart] = monthStr.split('-');
+          const year = Number(yearStr);
+          const month = Number(monthPart);
+          if (year && month) {
+            const lastDay = new Date(year, month, 0).getDate().toString().padStart(2, '0');
+            jinxinMonth = `${year}/${month.toString().padStart(2, '0')}/01-${year}/${month.toString().padStart(2, '0')}/${lastDay}`;
+          }
+        }
+        const sheBaoMoneyValue = Number(item.monthShebao || 0) + Number(item.yijin || 0);
+        const canBaoMoneyValue = Number(item.monthTax || 0) * 0.015;
+        const personCostValue = sheBaoMoneyValue + canBaoMoneyValue;
+        const rateValue = 0.22;
+        const serviceFeeValue = personCostValue * rateValue;
+        const shangbaoValue = 0;
+        const salaryTaxValue = personCostValue + serviceFeeValue + shangbaoValue;
+        const salaryRateValue = 0.0672; 
+        const salaryRateMoneyValue = salaryTaxValue * salaryRateValue;
+        const salaryTotalValue = salaryTaxValue + salaryRateMoneyValue;
+        return {
+          ...item,
+          index: index + 1,
+          serviceType: '岗位外包',
+          userName: `${item.userNameEn || ''}${item.userNameCn}`,
+          jinxinMonth,
+          sheBaoMoney: parseFloat(sheBaoMoneyValue.toString()).toFixed(2),
+          canBaoMoney: parseFloat(canBaoMoneyValue.toString()).toFixed(2),
+          economicCompensation: 0,
+          personCost: parseFloat(personCostValue.toString()).toFixed(2),
+          rate: rateValue * 100 + "%",
+          serviceFee: parseFloat(serviceFeeValue.toString()).toFixed(2),
+          salaryTax: parseFloat(salaryTaxValue.toString()).toFixed(2),
+          salaryRate: salaryRateValue * 100 + "%",
+          salaryRateMoney: parseFloat(salaryRateMoneyValue.toString()).toFixed(2),
+          salaryTotal: parseFloat(salaryTotalValue.toString()).toFixed(2),
+        };
+      }), //外包人员请款单 社保信息
   },
   actions: {
     /**
@@ -770,8 +823,9 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         formData.append('loseDate', this.outsourceContractForm.loseDate || '');
         const res = await fetchApi.addOutsourcePersonContract(formData);
         if (res.code == 1) {
-          this.queryOutsourcePersonContract();
+          //this.queryOutsourcePersonContract();
           this.queryOutsourcePerson();
+          this.handleSearchOutsourcePersonProcess();
         }
         return res;
       } catch (error) {
@@ -1438,9 +1492,10 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
      * 文件预览
      * @param originalPathBlobPath 文件路径
      */
-    handleFileYulanInfo(originalPathBlobPath: string) {
+    handleFileYulanInfo(originalPathBlobPath: string,orginalPathBlobType: number) {
       this.orginalPathBlobPathFlag = true;
       this.orginalPathBlobPath = originalPathBlobPath;
+      this.orginalPathBlobType = orginalPathBlobType;
     },
     /**
      * 查外包人员入离职流程
@@ -1465,6 +1520,33 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         this.personIsLoading = false;
         return null;
       }
+    },
+    /**
+     * 外包人员请款单
+     */
+    async outsourcePersonMoney(outsourcePersonMoney) {
+      const formData = new FormData();
+      formData.append('yearAndMonth', outsourcePersonMoney.yearAndMonth || '');
+      formData.append('companyName', outsourcePersonMoney.companyName || '');
+      const res = await fetchApi.outsourcePersonMoney(formData);
+      if (res.code == 1) {
+          this.offerOutsourceMonthSalary = res.info.offerOutsourceMonthSalary as OutsourceMonthSalaryItem[];
+          this.offerOutsourceSheBao = res.info.offerOutsourceSheBao as OutsourceSheBaoItem[];
+        }
+      return res;
+    },
+     /**
+     * 外包人员更新店铺简称
+     */
+    async updateOutsourcePersonMarketName(outsourcePerson: OutsourcePersonItem) {
+      const formData = new FormData();
+      formData.append('companyName', outsourcePerson.companyName || '');
+      formData.append('bId', outsourcePerson?.bId.toString() || '');
+      formData.append('mId', outsourcePerson?.mId.toString() || '');
+      formData.append('mkName', outsourcePerson.mkName || '');
+      formData.append('marketName', outsourcePerson?.market.toString() || '');
+      const res = await fetchApi.outsourcePersonMarketName(formData);
+      return res;
     },
   },
 });

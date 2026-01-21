@@ -1,7 +1,7 @@
 <template>
  <a-drawer
     v-model:open="orginalPathBlobPathFlag"
-    title="文件预览"
+    :title="getOrginalPathBlobType"
     :maskClosable="false"
     :keyboard="false"
     :closable="false"
@@ -24,7 +24,7 @@ import OrginalPath from '/@/components/OrginalPath/index.vue';
 import { CloseOutlined } from '@ant-design/icons-vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { orginalPathBlobPathFlag, orginalPathBlobPath, getOrginalPathBlobPath } = storeToRefs(outsourceDetailStore);
+const { orginalPathBlobPathFlag, orginalPathBlobPath, getOrginalPathBlobPath, getOrginalPathBlobType } = storeToRefs(outsourceDetailStore);
 const drawerWidth = ref(Math.max(600, window.innerWidth * 0.6));
 const closeDrawer = () => {
   orginalPathBlobPathFlag.value = false;

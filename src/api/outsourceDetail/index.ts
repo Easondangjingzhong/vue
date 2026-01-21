@@ -51,7 +51,23 @@ enum URL {
   person_msg_esign = '/employee-group/resume-vue-insert-person-msg-esign.action',
   upload_esign_file = '/employee-group/resume-vue-esign-upload-file.action',
   update_user_name = '/candidateRecommend/resume-vue-update-outsource_userName.action',
+  query_outsource_person_money = '/candidateRecommend/resume-vue-select-out-MonthQingkuan.action',
+  update_outsource_person_marketName = '/candidateRecommend/resume-vue-insert-update-out-marketName.action',
 }
+/**
+ * 更新外包店铺简称
+ * @param data yearAndMonth companyName
+ * @returns 
+ */
+const outsourcePersonMarketName = async (data: any) =>
+  post<any>({ url: URL.update_outsource_person_marketName, data});
+/**
+ * 请款单
+ * @param data yearAndMonth companyName
+ * @returns 
+ */
+const outsourcePersonMoney = async (data: any) =>
+  post<any>({ url: URL.query_outsource_person_money, data});
 /**
  * 同步姓名
  * @param data rId resumeId
@@ -413,6 +429,8 @@ const queryOutsourceMonthSalary = async (data: any) =>
   post<any>({ url: URL.query_outsource_month_salary, data});
 
 export default { 
+  outsourcePersonMarketName,
+  outsourcePersonMoney,
   updateUserName,
   uploadMessageEsignFile,
   personMessageEsign,
