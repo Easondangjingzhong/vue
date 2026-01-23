@@ -24,7 +24,7 @@
       rowKey="key"
       :columns="columns"
       :dataSource="getOutsourceFormulaList"
-      :scroll="{ x: 2000 }"
+      :scroll="{ x: 2300 }"
     >
     <template #bodyCell="{ column, record }">
       <span v-if="column.key === 'cycle'">{{ cycleFormulaOption.find(item => item.value === record.cycle)?.label || record.cycle }}</span>
@@ -179,6 +179,18 @@ const columns:TableColumnsType = [
     width: 30,
   },
    {
+    title: '有招费率',
+    dataIndex: 'youzhaoRateShow',
+    key: 'youzhaoRateShow',
+    width: 30,
+  },
+   {
+    title: '无招费率',
+    dataIndex: 'wuzhaoRateShow',
+    key: 'wuzhaoRateShow',
+    width: 30,
+  },
+   {
     title: '总工时',
     dataIndex: 'totalWorkHours',
     key: 'totalWorkHours',
@@ -291,6 +303,12 @@ const columns:TableColumnsType = [
     dataIndex: 'quanqinTiaocha',
     key: 'quanqinTiaocha',
     width: 30,
+  },
+   {
+    title: '历史',
+    dataIndex: 'hisNum',
+    key: 'hisNum',
+    width: 15,
   },
   {
     title: '操作',

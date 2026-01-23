@@ -131,6 +131,26 @@
             </a-form-item>
           </a-col>
         </a-row>
+         <a-row :gutter="24">
+          <a-col :span="12">
+            <a-form-item label="有招费率" name="youzhaoRate" :labelCol="{span: 4}">
+               <a-select v-model:value="outsourceFormulaForm.youzhaoRate">
+                <a-select-option value="0.22">22%</a-select-option>
+                <a-select-option value="0.20">20%</a-select-option>
+                <a-select-option value="0.12">12%</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">         
+            <a-form-item label="无招费率" name="wuzhaoRate" :labelCol="{span: 4}">
+              <a-select v-model:value="outsourceFormulaForm.wuzhaoRate">
+                <a-select-option value="0.22">22%</a-select-option>
+                <a-select-option value="0.20">20%</a-select-option>
+                <a-select-option value="0.12">12%</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item label="薪资日" name="xinZiRi" :labelCol="{span: 4}">

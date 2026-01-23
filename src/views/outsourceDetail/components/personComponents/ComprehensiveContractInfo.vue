@@ -2,7 +2,7 @@
 <a-row :gutter="24">
   <a-col :span="24" class="comprehensive-contract-info">
       <div class="comprehensive-contract-info-title">合同信息</div>
-      <!-- <a-button class="comprehensive-contract-info-btn" size="small" @click="handleAddClick">新增</a-button> -->
+      <a-button class="comprehensive-contract-info-btn" size="small" @click="handleAddClick">新增</a-button>
     </a-col>
 </a-row>
 <a-row :gutter="24">
@@ -21,14 +21,14 @@
 
       <a-tag v-if="column.key === 'contractFlag' && record.contractFlag == '等待发起'" color="red">等待发起</a-tag>
       <a-tag v-if="column.key === 'contractFlag' && record.contractFlag == '已经发起'" color="orange">已经发起</a-tag>
-      <a-tag v-if="column.key === 'contractFlag' && record.contractFlag == '签署完成'" color="green" style="cursor: pointer;" @click="handleFileYulanInfo(record.contractPath)">签署完成</a-tag>
+      <a-tag v-if="column.key === 'contractFlag' && record.contractFlag == '签署完成'" color="green" style="cursor: pointer;" @click="handleFileYulanInfo(record.contractPath,2)">签署完成</a-tag>
 
       <a-tag v-if="column.key === 'contractStatus' && record.contractStatus == '生效中'" color="green">生效中</a-tag>
       <a-tag v-if="column.key === 'contractStatus' && record.contractStatus == '已失效'" color="red">已失效</a-tag>
 
       <a-tag v-if="column.key === 'leaveApply' && record.leaveApply == '等待发起'" color="red">等待发起</a-tag>
       <a-tag v-if="column.key === 'leaveApply' && record.leaveApply == '已经发起'" color="orange">已经发起</a-tag>
-      <a-tag v-if="column.key === 'leaveApply' && record.leaveApply == '签署完成'" color="green" style="cursor: pointer;" @click="handleFileYulanInfo(record.leavePath)">签署完成</a-tag>
+      <a-tag v-if="column.key === 'leaveApply' && record.leaveApply == '签署完成'" color="green" style="cursor: pointer;" @click="handleFileYulanInfo(record.leavePath,3)">签署完成</a-tag>
 
        <!-- 添加类型断言和存在性检查以修复TypeScript索引类型错误 -->
       <span v-if="(typeof column.dataIndex === 'string' && (record[column.dataIndex] === null || record[column.dataIndex] === ''))">-</span>
@@ -177,8 +177,8 @@ const handleEditClick = (record: PersonContractItem) => {
   outsourceContractForm.value = _.cloneDeep(record);
   outsourceContractFlag.value = true;
 }
-const handleFileYulanInfo = (originalPathBlobPath) => {
-    outsourceDetailStore.handleFileYulanInfo(originalPathBlobPath);
+const handleFileYulanInfo = (originalPathBlobPath,type) => {
+    outsourceDetailStore.handleFileYulanInfo(originalPathBlobPath,type);
   }
 </script>
 

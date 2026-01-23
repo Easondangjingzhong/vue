@@ -353,6 +353,7 @@ export interface OutsourceMonthSalaryItem {
   personId?: number;
   zhanDanMonth?: string;
   mkName?: string;
+  shangBao?: number;
 
   // 时间相关
   jinxinMonth?: string; // 时间戳
@@ -757,6 +758,8 @@ export interface OutsourceFormulaItem {
   zhanDanRi: string; // private String zhanDanRi;
   xinZiRi: string; // private String xinZiRi;
   nianJia: string; // private String nianJia;
+  youzhaoRate: string; // private String youzhaoRate;
+  wuzhaoRate: string; // private String wuzhaoRate;
 }
 
 export interface OutsourcePersonMoneyItem {

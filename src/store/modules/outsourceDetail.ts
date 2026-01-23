@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { store } from '/@/store';
 import { formatToDate, currentDate, formatToMonth, formatToDateTime } from '/@/utils/dateUtil';
+import dayjs from 'dayjs';
 import fetchApi from '/@/api/outsourceDetail';
 import {
   PersonContractItem,
@@ -477,6 +478,8 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         startTime: item.startTime ? formatToDate(item.startTime) : '',
         endTime: item.endTime ? formatToDate(item.endTime) : '',
         mId: item.mId?.toString(),
+        youzhaoRateShow: item.youzhaoRate ? `${Number(item.youzhaoRate)*100}%` : '',
+        wuzhaoRateShow: item.wuzhaoRate ? `${Number(item.wuzhaoRate)*100}%` : '',
       })), //外包公司公式详情 公式信息
       getOrginalPathBlobPath: (state) => state.orginalPathBlobPath,
       getOrginalPathBlobType: (state) => {
@@ -501,7 +504,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         }
         const sheBaoMoneyValue = Number(item.monthShebao || 0) + Number(item.yijin || 0);
         const canBaoMoneyValue = Number(item.monthTax || 0) * 0.015;
-        const personCostValue = sheBaoMoneyValue + canBaoMoneyValue;
+        const personCostValue = Number(item.monthTax || 0) + sheBaoMoneyValue + canBaoMoneyValue;
         const rateValue = 0.22;
         const serviceFeeValue = personCostValue * rateValue;
         const shangbaoValue = 0;
@@ -509,12 +512,16 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         const salaryRateValue = 0.0672; 
         const salaryRateMoneyValue = salaryTaxValue * salaryRateValue;
         const salaryTotalValue = salaryTaxValue + salaryRateMoneyValue;
+        const lastMonthLeiJiValue = Number(item.yearGeshui || 0) + Number(item.monthGeshui || 0);
         return {
           ...item,
           index: index + 1,
           serviceType: '岗位外包',
           userName: `${item.userNameEn || ''}${item.userNameCn}`,
           jinxinMonth,
+          shangBao: Number(item.shangBao || 0),
+          jingJiBuChangJin: 0,
+          jinxinMonthDetail: item.jinxinMonth,
           sheBaoMoney: parseFloat(sheBaoMoneyValue.toString()).toFixed(2),
           canBaoMoney: parseFloat(canBaoMoneyValue.toString()).toFixed(2),
           economicCompensation: 0,
@@ -525,8 +532,24 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           salaryRate: salaryRateValue * 100 + "%",
           salaryRateMoney: parseFloat(salaryRateMoneyValue.toString()).toFixed(2),
           salaryTotal: parseFloat(salaryTotalValue.toString()).toFixed(2),
+          realEntryTime: item.realEntryTime ? dayjs(item.realEntryTime).format('YYYY年MM月DD日') : '',
+          realLeaveTime: item.realLeaveTime ? dayjs(item.realLeaveTime).format('YYYY年MM月DD日') : '', 
+          lastMonthLeiJi: parseFloat(lastMonthLeiJiValue.toString()).toFixed(2), 
         };
       }), //外包人员请款单 社保信息
+      getFormStatePersonMoney: (state) => {
+        const yearAndMonth = state.formStatePersonMoney?.yearAndMonth;
+        if (!yearAndMonth) {
+          return {
+            currentMonth: '',
+            lastMonth: '',
+          };
+        }
+        return {
+          currentMonth: dayjs(yearAndMonth).format('MM'),
+          lastMonth: dayjs(yearAndMonth).subtract(1, 'month').format('MM'),
+        };
+      },
   },
   actions: {
     /**

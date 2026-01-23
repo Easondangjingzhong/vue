@@ -292,7 +292,7 @@ const handleSubmit = () => {
       {
         participantId: getEsignTemplateDetail.value?.participants?.filter(item => (item.participantFlag === '签署方2' || item.participantFlag === '员工'))[0]?.participantId || '',      
         psnParticipant: {
-          psnAccount: '15656120372',
+          psnAccount: componentsReal().find(item => item.componentName === '联系电话' || item.componentName === '电话' || item.componentName === '手机号' || item.componentName === '手机')?.componentValue || contractInfomationFormTemp?.value['phoneNumber'] || '',
           psnName: componentsReal().find(item => item.componentName === '姓名')?.componentValue || '',
           psnIDCardNum: componentsReal().find(item => item.componentName === '身份证号码' || item.componentName === '身份证号')?.componentValue || '',
         }

@@ -206,7 +206,7 @@ const columnsOutsourceMonthSalary:TableColumnsType = [
   { title: '病假', dataIndex: 'bingjia', key: 'bingjia', width: 50, },
   { title: '带薪假', dataIndex: 'daixin', key: 'daixin', width: 50, },
   { title: '个人奖金', dataIndex: 'geti', key: 'geti', width: 50, },
-  { title: '团队奖金', dataIndex: 'tuanti', key: 'teamBouns', width: 50, },
+  { title: '团队奖金', dataIndex: 'tuanti', key: 'tuanti', width: 50, },
   { title: '激励奖金', dataIndex: 'jili', key: 'jili', width: 50, },
   { title: '特殊奖金', dataIndex: 'teshu', key: 'teshu', width: 50, },
   { title: '达成奖金', dataIndex: 'dacheng', key: 'dacheng', width: 50, },

@@ -33,7 +33,7 @@
         <a-tag v-if="outsourcePersonDetail.infoTableFlag == '信息待填'" style="cursor: pointer;" color="red">信息待填</a-tag>
         <a-tag v-else-if="outsourcePersonDetail.infoTableFlag == '等待发起'" style="cursor: pointer;" color="red">信息已填</a-tag>
         <a-tag v-else-if="outsourcePersonDetail.infoTableFlag == '等待签署'" color="orange">等待签署</a-tag>
-        <a-tag v-else-if="outsourcePersonDetail.infoTableFlag == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(outsourcePersonDetail.infoTablePath)">签署完成</a-tag>
+        <a-tag v-else-if="outsourcePersonDetail.infoTableFlag == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(outsourcePersonDetail.infoTablePath,1)">签署完成</a-tag>
         <span v-else>-</span>
       </a-descriptions-item>
 
@@ -43,7 +43,7 @@
       <a-descriptions-item label="OFFER">
         <a-tag v-if="outsourcePersonDetail.offerFlag == '等待发起'" color="red">等待发起</a-tag>
         <a-tag v-else-if="outsourcePersonDetail.offerFlag == '等待签署'" color="orange">等待签署</a-tag>
-        <a-tag v-else-if="outsourcePersonDetail.offerFlag == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(outsourcePersonDetail.offerPic)">签署完成</a-tag>
+        <a-tag v-else-if="outsourcePersonDetail.offerFlag == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(outsourcePersonDetail.offerPic,1)">签署完成</a-tag>
         <span v-else>-</span>
       </a-descriptions-item>
       
@@ -57,7 +57,7 @@
       <a-descriptions-item label="离职证明">
         <a-tag v-if="outsourcePersonDetail.proofFlag == '等待发起'" color="red">等待发起</a-tag>
         <a-tag v-else-if="outsourcePersonDetail.proofFlag == '已经发起'" color="orange">已经发起</a-tag>
-        <a-tag v-else-if="outsourcePersonDetail.proofFlag == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(outsourcePersonDetail.leavePath)">签署完成</a-tag>
+        <a-tag v-else-if="outsourcePersonDetail.proofFlag == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(outsourcePersonDetail.leavePath,3)">签署完成</a-tag>
         <span v-else>-</span>
       </a-descriptions-item>
     </a-descriptions>
@@ -296,8 +296,8 @@ watch(() => outsourcePersonDetail.value.id, () => {
   outsourceDetailStore.queryOutsourcePersonByPhone(outsourcePersonDetail.value.phoneNumber);
 });
 outsourceDetailStore.queryOutsourcePersonByPhone(outsourcePersonDetail.value.phoneNumber);
-const handleFileYulanInfo = (originalPathBlobPath) => {
-  outsourceDetailStore.handleFileYulanInfo(originalPathBlobPath);
+const handleFileYulanInfo = (originalPathBlobPath,type) => {
+  outsourceDetailStore.handleFileYulanInfo(originalPathBlobPath,type);
 }
 </script>
 
