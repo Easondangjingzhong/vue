@@ -2,6 +2,28 @@
   <div class="resume-content-search">
     <a-form ref="formRef" :model="formState" @finish="onFinish">
       <SearchContent :expand="expand" :formState="formState" ref="searchContentChild" />
+      <a-row :gutter="24">
+        <a-col :span="6">
+           <a-form-item :label-col="{ span: 5 }" name="userName" label="姓名">
+              <a-input v-model:value="formState.userName"/>
+           </a-form-item>     
+         </a-col>
+         <a-col :span="6">
+           <a-form-item name="phoneNum" label="手机">
+              <a-input v-model:value="formState.phoneNum"/>
+           </a-form-item>     
+         </a-col>
+         <a-col :span="6">
+           <a-form-item name="email" label="邮箱">
+              <a-input v-model:value="formState.email"/>
+           </a-form-item>     
+         </a-col>
+         <a-col :span="6">
+           <a-form-item name="majorName" label="专业">
+              <a-input v-model:value="formState.majorName"/>
+           </a-form-item>     
+         </a-col>
+      </a-row>
       <a-row>
         <a-col :span="18" class="row_col_space_brand">
           <a-form-item :label-col="{ span: 4 }" name="brandRuleOut" label="品牌" class="row_col_space_left_brand">
@@ -185,7 +207,7 @@
             >过保</a-tag
           >
           <a-tag
-            class="tagspan"
+            class="tagspan tagspanGreen"
             :title="record.limitRemarkDetail"
             v-if="showResumeRightOutFlag && !record.recruitId && record.projectFlag == '在保'"
             color="green"
@@ -211,7 +233,7 @@
             >两年</a-tag
           >
           <a-tag
-            class="tagspan"
+            class="tagspan tagspanWhite"
             :title="record.checkedTime"
             v-if="record.recruitId && record.checkFlag == '待核'"
             color="#d8d8d8"
@@ -225,7 +247,7 @@
           >
           <!-- <a-tag class="tagspan" v-if="record.recruitId && record.checkFlag == '已激活'" color="green">激活</a-tag> -->
           <a-tag
-            class="tagspan"
+            class="tagspan tagspanGreen"
             :title="record.newTime"
             v-if="
               record.recruitId &&
@@ -239,7 +261,7 @@
             >{{ record.checkFlag }}</a-tag
           >
           <a-tag
-            class="tagspan"
+            class="tagspan tagspanOrange"
             :title="record.newTime"
             v-if="
               record.recruitId &&
@@ -250,26 +272,24 @@
             >{{ record.checkFlag }}</a-tag
           >
           <a-tag
-            class="tagspan"
+            class="tagspan tagspanWhite"
             :title="record.repeatTime"
             v-if="showResumeRightOutFlag && record.recruitId && record.checkFlag == '待核' && record.fristFlag"
             color="#d8d8d8"
             >{{ record.fristFlag }}</a-tag
           >
           <a-tag
-            class="tagspan"
+            class="tagspan tagspanGreen"
             :title="record.repeatTime"
             v-if="showResumeRightOutFlag && record.recruitId && record.checkFlag != '待核' && record.fristFlag"
             color="green"
             >{{ record.fristFlag }}</a-tag
           >
-
           <a-tag class="tagspan" v-if="showResumeRightOutFlag && record.recruitId && record.onlyFlag" color="green">{{
             record.onlyFlag
           }}</a-tag>
-
           <a-tag
-            class="tagspan"
+            class="tagspan tagspanGreen"
             :title="record.commonFlagTime"
             v-if="showResumeRightOutFlag && record.recruitId && record.commonFlag"
             color="green"
@@ -280,55 +300,54 @@
           }}</a-tag>
 
           <!-- <a-tag class="tagspan" v-if="record.recruitId && record.limitFlag == '保护'" color="green">{{ record.limitFlag }}</a-tag> -->
+         
           <a-tag
-            class="tagspan"
+            class="tagspan tagspanOrange"
             :title="record.limitRemarkDetail"
             v-if="showResumeRightOutFlag && (record.limitFlag == '限制禁推' || record.limitFlag == '限制分单') && record.resumeStatus != '外包保护期中'"
             color="orange"
             >限制</a-tag
           >
           <a-tag
-            class="tagspan"
+            class="tagspan tagspanOrange"
             :title="record.limitRemarkDetail"
             v-if="showResumeRightOutFlag && record.limitFlag == '限制' && record.resumeStatus != '外包保护期中'"
             color="orange"
             >限制</a-tag
           >
           <a-tag
-            class="tagspan"
+            class="tagspan tagspanOrange"
             :title="record.limitRemarkDetail"
             v-if="showResumeRightOutFlag && record.limitFlag == '激活' && record.resumeStatus != '外包保护期中'"
             color="orange"
             >激活</a-tag
           >
           <a-tag
-            class="tagspan"
+            class="tagspan tagspanOrange"
             :title="record.offerTime"
             v-if="record.limitFlag == 'OFFER' && record.resumeStatus != '保证期中'"
             color="orange"
             >OFFER</a-tag
           >
           <a-tag
-            class="tagspan"
+            class="tagspan tagspanOrange"
             :title="record.entryTime"
             v-if="record.limitFlag == 'OFFER' && record.resumeStatus == '保证期中'"
             color="orange"
             >保证期</a-tag
           >
           <a-tag
-            class="tagspan"
+            class="tagspan tagspanOrange"
             title="外包保护期中"
             v-if="record.resumeStatus == '外包保护期中'"
             color="orange"
-            >保证期</a-tag
-          >
-           <a-tag
-            class="tagspan"
+            >保证期</a-tag>
+          <a-tag
+            class="tagspan tagspanOrange"
             v-if="record.isBlack == '1'"
             color="red"
             :title="loginVueUser.loginType == 'A' ? (record.blackRemark ? record.blackRemark : '此候选人已经存在公司黑名单中，禁止推荐') : '此候选人已经存在公司黑名单中，禁止推荐'"
-            >黑名单</a-tag
-          >
+            >黑名单</a-tag>
         </template>
         <template v-if="column.key === 'action' && loginVueUser.loginType == 'A'">
           <a-dropdown>
@@ -947,6 +966,18 @@ optionsRecruitId.value = teamPersonChangeArr.value.map(item => ({value: item.tea
   .tagspan {
     margin-inline-end: 4px;
     border-radius: 8px;
+  }
+  .tagspanOrange {
+    background: linear-gradient(45deg, #fff7e6 88%, #f90202 0px);
+    border-top-right-radius: 4px;
+  }
+  .tagspanGreen {
+    background: linear-gradient(45deg, #f6ffed 88%, #f90202 0px);
+    border-top-right-radius: 4px;
+  }
+  .tagspanWhite {
+    background: linear-gradient(45deg, transparent 88%, #f90202 0);
+    border-top-right-radius: 4px;
   }
   :deep(.row_col_space_brand) {
     display: flex;

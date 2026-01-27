@@ -40,7 +40,7 @@ interface ResumeListState {
   resumeLoginNameChangeFlag: boolean; //切换后我的人才modal展示 true 展示 false 隐藏
 }
 const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginOutFlag: '' } = JSON.parse(
-  localStorage.getItem('loginVueUser'),
+  localStorage.getItem('loginVueUser') || '{}',
 );
 export const useResumeListStore = defineStore('app-Resume-List',{
   state: (): ResumeListState => ({
@@ -975,6 +975,7 @@ export const useResumeListStore = defineStore('app-Resume-List',{
       formData.append('userName', param.userName || '');
       formData.append('phoneNum', param.phoneNum || '');
       formData.append('email', param.email || '');
+      formData.append('majorName', param.majorName || '');
       formData.append('sex', param.sex || '');
       if (
         (param.positionType && param.positionType.length > 0) ||
@@ -1009,7 +1010,8 @@ export const useResumeListStore = defineStore('app-Resume-List',{
       formData.append('maxAge', param.maxAge || '');
       formData.append('leftTeamId', param.leftTeamId || '');
       formData.append('leftRecruitId', param.leftRecruitId || '');
-      formData.append('leftType', param.leftType || (loginVueUser.loginOutFlag != '1' ? '2' : '5'));
+      formData.append('leftType', param.leftType || ((loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3') ? '2' : '5'));
+      formData.append('isWai', ((loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3') ? '' : '1'));
       formData.append('isWorkExp', this.searchWorkExp);
       formData.append('sortId', param.sortId || '');
       formData.append('viewType', param.viewType || 'T');

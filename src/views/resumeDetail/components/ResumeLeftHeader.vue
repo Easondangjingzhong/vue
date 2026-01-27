@@ -132,7 +132,7 @@
         </span>
       </a-col>
     </a-row>
-    <div v-if="expend">
+    <div v-if="expend" style='border: 1px solid #ccc;padding: 5px;border-radius: 5px;'>
       <a-row :gutter="24">
         <a-col :span="24" v-html="formState.reportContentShow"  class="report-content"></a-col>
       </a-row>

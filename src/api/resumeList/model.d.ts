@@ -57,6 +57,7 @@ export interface SearchResumeList {
   totalCount: string; // 页码是1返回的总数,其他的都默认
   isBlack: string; // 是否黑名单
   jobStatus: string; // 职状 1在职 2离职
+  majorName: string; // 专业
 }
 
 export interface Item {

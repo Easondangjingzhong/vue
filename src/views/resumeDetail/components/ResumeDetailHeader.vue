@@ -6,48 +6,48 @@
         <a-tag class="resume_tag_checked" v-if=" resumeData.zaiZhi == '1'" color="green">在职</a-tag>
         <a-tag class="resume_tag_checked" v-if=" resumeData.zaiZhi == '2'" color="red">离职</a-tag>
         <a-tag class="resume_tag_checked" v-if="props.showResumeRightOutFlag && !resumeData.recruitId && resumeData.projectFlag == '待保'" color="red">过保</a-tag>
-        <a-tag class="resume_tag_checked" :title="limitRemarkDetail" v-if="props.showResumeRightOutFlag && !resumeData.recruitId && resumeData.projectFlag == '在保'" color="green">{{ resumeData.projectFlag }}</a-tag>
+        <a-tag class="resume_tag_checked tagspanGreen" :title="limitRemarkDetail" v-if="props.showResumeRightOutFlag && !resumeData.recruitId && resumeData.projectFlag == '在保'" color="green">{{ resumeData.projectFlag }}</a-tag>
         <a-tag class="resume_tag_checked" v-if="props.showResumeRightOutFlag && !resumeData.recruitId && resumeData.projectFlag == '不保'" color="red">过保</a-tag>
         <a-tag class="resume_tag_checked" v-if="props.showResumeRightOutFlag && !resumeData.recruitId && resumeData.projectFlag == '过保'" color="red">{{ resumeData.projectFlag }}</a-tag>
         <a-tag class="resume_tag_checked_top" v-if="props.showResumeRightOutFlag && !resumeData.recruitId" color="orange">公共</a-tag>
         <a-tag class="resume_tag_checked_top" v-if="props.showResumeRightOutFlag && !resumeData.recruitId && resumeData.twoYearFlag == '两年'" color="green">两年</a-tag>
-        <a-tag :title="checkedTime" style="cursor: pointer;" color="#d8d8d8" class="resume_tag_checked" v-if="showResumeAdd && resumeData.recruitId && (resumeData.checkFlag == '待核' || resumeData.checkFlag == '过期')"
+        <a-tag :title="checkedTime" style="cursor: pointer;" color="#d8d8d8" class="resume_tag_checked tagspanWhite" v-if="showResumeAdd && resumeData.recruitId && (resumeData.checkFlag == '待核' || resumeData.checkFlag == '过期')"
         >待核</a-tag>
         <a-tag style="cursor: pointer;" color="#d8d8d8" class="resume_tag_checked" v-if="props.showResumeRightOutFlag && showResumeAdd && resumeData.recruitId && resumeData.checkFlag == '待激活'"
           >激活</a-tag
         >
-        <a-tag :title="newTime" style="cursor: pointer;" color="green" class="resume_tag_checked" v-if="showResumeAdd && resumeData.recruitId && resumeData.checkFlag == '已激活'"
+        <a-tag :title="newTime" style="cursor: pointer;" color="green" class="resume_tag_checked tagspanGreen" v-if="showResumeAdd && resumeData.recruitId && resumeData.checkFlag == '已激活'"
           >最新</a-tag
         >
         <a-tag
           color="green"
-          class="resume_tag_checked"
+          class="resume_tag_checked tagspanGreen"
           :title="newTime"
           v-if="resumeData.recruitId && resumeData.checkFlag && resumeData.checkFlag != '待核' && resumeData.checkFlag != '待激活' && resumeData.checkFlag != '已激活' && resumeData.checkFlag != '过期'"
           >最新</a-tag
         >
         <a-tag
           color="orange"
-          class="resume_tag_checked"
+          class="resume_tag_checked tagspanOrange"
           :title="newTime"
           v-if="resumeData.recruitId && resumeData.checkFlag && resumeData.checkFlag == '过期'"
           >过期</a-tag
         >
         <a-tag
           color="#d8d8d8"
-          class="resume_tag_checked_top"
+          class="resume_tag_checked_top tagspanWhite"
           :title="repeatTime"
           v-if="props.showResumeRightOutFlag && resumeData.recruitId && resumeData.checkFlag == '待核' && resumeData.fristFlag"
           >首增</a-tag
         >
         <a-tag
           color="green"
-          class="resume_tag_checked_top"
+          class="resume_tag_checked_top tagspanGreen"
           :title="repeatTime"
           v-if="props.showResumeRightOutFlag && resumeData.recruitId && resumeData.checkFlag != '待核' && resumeData.fristFlag"
           >首增</a-tag>
         <a-tag class="resume_tag_checked_top" v-if="props.showResumeRightOutFlag && resumeData.recruitId && resumeData.onlyFlag" color="green">{{ resumeData.onlyFlag }}</a-tag>
-        <a-tag :title="commonFlagTime" class="resume_tag_checked_top" v-if="props.showResumeRightOutFlag && resumeData.recruitId && resumeData.commonFlag" color="green">{{ resumeData.commonFlag }}</a-tag>
+        <a-tag :title="commonFlagTime" class="resume_tag_checked_top tagspanGreen" v-if="props.showResumeRightOutFlag && resumeData.recruitId && resumeData.commonFlag" color="green">{{ resumeData.commonFlag }}</a-tag>
         <a-tag class="resume_tag_checked_top" v-if="props.showResumeRightOutFlag && resumeData.recruitId && resumeData.gognGongFlag" color="orange">{{ resumeData.gognGongFlag }}</a-tag>
         <!-- <a-tag
           color="#4bb632"
@@ -65,44 +65,44 @@
         >
         <a-tag
           color="orange"
-          class="resume_tag_checked_top"
+          class="resume_tag_checked_top tagspanOrange"
           v-if="props.showResumeRightOutFlag &&resumeData.limitFlag == '限制禁推'"
           :title="limitRemarkDetail"
           >限制</a-tag
         >
         <a-tag
           color="orange"
-          class="resume_tag_checked_top"
+          class="resume_tag_checked_top tagspanOrange"
           v-if="props.showResumeRightOutFlag &&resumeData.limitFlag == '限制分单'"
           :title="limitRemarkDetail"
           >限制</a-tag
         >
         <a-tag
           color="orange"
-          class="resume_tag_checked_top"
+          class="resume_tag_checked_top tagspanOrange"
           v-if="resumeData.limitFlag == 'OFFER' && resumeData.resumeStatus != '保证期中'"
           :title="offerTime"
           >OFFER</a-tag
         > 
         <a-tag
           color="orange"
-          class="resume_tag_checked_top"
+          class="resume_tag_checked_top tagspanOrange"
           v-if="resumeData.limitFlag == 'OFFER' && resumeData.resumeStatus == '保证期中'"
           :title="entryTime"
           >保证期</a-tag
         > 
         <a-tag
           color="orange"
-          class="resume_tag_checked_top"
+          class="resume_tag_checked_top tagspanOrange"
           v-if="resumeData.resumeStatus == '外包保护期中'"
           :title="entryTime"
           >保证期</a-tag
         > 
-        <a-tag style="cursor: pointer;" :title="limitRemarkDetail" color="orange" class="resume_tag_checked" v-if="props.showResumeRightOutFlag && showResumeAdd && resumeData.recruitId && resumeData.limitFlag == '激活'&& resumeData.resumeStatus != '外包保护期中'"
+        <a-tag style="cursor: pointer;" :title="limitRemarkDetail" color="orange" class="resume_tag_checked tagspanOrange" v-if="props.showResumeRightOutFlag && showResumeAdd && resumeData.recruitId && resumeData.limitFlag == '激活'&& resumeData.resumeStatus != '外包保护期中'"
           >激活</a-tag
         >
          <a-tag
-            class="resume_tag_checked_top"
+            class="resume_tag_checked_top tagspanOrange"
             v-if="resumeData.isBlack == '1'"
             :title="loginVueUser.loginType == 'A' ? (resumeData.blackRemark ? resumeData.blackRemark : '此候选人已经存在公司黑名单中，禁止推荐') : '此候选人已经存在公司黑名单中，禁止推荐'"
             color="red"
@@ -156,6 +156,7 @@
           查看
         </a-popover>
       </a-tag>
+      <a-tag class="resume_tag_source" style="cursor: pointer;" v-if="resumeData.orginalPath" color="#00bcd4" title="原始简历" @click="handleResumeOrginalPath(resumeData.orginalPath)">原简</a-tag>
     </a-row>
     <a-row :gutter="24" class="resume_row">
       <a-col :span="16">
@@ -298,14 +299,33 @@
             </a-col>
           </a-row>
         </a-modal>
+    <a-drawer
+        v-model:open="orginalPathHeaderShow"
+        title="文件预览"
+        :keyboard="false"
+        :closable="false"
+        :mask="false"
+        :width="639"
+        :bodyStyle="{ padding: '14px' }"
+        :headerStyle="{ padding: '5px 18px 5px 12px' }"
+        placement="right"
+      >
+        <template #extra>
+          <CloseOutlined @click="handleOrginalPathClose" />
+        </template>
+        <div>
+          <OrginalPath :orginalPathBlobPath="orginalPathBlobPath" />
+        </div>
+      </a-drawer>
   </div>
 </template>
 <script setup lang="ts">
   import { message } from 'ant-design-vue';
   import { storeToRefs } from 'pinia';
   import type { SelectProps } from 'ant-design-vue';
+  import OrginalPath from '/@/components/OrginalPath/index.vue';
   import { formatToDateMinute } from '/@/utils/dateUtil';
-  import { PlusSquareFilled, PhoneFilled } from '@ant-design/icons-vue';
+  import { PlusSquareFilled, PhoneFilled, CloseOutlined } from '@ant-design/icons-vue';
   import RecommendCandidatePosition from './RecommendCandidatePosition.vue';
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   const resumeDetailStore = useResumeDetailStore();
@@ -701,7 +721,16 @@
     }
   }
   queryLimitFlagRecommend();
-  
+  //原始简历预览开始
+    const orginalPathBlobPath = ref('');
+    const orginalPathHeaderShow = ref(false);
+    const handleResumeOrginalPath = (path) => {
+      orginalPathBlobPath.value = path;
+      orginalPathHeaderShow.value = true;
+    };
+    const handleOrginalPathClose = () => {
+      orginalPathHeaderShow.value = false;
+    };
 </script>
 <style lang="less" scoped>
   .resume_header {
@@ -760,6 +789,18 @@
   .tagspan {
     margin-inline-end: 4px;
     border-radius: 8px;
+  }
+  .tagspanOrange {
+    background: linear-gradient(45deg, #fff7e6 88%, #f90202 0px);
+    border-top-right-radius: 4px;
+  }
+  .tagspanGreen {
+    background: linear-gradient(45deg, #f6ffed 88%, #f90202 0px);
+    border-top-right-radius: 4px;
+  }
+  .tagspanWhite {
+    background: linear-gradient(45deg, transparent 88%, #f90202 0);
+    border-top-right-radius: 4px;
   }
   :deep(.resume_tag_phone > .anticon + span, .resume_tag_phone > span + .anticon) {
     margin-inline-start: 0px !important;
