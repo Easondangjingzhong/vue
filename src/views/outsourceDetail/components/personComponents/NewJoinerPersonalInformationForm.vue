@@ -388,9 +388,14 @@
             <a-select v-model:value="newJoinerPersonalInformationForm.jobType" name="jobType" :options="jobTypeOptions" placeholder="请选择性质"></a-select>
           </a-form-item>
         </a-col>
+        <a-col :span="12">
+          <a-form-item label="OFFER发起" :label-col="labelCol" :rules="[{ required: true, message: '请选择OFFER发起' }]">
+            <a-select v-model:value="jobTypeOffer" name="jobTypeOffer" :options="jobTypeOfferOptions" placeholder="请选择OFFER发起"></a-select>
+          </a-form-item>
+        </a-col>
       </a-row>
       <a-row :gutter="24" style="margin-top: 12px;">
-        <a-col :span="12">
+        <a-col :span="12"  v-if="jobTypeOffer=='1'">
           <a-form-item label="OFFER类型" :label-col="labelCol" :rules="[{ required: true, message: '请选择OFFER类型' }]">
             <a-select v-model:value="offerInformationForm.offerType" name="offerType" :options="offerTypeOptions" placeholder="请选择OFFER类型"></a-select>
           </a-form-item>
@@ -401,7 +406,7 @@
           </a-form-item>
         </a-col>
       </a-row>
-      <div v-if="offerInformationForm.offerType == '全职实习合同'">
+      <div v-if="offerInformationForm.offerType == '全职实习合同' && jobTypeOffer=='1'">
       <a-row :gutter="24">
         <a-col :span="12">
           <a-form-item label="实习开始" :label-col="labelCol" :rules="[{ required: true, message: '请选择实习开始' }]">
@@ -447,7 +452,7 @@
         </a-col>
       </a-row>
      </div>
-     <div v-if="offerInformationForm.offerType == '全职劳动合同'">
+     <div v-if="offerInformationForm.offerType == '全职劳动合同' && jobTypeOffer=='1'">
       <a-row :gutter="24">
         <a-col :span="12">
           <a-form-item label="开始时间" :label-col="labelCol" :rules="[{ required: true, message: '请选择开始时间' }]">
@@ -499,7 +504,7 @@
         </a-col>
       </a-row>
      </div>
-     <div v-if="offerInformationForm.offerType == '兼职合同'">
+     <div v-if="offerInformationForm.offerType == '兼职合同' && jobTypeOffer=='1'">
       <a-row :gutter="24">
         <a-col :span="8">
           <a-form-item label="基本薪资" :label-col="{ span: 8 }" :rules="[{ required: true, message: '请输入基本薪资' }]">
@@ -1891,6 +1896,11 @@ const signingYMD = computed(() => {
 const signingY = computed(() => signingYMD.value.y);
 const signingM = computed(() => signingYMD.value.m);
 const signingD = computed(() => signingYMD.value.d);
+const jobTypeOffer = ref("1");
+const jobTypeOfferOptions = [
+  {value: '1', label: '是'},
+  {value: '2', label: '否'},
+];
 const jobTypeOptions = [
   {value: '兼职', label: '兼职'},
   {value: '全职', label: '全职'},
@@ -1910,6 +1920,7 @@ const displayName = computed(() => {
 });
 const closeDrawer = () => {
   isShow.value = true;
+  jobTypeOffer.value = '1'
   newJoinerPersonalInformationFlag.value = false;
   newJoinerPersonalInformationFormTemp.value = {} as OutsourcePersonItem;
   newJoinerPersonalInformationForm.value = {} as NewJoinerPersonalInfoItem;
@@ -2249,7 +2260,7 @@ const generatePDFText = async() => {
       currentY = margin;
     };
 
-    if (offerInformationForm.value.offerType) {
+    if (offerInformationForm.value.offerType && jobTypeOffer.value == '1') {
        await drawOfferContent();
     }
 

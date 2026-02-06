@@ -12,7 +12,7 @@
               <a-tab-pane key="1" tab="外包人员">
                 <OutsourceContentPerson/>
               </a-tab-pane>
-              <a-tab-pane key="2" tab="外包薪资">
+              <a-tab-pane key="2" tab="薪资标准">
                 <OutsourceContentSalary/>
               </a-tab-pane>
               <a-tab-pane key="3" tab="外包社保">
@@ -23,6 +23,9 @@
               </a-tab-pane>
               <a-tab-pane key="5" tab="月度薪资">
                 <OutsourceContentMonthSalary/>
+              </a-tab-pane>
+              <a-tab-pane key="6" tab="外包业绩">
+                <OutsourceContentMonthSalaryOffer/>
               </a-tab-pane>
           </a-tabs>
         </a-layout-content>
@@ -41,6 +44,7 @@ import OutsourceContentSalary from './components/OutsourceContentSalary.vue';
 import OutsourceContentSheBao from './components/OutsourceContentSheBao.vue';
 import OutsourceContentMonthSalary from './components/OutsourceContentMonthSalary.vue';
 import OutsourceContentAttend from './components/OutsourceContentAttend.vue';
+import OutsourceContentMonthSalaryOffer from './components/OutsourceContentMonthSalaryOffer.vue';
 
 import AddOutsourcePerson from './components/AddOutsourcePerson.vue';
 import OutsourcePersonDetail from './components/OutsourcePersonDetail.vue';

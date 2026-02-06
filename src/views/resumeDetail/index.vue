@@ -66,7 +66,7 @@
           <ResumeLeftCheckDuplicate v-if="showResumeRightHeader && showResumeRightOutFlag" :showResumeAdd="showResumeAdd" />
           <ResumeLeftPositions v-if="showResumePositionsAndRecommendRecord && showResumeRightOutFlag" />
           <ResumeLeftContactContent v-if="showResumeRightContact" :showResumeAdd="showResumeAdd"  :showResumeRightOutFlag="showResumeRightOutFlag"/>
-          <ResumeLeftRecommendRecord />
+          <ResumeLeftRecommendRecord v-if="showResumePositionsAndRecommendRecord"/>
         </div>
       </a-layout-sider>
     </a-layout>

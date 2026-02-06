@@ -1866,4 +1866,12 @@
     font-weight: 600;
     z-index: 1;
   }
+  :deep(.ant-menu-light) {
+    background: #197d6f;
+    color: #ffffff;
+  }
+  :deep(.ant-menu-light.ant-menu-horizontal >.ant-menu-item-selected, .ant-menu-light.ant-menu-horizontal >.ant-menu-submenu-selecte) {
+    color: #000000;
+    background-color: #ffffff;
+  }
 </style>

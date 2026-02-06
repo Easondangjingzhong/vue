@@ -287,19 +287,21 @@
   const fileList = ref([]);
   const cropperModal = ref<any>();
   const photoPath = ref(props.personInfoData.photoPath);
+  const photoPathTemp = ref(props.personInfoData.photoPath);
   const handleChangephoto = () => {
     const target = Object.assign({}, coverOptions, {
-      img: photoPath,
+      img: photoPathTemp,
     });
     cropperModal.value.edit(target);
   };
   const handleCropperSuccess = (e) => {
+    photoPath.value = e;
     props.personInfoData.photoPath = e;
     resumeStore.updateResumePhoto(e);
   };
    const handleChangephotoUpload = (e) => {
       blobToDataURI(fileToBlob(e.file), (res) => {
-        photoPath.value = res;
+        photoPathTemp.value = res;
         handleChangephoto();
       });
     };

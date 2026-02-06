@@ -181,13 +181,16 @@
             {{ record.userName }}
           </a>
         </template>
-        <template v-else-if="column.key === 'registTimeStr'">
+        <template v-if="column.key === 'registTimeStr'">
           <span :title="record.registTimeStr">{{ record.registTimeDetails }}</span>
         </template>
-        <template v-else-if="column.key === 'lastUpdateTimeStr'">
-          <span :title="record.lastUpdateTimeStr">{{ record.lastUpdateTime }}</span>
+        <template v-if="column.key === 'lastUpdateTimeStr'">
+          <a-tag v-if='!record.callLastTime' color="red">7日未联</a-tag>
+          <a-tag v-if='record.callLastTime && calculateDateDiff(record.callLastTime) > 7' color="red">7日未联</a-tag>
+          <a-tag v-if='record.callLastTime && calculateDateDiff(record.callLastTime) <= 7' color="green">7日已联</a-tag>
+          <a-tag v-if='record.notConnectFlag == 1' color="red" :title="record.notConnectTime">未接</a-tag>
         </template>
-        <template v-else-if="column.key === 'projectFlag'">
+        <template v-if="column.key === 'projectFlag'">
            <a-tag
             class="tagspan"
             v-if="record.zaiZhi == '2'"
@@ -683,7 +686,7 @@
       dataIndex: 'positionName',
       key: 'positionName',
       ellipsis: true,
-      width: 135,
+      width: 110,
     },
     {
       title: '顾问',
@@ -693,18 +696,18 @@
       width: 70,
     },
     {
-      title: '录入日期',
+      title: '新增日期',
       dataIndex: 'registTimeStr',
       key: 'registTimeStr',
       ellipsis: true,
       width: 75,
     },
     {
-      title: '联络日期',
+      title: '联络状态',
       dataIndex: 'lastUpdateTimeStr',
       key: 'lastUpdateTimeStr',
       ellipsis: true,
-      width: 75,
+      width: 100,
     },
     {
       title: '标签',
@@ -941,6 +944,14 @@ optionsRecruitId.value = teamPersonChangeArr.value.map(item => ({value: item.tea
         message.error('加入黑名单失败');
       }
     });
+ }
+ const calculateDateDiff = (callLastTime) => {
+  if (callLastTime) {
+    const diffDays = dayjs().diff(dayjs(callLastTime), 'day', true);
+    const rounded = Math.round(diffDays * 100) / 100;
+    return rounded;
+  }
+  return 0;
  }
 </script>
 <style lang="less" scoped>

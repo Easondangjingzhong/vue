@@ -17,7 +17,7 @@ export interface OutsourcePersonItem {
   bId: number;
   brand: string;
   jobNumber: string;
-  mId: number;
+  mId: string;
   market: string;
   mkName: string;
   positionId: string;
@@ -54,7 +54,7 @@ export interface OutsourcePersonItem {
   yujiaoTime: string;
   yutingTime: string;
   paymentYearMonth: string;
-  preStopYearMonth: string;
+  prestopYearMonth: string;
   phoneNumber: string;
   email: string;
   idCard: string;
@@ -152,6 +152,8 @@ export interface OutsourceSalaryItem {
   teshu: string;
   jili: string;
   dacheng: string;
+  thirteenthSalary: string;
+  yearEndBouns: string;
   zonghe: string;
   shangbao: string;
   companyTotal: string;
@@ -393,6 +395,8 @@ export interface OutsourceMonthSalaryItem {
   chidao?: string; // 可为null
   dabing?: string; // 可为null
   dacheng?: string; // 可为null
+  thirteenthSalary?: string; // 可为null
+  yearEndBouns?: string; // 可为null
   daixin?: string; // 可为null
   fangdaiLixi?: string; // 可为null
   fangzu?: string; // 可为null

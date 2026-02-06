@@ -31,11 +31,22 @@ function getQueryVariable(variable)
     return("");
 }
 export const routerQuery = async () => {
+  //首次登录
   if (getQueryVariable("loginFirst")) {
     localStorage.removeItem("loginVueUser");
     localStorage.setItem("loginVueUser",JSON.stringify({"loginId": getQueryVariable("loginId"),"loginName": getQueryVariable("loginName"),"loginTocken": getQueryVariable("loginTocken"),"loginType": getQueryVariable("loginType"),"loginOutFlag": getQueryVariable("loginOutFlag")}));
     return true;
   }
+  //邮箱登录查看简历
+   if (getQueryVariable("loginEmail")) {
+    const loginVueUser: {loginName: "", loginId: "", loginTocken: "",loginType: ""} = JSON.parse(localStorage.getItem("loginVueUser"));
+      if (loginVueUser && !loginVueUser.loginId) {
+        window.open("http://work.wotui.com:8889/WTSM/","_self");
+        return false;
+      }
+      handleToResumeDetails(getQueryVariable("resumeId"),getQueryVariable("addConsultantId"));
+      return true;
+   }
   return await cityStore.resuemCheckLogin(getQueryVariable("loginTocken")).then(res => {
     if (res.code == 1) {
       const loginVueUser: {loginName: "", loginId: "", loginTocken: "",loginType: ""} = JSON.parse(localStorage.getItem("loginVueUser"));

@@ -210,6 +210,8 @@ const columnsOutsourceMonthSalary:TableColumnsType = [
   { title: '激励奖金', dataIndex: 'jili', key: 'jili', width: 50, },
   { title: '特殊奖金', dataIndex: 'teshu', key: 'teshu', width: 50, },
   { title: '达成奖金', dataIndex: 'dacheng', key: 'dacheng', width: 50, },
+  { title: '十三薪', dataIndex: 'thirteenthSalary', key: 'thirteenthSalary', width: 50, },
+  { title: '年终奖金', dataIndex: 'yearEndBouns', key: 'yearEndBouns', width: 50, },
   { title: '奖金总计', dataIndex: 'jiangjinTotal', key: 'jiangjinTotal', width: 50, },
   { title: '保底奖金', dataIndex: 'baodiJiangjin', key: 'baodiJiangjin', width: 50, },
   { title: '工资调差', dataIndex: 'salaryTiaocha', key: 'salaryTiaocha', width: 50, },

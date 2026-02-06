@@ -1,0 +1,284 @@
+<template>
+  <div class="resume-content-search">
+    <a-form :model="formStateMonthSalary" @finish="onSearch">
+      <a-row :gutter="24">
+         <a-col :span="3">
+          <a-form-item name="userName" label="姓名">
+            <a-input v-model:value="formStateMonthSalary.userName"/>
+          </a-form-item>
+        </a-col>
+        <a-col :span="3">
+          <a-form-item name="city" label="城市">
+            <a-select
+              optionFilterProp="label"
+              v-model:value="formStateMonthSalary.city"
+              :options="getProvince"
+              :showArrow="false"
+              showSearch
+              allowClear
+            ></a-select>
+          </a-form-item>
+        </a-col>
+         <a-col :span="3">
+          <a-form-item name="companyName" label="公司">
+            <a-select
+              optionFilterProp="label"
+              v-model:value="formStateMonthSalary.companyName"
+              :options="getOutsourceCompanyAll"
+              :showArrow="false"
+              showSearch
+              allowClear
+            ></a-select>
+          </a-form-item>
+        </a-col>
+        <a-col :span="3">
+          <a-form-item name="bId" label="品牌">
+            <a-select
+              optionFilterProp="label"
+              v-model:value="formStateMonthSalary.bId"
+              :options="getOutsourceBrand"
+              :showArrow="false"
+              showSearch
+              allowClear
+            ></a-select>
+          </a-form-item>
+        </a-col>
+        <a-col :span="3">
+          <a-form-item name="positionId" label="职位">
+            <a-select
+              optionFilterProp="label"
+              v-model:value="formStateMonthSalary.positionId"
+              :options="getOutsourcePosition"
+              :showArrow="false"
+              showSearch
+              allowClear
+            ></a-select>
+          </a-form-item>
+        </a-col>
+        <a-col :span="3">
+          <a-form-item name="jobType" label="性质">
+            <a-select
+              optionFilterProp="label"
+              v-model:value="formStateMonthSalary.jobType"
+              :showArrow="false"
+              showSearch
+              allowClear
+            >
+              <a-select-option value="兼职">兼职</a-select-option>
+              <a-select-option value="全职">全职</a-select-option>
+          </a-select>
+          </a-form-item>
+        </a-col>
+        <a-col :span="3">
+          <a-form-item name="yearAndMonth" label="计薪">
+            <a-date-picker
+                  v-model:value="formStateMonthSalary.yearAndMonth"
+                  value-format="YYYY-MM"
+                  picker="month"
+                />
+          </a-form-item>
+        </a-col>
+         <a-col :span="3">
+          <a-button style="margin: 0 0 0 8px" type="primary" html-type="submit">搜索</a-button>
+          <a-button style="margin: 0 8px" @click="clearFromState">清空</a-button>
+         </a-col>
+      </a-row>
+     </a-form>
+  </div>
+  <div class="resume-content">
+    <a-row>
+    <a-table
+      size="small"
+      :pagination="false"
+      rowKey="key"
+      :loading="monthSalaryIsLoading"
+      :columns="columnsOutsourceMonthSalary"
+      :dataSource="getOutsourceMonthSalaryList"
+      :scroll="{ x: 2100 }"
+    >
+    <template #bodyCell="{ column, record }">
+       <a-tag v-if="column.key === 'sign' && record.sign === '1'" color="orange">待核</a-tag>
+      <a-tag v-if="column.key === 'sign' && record.sign === '2'" color="green">已核</a-tag>
+    <!-- 添加类型断言和存在性检查以修复TypeScript索引类型错误 -->
+    <span v-if="(typeof column.dataIndex === 'string' && column.key !== 'operation'  && (record[column.dataIndex] === null || record[column.dataIndex] === '' || record[column.dataIndex] === undefined))">-</span>
+    <template v-if="column.key === 'salaryAfterTax'">
+      <span style="font-weight: 600;">{{ record.salaryAfterTax }}</span>
+    </template>
+    <template v-if="column.key === 'operation' && record['personId']">
+          <a-dropdown>
+            <span class="ant-dropdown-link" style="cursor: pointer;" @click.prevent>
+              <MenuUnfoldOutlined style="font-size: 15px;"/>
+            </span>
+            <template #overlay>
+              <a-menu>
+                <a-menu-item>
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+     </template>
+  </template>  
+    </a-table>
+    </a-row>
+    <a-row style="justify-content: end; margin-top: 10px">
+      <a-pagination
+        v-model:current="pageOutsourceMonthSalaryList.pageNumber"
+        :pageSize="pageOutsourceMonthSalaryList.pageSize"
+        @change="handleOutsourceMonthSalaryListData"
+        :total="pageOutsourceMonthSalaryList.total"
+        :showSizeChanger="false"
+        :showQuickJumper="true"
+        :hideOnSinglePage="true"
+        size="small"
+        :show-total="(total) => `共 ${total} 条`"
+      >
+        <template #itemRender="{ type, originalElement }">
+          <a v-if="type === 'prev'">上一页</a>
+          <a v-else-if="type === 'next'">下一页</a>
+          <component :is="originalElement" v-else></component>
+        </template>
+      </a-pagination>
+    </a-row>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { storeToRefs } from 'pinia';
+import _ from 'lodash';
+import { MenuUnfoldOutlined } from '@ant-design/icons-vue';
+import type { TableColumnsType } from 'ant-design-vue';
+import { SearchMonthSalaryItem } from '/@/api/outsourceDetail/model';
+import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
+const outsourceDetailStore = useOutsourceDetailStoreWithOut();
+const { monthSalaryIsLoading,pageOutsourceMonthSalaryList,getOutsourceMonthSalaryList,formStateMonthSalary, getProvince, getOutsourceBrand, getOutsourceCompanyAll, getOutsourcePosition, outsourceFormulaFlag, outsourceMonthSalaryForm, outsourceMonthSalaryFlag,outsourceMonthSalaryShiJiFlag} = storeToRefs(outsourceDetailStore);
+const columnsOutsourceMonthSalary:TableColumnsType = [
+  {
+    title: '客户信息',
+    className: 'customer-info-header',
+    children: [
+      { title: '编号', dataIndex: 'index', key: 'index', fixed: 'left', width: 30, },
+      { title: '计薪月', dataIndex: 'jinxinMonth', key: 'jinxinMonth', fixed: 'left', width: 40, },
+      { title: '标识', dataIndex: 'sign', key: 'sign', fixed: 'left', width: 30, },
+      { title: '姓名', dataIndex: 'userNameCn', key: 'userNameCn', fixed: 'left', width: 55, ellipsis: true, },
+      { title: '职位', dataIndex: 'positions', key: 'positions', fixed: 'left', width: 50, ellipsis: true,},
+      { title: '品牌', dataIndex: 'brand', key: 'brand', fixed: 'left', width: 50, ellipsis: true,},
+      { title: '公司', dataIndex: 'companyName', key: 'companyName', fixed: 'left', width: 45, ellipsis: true, },
+      { title: '城市', dataIndex: 'city', key: 'city', fixed: 'left', width: 30, },
+      { title: '性质', dataIndex: 'jobType', key: 'jobType', fixed: 'left', width: 30, },
+      { title: '招聘', dataIndex: 'isHave', key: 'isHave', fixed: 'left', width: 30, },
+    ]
+  },
+  {
+    title: '客户外包账单',
+    className: 'salary-info-header',
+    children: [
+      { title: '人才支出', dataIndex: 'baseSalary', key: 'baseSalary', width: 50, },
+      { title: '企业支出', dataIndex: 'bonus', key: 'bonus', width: 50, },
+      { title: '管理费', dataIndex: 'tax', key: 'tax', width: 50, },
+      { title: '税金', dataIndex: 'salaryAfterTax', key: 'salaryAfterTax', width: 50, },
+      { title: '总营收费', dataIndex: 'salaryAfterTax', key: 'salaryAfterTax', width: 50, },
+    ]
+  },
+  {
+    title: '客户转换费账单',
+    className: 'customer-info-header',
+    children: [
+      { title: '税前转换', dataIndex: 'baseSalary', key: 'baseSalary', width: 50, },
+      { title: '税金', dataIndex: 'bonus', key: 'bonus', width: 50, },
+      { title: '税后转换', dataIndex: 'tax', key: 'tax', width: 50, },
+    ]
+  },
+  {
+    title: '公司支出成本',
+    className: 'salary-info-header',
+    children: [
+      { title: '人才支出', dataIndex: 'baseSalary', key: 'baseSalary', width: 50, },
+      { title: '公司支出', dataIndex: 'bonus', key: 'bonus', width: 50, },
+    ]
+  },
+  {
+    title: '公司管理费',
+    className: 'customer-info-header',
+    children: [
+      { title: '税前管理', dataIndex: 'baseSalary', key: 'baseSalary', width: 50, },
+      { title: '税金', dataIndex: 'bonus', key: 'bonus', width: 50, },
+      { title: '税后管理', dataIndex: 'tax', key: 'tax', width: 50, },
+    ]
+  },
+  {
+    title: '公司业绩分配',
+    className: 'salary-info-header',
+    children: [
+      { title: '推顾', dataIndex: 'baseSalary', key: 'baseSalary', width: 50, },
+      { title: '企顾', dataIndex: 'bonus', key: 'bonus', width: 50, },
+      { title: '服顾', dataIndex: 'bonus', key: 'bonus', width: 50, },
+      { title: '开顾1', dataIndex: 'bonus', key: 'bonus', width: 50, },
+      { title: '开顾2', dataIndex: 'bonus', key: 'bonus', width: 50, },
+      { title: '税后总计', dataIndex: 'bonus', key: 'bonus', width: 50, },
+      { title: '含税总计', dataIndex: 'bonus', key: 'bonus', width: 50, },
+      
+    ]
+  },
+  {
+    title: '',
+    children: [
+      { title: '操作', dataIndex: 'operation', key: 'operation', fixed: 'right', width: 30, },
+    ]
+  },
+]
+const clearFromState = () => {
+  formStateMonthSalary.value = {} as SearchMonthSalaryItem;
+}
+const onSearch = () => {
+  console.log(formStateMonthSalary.value);
+  pageOutsourceMonthSalaryList.value = {
+      ...pageOutsourceMonthSalaryList.value,
+      pageNumber: 1,
+    }
+  outsourceDetailStore.queryOutsourceMonthSalary();
+}
+onSearch();
+const handleOutsourceMonthSalaryListData = () => {
+  outsourceDetailStore.queryOutsourceMonthSalary();
+}
+</script>
+
+<style lang="less" scoped>
+  .active {
+    color: #389e0d;
+    background: #f6ffed;
+    border-color: #b7eb8f;
+  }
+  .tag {
+    cursor: pointer;
+  }
+  .resume-content,
+  .resume-content-search {
+    background-color: #fff;
+    box-shadow: 0 0 2px #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+    padding: 20px;
+  }
+  .resume-content-search {
+    margin-bottom: 10px;
+    padding-bottom: 9px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+  }
+  .resume-content-search .ant-form .ant-form-item {
+    margin-bottom: 10px !important;
+  }
+  :deep(.ant-pagination-prev ){
+    padding-right: 5px;
+  }
+  :deep(.ant-pagination-next ){
+    padding-left: 5px;
+  }
+  :deep(.customer-info-header) {
+    background-color: #e6f7ff !important;
+  }
+  :deep(.salary-info-header) {
+    background-color: #fff7e6 !important;
+  }
+</style>

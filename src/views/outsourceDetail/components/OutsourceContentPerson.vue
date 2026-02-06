@@ -307,7 +307,7 @@ const columnsOutsourceDetail: TableColumnsType = [
   { title: '商保', dataIndex: 'shangbaoFlag', key: 'shangbaoFlag', width: 30, ellipsis: true,},
   { title: '缴纳单位', dataIndex: 'socialCompany', key: 'socialCompany', width: 50, ellipsis: true,},
   { title: '预缴年月', dataIndex: 'paymentYearMonth', key: 'paymentYearMonth', width: 50, ellipsis: true,},
-  { title: '预停年月', dataIndex: 'preStopYearMonth', key: 'preStopYearMonth', width: 50, ellipsis: true,},
+  { title: '预停年月', dataIndex: 'prestopYearMonth', key: 'prestopYearMonth', width: 50, ellipsis: true,},
   { title: '工作地', dataIndex: 'workCity', key: 'workCity', width: 40, ellipsis: true,},
   { title: '社保地', dataIndex: 'socialCity', key: 'socialCity', width: 40, ellipsis: true,},
   { title: '个税地', dataIndex: 'taxCity', key: 'taxCity', width: 40, ellipsis: true,},

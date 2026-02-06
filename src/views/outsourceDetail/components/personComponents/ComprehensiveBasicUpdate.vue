@@ -71,6 +71,27 @@
             </a-form-item>
           </a-col>
         </a-row>
+        <a-row :gutter="24" v-if="outsourceBasicForm.currentStatus != '4'">
+          <a-col :span="12">
+            <a-form-item name="userNameEn" label="英文名"
+            :rules="[{ required: false, message: '请填写英文名' }]">
+              <a-input v-model:value="outsourceBasicForm.userNameEn" placeholder="请输入英文名" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">
+            <a-form-item name="mId" label="店铺">
+              <a-select 
+              v-model:value="outsourceBasicForm.mId" 
+              placeholder="请选择店铺" 
+              :showArrow="false"
+              allowClear
+              showSearch
+              :options="getOutsourceMarkList"
+              @search="handleMarkIdSearch"
+              optionFilterProp="label"></a-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
         <a-row :gutter="24">
           <a-col :span="24" style="text-align: right;">
             <a-button type="primary" :loading="iconLoading" html-type="submit">
@@ -88,10 +109,11 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { message } from 'ant-design-vue';
+import { debounce } from 'lodash-es';
 import { CloseOutlined } from '@ant-design/icons-vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { outsourceBasicFlag, outsourceBasicForm } = storeToRefs(outsourceDetailStore);
+const { outsourceBasicFlag, outsourceBasicForm, getOutsourceMarkList } = storeToRefs(outsourceDetailStore);
 const drawerWidth = ref(Math.max(600, window.innerWidth * 0.5));
 const labelCol = {
   span: 6,
@@ -109,9 +131,18 @@ const jobTypeOption = ref([
   },
 ]);
 
-
+const handleMarkIdSearch = debounce((value?: string) => {
+    outsourceDetailStore.queryMarkListSearch(outsourceBasicForm.value.city,value || "");
+  },1000);
+const loadingMarkIdSearch = () => {
+  outsourceDetailStore.queryMarkListSearch(outsourceBasicForm.value.city,"");
+}
+watch(() => outsourceBasicForm.value.city, () => {
+  loadingMarkIdSearch();
+});
 const handleSubmit = () => {
   iconLoading.value = true;
+  outsourceBasicForm.value.market = getOutsourceMarkList.value.find(item => item.value === outsourceBasicForm.value.mId)?.label || '';
   outsourceDetailStore.addUpdateOutsourceBasic().then(res => {
     if (res.code == 1) {
       message.success('操作成功');

@@ -935,6 +935,9 @@ export const useResumeListStore = defineStore('app-Resume-List',{
           //   tempItem.works = "";
           // }
           tempItem.works = item.works;
+          tempItem.callLastTime = item.callLastTime;
+          tempItem.notConnectFlag = item.notConnectFlag;
+          tempItem.notConnectTime = item.notConnectTime ? `未接时间${formatToDateMinute(item.notConnectTime)}`: "";
           tempList.push(tempItem);
           this.expandedRowKeys.push(item.id);
         });

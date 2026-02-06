@@ -148,6 +148,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         index:
           state.pageOutsourcePersonList.pageSize * (state.pageOutsourcePersonList.pageNumber - 1) +
           (index + 1),
+        mId: item.mId?.toString() || '',
         enterprise: `${item.recommendCounselor}/${item.counselor}`,
         planEntryTime: item.planEntryTime ? formatToDate(item.planEntryTime) : '',
         age: item.birthYear ? (new Date().getFullYear() - Number(item.birthYear)).toString() : '',
@@ -161,7 +162,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         yujiaoTime: item.yujiaoTime ? formatToDate(item.yujiaoTime) : '',
         yutingTime: item.yutingTime ? formatToDate(item.yutingTime) : '',
         paymentYearMonth: item.paymentYearMonth ? formatToMonth(item.paymentYearMonth) : '',
-        preStopYearMonth: item.preStopYearMonth ? formatToMonth(item.preStopYearMonth) : '',
+        prestopYearMonth: item.prestopYearMonth ? formatToMonth(item.prestopYearMonth) : '',
       })),
       getOutsourcePersonProcessNum: (state) => state.outsourcePersonProcessNum,
     getOutsourcePersonProcessList: (state) =>
@@ -183,7 +184,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         yujiaoTime: item.yujiaoTime ? formatToDate(item.yujiaoTime) : '',
         yutingTime: item.yutingTime ? formatToDate(item.yutingTime) : '',
         paymentYearMonth: item.paymentYearMonth ? formatToMonth(item.paymentYearMonth) : '',
-        preStopYearMonth: item.preStopYearMonth ? formatToMonth(item.preStopYearMonth) : '',
+        prestopYearMonth: item.prestopYearMonth ? formatToMonth(item.prestopYearMonth) : '',
       })),
     getOutsourceSalaryList: (state) =>
       state.outsourceSalaryList.map((item, index) => ({
@@ -904,6 +905,9 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       formData.append('realLeaveTime', this.outsourceBasicForm.realLeaveTime || '');
       formData.append('offerTime', this.outsourceBasicForm.offerTime || '');
       formData.append('currentStatus', this.outsourceBasicForm.currentStatus || '');
+      formData.append('mId', this.outsourceBasicForm.mId?.toString() || '');
+      formData.append('market', this.outsourceBasicForm.market || '');
+      formData.append('userNameEn', this.outsourceBasicForm.userNameEn || '');
       const res = await fetchApi.addUpdateOutsourceBasic(formData);
       if (res.code == 1) {
         this.outsourcePersonDetail = {

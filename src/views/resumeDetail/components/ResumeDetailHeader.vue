@@ -138,6 +138,7 @@
         >{{ resumeProgressDetailScore }}%</a-tag
       >
       <a-tag class="resume_tag_source" v-if="resumeData.talentSource" color="#00bcd4" title="来源">{{ resumeData.talentSource }}</a-tag>
+      <a-tag class="resume_tag_source" style="cursor: pointer;" v-if="resumeData.orginalPath" color="#00bcd4" title="原始简历" @click="handleResumeOrginalPath(resumeData.orginalPath)">原简</a-tag>
       <a-tag v-if="props.showResumeRightOutFlag" color="#ccc" class="resume_tag_phone" style="cursor: pointer;" @click="handlePhoneNumToSystem(resumeData.phoneNum)"
         ><PhoneFilled :style="{ fontSize: '8px' }" :rotate="90" />
         <a-popover placement="topLeft">
@@ -156,7 +157,6 @@
           查看
         </a-popover>
       </a-tag>
-      <a-tag class="resume_tag_source" style="cursor: pointer;" v-if="resumeData.orginalPath" color="#00bcd4" title="原始简历" @click="handleResumeOrginalPath(resumeData.orginalPath)">原简</a-tag>
     </a-row>
     <a-row :gutter="24" class="resume_row">
       <a-col :span="16">
@@ -301,7 +301,7 @@
         </a-modal>
     <a-drawer
         v-model:open="orginalPathHeaderShow"
-        title="文件预览"
+        title="原始简历"
         :keyboard="false"
         :closable="false"
         :mask="false"
@@ -386,7 +386,7 @@
       : '',
   );
   const entryTime = ref(
-    props.resumeData.limitFlag == 'OFFER' && props.resumeData.resumeStatus == '保证期中'
+    props.resumeData.limitFlag == 'OFFER' && (props.resumeData.resumeStatus == '保证期中' || props.resumeData.resumeStatus == '外包保护期中')
       ? `${formatToDateMinute(props.resumeData.shiRuTime)} - ${formatToDateMinute(props.resumeData.guoBaoTime)}  保证期周期`
       : '',
   );
