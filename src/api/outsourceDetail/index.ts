@@ -53,7 +53,43 @@ enum URL {
   update_user_name = '/candidateRecommend/resume-vue-update-outsource_userName.action',
   query_outsource_person_money = '/candidateRecommend/resume-vue-select-out-MonthQingkuan.action',
   update_outsource_person_marketName = '/candidateRecommend/resume-vue-insert-update-out-marketName.action',
+  query_outsource_attend_Month_personId = '/candidateRecommend/resume-vue-select-out-attend-Month-personId.action',
+  query_outsource_person_byPersonId = '/candidateRecommend/resume-vue-select-out-person-byPersonId.action',
+  query_outsource_salary_by_personId = '/candidateRecommend/resume-vue-select-out-Salary-byperson.action',
+  query_outsource_shebao_by_personId = '/candidateRecommend/resume-vue-select-out-SheBao-person-jinxinMonth.action',
 }
+/**
+ * 查询外包人员业绩分配出勤月份
+ * @param data personId
+ * @param data jinXinMonth
+ * @returns 
+ */
+const queryOutsourceAttendMonthPersonId = async (data: any) =>
+  post<any>({ url: URL.query_outsource_attend_Month_personId, data});
+/**
+ * 查询外包人员业绩分配基本信息
+ * @param data personId
+ * @param data jinXinMonth
+ * @returns 
+ */
+const queryOutsourcePersonByPersonId = async (data: any) =>
+  post<any>({ url: URL.query_outsource_person_byPersonId, data});
+/**
+ * 查询外包人员业绩分配薪资标准
+ * @param data personId
+ * @param data jinXinMonth
+ * @returns 
+ */
+const queryOutsourceSalaryByPersonId = async (data: any) =>
+  post<any>({ url: URL.query_outsource_salary_by_personId, data});
+/**
+ * 查询外包人员业绩分配月度社保
+ * @param data personId
+ * @param data jinXinMonth
+ * @returns 
+ */
+const queryOutsourceShebaoByPersonId = async (data: any) =>
+  post<any>({ url: URL.query_outsource_shebao_by_personId, data});
 /**
  * 更新外包店铺简称
  * @param data yearAndMonth companyName
@@ -429,6 +465,10 @@ const queryOutsourceMonthSalary = async (data: any) =>
   post<any>({ url: URL.query_outsource_month_salary, data});
 
 export default { 
+  queryOutsourceAttendMonthPersonId,
+  queryOutsourcePersonByPersonId,
+  queryOutsourceSalaryByPersonId,
+  queryOutsourceShebaoByPersonId,
   outsourcePersonMarketName,
   outsourcePersonMoney,
   updateUserName,

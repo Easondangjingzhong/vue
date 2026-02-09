@@ -140,6 +140,19 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     formStatePersonMoney: {} as OutsourcePersonMoneyItem, //外包人员请款单 表单信息
     offerOutsourceMonthSalary: [] as OutsourceMonthSalaryItem[], //外包人员请款单 请款单
     offerOutsourceSheBao: [] as OutsourceSheBaoItem[], //外包人员请款单 社保信息
+    outsourcePersonPerformanceDetailFlag: false, //外包人员绩效详情控制
+    outsourcePersonPerformanceDetail: {} as OutsourceMonthSalaryItem, //外包人员绩效详情月度薪资
+    outsourcePersonPerformanceDetailPersonInfo: [] as OutsourcePersonItem[], //外包人员绩效详情基本信息
+    outsourcePersonPerformanceDetailSalaryInfo: [] as OutsourceSalaryItem[], //外包人员绩效详情薪资标准
+    outsourcePersonPerformanceDetailAttendInfo: [] as OutsourceAttendItem[], //外包人员绩效详情薪资标准
+    outsourcePersonPerformanceDetailSheBaoInfo: [] as OutsourceSheBaoItem[], //外包人员绩效详情月度社保
+    formStateMonthSalaryOffer: {} as SearchMonthSalaryItem,
+    outsourceMonthSalaryOfferList: [] as OutsourceMonthSalaryItem[], //外包人员业绩分配
+    pageOutsourceMonthSalaryOfferList: {
+      pageNumber: 1,
+      pageSize: 16,
+      total: 0,
+    } as PageItem,
   }),
   getters: {
     getOutsourcePersonList: (state) =>
@@ -164,12 +177,13 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         paymentYearMonth: item.paymentYearMonth ? formatToMonth(item.paymentYearMonth) : '',
         prestopYearMonth: item.prestopYearMonth ? formatToMonth(item.prestopYearMonth) : '',
       })),
-      getOutsourcePersonProcessNum: (state) => state.outsourcePersonProcessNum,
+    getOutsourcePersonProcessNum: (state) => state.outsourcePersonProcessNum,
     getOutsourcePersonProcessList: (state) =>
       state.outsourcePersonProcessList.map((item, index) => ({
         ...item,
         index:
-          state.pageOutsourcePersonProcessList.pageSize * (state.pageOutsourcePersonProcessList.pageNumber - 1) +
+          state.pageOutsourcePersonProcessList.pageSize *
+            (state.pageOutsourcePersonProcessList.pageNumber - 1) +
           (index + 1),
         enterprise: `${item.recommendCounselor}/${item.counselor}`,
         planEntryTime: item.planEntryTime ? formatToDate(item.planEntryTime) : '',
@@ -278,12 +292,33 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       state.outsourceMonthSalaryList.map((item, index) => ({
         ...item,
         index:
-          index < (state.outsourceMonthSalaryList.length - 1)? state.pageOutsourceAttendList.pageSize * (state.pageOutsourceAttendList.pageNumber - 1) +
-          (index + 1) : '',
+          index < state.outsourceMonthSalaryList.length - 1
+            ? state.pageOutsourceMonthSalaryList.pageSize *
+                (state.pageOutsourceMonthSalaryList.pageNumber - 1) +
+              (index + 1)
+            : '',
         jinxinMonth: item.jinxinMonth ? formatToMonth(item.jinxinMonth) : '',
         realEntryTime: item.realEntryTime ? formatToDate(item.realEntryTime) : '',
         realLeaveTime: item.realLeaveTime ? formatToDate(item.realLeaveTime) : '',
-        userNameCn: item.userNameCn ? `${item.userNameCn}${item.userNameEn ? '/' + item.userNameEn : ''}` : '',
+        userNameCn: item.userNameCn
+          ? `${item.userNameCn}${item.userNameEn ? '/' + item.userNameEn : ''}`
+          : '',
+      })),
+    getOutsourceMonthSalaryOfferList: (state) =>
+      state.outsourceMonthSalaryOfferList.map((item, index) => ({
+        ...item,
+        index:
+          index < state.outsourceMonthSalaryOfferList.length - 1
+            ? state.pageOutsourceMonthSalaryOfferList.pageSize *
+                (state.pageOutsourceMonthSalaryOfferList.pageNumber - 1) +
+              (index + 1)
+            : '',
+        jinxinMonth: item.jinxinMonth ? formatToMonth(item.jinxinMonth) : '',
+        realEntryTime: item.realEntryTime ? formatToDate(item.realEntryTime) : '',
+        realLeaveTime: item.realLeaveTime ? formatToDate(item.realLeaveTime) : '',
+        userNameCn: item.userNameCn
+          ? `${item.userNameCn}${item.userNameEn ? '/' + item.userNameEn : ''}`
+          : '',
       })),
     getOutsourcePersonByPhoneList: (state) =>
       state.outsourcePersonByPhoneList.map((item, index) => ({
@@ -387,7 +422,11 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
             })) || [],
         ) || [];
       // 添加固定选项
-      const allOptions = [{ value: '9999', label: '公司' },{ value: '5485', label: 'Mona Xu' }, ...recruitList];
+      const allOptions = [
+        { value: '9999', label: '公司' },
+        { value: '5485', label: 'Mona Xu' },
+        ...recruitList,
+      ];
 
       // 去重处理：使用Map来确保value的唯一性
       const uniqueOptionsMap = new Map();
@@ -479,19 +518,27 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         startTime: item.startTime ? formatToDate(item.startTime) : '',
         endTime: item.endTime ? formatToDate(item.endTime) : '',
         mId: item.mId?.toString(),
-        youzhaoRateShow: item.youzhaoRate ? `${Number(item.youzhaoRate)*100}%` : '',
-        wuzhaoRateShow: item.wuzhaoRate ? `${Number(item.wuzhaoRate)*100}%` : '',
+        youzhaoRateShow: item.youzhaoRate ? `${Number(item.youzhaoRate) * 100}%` : '',
+        wuzhaoRateShow: item.wuzhaoRate ? `${Number(item.wuzhaoRate) * 100}%` : '',
       })), //外包公司公式详情 公式信息
-      getOrginalPathBlobPath: (state) => state.orginalPathBlobPath,
-      getOrginalPathBlobType: (state) => {
-        const orginalPathBlobTypeList = ['文件预览', '信息OFFER文件', '合同文件', '离职申请文件', '其他文件']
-        return orginalPathBlobTypeList[state.orginalPathBlobType] || '其他文件'
-      },
-      getOfferOutsourceSheBao: (state) => state.offerOutsourceSheBao.map((item, index) => ({
+    getOrginalPathBlobPath: (state) => state.orginalPathBlobPath,
+    getOrginalPathBlobType: (state) => {
+      const orginalPathBlobTypeList = [
+        '文件预览',
+        '信息OFFER文件',
+        '合同文件',
+        '离职申请文件',
+        '其他文件',
+      ];
+      return orginalPathBlobTypeList[state.orginalPathBlobType] || '其他文件';
+    },
+    getOfferOutsourceSheBao: (state) =>
+      state.offerOutsourceSheBao.map((item, index) => ({
         ...item,
         index: index + 1,
       })), //外包人员请款单 社保信息
-      getOfferOutsourceMonthSalary: (state) => state.offerOutsourceMonthSalary.map((item, index) => {
+    getOfferOutsourceMonthSalary: (state) =>
+      state.offerOutsourceMonthSalary.map((item, index) => {
         const monthStr = item.jinxinMonth ? formatToMonth(item.jinxinMonth) : '';
         let jinxinMonth = '';
         if (monthStr) {
@@ -500,7 +547,9 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           const month = Number(monthPart);
           if (year && month) {
             const lastDay = new Date(year, month, 0).getDate().toString().padStart(2, '0');
-            jinxinMonth = `${year}/${month.toString().padStart(2, '0')}/01-${year}/${month.toString().padStart(2, '0')}/${lastDay}`;
+            jinxinMonth = `${year}/${month.toString().padStart(2, '0')}/01-${year}/${month
+              .toString()
+              .padStart(2, '0')}/${lastDay}`;
           }
         }
         const sheBaoMoneyValue = Number(item.monthShebao || 0) + Number(item.yijin || 0);
@@ -510,7 +559,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         const serviceFeeValue = personCostValue * rateValue;
         const shangbaoValue = 0;
         const salaryTaxValue = personCostValue + serviceFeeValue + shangbaoValue;
-        const salaryRateValue = 0.0672; 
+        const salaryRateValue = 0.0672;
         const salaryRateMoneyValue = salaryTaxValue * salaryRateValue;
         const salaryTotalValue = salaryTaxValue + salaryRateMoneyValue;
         const lastMonthLeiJiValue = Number(item.yearGeshui || 0) + Number(item.monthGeshui || 0);
@@ -527,30 +576,140 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           canBaoMoney: parseFloat(canBaoMoneyValue.toString()).toFixed(2),
           economicCompensation: 0,
           personCost: parseFloat(personCostValue.toString()).toFixed(2),
-          rate: rateValue * 100 + "%",
+          rate: rateValue * 100 + '%',
           serviceFee: parseFloat(serviceFeeValue.toString()).toFixed(2),
           salaryTax: parseFloat(salaryTaxValue.toString()).toFixed(2),
-          salaryRate: salaryRateValue * 100 + "%",
+          salaryRate: salaryRateValue * 100 + '%',
           salaryRateMoney: parseFloat(salaryRateMoneyValue.toString()).toFixed(2),
           salaryTotal: parseFloat(salaryTotalValue.toString()).toFixed(2),
-          realEntryTime: item.realEntryTime ? dayjs(item.realEntryTime).format('YYYY年MM月DD日') : '',
-          realLeaveTime: item.realLeaveTime ? dayjs(item.realLeaveTime).format('YYYY年MM月DD日') : '', 
-          lastMonthLeiJi: parseFloat(lastMonthLeiJiValue.toString()).toFixed(2), 
+          realEntryTime: item.realEntryTime
+            ? dayjs(item.realEntryTime).format('YYYY年MM月DD日')
+            : '',
+          realLeaveTime: item.realLeaveTime
+            ? dayjs(item.realLeaveTime).format('YYYY年MM月DD日')
+            : '',
+          lastMonthLeiJi: parseFloat(lastMonthLeiJiValue.toString()).toFixed(2),
         };
       }), //外包人员请款单 社保信息
-      getFormStatePersonMoney: (state) => {
-        const yearAndMonth = state.formStatePersonMoney?.yearAndMonth;
-        if (!yearAndMonth) {
-          return {
-            currentMonth: '',
-            lastMonth: '',
-          };
-        }
+    getFormStatePersonMoney: (state) => {
+      const yearAndMonth = state.formStatePersonMoney?.yearAndMonth;
+      if (!yearAndMonth) {
         return {
-          currentMonth: dayjs(yearAndMonth).format('MM'),
-          lastMonth: dayjs(yearAndMonth).subtract(1, 'month').format('MM'),
+          currentMonth: '',
+          lastMonth: '',
         };
-      },
+      }
+      return {
+        currentMonth: dayjs(yearAndMonth).format('MM'),
+        lastMonth: dayjs(yearAndMonth).subtract(1, 'month').format('MM'),
+      };
+    },
+    getOutsourcePersonPerformanceDetail: (state) => [state.outsourcePersonPerformanceDetail],
+    getOutsourcePersonPerformanceDetailPersonInfo: (state) =>
+      state.outsourcePersonPerformanceDetailPersonInfo.map((item, index) => ({
+        ...item,
+        index: index + 1,
+        enterprise: `${item.recommendCounselor}/${item.counselor}`,
+        planEntryTime: item.planEntryTime ? formatToDate(item.planEntryTime) : '',
+        offerTime: item.offerTime ? formatToDate(item.offerTime) : '',
+        realEntryTime: item.realEntryTime ? formatToDate(item.realEntryTime) : '',
+        planLeaveTime: item.planLeaveTime ? formatToDate(item.planLeaveTime) : '',
+        realLeaveTime: item.realLeaveTime ? formatToDate(item.realLeaveTime) : '',
+      })),
+    getOutsourcePersonPerformanceDetailSalaryInfo: (state) =>
+      state.outsourcePersonPerformanceDetailSalaryInfo.map((item) => ({
+        ...item,
+        startTime: item.startTime ? formatToDate(item.startTime) : '',
+        endTime: item.endTime ? formatToDate(item.endTime) : '',
+        changeTime: item.changeTime ? formatToDate(item.changeTime) : '',
+      })),
+    getOutsourcePersonPerformanceDetailAttendInfo: (state) =>
+      state.outsourcePersonPerformanceDetailAttendInfo.map((item) => ({
+        ...item,
+        userNameCn: `${item.userNameCn}${item.userNameEn ? '/' + item.userNameEn : ''}`,
+        lastMonthYuHoursTotal: parseFloat(item.lastMonthYuHours || '0').toFixed(2),
+        lastMonthShiHoursTotal: parseFloat(item.lastMonthShiHours || '0').toFixed(2),
+        currentMonthYuHoursTotal: parseFloat(item.currentMonthYuHours || '0').toFixed(2),
+        currentMonthShiHoursTotal: parseFloat(item.currentMonthShiHours || '0').toFixed(2),
+        totalChaHoursTotal: parseFloat(item.totalChaHours || '0').toFixed(2),
+        overDouble: item.overDouble || '1.5',
+        overHoursTotal: (
+          parseFloat(item.overHours || '0') * parseFloat(item.overDouble || '1.5')
+        ).toFixed(2),
+        holidayOverDouble: item.holidayOverDouble || '3',
+        holidayOverHoursTotal: (
+          parseFloat(item.holidayOverHours || '0') * parseFloat(item.holidayOverDouble || '3')
+        ).toFixed(2),
+        restOverDouble: item.restOverDouble || '2',
+        restOverHoursTotal: (
+          parseFloat(item.restOverHours || '0') * parseFloat(item.restOverDouble || '2')
+        ).toFixed(2),
+        daixinBingjiaDouble: item.daixinBingjiaDouble || '1',
+        daixinBingjiaHoursTotal: (
+          parseFloat(item.daixinBingjiaHours || '0') * parseFloat(item.daixinBingjiaDouble || '1')
+        ).toFixed(2),
+        kouxinBingjiaDouble: item.kouxinBingjiaDouble || '0.4',
+        kouxinBingjiaHoursTotal: (
+          parseFloat(item.kouxinBingjiaHours || '0') * parseFloat(item.kouxinBingjiaDouble || '0.4')
+        ).toFixed(2),
+        shijiaDouble: item.shijiaDouble || '1',
+        shijiaHoursTotal: (
+          parseFloat(item.shijiaHours || '0') * parseFloat(item.shijiaDouble || '1')
+        ).toFixed(2),
+        nianjianDouble: item.nianjianDouble || '1',
+        nianjianHoursTotal: (
+          parseFloat(item.nianjianHours || '0') * parseFloat(item.nianjianDouble || '1')
+        ).toFixed(2),
+        hunjiaDouble: item.hunjiaDouble || '1',
+        hunjiaHoursTotal: (
+          parseFloat(item.hunjiaHours || '0') * parseFloat(item.hunjiaDouble || '1')
+        ).toFixed(2),
+        sanjiaDouble: item.sanjiaDouble || '1',
+        sanjiaHoursTotal: (
+          parseFloat(item.sanjiaHours || '0') * parseFloat(item.sanjiaDouble || '1')
+        ).toFixed(2),
+        otherDaixinDouble: item.otherDaixinDouble || '1',
+        otherDaixinHoursTotal: (
+          parseFloat(item.otherDaixinHours || '0') * parseFloat(item.otherDaixinDouble || '1')
+        ).toFixed(2),
+        utDouble: item.utDouble || '1',
+        utHoursTotal: (parseFloat(item.utHours || '0') * parseFloat(item.utDouble || '1')).toFixed(
+          2,
+        ),
+      })),
+    getOutsourcePersonPerformanceDetailSheBaoInfo: (state) => {
+      const shebaoStandardMap: Record<string, string> = {
+        '1': '最低基数',
+        '2': '基本工资',
+        '3': '特殊基数',
+      };
+      return state.outsourcePersonPerformanceDetailSheBaoInfo.map((item) => ({
+        ...item,
+        shebaoShijiaoTime: item.shebaoShijiaoTime ? formatToMonth(item.shebaoShijiaoTime) : '',
+        serviceMoney:
+          item.serviceMoney != '公式'
+            ? parseFloat(item.serviceMoney || '0').toFixed(2)
+            : item.serviceMoney,
+        companyTotal: parseFloat(((item?.companyTotal || 0) - (item.yijinCompany || 0)).toFixed(2)),
+        personTotal: parseFloat(((item?.personTotal || 0) - (item.yijinPerson || 0)).toFixed(2)),
+        shangbaoTotal: parseFloat(
+          (
+            parseFloat(((item?.companyTotal || 0) - (item.yijinCompany || 0)).toFixed(2)) +
+            parseFloat(((item?.personTotal || 0) - (item.yijinPerson || 0)).toFixed(2)) +
+            parseFloat(item.serviceMoney != '公式' ? item.serviceMoney?.toString() || '0' : '0')
+          ).toString(),
+        ).toFixed(2),
+        shebaoStandard: shebaoStandardMap[item.shebaoStandard || ''] || '',
+      }));
+    },
+    getOutsourcePersonPerformanceDetailCostInfo: (state) => {
+      const costArr = [];
+      const costMap = state.outsourcePersonPerformanceDetail;
+      // costArr.push({
+
+      // })
+      return costArr;
+    },
   },
   actions: {
     /**
@@ -750,7 +909,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       params.append('city', this.formStateMonthSalary.city || '');
       params.append('bId', this.formStateMonthSalary.bId || '');
       params.append('positionId', this.formStateMonthSalary.positionId || '');
-      params.append('currentStatus', this.formStateMonthSalary.currentStatus || "");
+      params.append('currentStatus', this.formStateMonthSalary.currentStatus || '');
       params.append('userName', this.formStateMonthSalary.userName || '');
       params.append('companyName', this.formStateMonthSalary.companyName || '');
       params.append('companyArrange', this.formStateMonthSalary.companyArrange || '');
@@ -765,6 +924,51 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           this.outsourceMonthSalaryList = res.info.pager.list as OutsourceMonthSalaryItem[];
           this.outsourceMonthSalaryList.push(totalNum);
           this.pageOutsourceMonthSalaryList = {
+            pageNumber: res.info.pager.pageNumber,
+            pageSize: res.info.pager.pageSize,
+            total: res.info.pager.totalCount,
+          } as PageItem;
+        }
+        return res;
+      } catch (error) {
+        this.monthSalaryIsLoading = false;
+        return null;
+      }
+    },
+    /**
+     * 查外包业绩分配
+     */
+    async queryOutsourceMonthSalaryOffer() {
+      if (this.monthSalaryIsLoading) {
+        return;
+      }
+      if (!this.formStateMonthSalaryOffer.yearAndMonth) {
+        this.formStateMonthSalaryOffer.yearAndMonth = currentDate('YYYY-MM');
+      }
+      if (this.formStateMonthSalaryOffer.currentStatus == '1') {
+        this.formStateMonthSalaryOffer.currentStatus = '';
+      }
+      const params = new FormData();
+      params.append('pageNumber', this.pageOutsourceMonthSalaryOfferList.pageNumber.toString());
+      params.append('pageSize', this.pageOutsourceMonthSalaryOfferList.pageSize.toString());
+      params.append('city', this.formStateMonthSalaryOffer.city || '');
+      params.append('bId', this.formStateMonthSalaryOffer.bId || '');
+      params.append('positionId', this.formStateMonthSalaryOffer.positionId || '');
+      params.append('currentStatus', this.formStateMonthSalaryOffer.currentStatus || '');
+      params.append('userName', this.formStateMonthSalaryOffer.userName || '');
+      params.append('companyName', this.formStateMonthSalaryOffer.companyName || '');
+      params.append('companyArrange', this.formStateMonthSalaryOffer.companyArrange || '');
+      params.append('jobType', this.formStateMonthSalaryOffer.jobType || '');
+      params.append('yearAndMonth', this.formStateMonthSalaryOffer.yearAndMonth || '');
+      this.monthSalaryIsLoading = true;
+      try {
+        const res = await fetchApi.queryOutsourceMonthSalary(params);
+        if (res.code == 1) {
+          this.monthSalaryIsLoading = false;
+          const totalNum = res.info.totalNum;
+          this.outsourceMonthSalaryOfferList = res.info.pager.list as OutsourceMonthSalaryItem[];
+          this.outsourceMonthSalaryOfferList.push(totalNum);
+          this.pageOutsourceMonthSalaryOfferList = {
             pageNumber: res.info.pager.pageNumber,
             pageSize: res.info.pager.pageSize,
             total: res.info.pager.totalCount,
@@ -887,7 +1091,9 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       this.outsourceBasicForm = {
         ...this.outsourcePersonDetail,
         currentStatus: '2',
-        realEntryTime: this.outsourcePersonDetail.planEntryTime ? formatToDate(this.outsourcePersonDetail.planEntryTime) : '',
+        realEntryTime: this.outsourcePersonDetail.planEntryTime
+          ? formatToDate(this.outsourcePersonDetail.planEntryTime)
+          : '',
       };
     },
     /**
@@ -908,6 +1114,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       formData.append('mId', this.outsourceBasicForm.mId?.toString() || '');
       formData.append('market', this.outsourceBasicForm.market || '');
       formData.append('userNameEn', this.outsourceBasicForm.userNameEn || '');
+      formData.append('haveZhao', this.outsourceBasicForm.haveZhao || '');
       const res = await fetchApi.addUpdateOutsourceBasic(formData);
       if (res.code == 1) {
         this.outsourcePersonDetail = {
@@ -964,7 +1171,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       }
       return res;
     },
-     /**
+    /**
      * 查询外包人员薪资
      */
     async queryOutsourceLeijiChae(personId?: string, jinXinMonth?: string) {
@@ -1081,7 +1288,12 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       try {
         const formData = new FormData();
         formData.append('city', this.outsourceSocialSecurityForm.shebaoCity || '');
-        formData.append('time', this.outsourceSocialSecurityForm.shebaoYujiaoTime || currentDate());
+        formData.append(
+          'time',
+          this.outsourceSocialSecurityForm.shebaoShijiaoTime ||
+            this.outsourceSocialSecurityForm.shebaoYujiaoTime ||
+            currentDate(),
+        );
         const res = await fetchApi.queryOutsourceShebaoContractRates(formData);
         if (res.code == 1) {
           this.outsourceSocialSecurityContractRatesList =
@@ -1362,7 +1574,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       const res = await fetchApi.queryEsignTemplateBySign(TemplateDetail);
       return res;
     },
-     /**
+    /**
      * 签署模板离职申请
      * @param data TemplateDetail
      * @returns
@@ -1434,7 +1646,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     /**
      * 查询外包公司年度薪资
      */
-    async queryOutsourceYearTotalPre(personId: string,jinxinMonth: string) {
+    async queryOutsourceYearTotalPre(personId: string, jinxinMonth: string) {
       const formData = new FormData();
       formData.append('personId', personId || '');
       formData.append('jinxinMonth', jinxinMonth || '');
@@ -1496,7 +1708,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       }
       return res;
     },
-     /**
+    /**
      * 信息表签署文件上传
      */
     async uploadMessageEsignFile(file) {
@@ -1505,10 +1717,10 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       const res = await fetchApi.uploadMessageEsignFile(formData);
       return res;
     },
-     /**
+    /**
      * 同步简历名称
      */
-    async updateUserName(resumeId:string,rId?:string) {
+    async updateUserName(resumeId: string, rId?: string) {
       const formData = new FormData();
       formData.append('resumeId', resumeId || '');
       formData.append('rId', rId || '');
@@ -1519,7 +1731,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
      * 文件预览
      * @param originalPathBlobPath 文件路径
      */
-    handleFileYulanInfo(originalPathBlobPath: string,orginalPathBlobType: number) {
+    handleFileYulanInfo(originalPathBlobPath: string, orginalPathBlobType: number) {
       this.orginalPathBlobPathFlag = true;
       this.orginalPathBlobPath = originalPathBlobPath;
       this.orginalPathBlobType = orginalPathBlobType;
@@ -1557,12 +1769,13 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       formData.append('companyName', outsourcePersonMoney.companyName || '');
       const res = await fetchApi.outsourcePersonMoney(formData);
       if (res.code == 1) {
-          this.offerOutsourceMonthSalary = res.info.offerOutsourceMonthSalary as OutsourceMonthSalaryItem[];
-          this.offerOutsourceSheBao = res.info.offerOutsourceSheBao as OutsourceSheBaoItem[];
-        }
+        this.offerOutsourceMonthSalary = res.info
+          .offerOutsourceMonthSalary as OutsourceMonthSalaryItem[];
+        this.offerOutsourceSheBao = res.info.offerOutsourceSheBao as OutsourceSheBaoItem[];
+      }
       return res;
     },
-     /**
+    /**
      * 外包人员更新店铺简称
      */
     async updateOutsourcePersonMarketName(outsourcePerson: OutsourcePersonItem) {
@@ -1574,6 +1787,30 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       formData.append('marketName', outsourcePerson?.market.toString() || '');
       const res = await fetchApi.outsourcePersonMarketName(formData);
       return res;
+    },
+    async handleOutsourceMonthSalaryOfferAllocation(record) {
+      this.outsourcePersonPerformanceDetailFlag = true;
+      this.outsourcePersonPerformanceDetail = record as OutsourceMonthSalaryItem;
+      const formData = new FormData();
+      formData.append('personId', record.personId || '');
+      formData.append('jinxinMonth', record.jinxinMonth || '');
+      const resPerson = await fetchApi.queryOutsourcePersonByPersonId(formData);
+      if (resPerson.code == 1) {
+        this.outsourcePersonPerformanceDetailPersonInfo = resPerson.info as OutsourcePersonItem[];
+      }
+      const resSalary = await fetchApi.queryOutsourceSalaryByPersonId(formData);
+      if (resSalary.code == 1) {
+        this.outsourcePersonPerformanceDetailSalaryInfo = resSalary.info as OutsourceSalaryItem[];
+      }
+      const resAttend = await fetchApi.queryOutsourceAttendMonthPersonId(formData);
+      if (resAttend.code == 1) {
+        this.outsourcePersonPerformanceDetailAttendInfo = resAttend.info as OutsourceAttendItem[];
+      }
+      const resSheBao = await fetchApi.queryOutsourceShebaoByPersonId(formData);
+      if (resSheBao.code == 1) {
+        this.outsourcePersonPerformanceDetailSheBaoInfo =
+          resSheBao.info as OutsourceShebaoInfoItem[];
+      }
     },
   },
 });

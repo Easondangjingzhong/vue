@@ -101,6 +101,7 @@ export interface OutsourcePersonItem {
   idPhotoFan: string;
   idPhotoZheng: string;
   allowance: string;
+  haveZhao: string;
 }
 /**
  * 外包查询个人信息
@@ -440,6 +441,65 @@ export interface OutsourceMonthSalaryItem {
 
   // 状态
   currentStatus: string;
+  //业绩分配
+  companyShebao?: string;//公司社保金额
+  companyYijin?: string;//公司一金金额
+  moneyCahrgeTax?: string;//总营收费含税
+  moneyCahrgeTaxMoney?: string;//总营收费税金
+  moneyCahrgeRate?: string;//总营收费税率
+  moneyChargeAfter?: string;//总营收费税后金额
+  manageChargeTax?: string;//管理费金额
+  manageChargeTaxMoney?: string;//管理费税金
+  manageChargeRate?: string;//管理费税率
+  manageChargeAfter?: string;//管理费税后金额
+  zhuanChargeTax?: string;//转换金额
+  zhuanChargeTaxMoney?: string;//转换税金
+  zhuanChargeRate?: string;//转换税率
+  zhuanChargeAfter?: string;//转换税后金额
+  totalCharge?: string;//总收费金额
+  welfare?: string;//福利金额
+  otherPay?: string;//其他支付金额
+  companyShebaoKe?: string;//公司社保金额(客户)
+  companyYijinKe?: string;//公司一金金额(客户)
+  keShangbao?: string;//商业保险(客户)
+  shiShangbao?: string;//实际商业保险
+  welfareKe?: string;//福利金额(客户)
+  otherPayKe?: string;//其他支付金额(客户)
+  rMoney?: string;
+  rRatio?: string;
+  cMoney?: string;
+  cRatio?: string;
+  dMoney?: string;
+  dRatio?: string;
+  d2Money?: string;
+  d2Ratio?: string;
+  d2Ratio?: string;
+  fMoney?: string;
+  fRatio?: string;
+  offerMoneyTax?: string;
+  offerMoney?: string;
+  recommendRecruitId?: string;
+  recommendRealNameEn?: string;
+  recruitId?: string;
+  realNameEn?: string;
+  discoverRecruitId?: string;
+  discoverRealNameEn?: string;
+  supportRecruitId?: string;
+  supportRealNameEn?: string;
+  discover2RecruitId?: string;
+  discover2RealNameEn?: string;
+  serviceRecruitId?: string;
+  serviceRealNameEn?: string;
+  otherPayKeStr?: string;
+  otherPayStr?: string;
+  welfareList?: Array<WelfareItem>;
+}
+export interface WelfareItem {
+  id?: string;
+  collectId?: string;
+  personId?: string;
+  name?: string;
+  money?: string;
 }
 /**
  * 外包分页
@@ -764,6 +824,10 @@ export interface OutsourceFormulaItem {
   nianJia: string; // private String nianJia;
   youzhaoRate: string; // private String youzhaoRate;
   wuzhaoRate: string; // private String wuzhaoRate;
+  keZhaoGongShi: string; // private String wuzhaoRate;
+  gongZhaoGongShi: string; // private String wuzhaoRate;
+  keZhaoGongShiStudent: string; // private String wuzhaoRate;
+  gongZhaoGongShiStudent: string; // private String wuzhaoRate;
 }
 
 export interface OutsourcePersonMoneyItem {

@@ -1,7 +1,7 @@
 <template>
 <a-row :gutter="24">
   <a-col :span="24" class="comprehensive-contract-info">
-      <div class="comprehensive-contract-info-title">薪资标准</div>
+      <div class="comprehensive-contract-info-title">业绩分配</div>
     </a-col>
 </a-row>
 <a-row :gutter="24">
@@ -9,7 +9,7 @@
     <a-table
       size="small"
       :columns="columns"
-      :data-source="getOutsourcePersonPerformanceDetailSalaryInfo"
+      :data-source="getOutsourceContractList"
       :pagination="false"
     >
   </a-table>
@@ -24,77 +24,71 @@ import _ from 'lodash';
 import type { TableColumnsType } from 'ant-design-vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { getOutsourcePersonPerformanceDetailSalaryInfo } = storeToRefs(outsourceDetailStore);
+const { getOutsourceContractList } = storeToRefs(outsourceDetailStore);
 
 const columns:TableColumnsType = [
   {
-    title: '基础薪资',
-    dataIndex: 'dixin',
-    key: 'dixin',
+    title: '类型',
+    dataIndex: 'offerTime',
+    key: 'offerTime',
     width: 40,
   },
   {
-    title: '餐补',
-    dataIndex: 'canbu',
-    key: 'canbu',
-    width: 40,
-  },
-   {
-    title: '津贴',
-    dataIndex: 'jintie',
-    key: 'jintie',
-    width: 40,
-  },
-   {
-    title: '全勤',
-    dataIndex: 'quanqin',
-    key: 'quanqin',
-    width: 40,
-  },
-   {
-    title: '总计',
-    dataIndex: 'zonghe',
-    key: 'zonghe',
-    width: 40,
-  },
-   {
-    title: '个人',
-    dataIndex: 'geti',
-    key: 'geti',
+    title: '顾问',
+    dataIndex: 'joinTime',
+    key: 'joinTime',
     width: 40,
   },
    {
     title: '团队',
-    dataIndex: 'tuanti',
-    key: 'tuanti',
+    dataIndex: 'joinTime',
+    key: 'joinTime',
     width: 40,
   },
    {
-    title: '特殊',
-    dataIndex: 'teshu',
-    key: 'teshu',
+    title: '税前管理',
+    dataIndex: 'joinTime',
+    key: 'joinTime',
     width: 40,
   },
    {
-    title: '激励',
-    dataIndex: 'jili',
-    key: 'jili',
+    title: '税后管理',
+    dataIndex: 'joinTime',
+    key: 'joinTime',
     width: 40,
   },
    {
-    title: '达成',
-    dataIndex: 'dacheng',
-    key: 'dacheng',
+    title: '比例',
+    dataIndex: 'joinTime',
+    key: 'joinTime',
     width: 40,
   },
-   {
-    title: '商保',
-    dataIndex: 'shangbao',
-    key: 'shangbao',
+    {
+    title: '税前转换',
+    dataIndex: 'joinTime',
+    key: 'joinTime',
     width: 40,
   },
-   {
-    title: '残保',
+    {
+    title: '税后转换',
+    dataIndex: 'joinTime',
+    key: 'joinTime',
+    width: 40,
+  },
+    {
+    title: '比例',
+    dataIndex: 'joinTime',
+    key: 'joinTime',
+    width: 40,
+  },
+    {
+    title: '税前总计',
+    dataIndex: 'joinTime',
+    key: 'joinTime',
+    width: 40,
+  },
+    {
+    title: '税后总计',
     dataIndex: 'joinTime',
     key: 'joinTime',
     width: 40,

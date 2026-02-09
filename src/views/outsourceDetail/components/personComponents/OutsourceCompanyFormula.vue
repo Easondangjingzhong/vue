@@ -102,6 +102,23 @@
         </template>
         <a-tag>查看</a-tag>
       </a-popover>
+      <a-popover v-if="column.key === 'manageGongShi' && (record.keZhaoGongShi || record.gongZhaoGongShi || record.keZhaoGongShiStudent || record.gongZhaoGongShiStudent)">
+        <template #content>
+          <div v-if="record.keZhaoGongShi">
+            客户管理(社会)：{{ record.keZhaoGongShi }}
+          </div>
+          <div v-if="record.gongZhaoGongShi">
+            公司管理(社会)：{{ record.gongZhaoGongShi }}
+          </div>
+          <div v-if="record.keZhaoGongShiStudent">
+            客户管理(学生)：{{ record.keZhaoGongShiStudent }}
+          </div>
+          <div v-if="record.gongZhaoGongShiStudent">
+            公司管理(学生)：{{ record.gongZhaoGongShiStudent }}
+          </div>
+        </template>
+        <a-tag>查看</a-tag>
+      </a-popover>
       <span v-if="column.key == 'operation'">
         <FormOutlined @click="handleEditClick(record)"/>
       </span>
@@ -224,7 +241,7 @@ const columns:TableColumnsType = [
     title: '薪资日',
     dataIndex: 'xinZiRi',
     key: 'xinZiRi',
-    width: 30,
+    width: 40,
   },
   {
     title: '年假',
@@ -302,6 +319,12 @@ const columns:TableColumnsType = [
     title: '全勤调差',
     dataIndex: 'quanqinTiaocha',
     key: 'quanqinTiaocha',
+    width: 30,
+  },
+  {
+    title: '管理公式',
+    dataIndex: 'manageGongShi',
+    key: 'manageGongShi',
     width: 30,
   },
    {

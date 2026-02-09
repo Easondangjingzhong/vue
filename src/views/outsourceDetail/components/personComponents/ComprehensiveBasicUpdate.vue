@@ -92,6 +92,16 @@
             </a-form-item>
           </a-col>
         </a-row>
+         <a-row :gutter="24" v-if="outsourceBasicForm.currentStatus != '4'">
+          <a-col :span="12">
+            <a-form-item name="haveZhao" label="招聘费">
+              <a-select v-model:value="outsourceBasicForm.haveZhao">
+                <a-select-option value="无招">无招</a-select-option>
+                <a-select-option value="有招">有招</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
         <a-row :gutter="24">
           <a-col :span="24" style="text-align: right;">
             <a-button type="primary" :loading="iconLoading" html-type="submit">

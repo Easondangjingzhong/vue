@@ -9,9 +9,15 @@
     <a-table
       size="small"
       :columns="columns"
-      :data-source="getOutsourceContractList"
+      :data-source="getOutsourcePersonPerformanceDetailPersonInfo"
       :pagination="false"
     >
+    <template #bodyCell="{ column, record }">
+    <a-tag v-if="column.key === 'currentStatus' && record.currentStatus === '1'" color="orange">待入</a-tag>
+     <a-tag v-if="column.key === 'currentStatus' && record.currentStatus === '2'" color="green">在职</a-tag>
+     <a-tag v-if="column.key === 'currentStatus' && record.currentStatus === '3'" color="red">离职</a-tag>
+     <a-tag v-if="column.key === 'currentStatus' && record.currentStatus === '4'" color="red">未入</a-tag>
+     </template>
   </a-table>
   </a-col>
 </a-row>
@@ -24,9 +30,47 @@ import _ from 'lodash';
 import type { TableColumnsType } from 'ant-design-vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { getOutsourceContractList } = storeToRefs(outsourceDetailStore);
+const { getOutsourcePersonPerformanceDetailPersonInfo } = storeToRefs(outsourceDetailStore);
 
 const columns:TableColumnsType = [
+  {
+      title: '中文姓名',
+      dataIndex: 'userNameCn',
+      key: 'userNameCn',
+      fixed: 'left',
+      width: 20,
+      ellipsis: true,
+    },
+    {
+      title: '英文姓名',
+      dataIndex: 'userNameEn',
+      key: 'userNameEn',
+      fixed: 'left',
+      width: 20,
+      ellipsis: true,
+    },
+    {
+      title: '性别',
+      dataIndex: 'sex',
+      key: 'sex',
+      fixed: 'left',
+      width: 20,
+      ellipsis: true,
+    },
+    {
+        title: '公司',
+        dataIndex: 'companyName',
+        key: 'companyName',
+        width: 25,
+        ellipsis: true,
+      },
+      {
+        title: '状态',
+        dataIndex: 'currentStatus',
+        key: 'currentStatus',
+        width: 20,
+        ellipsis: true,
+      },
   {
     title: 'OFFER日期',
     dataIndex: 'offerTime',
@@ -35,32 +79,32 @@ const columns:TableColumnsType = [
   },
   {
     title: '入职日期',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'realEntryTime',
+    key: 'realEntryTime',
     width: 40,
   },
    {
     title: '预离日期',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'planLeaveTime',
+    key: 'planLeaveTime',
     width: 40,
   },
    {
     title: '实际离职',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'realLeaveTime',
+    key: 'realLeaveTime',
     width: 40,
   },
    {
     title: '合同期',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'contractPeriod',
+    key: 'contractPeriod',
     width: 40,
   },
    {
     title: '性质',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'jobType',
+    key: 'jobType',
     width: 40,
   },
 ]

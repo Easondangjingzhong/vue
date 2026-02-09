@@ -1,17 +1,17 @@
 <template>
   <div class="resume-content-search">
-    <a-form :model="formStateMonthSalary" @finish="onSearch">
+    <a-form :model="formStateMonthSalaryOffer" @finish="onSearch">
       <a-row :gutter="24">
          <a-col :span="3">
           <a-form-item name="userName" label="姓名">
-            <a-input v-model:value="formStateMonthSalary.userName"/>
+            <a-input v-model:value="formStateMonthSalaryOffer.userName"/>
           </a-form-item>
         </a-col>
         <a-col :span="3">
           <a-form-item name="city" label="城市">
             <a-select
               optionFilterProp="label"
-              v-model:value="formStateMonthSalary.city"
+              v-model:value="formStateMonthSalaryOffer.city"
               :options="getProvince"
               :showArrow="false"
               showSearch
@@ -23,7 +23,7 @@
           <a-form-item name="companyName" label="公司">
             <a-select
               optionFilterProp="label"
-              v-model:value="formStateMonthSalary.companyName"
+              v-model:value="formStateMonthSalaryOffer.companyName"
               :options="getOutsourceCompanyAll"
               :showArrow="false"
               showSearch
@@ -35,7 +35,7 @@
           <a-form-item name="bId" label="品牌">
             <a-select
               optionFilterProp="label"
-              v-model:value="formStateMonthSalary.bId"
+              v-model:value="formStateMonthSalaryOffer.bId"
               :options="getOutsourceBrand"
               :showArrow="false"
               showSearch
@@ -47,7 +47,7 @@
           <a-form-item name="positionId" label="职位">
             <a-select
               optionFilterProp="label"
-              v-model:value="formStateMonthSalary.positionId"
+              v-model:value="formStateMonthSalaryOffer.positionId"
               :options="getOutsourcePosition"
               :showArrow="false"
               showSearch
@@ -59,7 +59,7 @@
           <a-form-item name="jobType" label="性质">
             <a-select
               optionFilterProp="label"
-              v-model:value="formStateMonthSalary.jobType"
+              v-model:value="formStateMonthSalaryOffer.jobType"
               :showArrow="false"
               showSearch
               allowClear
@@ -72,7 +72,7 @@
         <a-col :span="3">
           <a-form-item name="yearAndMonth" label="计薪">
             <a-date-picker
-                  v-model:value="formStateMonthSalary.yearAndMonth"
+                  v-model:value="formStateMonthSalaryOffer.yearAndMonth"
                   value-format="YYYY-MM"
                   picker="month"
                 />
@@ -93,7 +93,7 @@
       rowKey="key"
       :loading="monthSalaryIsLoading"
       :columns="columnsOutsourceMonthSalary"
-      :dataSource="getOutsourceMonthSalaryList"
+      :dataSource="getOutsourceMonthSalaryOfferList"
       :scroll="{ x: 2100 }"
     >
     <template #bodyCell="{ column, record }">
@@ -112,6 +112,10 @@
             <template #overlay>
               <a-menu>
                 <a-menu-item>
+                  <a href="javascript:;">业绩核对</a>
+                </a-menu-item>
+                 <a-menu-item>
+                  <a href="javascript:;" @click="handleOutsourceMonthSalaryOfferAllocation(record)">业绩分配</a>
                 </a-menu-item>
               </a-menu>
             </template>
@@ -122,10 +126,10 @@
     </a-row>
     <a-row style="justify-content: end; margin-top: 10px">
       <a-pagination
-        v-model:current="pageOutsourceMonthSalaryList.pageNumber"
-        :pageSize="pageOutsourceMonthSalaryList.pageSize"
-        @change="handleOutsourceMonthSalaryListData"
-        :total="pageOutsourceMonthSalaryList.total"
+        v-model:current="pageOutsourceMonthSalaryOfferList.pageNumber"
+        :pageSize="pageOutsourceMonthSalaryOfferList.pageSize"
+        @change="handleOutsourceMonthSalaryOfferListData"
+        :total="pageOutsourceMonthSalaryOfferList.total"
         :showSizeChanger="false"
         :showQuickJumper="true"
         :hideOnSinglePage="true"
@@ -140,6 +144,7 @@
       </a-pagination>
     </a-row>
   </div>
+  <OutsourceContentMonthSalaryOfferDetail/>
 </template>
 
 <script setup lang="ts">
@@ -148,9 +153,10 @@ import _ from 'lodash';
 import { MenuUnfoldOutlined } from '@ant-design/icons-vue';
 import type { TableColumnsType } from 'ant-design-vue';
 import { SearchMonthSalaryItem } from '/@/api/outsourceDetail/model';
+import OutsourceContentMonthSalaryOfferDetail from './OutsourceContentMonthSalaryOfferDetail.vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { monthSalaryIsLoading,pageOutsourceMonthSalaryList,getOutsourceMonthSalaryList,formStateMonthSalary, getProvince, getOutsourceBrand, getOutsourceCompanyAll, getOutsourcePosition, outsourceFormulaFlag, outsourceMonthSalaryForm, outsourceMonthSalaryFlag,outsourceMonthSalaryShiJiFlag} = storeToRefs(outsourceDetailStore);
+const { monthSalaryIsLoading,pageOutsourceMonthSalaryOfferList,getOutsourceMonthSalaryOfferList,formStateMonthSalaryOffer, getProvince, getOutsourceBrand, getOutsourceCompanyAll, getOutsourcePosition } = storeToRefs(outsourceDetailStore);
 const columnsOutsourceMonthSalary:TableColumnsType = [
   {
     title: '客户信息',
@@ -222,24 +228,26 @@ const columnsOutsourceMonthSalary:TableColumnsType = [
   {
     title: '',
     children: [
-      { title: '操作', dataIndex: 'operation', key: 'operation', fixed: 'right', width: 30, },
+      { title: '操作', dataIndex: 'operation', key: 'operation', fixed: 'right', width: 25, },
     ]
   },
 ]
 const clearFromState = () => {
-  formStateMonthSalary.value = {} as SearchMonthSalaryItem;
+  formStateMonthSalaryOffer.value = {} as SearchMonthSalaryItem;
 }
 const onSearch = () => {
-  console.log(formStateMonthSalary.value);
-  pageOutsourceMonthSalaryList.value = {
-      ...pageOutsourceMonthSalaryList.value,
+  pageOutsourceMonthSalaryOfferList.value = {
+      ...pageOutsourceMonthSalaryOfferList.value,
       pageNumber: 1,
     }
-  outsourceDetailStore.queryOutsourceMonthSalary();
+  outsourceDetailStore.queryOutsourceMonthSalaryOffer();
 }
 onSearch();
-const handleOutsourceMonthSalaryListData = () => {
-  outsourceDetailStore.queryOutsourceMonthSalary();
+const handleOutsourceMonthSalaryOfferListData = () => {
+  outsourceDetailStore.queryOutsourceMonthSalaryOffer();
+}
+const handleOutsourceMonthSalaryOfferAllocation = (record) => {
+  outsourceDetailStore.handleOutsourceMonthSalaryOfferAllocation(_.cloneDeep(record));
 }
 </script>
 

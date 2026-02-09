@@ -9,8 +9,9 @@
     <a-table
       size="small"
       :columns="columns"
-      :data-source="getOutsourceContractList"
+      :data-source="getOutsourcePersonPerformanceDetailAttendInfo"
       :pagination="false"
+      :scroll="{ x: 1600 }"
     >
   </a-table>
   </a-col>
@@ -24,127 +25,127 @@ import _ from 'lodash';
 import type { TableColumnsType } from 'ant-design-vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { getOutsourceContractList } = storeToRefs(outsourceDetailStore);
+const { getOutsourcePersonPerformanceDetailAttendInfo } = storeToRefs(outsourceDetailStore);
 
 const columns:TableColumnsType = [
   {
     title: '全勤工时',
-    dataIndex: 'offerTime',
-    key: 'offerTime',
+    dataIndex: 'quanqinHours',
+    key: 'quanqinHours',
     width: 40,
   },
   {
     title: '预估',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'isYugu',
+    key: 'isYugu',
     width: 40,
   },
    {
     title: '上月预估',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'lastMonthYuHoursTotal',
+    key: 'lastMonthYuHoursTotal',
     width: 40,
   },
    {
     title: '上月实际',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'lastMonthShiHoursTotal',
+    key: 'lastMonthShiHoursTotal',
     width: 40,
   },
    {
     title: '本月预估',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'currentMonthYuHoursTotal',
+    key: 'currentMonthYuHoursTotal',
     width: 40,
   },
    {
     title: '本月实际',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'currentMonthShiHoursTotal',
+    key: 'currentMonthShiHoursTotal',
     width: 40,
   },
    {
     title: '累计差额',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'totalChaHoursTotal',
+    key: 'totalChaHoursTotal',
     width: 40,
   },
    {
     title: '正常加班',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'overHoursTotal',
+    key: 'overHoursTotal',
     width: 40,
   },
    {
     title: '国定加班',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'holidayOverHoursTotal',
+    key: 'holidayOverHoursTotal',
     width: 40,
   },
    {
     title: '休息加班',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'restOverHoursTotal',
+    key: 'restOverHoursTotal',
     width: 40,
   },
    {
     title: '带薪病假',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'daixinBingjiaHoursTotal',
+    key: 'daixinBingjiaHoursTotal',
     width: 40,
   },
    {
     title: '扣薪病假',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'kouxinBingjiaHoursTotal',
+    key: 'kouxinBingjiaHoursTotal',
     width: 40,
   },
    {
     title: '事假',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'shijiaHoursTotal',
+    key: 'shijiaHoursTotal',
     width: 40,
   },
    {
     title: '年假',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'nianjianHoursTotal',
+    key: 'nianjianHoursTotal',
     width: 40,
   },
    {
     title: '婚假',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'hunjiaHoursTotal',
+    key: 'hunjiaHoursTotal',
     width: 40,
   },
    {
     title: '丧假',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'sanjiaHoursTotal',
+    key: 'sanjiaHoursTotal',
     width: 40,
   },
    {
     title: '其它带薪',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'otherDaixinHoursTotal',
+    key: 'otherDaixinHoursTotal',
     width: 40,
   },
    {
     title: '迟到',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'lateHours',
+    key: 'lateHours',
     width: 40,
   },
    {
     title: '全勤',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'isQuanqin',
+    key: 'isQuanqin',
     width: 40,
   },
    {
     title: 'UT',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'utHoursTotal',
+    key: 'utHoursTotal',
     width: 40,
   },
 ]

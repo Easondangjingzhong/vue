@@ -9,8 +9,9 @@
     <a-table
       size="small"
       :columns="columns"
-      :data-source="getOutsourceContractList"
+      :data-source="getOutsourcePersonPerformanceDetailSheBaoInfo"
       :pagination="false"
+      :scroll="{ x: 1600 }"
     >
   </a-table>
   </a-col>
@@ -24,133 +25,133 @@ import _ from 'lodash';
 import type { TableColumnsType } from 'ant-design-vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { getOutsourceContractList } = storeToRefs(outsourceDetailStore);
+const { getOutsourcePersonPerformanceDetailSheBaoInfo } = storeToRefs(outsourceDetailStore);
 
 const columns:TableColumnsType = [
   {
     title: '缴纳单位',
-    dataIndex: 'offerTime',
-    key: 'offerTime',
+    dataIndex: 'shebaoCompany',
+    key: 'shebaoCompany',
     width: 40,
   },
   {
     title: '单位合计',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'companyTotal',
+    key: 'companyTotal',
     width: 40,
   },
    {
     title: '个人合计',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'personTotal',
+    key: 'personTotal',
     width: 40,
   },
    {
     title: '补差',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'buchaMoney',
+    key: 'buchaMoney',
     width: 40,
   },
    {
     title: '手续',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'serviceMoney',
+    key: 'serviceMoney',
     width: 40,
   },
    {
     title: '社保总计',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'shangbaoTotal',
+    key: 'shangbaoTotal',
     width: 40,
   },
    {
     title: '客商',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'keShangbao',
+    key: 'keShangbao',
     width: 40,
   },
    {
     title: '实商',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'shangbao',
+    key: 'shangbao',
     width: 40,
   },
    {
     title: '社保标准',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'shebaoStandard',
+    key: 'shebaoStandard',
     width: 40,
   },
    {
     title: '养老基数',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'yanglaoJishu',
+    key: 'yanglaoJishu',
     width: 40,
   },
    {
     title: '单位',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'yanglaoCompany',
+    key: 'yanglaoCompany',
     width: 40,
   },
    {
     title: '个人',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'yanglaoPerson',
+    key: 'yanglaoPerson',
     width: 40,
   },
    {
     title: '失业基数',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'shiyeJishu',
+    key: 'shiyeJishu',
     width: 40,
   },
    {
     title: '单位',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'shiyeCompany',
+    key: 'shiyeCompany',
     width: 40,
   },
    {
     title: '个人',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'shiyePerson',
+    key: 'shiyePerson',
     width: 40,
   },
    {
     title: '医疗基数',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'yiliaoJishu',
+    key: 'yiliaoJishu',
     width: 40,
   },
    {
     title: '单位',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'yiliaoCompany',
+    key: 'yiliaoCompany',
     width: 40,
   },
    {
     title: '个人',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'yiliaoPerson',
+    key: 'yiliaoPerson',
     width: 40,
   },
    {
     title: '大病基数',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'dabingJishu',
+    key: 'dabingJishu',
     width: 40,
   },
    {
     title: '单位',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'dabingCompany',
+    key: 'dabingCompany',
     width: 40,
   },
    {
     title: '个人',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'dabingPerson',
+    key: 'dabingPerson',
     width: 40,
   },
 ]

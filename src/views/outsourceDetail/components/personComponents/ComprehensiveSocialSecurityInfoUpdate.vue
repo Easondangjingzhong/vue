@@ -77,7 +77,7 @@
           </a-col>
            <a-col :span="12">
             <a-form-item name="shebaoShijiaoTime" label="社保实缴" :rules="[{ required: false, message: '请填写社保实缴' }]">
-              <a-date-picker v-model:value="outsourceSocialSecurityForm.shebaoShijiaoTime" value-format="YYYY-MM-DD" />
+              <a-date-picker v-model:value="outsourceSocialSecurityForm.shebaoShijiaoTime" value-format="YYYY-MM-DD" @change="handleChangeShebaoStatus"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -421,7 +421,10 @@ const dabingPerson = computed(() => {
   if ((outsourceSocialSecurityForm.value?.dabingRate || 0) - 1 < 0) {
     return parseFloat(parseFloat(((Number((Number((outsourceSocialSecurityForm.value?.dabingJishu || 0) * (outsourceSocialSecurityForm.value?.dabingRate || 0))*100).toFixed(0))/100).toString())).toFixed(2));
   }
-  return parseFloat(((outsourceSocialSecurityForm.value?.dabingJishu || 0)).toFixed(2));
+  if (outsourceSocialSecurityForm.value.yijinStandard == '1') {
+    return parseFloat(((outsourceSocialSecurityForm.value?.dabingJishu || 0)).toFixed(2));
+  }
+  return parseFloat(((outsourceSocialSecurityForm.value?.dabingRate || 0)).toFixed(2));
 });
 
 // 计算属性 - 企业大病金额
@@ -437,7 +440,10 @@ const dabingCompany = computed(() => {
   if ((outsourceSocialSecurityForm.value?.dabingCompanyRate || 0) - 1 < 0) {
     return parseFloat(parseFloat(((Number((Number((outsourceSocialSecurityForm.value?.dabingCompanyJishu || 0) * (outsourceSocialSecurityForm.value?.dabingCompanyRate || 0))*100).toFixed(0))/100).toString())).toFixed(2));
   }
-  return parseFloat(((outsourceSocialSecurityForm.value?.dabingCompanyJishu || 0)).toFixed(2));
+  if (outsourceSocialSecurityForm.value.yijinStandard == '1') {
+    return parseFloat(((outsourceSocialSecurityForm.value?.dabingCompanyJishu || 0)).toFixed(2));
+  }
+  return parseFloat(((outsourceSocialSecurityForm.value?.dabingCompanyRate || 0)).toFixed(2));
 });
 
 // 计算属性 - 个人一金金额
@@ -542,7 +548,8 @@ const handleChangeShebaoStatus = () => {
         const p = res.info[0];
         outsourceSocialSecurityForm.value.shebaoCompany = companyJiaoOption.find(item => item.value === p.companyJiao)?.label || '';
         outsourceSocialSecurityForm.value.yijinJiaoCompany = companyJiaoOption.find(item => item.value === p.companyJiao)?.label || '';
-        handleChangeShebaoCalc(p);
+        //handleChangeShebaoCalc(p);
+        handleChangeShebaoSign();
         //缴纳标准是2基本工资
   if (outsourceSocialSecurityForm.value.shebaoStandard == '2' && (getOutsourceSalaryDetailList.value.length > 0 || outsourceSocialSecurityForm.value.shebaoShijiJishu)) {
     let jishu = getOutsourceSalaryDetailList.value[0].dixin || 0;

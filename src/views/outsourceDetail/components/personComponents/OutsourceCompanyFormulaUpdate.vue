@@ -158,6 +158,7 @@
                 <a-select-option value="当月-5日">当月-5日</a-select-option>
                 <a-select-option value="当月-15日">当月-15日</a-select-option>
                 <a-select-option value="上月-最后工作日">上月-最后工作日</a-select-option>
+                <a-select-option value="当月-最后工作日">当月-最后工作日</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -170,7 +171,7 @@
           </a-col>
         </a-row>
         <a-row :gutter="24">
-          <a-col :span="12">
+          <a-col :span="12" v-if="outsourceFormulaForm.jobType == '全职'">
             <a-form-item label="当月差额" name="dangmonthCha" :labelCol="{span: 4}">
                <a-select v-model:value="outsourceFormulaForm.dangmonthCha">
                 <a-select-option value="上月实际-上月预估">上月实际-上月预估</a-select-option>
@@ -185,8 +186,15 @@
               </a-select>
             </a-form-item>
           </a-col>
+          <a-col :span="12" v-if="outsourceFormulaForm.jobType == '兼职'">         
+            <a-form-item label="国定加班" name="fadingJiaban" :labelCol="{span: 4}">
+              <a-select v-model:value="outsourceFormulaForm.fadingJiaban">
+                <a-select-option value="基本工资/全勤工时*3*国定加班工时">基本工资/全勤工时*3*国定加班工时</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
         </a-row>
-        <a-row :gutter="24">
+        <a-row :gutter="24" v-if="outsourceFormulaForm.jobType == '全职'">
           <a-col :span="12">         
             <a-form-item label="餐补" name="canbu" :labelCol="{span: 4}">
               <a-select v-model:value="outsourceFormulaForm.canbu">
@@ -204,7 +212,7 @@
             </a-form-item>
           </a-col>
           </a-row>
-        <a-row :gutter="24">
+        <a-row :gutter="24" v-if="outsourceFormulaForm.jobType == '全职'">
           <a-col :span="12">         
             <a-form-item label="全勤" name="quanqin" :labelCol="{span: 4}">
               <a-select v-model:value="outsourceFormulaForm.quanqin">
@@ -221,7 +229,7 @@
             </a-form-item>
           </a-col>
         </a-row>
-        <a-row :gutter="24">
+        <a-row :gutter="24" v-if="outsourceFormulaForm.jobType == '全职'">
           <a-col :span="12">
             <a-form-item label="休息加班" name="restJiaban" :labelCol="{span: 4}">
               <a-select v-model:value="outsourceFormulaForm.restJiaban">
@@ -237,7 +245,7 @@
             </a-form-item>
           </a-col>
         </a-row>
-        <a-row :gutter="24">
+        <a-row :gutter="24" v-if="outsourceFormulaForm.jobType == '全职'">
           <a-col :span="12">         
             <a-form-item label="工资调差" name="salaryTiaocha" :labelCol="{span: 4}">
               <a-select v-model:value="outsourceFormulaForm.salaryTiaocha">
@@ -253,7 +261,7 @@
             </a-form-item>
           </a-col>
         </a-row>
-        <a-row :gutter="24">
+        <a-row :gutter="24" v-if="outsourceFormulaForm.jobType == '全职'">
           <a-col :span="12">         
             <a-form-item label="津贴调差" name="jintieTiaocha" :labelCol="{span: 4}">
               <a-select v-model:value="outsourceFormulaForm.jintieTiaocha">
@@ -266,6 +274,30 @@
               <a-select v-model:value="outsourceFormulaForm.quanqinTiaocha">
                 <a-select-option value="当月差额＜0；扣除全勤工资">当月差额＜0；扣除全勤工资</a-select-option>
               </a-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="12">         
+            <a-form-item label="客户管理" name="keZhaoGongShi" :labelCol="{span: 4}">
+             <a-input v-model:value="outsourceFormulaForm.keZhaoGongShi" placeholder="请输入客户管理" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">         
+            <a-form-item label="公司管理" name="gongZhaoGongShi" :labelCol="{span: 4}">
+              <a-input v-model:value="outsourceFormulaForm.gongZhaoGongShi" placeholder="请输入公司管理" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24" v-if="outsourceFormulaForm.jobType == '兼职'">
+          <a-col :span="12">         
+            <a-form-item label="客户管理(学生)" name="keZhaoGongShiStudent" :labelCol="{span: 5}">
+             <a-input v-model:value="outsourceFormulaForm.keZhaoGongShiStudent" placeholder="请输入客户管理" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">         
+            <a-form-item label="公司管理(学生)" name="gongZhaoGongShiStudent" :labelCol="{span: 5}">
+              <a-input v-model:value="outsourceFormulaForm.gongZhaoGongShiStudent" placeholder="请输入公司管理" />
             </a-form-item>
           </a-col>
         </a-row>
@@ -313,7 +345,7 @@ watch(outsourceFormulaForm, () => {
   if (outsourceFormulaForm.value.jobType == '全职') {
     outsourceFormulaForm.value.zhanDanMonth = '当月';
     outsourceFormulaForm.value.kaoQinBiao = '当月-15日';
-    outsourceFormulaForm.value.xinZiRi = '上月-5日';
+    outsourceFormulaForm.value.xinZiRi = '当月-5日';
   } else {
     outsourceFormulaForm.value.zhanDanMonth = '上月';
     outsourceFormulaForm.value.kaoQinBiao = '上月-15日';
