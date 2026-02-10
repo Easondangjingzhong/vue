@@ -103,6 +103,30 @@ export interface OutsourcePersonItem {
   allowance: string;
   haveZhao: string;
 }
+//业绩分配详情
+export interface OfferDetailsItem {
+  collectId: string;
+  personId: string;
+  monthSalaryId: string;
+  goodNewsTime: string;
+  recruitId: string;
+  counselor: string;
+  teamId: string;
+  teamName: string;
+  taxIncluded: string;
+  money: string;
+  ratio: string;
+  offerNum: string;
+  orderType: string;
+  isMain: string;
+  outFlag: string;
+  manageChargeTax: string;
+  manageChargeRate: string;
+  manageChargeAfter: string;
+  zhuanChargeTax: string;
+  zhuanChargeRate: string;
+  zhuanChargeAfter: string;
+}
 /**
  * 外包查询个人信息
  */
@@ -465,6 +489,7 @@ export interface OutsourceMonthSalaryItem {
   shiShangbao?: string;//实际商业保险
   welfareKe?: string;//福利金额(客户)
   otherPayKe?: string;//其他支付金额(客户)
+  manageGongShi?: string;//管理公式
   rMoney?: string;
   rRatio?: string;
   cMoney?: string;
@@ -493,7 +518,113 @@ export interface OutsourceMonthSalaryItem {
   otherPayKeStr?: string;
   otherPayStr?: string;
   welfareList?: Array<WelfareItem>;
+  serviceMoney?: string;//三方服务金额
+  chenbenTiaocha?: string;//调差调整金额
+  chenbenTiaochaKe?: string;//调差调整金额
+  chenbenTiaochaStr?: string;//调差调整金额
+  chenbenTiaochaKeStr?: string;//调差调整金额
+  offerOutSourceDetails?: OfferDetailsItem[];
 }
+//用工成本
+export interface CostItem {
+  costType: string;
+  monthTax?: string;
+  companyShebao?: string;
+  companyYijin?: string;
+  shangbao?: string;
+  canBao?: string;
+  welfare?: string;
+  otherPay?: string;
+  chenbenTiaocha?: string;
+  serviceMoney?: string;
+  costTotal?: string;
+  manageGongShi?: string;
+  manageChargeTax?: string;
+  manageChargeRate?: string;
+  manageChargeTaxMoney?: string;
+  moneyCahrgeTax?: string;
+  zhuanChargeTax?: string;
+  zhuanChargeRate?: string;
+  zhuanChargeTaxMoney?: string;
+  zhuanChargeAfter?: string;
+  totalCharge?: string;     
+}
+//外包用工成本详情
+export interface ComprehensiveCostItem {
+  userNameCn: string;
+  companyName: string;
+  brand: string;
+  city: string;
+  jobType: string;
+  currentStatus: string;
+  personId: string;
+  monthTax: string;
+  jinxinMonth: string;
+  canBao?: string;//企业残保
+  costTotal?: string;//成本总计
+  costTotalke?: string;//成本总计
+  //业绩分配
+  companyShebao?: string;//公司社保金额
+  companyYijin?: string;//公司一金金额
+  moneyCahrgeTax?: string;//总营收费含税
+  moneyCahrgeTaxMoney?: string;//总营收费税金
+  moneyCahrgeRate?: string;//总营收费税率
+  moneyChargeAfter?: string;//总营收费税后金额
+  manageChargeTax?: string;//管理费金额
+  manageChargeTaxMoney?: string;//管理费税金
+  manageChargeRate?: string;//管理费税率
+  manageChargeAfter?: string;//管理费税后金额
+  zhuanChargeTax?: string;//转换金额
+  zhuanChargeTaxMoney?: string;//转换税金
+  zhuanChargeRate?: string;//转换税率
+  zhuanChargeAfter?: string;//转换税后金额
+  totalCharge?: string;//总收费金额
+  welfare?: string;//福利金额
+  otherPay?: string;//其他支付金额
+  companyShebaoKe?: string;//公司社保金额(客户)
+  companyYijinKe?: string;//公司一金金额(客户)
+  keShangbao?: string;//商业保险(客户)
+  shiShangbao?: string;//实际商业保险
+  welfareKe?: string;//福利金额(客户)
+  otherPayKe?: string;//其他支付金额(客户)
+  manageGongShi?: string;//管理公式
+  rMoney?: string;
+  rRatio?: string;
+  cMoney?: string;
+  cRatio?: string;
+  dMoney?: string;
+  dRatio?: string;
+  d2Money?: string;
+  d2Ratio?: string;
+  d2Ratio?: string;
+  fMoney?: string;
+  fRatio?: string;
+  offerMoneyTax?: string;
+  offerMoney?: string;
+  recommendRecruitId?: string;
+  recommendRealNameEn?: string;
+  recruitId?: string;
+  realNameEn?: string;
+  discoverRecruitId?: string;
+  discoverRealNameEn?: string;
+  supportRecruitId?: string;
+  supportRealNameEn?: string;
+  discover2RecruitId?: string;
+  discover2RealNameEn?: string;
+  serviceRecruitId?: string;
+  serviceRealNameEn?: string;
+  otherPayKeStr?: string;
+  otherPayStr?: string;
+  welfareList?: Array<WelfareItem>;
+  serviceMoney?: string;//三方服务金额
+  chenbenTiaocha?: string;//调差调整金额
+  chenbenTiaochaKe?: string;//调差调整金额
+  chenbenTiaochaStr?: string;//调差调整金额
+  chenbenTiaochaKeStr?: string;//调差调整金额    
+}
+/**
+ * 外包福利
+ */
 export interface WelfareItem {
   id?: string;
   collectId?: string;

@@ -171,57 +171,57 @@ const columnsOutsourceMonthSalary:TableColumnsType = [
       { title: '公司', dataIndex: 'companyName', key: 'companyName', fixed: 'left', width: 45, ellipsis: true, },
       { title: '城市', dataIndex: 'city', key: 'city', fixed: 'left', width: 30, },
       { title: '性质', dataIndex: 'jobType', key: 'jobType', fixed: 'left', width: 30, },
-      { title: '招聘', dataIndex: 'isHave', key: 'isHave', fixed: 'left', width: 30, },
+      { title: '招聘', dataIndex: 'haveZhao', key: 'haveZhao', fixed: 'left', width: 30, },
     ]
   },
   {
     title: '客户外包账单',
     className: 'salary-info-header',
     children: [
-      { title: '人才支出', dataIndex: 'baseSalary', key: 'baseSalary', width: 50, },
-      { title: '企业支出', dataIndex: 'bonus', key: 'bonus', width: 50, },
-      { title: '管理费', dataIndex: 'tax', key: 'tax', width: 50, },
-      { title: '税金', dataIndex: 'salaryAfterTax', key: 'salaryAfterTax', width: 50, },
-      { title: '总营收费', dataIndex: 'salaryAfterTax', key: 'salaryAfterTax', width: 50, },
+      { title: '人才支出', dataIndex: 'monthTax', key: 'monthTax', width: 50, },
+      { title: '企业支出', dataIndex: 'costTotalke', key: 'costTotalke', width: 50, },
+      { title: '管理费', dataIndex: 'manageChargeTax', key: 'manageChargeTax', width: 50, },
+      { title: '税金', dataIndex: 'manageChargeTaxMoney', key: 'manageChargeTaxMoney', width: 50, },
+      { title: '总营收费', dataIndex: 'moneyCahrgeTax', key: 'moneyCahrgeTax', width: 50, },
     ]
   },
   {
     title: '客户转换费账单',
     className: 'customer-info-header',
     children: [
-      { title: '税前转换', dataIndex: 'baseSalary', key: 'baseSalary', width: 50, },
-      { title: '税金', dataIndex: 'bonus', key: 'bonus', width: 50, },
-      { title: '税后转换', dataIndex: 'tax', key: 'tax', width: 50, },
+      { title: '税前转换', dataIndex: 'zhuanChargeTax', key: 'zhuanChargeTax', width: 50, },
+      { title: '税金', dataIndex: 'zhuanChargeTaxMoney', key: 'zhuanChargeTaxMoney', width: 50, },
+      { title: '税后转换', dataIndex: 'zhuanChargeAfter', key: 'zhuanChargeAfter', width: 50, },
     ]
   },
   {
     title: '公司支出成本',
     className: 'salary-info-header',
     children: [
-      { title: '人才支出', dataIndex: 'baseSalary', key: 'baseSalary', width: 50, },
-      { title: '公司支出', dataIndex: 'bonus', key: 'bonus', width: 50, },
+      { title: '人才支出', dataIndex: 'monthTax', key: 'monthTax', width: 50, },
+      { title: '公司支出', dataIndex: 'costTotal', key: 'costTotal', width: 50, },
     ]
   },
   {
     title: '公司管理费',
     className: 'customer-info-header',
     children: [
-      { title: '税前管理', dataIndex: 'baseSalary', key: 'baseSalary', width: 50, },
-      { title: '税金', dataIndex: 'bonus', key: 'bonus', width: 50, },
-      { title: '税后管理', dataIndex: 'tax', key: 'tax', width: 50, },
+      { title: '税前管理', dataIndex: 'manageChargeTax', key: 'manageChargeTax', width: 50, },
+      { title: '税金', dataIndex: 'manageChargeRate', key: 'manageChargeRate', width: 50, },
+      { title: '税后管理', dataIndex: 'manageChargeAfter', key: 'manageChargeAfter', width: 50, },
     ]
   },
   {
     title: '公司业绩分配',
     className: 'salary-info-header',
     children: [
-      { title: '推顾', dataIndex: 'baseSalary', key: 'baseSalary', width: 50, },
-      { title: '企顾', dataIndex: 'bonus', key: 'bonus', width: 50, },
-      { title: '服顾', dataIndex: 'bonus', key: 'bonus', width: 50, },
-      { title: '开顾1', dataIndex: 'bonus', key: 'bonus', width: 50, },
-      { title: '开顾2', dataIndex: 'bonus', key: 'bonus', width: 50, },
-      { title: '税后总计', dataIndex: 'bonus', key: 'bonus', width: 50, },
-      { title: '含税总计', dataIndex: 'bonus', key: 'bonus', width: 50, },
+      { title: '推顾', dataIndex: 'rMoney', key: 'rMoney', width: 50, },
+      { title: '企顾', dataIndex: 'cMoney', key: 'cMoney', width: 50, },
+      { title: '服顾', dataIndex: 'fMoney', key: 'fMoney', width: 50, },
+      { title: '开顾1', dataIndex: 'dMoney', key: 'dMoney', width: 50, },
+      { title: '开顾2', dataIndex: 'd2Money', key: 'd2Money', width: 50, },
+      { title: '税后总计', dataIndex: 'totalCharge', key: 'totalCharge', width: 50, },
+      { title: '含税总计', dataIndex: 'totalChargeAfter', key: 'totalChargeAfter', width: 50, },
       
     ]
   },

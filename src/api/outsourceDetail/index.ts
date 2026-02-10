@@ -57,7 +57,58 @@ enum URL {
   query_outsource_person_byPersonId = '/candidateRecommend/resume-vue-select-out-person-byPersonId.action',
   query_outsource_salary_by_personId = '/candidateRecommend/resume-vue-select-out-Salary-byperson.action',
   query_outsource_shebao_by_personId = '/candidateRecommend/resume-vue-select-out-SheBao-person-jinxinMonth.action',
+  query_outsource_gongshi_by_companyName = '/candidateRecommend/resume-vue-query-out-gongshi-CompanyName.action',
+  query_outsource_team_msg = '/employee-group/resume-vue-query-team-msg.action',
+  query_outsource_checkNum = '/candidateRecommend/resume-vue-query-offer-outSoure-checkNum.action',
+  update_outsource_detail = '/candidateRecommend/resume-vue-update-offer-outSoure-detail.action',
+  update_outsource_shebao_month = '/employee-group/resume-vue-updateOut-SheBaoMonth-JinxinMonth.action',
 }
+/**
+ * 业绩分配
+ * @param data personId
+ * @param data jinxinMonth
+ * @returns 
+ */
+const updateOutsourceSheBaoMonth = async (data: any) =>
+  post<any>({ url: URL.update_outsource_shebao_month, data});
+/**
+ * 业绩分配
+ * @param data collectId
+ * @returns 
+ */
+const updateOutsourceDetail = async (data: any) =>
+  post<any>({ url: URL.update_outsource_detail, data});
+/**
+ * 查询外包人员比例
+ * @param data collectId
+ * @param data rId
+ * @param data companyName
+ * @param data phoneNumber
+ * @param data jinxinStart
+ * @param data jinxinEnd
+ * @returns 
+ */
+const queryOutsourceCheckNum = async (data: any) =>
+  post<any>({ url: URL.query_outsource_checkNum, data});
+/**
+ * 查询外包人员团队数据
+ * @param data id
+ * @returns 
+ */
+const queryOutsourceTeamMsg = async (data: any) =>
+  post<any>({ url: URL.query_outsource_team_msg, data});
+/**
+ * 查询外包人员业绩分配出勤月份
+ * @param data companyName
+ * @param data bId
+ * @param data city
+ * @param data jobType
+ * @param data jinxinMonth
+ * @param data mId
+ * @returns 
+ */
+const queryOutsourceGongShiByCompany = async (data: any) =>
+  post<any>({ url: URL.query_outsource_gongshi_by_companyName, data});
 /**
  * 查询外包人员业绩分配出勤月份
  * @param data personId
@@ -465,6 +516,11 @@ const queryOutsourceMonthSalary = async (data: any) =>
   post<any>({ url: URL.query_outsource_month_salary, data});
 
 export default { 
+  updateOutsourceSheBaoMonth,
+  updateOutsourceDetail,
+  queryOutsourceCheckNum,
+  queryOutsourceTeamMsg,
+  queryOutsourceGongShiByCompany,
   queryOutsourceAttendMonthPersonId,
   queryOutsourcePersonByPersonId,
   queryOutsourceSalaryByPersonId,

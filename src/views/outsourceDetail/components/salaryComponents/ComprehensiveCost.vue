@@ -9,147 +9,179 @@
     <a-table
       size="small"
       :columns="columns"
-      :data-source="getOutsourceContractList"
+      :data-source="getOutsourcePersonPerformanceDetailCostInfo"
       :pagination="false"
       :scroll="{ x: 1600 }"
     >
+    <template #bodyCell="{ column, record }">
+      <a-popover v-if="column.key === 'manageGongShi' && record.manageGongShi !== '-'">
+        <template #content>
+          <span>{{ record.manageGongShi }}</span>
+        </template>
+        <a-tag>查看</a-tag>
+      </a-popover>
+      <span v-if="column.key == 'manageChargeRate' && record.manageChargeRate !== '-'">
+        {{ record.manageChargeRate*100 }}%
+      </span>
+       <span v-if="column.key == 'zhuanChargeRate' && record.zhuanChargeRate !== '-'">
+        {{ record.zhuanChargeRate*100 }}%
+      </span>
+      <span v-if="column.key == 'operation' && record.costType == '客户账单'">
+        <FormOutlined @click="handleEditClick()"/>
+      </span>
+    </template>
   </a-table>
   </a-col>
 </a-row>
-
 </template>
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import _ from 'lodash';
 import type { TableColumnsType } from 'ant-design-vue';
+import { FormOutlined } from '@ant-design/icons-vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { getOutsourceContractList } = storeToRefs(outsourceDetailStore);
+const { getOutsourcePersonPerformanceDetailCostInfo, costDetailFlag } = storeToRefs(outsourceDetailStore);
 
 const columns:TableColumnsType = [
   {
     title: '成本类型',
-    dataIndex: 'offerTime',
-    key: 'offerTime',
+    dataIndex: 'costType',
+    key: 'costType',
     width: 40,
   },
   {
     title: '人才支出',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'monthTax',
+    key: 'monthTax',
     width: 40,
   },
    {
     title: '企业社保',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'companyShebao',
+    key: 'companyShebao',
     width: 40,
   },
    {
     title: '企业一金',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'companyYijin',
+    key: 'companyYijin',
     width: 40,
   },
    {
     title: '企业商保',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'shangbao',
+    key: 'shangbao',
     width: 40,
   },
    {
     title: '企业残保',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'canBao',
+    key: 'canBao',
+    width: 40,
+  },
+  {
+    title: '其他支出',
+    dataIndex: 'otherPay',
+    key: 'otherPay',
+    width: 40,
+  },
+  {
+    title: '调差调整',
+    dataIndex: 'chenbenTiaocha',
+    key: 'chenbenTiaocha',
     width: 40,
   },
     {
     title: '员工福利',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'welfare',
+    key: 'welfare',
     width: 40,
   },
     {
-    title: '其他支出',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
-    width: 40,
-  },
-    {
-    title: '调差调整',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    title: '三方服务',
+    dataIndex: 'serviceMoney',
+    key: 'serviceMoney',
     width: 40,
   },
     {
     title: '成本总计',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'costTotal',
+    key: 'costTotal',
     width: 40,
   },
     {
     title: '管理公式',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'manageGongShi',
+    key: 'manageGongShi',
     width: 40,
   },
     {
     title: '税前管理',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'manageChargeTax',
+    key: 'manageChargeTax',
     width: 40,
   },
     {
     title: '税率',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'manageChargeRate',
+    key: 'manageChargeRate',
     width: 40,
   },
     {
     title: '税金',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'manageChargeTaxMoney',
+    key: 'manageChargeTaxMoney',
     width: 40,
   },
     {
     title: '总营收费',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'moneyCahrgeTax',
+    key: 'moneyCahrgeTax',
     width: 40,
   },
     {
     title: '税前转换',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'zhuanChargeTax',
+    key: 'zhuanChargeTax',
     width: 40,
   },
    {
     title: '税率',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'zhuanChargeRate',
+    key: 'zhuanChargeRate',
     width: 40,
   },
     {
     title: '税金',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'zhuanChargeTaxMoney',
+    key: 'zhuanChargeTaxMoney',
     width: 40,
   },
     {
     title: '税后转换',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'zhuanChargeAfter',
+    key: 'zhuanChargeAfter',
     width: 40,
   },
     {
     title: '总收费',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'totalCharge',
+    key: 'totalCharge',
     width: 40,
   },
+  {
+    title: '操作',
+    dataIndex: 'operation',
+    key: 'operation',
+    fixed: 'right',
+    width: 20,
+  },
 ]
-
+const handleEditClick = () => {
+  costDetailFlag.value = true;
+}
 </script>
 
 <style lang="less" scoped>

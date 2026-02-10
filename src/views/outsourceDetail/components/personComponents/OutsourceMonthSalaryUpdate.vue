@@ -292,11 +292,6 @@ const monthGeshui = computed(() => {
   
     // 计算应纳税所得额
     const taxableIncome = yearIncomeTotal - yearSocialSecurityTotal - exemptAmount - currentMonthDeductionTotal;
-    console.log(yearIncomeTotal);
-    console.log(yearSocialSecurityTotal);
-    console.log(exemptAmount);
-    console.log(currentMonthDeductionTotal);
-    console.log(taxableIncome);
     // 确保应纳税所得额不为负数
     const adjustedTaxableIncome = Math.max(0, taxableIncome);
   

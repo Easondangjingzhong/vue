@@ -9,7 +9,7 @@
     <a-table
       size="small"
       :columns="columns"
-      :data-source="getOutsourceContractList"
+      :data-source="costOfferDetailsForm"
       :pagination="false"
     >
   </a-table>
@@ -24,73 +24,73 @@ import _ from 'lodash';
 import type { TableColumnsType } from 'ant-design-vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { getOutsourceContractList } = storeToRefs(outsourceDetailStore);
+const { costOfferDetailsForm } = storeToRefs(outsourceDetailStore);
 
 const columns:TableColumnsType = [
   {
     title: '类型',
-    dataIndex: 'offerTime',
-    key: 'offerTime',
+    dataIndex: 'orderType',
+    key: 'orderType',
     width: 40,
   },
   {
     title: '顾问',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'counselor',
+    key: 'counselor',
     width: 40,
   },
    {
     title: '团队',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'teamName',
+    key: 'teamName',
     width: 40,
   },
    {
     title: '税前管理',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'manageChargeTax',
+    key: 'manageChargeTax',
     width: 40,
   },
    {
     title: '税后管理',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'manageChargeAfter',
+    key: 'manageChargeAfter',
     width: 40,
   },
    {
     title: '比例',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'manageChargeRate',
+    key: 'manageChargeRate',
     width: 40,
   },
     {
     title: '税前转换',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'zhuanChargeTax',
+    key: 'zhuanChargeTax',
     width: 40,
   },
     {
     title: '税后转换',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'zhuanChargeAfter',
+    key: 'zhuanChargeAfter',
     width: 40,
   },
     {
     title: '比例',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'zhuanChargeRate',
+    key: 'zhuanChargeRate',
     width: 40,
   },
     {
     title: '税前总计',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'taxIncluded',
+    key: 'taxIncluded',
     width: 40,
   },
     {
     title: '税后总计',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
+    dataIndex: 'money',
+    key: 'money',
     width: 40,
   },
 ]

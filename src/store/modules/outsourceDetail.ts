@@ -20,7 +20,10 @@ import {
   OutsourceSheBaoContractRatesItem,
   OutsourceShebaoInfoItem,
   OutsourceFormulaItem,
+  CostItem,
+  OfferDetailsItem,
   OutsourcePersonMoneyItem, //外包人员请款单 表单信息
+  ComprehensiveCostItem,
 } from '/@/api/outsourceDetail/model';
 const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: '' } = JSON.parse(
   localStorage.getItem('loginVueUser') || '{}',
@@ -146,6 +149,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     outsourcePersonPerformanceDetailSalaryInfo: [] as OutsourceSalaryItem[], //外包人员绩效详情薪资标准
     outsourcePersonPerformanceDetailAttendInfo: [] as OutsourceAttendItem[], //外包人员绩效详情薪资标准
     outsourcePersonPerformanceDetailSheBaoInfo: [] as OutsourceSheBaoItem[], //外包人员绩效详情月度社保
+    outsourcePersonPerformanceDetailGongShi: [] as OutsourceFormulaItem[], //公司公式
     formStateMonthSalaryOffer: {} as SearchMonthSalaryItem,
     outsourceMonthSalaryOfferList: [] as OutsourceMonthSalaryItem[], //外包人员业绩分配
     pageOutsourceMonthSalaryOfferList: {
@@ -153,6 +157,10 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       pageSize: 16,
       total: 0,
     } as PageItem,
+    costDetailFlag: false, //外包用工成本详情控制
+    costDetailForm: {} as ComprehensiveCostItem, //外包用工成本详情控制
+    costOfferDetailsForm: [] as OfferDetailsItem[], //外包用工成本详情控制
+    haveZhaoFlag: "" as string, //是否有招
   }),
   getters: {
     getOutsourcePersonList: (state) =>
@@ -307,18 +315,18 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     getOutsourceMonthSalaryOfferList: (state) =>
       state.outsourceMonthSalaryOfferList.map((item, index) => ({
         ...item,
-        index:
-          index < state.outsourceMonthSalaryOfferList.length - 1
-            ? state.pageOutsourceMonthSalaryOfferList.pageSize *
+        index: state.pageOutsourceMonthSalaryOfferList.pageSize *
                 (state.pageOutsourceMonthSalaryOfferList.pageNumber - 1) +
-              (index + 1)
-            : '',
+              (index + 1),
         jinxinMonth: item.jinxinMonth ? formatToMonth(item.jinxinMonth) : '',
         realEntryTime: item.realEntryTime ? formatToDate(item.realEntryTime) : '',
         realLeaveTime: item.realLeaveTime ? formatToDate(item.realLeaveTime) : '',
         userNameCn: item.userNameCn
           ? `${item.userNameCn}${item.userNameEn ? '/' + item.userNameEn : ''}`
           : '',
+        costTotalke: (Number(item.companyShebaoKe || 0) + Number(item.companyYijinKe || 0) + Number(item.welfareKe || 0) + Number(item.keShangbao || 0) + Number(item.otherPayKe || 0) + Number(item.otherPay || 0)).toFixed(2),
+        costTotal: (Number(item.companyShebao || 0) + Number(item.companyYijin || 0) + Number(item.welfare || 0) + Number(item.otherPay || 0) + Number(item.shiShangbao || 0) + Number(item.serviceMoney || 0)).toFixed(2),
+        totalChargeAfter: item.totalCharge ? (parseFloat(item.totalCharge)* 1.0672).toFixed(2) : "",
       })),
     getOutsourcePersonByPhoneList: (state) =>
       state.outsourcePersonByPhoneList.map((item, index) => ({
@@ -605,6 +613,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       };
     },
     getOutsourcePersonPerformanceDetail: (state) => [state.outsourcePersonPerformanceDetail],
+    getOutsourcePersonPerformanceDetailGongShi: (state) => state.outsourcePersonPerformanceDetailGongShi,
     getOutsourcePersonPerformanceDetailPersonInfo: (state) =>
       state.outsourcePersonPerformanceDetailPersonInfo.map((item, index) => ({
         ...item,
@@ -703,12 +712,61 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       }));
     },
     getOutsourcePersonPerformanceDetailCostInfo: (state) => {
-      const costArr = [];
+      const costArr = [] as CostItem[];
+      const sheBaoMap = state.outsourcePersonPerformanceDetailSheBaoInfo.length > 0 ? state.outsourcePersonPerformanceDetailSheBaoInfo[0] : {};
       const costMap = state.outsourcePersonPerformanceDetail;
-      // costArr.push({
-
-      // })
+      const canBao = Number(costMap.monthTax || 0) * 0.015;
+      const costTotal = (Number(costMap.monthTax || 0) + Number(costMap.companyShebaoKe || 0) + Number(costMap.companyYijinKe || 0) + Number(costMap.keShangbao || 0) + Number(canBao || 0) + Number(costMap.welfareKe || 0) + Number(costMap.otherPayKe || 0) + Number(costMap.chenbenTiaochaKe || 0));
+      costArr.push({
+        costType: '客户账单',
+        monthTax: costMap.monthTax,
+        companyShebao: costMap.companyShebaoKe,
+        companyYijin: costMap.companyYijinKe,
+        shangbao: costMap.keShangbao,
+        canBao: canBao?.toFixed(2).toString(),
+        welfare: costMap.welfareKe,
+        otherPay: costMap.otherPayKe,
+        chenbenTiaocha: costMap.chenbenTiaochaKe,
+        serviceMoney: '-',
+        costTotal: costTotal?.toFixed(2).toString(),
+        manageGongShi: costMap.manageGongShi,
+        manageChargeTax: costMap.manageChargeTax,
+        manageChargeRate: costMap.manageChargeRate,
+        manageChargeTaxMoney: costMap.manageChargeTaxMoney,
+        moneyCahrgeTax: costMap.moneyCahrgeTax,
+        zhuanChargeTax: costMap.zhuanChargeTax,
+        zhuanChargeRate: costMap.zhuanChargeRate,
+        zhuanChargeTaxMoney: costMap.zhuanChargeTaxMoney,
+        zhuanChargeAfter: costMap.zhuanChargeAfter,
+        totalCharge: costMap.totalCharge,
+      })
+      costArr.push({
+        costType: '公司账单',
+        monthTax: costMap.monthTax,
+        companyShebao: costMap.companyShebao,
+        companyYijin: costMap.companyYijin,
+        shangbao: costMap.shiShangbao,
+        canBao: canBao?.toFixed(2).toString(),
+        welfare: costMap.welfare,
+        otherPay: costMap.otherPay,
+        chenbenTiaocha: costMap.chenbenTiaocha,
+        serviceMoney: costMap.serviceMoney || "-",
+        costTotal: '-',
+        manageGongShi: '-',
+        manageChargeTax: '-',
+        manageChargeRate: '-',
+        manageChargeTaxMoney: '-',
+        moneyCahrgeTax: '-',
+        zhuanChargeTax: '-',
+        zhuanChargeRate: '-',
+        zhuanChargeTaxMoney: '-',
+        zhuanChargeAfter: '-',
+        totalCharge: '-',
+      })
       return costArr;
+    },
+    getHaveZhaoFlag: (state) => {
+      return state.haveZhaoFlag;
     },
   },
   actions: {
@@ -965,9 +1023,9 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         const res = await fetchApi.queryOutsourceMonthSalary(params);
         if (res.code == 1) {
           this.monthSalaryIsLoading = false;
-          const totalNum = res.info.totalNum;
+          //const totalNum = res.info.totalNum;
           this.outsourceMonthSalaryOfferList = res.info.pager.list as OutsourceMonthSalaryItem[];
-          this.outsourceMonthSalaryOfferList.push(totalNum);
+          //this.outsourceMonthSalaryOfferList.push(totalNum);
           this.pageOutsourceMonthSalaryOfferList = {
             pageNumber: res.info.pager.pageNumber,
             pageSize: res.info.pager.pageSize,
@@ -1660,6 +1718,13 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       const res = await fetchApi.addUpdateOutsourceSalaryMonth(outsourceSalaryMonth);
       return res;
     },
+      /**
+     * 更新外包业绩分配
+     */
+    async addUpdateOutsourceCostDetail(costDetailForm: ComprehensiveCostItem) {
+      const res = await fetchApi.addUpdateOutsourceSalaryMonth(costDetailForm);
+      return res;
+    },
     /**
      * 添加或更新外包公司年度薪资
      */
@@ -1788,15 +1853,37 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       const res = await fetchApi.outsourcePersonMarketName(formData);
       return res;
     },
+    async updateOutsourceDetail(costOfferDetailsForm: OfferDetailsItem[]) {
+      const res = await fetchApi.updateOutsourceDetail(costOfferDetailsForm);
+      return res;
+    },
+    //同步社保
+    async updateOutsourceSheBaoMonth(personId: string, jinxinMonth: string) {
+      const formData = new FormData();
+      formData.append('personId', personId || '');
+      formData.append('jinxinMonth', jinxinMonth || '');
+      const res = await fetchApi.updateOutsourceSheBaoMonth(formData);
+      return res;
+    },
     async handleOutsourceMonthSalaryOfferAllocation(record) {
       this.outsourcePersonPerformanceDetailFlag = true;
       this.outsourcePersonPerformanceDetail = record as OutsourceMonthSalaryItem;
       const formData = new FormData();
       formData.append('personId', record.personId || '');
       formData.append('jinxinMonth', record.jinxinMonth || '');
+      formData.append('companyName', record.companyName || '');
+      formData.append('bId', record.bId || '');
+      formData.append('city', record.city || '');
+      formData.append('jobType', record.jobType || '');
+      formData.append('mId', record.mId || '');
+      const gongShiByCompany = await fetchApi.queryOutsourceGongShiByCompany(formData);
+      if (gongShiByCompany.code == 1) {
+        this.outsourcePersonPerformanceDetailGongShi = gongShiByCompany.info as OutsourceFormulaItem[];
+      }
       const resPerson = await fetchApi.queryOutsourcePersonByPersonId(formData);
       if (resPerson.code == 1) {
         this.outsourcePersonPerformanceDetailPersonInfo = resPerson.info as OutsourcePersonItem[];
+        this.haveZhaoFlag = resPerson.info[0].haveZhao || '';
       }
       const resSalary = await fetchApi.queryOutsourceSalaryByPersonId(formData);
       if (resSalary.code == 1) {
@@ -1811,6 +1898,183 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         this.outsourcePersonPerformanceDetailSheBaoInfo =
           resSheBao.info as OutsourceShebaoInfoItem[];
       }
+      this.costOfferDetailsForm = [] as OfferDetailsItem[];
+      let tempFlag = false;
+      if (record.offerOutSourceDetails && record.offerOutSourceDetails.length > 0) {
+          tempFlag = true;
+      }
+        if (record.recommendRecruitId) {
+        const formDataTemp = new FormData();
+        formDataTemp.append('id', record.recommendRecruitId || '');
+        const resTeamMsg = await fetchApi.queryOutsourceTeamMsg(formDataTemp);
+        if (resTeamMsg.code == 1) {
+          let temp = {} as OfferDetailsItem;
+          temp.personId = record.personId || '';
+          temp.monthSalaryId = record.id || '';
+          temp.recruitId = record.recommendRecruitId || '9999';
+          temp.counselor = record.recommendRealNameEn || '公司';
+          temp.goodNewsTime = record.jinxinMonth+"-01";
+          temp.isMain = '1';
+          temp.orderType = '1';
+          temp.teamId = resTeamMsg?.info[0]?.teamId || "9999";
+          temp.teamName = resTeamMsg?.info[0]?.teamName || '公司';
+          temp.outFlag = resTeamMsg?.info[0]?.outFlag || "2";
+          if (tempFlag) {
+            const tempDetail = record.offerOutSourceDetails?.filter(item => item.orderType === 1)[0];
+            if (this.haveZhaoFlag == "有招") {
+
+            } else {
+              const manageChargeAfter = resTeamMsg?.info[0]?.outFlag === '1' ? (parseFloat(record.manageChargeAfter) * 0.49).toFixed(2) : (parseFloat(record.manageChargeAfter) * 0.46).toFixed(2);
+              temp.manageChargeTax = (parseFloat(manageChargeAfter) * 1.0672).toFixed(2);
+              temp.manageChargeRate = resTeamMsg?.info[0]?.outFlag === '1' ? '49%' : '46%';
+              temp.manageChargeAfter = manageChargeAfter;
+              temp.zhuanChargeTax = (parseFloat(record.zhuanChargeAfter) * 0.25 * 1.0672).toFixed(2) || '0';
+              temp.zhuanChargeRate = '25%';
+              temp.zhuanChargeAfter = (parseFloat(record.zhuanChargeAfter) * 0.25).toFixed(2);
+            }
+            temp.money = tempDetail.money;
+            temp.taxIncluded = tempDetail.taxIncluded;
+            temp.ratio = tempDetail.ratio;
+            temp.offerNum = tempDetail.offerNum;
+          }
+          this.costOfferDetailsForm.push(temp);
+        }
+      }
+      if (record.recruitId) {
+        const formDataTemp = new FormData();
+        formDataTemp.append('id', record.recruitId || '');
+        const resTeamMsg = await fetchApi.queryOutsourceTeamMsg(formDataTemp);
+        if (resTeamMsg.code == 1) {
+          let temp = {} as OfferDetailsItem;
+          temp.personId = record.personId || '';
+          temp.monthSalaryId = record.id || '';
+          temp.recruitId = record.recruitId || '9999';
+          temp.counselor = record.realNameEn || '公司';
+          temp.goodNewsTime = record.jinxinMonth+"-01";
+          temp.isMain = '1';
+          temp.orderType = '2';
+          temp.teamId = resTeamMsg?.info[0]?.teamId || "9999";
+          temp.teamName = resTeamMsg?.info[0]?.teamName || '公司';
+          temp.outFlag = resTeamMsg?.info[0]?.outFlag || "2";
+          if (tempFlag) {
+            const tempDetail = record.offerOutSourceDetails?.filter(item => item.orderType === 2)[0];
+            if (this.haveZhaoFlag == "有招") {
+
+            } else {
+              const manageChargeAfter = resTeamMsg?.info[0]?.outFlag === '1' ? (parseFloat(record.manageChargeAfter) * 0.17).toFixed(2) : (parseFloat(record.manageChargeAfter) * 0.18).toFixed(2);
+              temp.manageChargeTax = (parseFloat(manageChargeAfter) * 1.0672).toFixed(2);
+              temp.manageChargeRate = resTeamMsg?.info[0]?.outFlag === '1' ? '17%' : '18%';
+              temp.manageChargeAfter = manageChargeAfter;
+              temp.zhuanChargeTax = (parseFloat(record.zhuanChargeAfter) * 0.25 * 1.0672).toFixed(2) || '0';
+              temp.zhuanChargeRate = '25%';
+              temp.zhuanChargeAfter = (parseFloat(record.zhuanChargeAfter) * 0.25).toFixed(2);
+            }
+            temp.money = tempDetail.money;
+            temp.taxIncluded = tempDetail.taxIncluded;
+            temp.ratio = tempDetail.ratio;
+            temp.offerNum = tempDetail.offerNum;
+          }
+          this.costOfferDetailsForm.push(temp);
+        }
+      }
+       if (record.serviceRecruitId) {
+        const formDataTemp = new FormData();
+        formDataTemp.append('id', record.serviceRecruitId || '');
+        const resTeamMsg = await fetchApi.queryOutsourceTeamMsg(formDataTemp);
+        if (resTeamMsg.code == 1) {
+          let temp = {} as OfferDetailsItem;
+          temp.personId = record.personId || '';
+          temp.monthSalaryId = record.id || '';
+          temp.recruitId = record.serviceRecruitId || '9999';
+          temp.counselor = record.serviceRealNameEn || '公司';
+          temp.goodNewsTime = record.jinxinMonth+"-01";
+          temp.isMain = '1';
+          temp.orderType = '3';
+          temp.teamId = resTeamMsg?.info[0]?.teamId || "9999";
+          temp.teamName = resTeamMsg?.info[0]?.teamName || '公司';
+          temp.outFlag = resTeamMsg?.info[0]?.outFlag || "2";
+          if (tempFlag) {
+            const tempDetail = record.offerOutSourceDetails?.filter(item => item.orderType === 3)[0];
+            if (this.haveZhaoFlag == "有招") {
+
+            } else {
+              const manageChargeAfter = resTeamMsg?.info[0]?.outFlag === '1' ? (parseFloat(record.manageChargeAfter) * 0.17).toFixed(2) : (parseFloat(record.manageChargeAfter) * 0.18).toFixed(2);
+              temp.manageChargeTax = (parseFloat(manageChargeAfter) * 1.0672).toFixed(2);
+              temp.manageChargeRate = resTeamMsg?.info[0]?.outFlag === '1' ? '17%' : '18%';
+              temp.manageChargeAfter = manageChargeAfter;
+              temp.zhuanChargeTax = (parseFloat(record.zhuanChargeAfter) * 0.25 * 1.0672).toFixed(2) || '0';
+              temp.zhuanChargeRate = '25%';
+              temp.zhuanChargeAfter = (parseFloat(record.zhuanChargeAfter) * 0.25).toFixed(2);
+            }
+            temp.money = tempDetail.money;
+            temp.taxIncluded = tempDetail.taxIncluded;
+            temp.ratio = tempDetail.ratio;
+            temp.offerNum = tempDetail.offerNum;
+          }
+          this.costOfferDetailsForm.push(temp);
+        }
+      }
+       if (record.discoverRecruitId) {
+        const formDataTemp = new FormData();
+        formDataTemp.append('id', record.discoverRecruitId || '');
+        const resTeamMsg = await fetchApi.queryOutsourceTeamMsg(formDataTemp);
+        if (resTeamMsg.code == 1) {
+          let temp = {} as OfferDetailsItem;
+          temp.personId = record.personId || '';
+          temp.monthSalaryId = record.id || '';
+          temp.recruitId = record.discoverRecruitId || '9999';
+          temp.counselor = record.discoverRealNameEn || '公司';
+          temp.goodNewsTime = record.jinxinMonth+"-01";
+          temp.isMain = '1';
+          temp.orderType = '4';
+          temp.teamId = resTeamMsg?.info[0]?.teamId || "9999";
+          temp.teamName = resTeamMsg?.info[0]?.teamName || '公司';
+          temp.outFlag = resTeamMsg?.info[0]?.outFlag || "2";
+          if (tempFlag) {
+            const tempDetail = record.offerOutSourceDetails?.filter(item => item.orderType === 4)[0];
+            if (this.haveZhaoFlag == "有招") {
+
+            } else {
+              const manageChargeAfter = resTeamMsg?.info[0]?.outFlag === '1' ? (parseFloat(record.manageChargeAfter) * 0.17).toFixed(2) : (parseFloat(record.manageChargeAfter) * 0.18).toFixed(2);
+              temp.manageChargeTax = (parseFloat(manageChargeAfter) * 1.0672).toFixed(2);
+              temp.manageChargeRate = resTeamMsg?.info[0]?.outFlag === '1' ? '17%' : '18%';
+              temp.manageChargeAfter = manageChargeAfter;
+              temp.zhuanChargeTax = (parseFloat(record.zhuanChargeAfter) * 0.25 * 1.0672).toFixed(2) || '0';
+              temp.zhuanChargeRate = '25%';
+              temp.zhuanChargeAfter = (parseFloat(record.zhuanChargeAfter) * 0.25).toFixed(2);
+            }
+            temp.money = tempDetail.money;
+            temp.taxIncluded = tempDetail.taxIncluded;
+            temp.ratio = tempDetail.ratio;
+            temp.offerNum = tempDetail.offerNum;
+          }
+          this.costOfferDetailsForm.push(temp);
+        }
+      }
+      if (record.discover2RecruitId) {
+        const formDataTemp = new FormData();
+        formDataTemp.append('id', record.discover2RecruitId || '');
+        const resTeamMsg = await fetchApi.queryOutsourceTeamMsg(formDataTemp);
+        if (resTeamMsg.code == 1) {
+          let temp = {} as OfferDetailsItem;
+          temp.personId = record.personId || '';
+          temp.monthSalaryId = record.id || '';
+          temp.recruitId = record.discover2RecruitId || '9999';
+          temp.counselor = record.discover2RealNameEn || '公司';
+          temp.goodNewsTime = record.jinxinMonth+"-01";
+          temp.isMain = '3';
+          temp.orderType = '4';
+          temp.teamId = resTeamMsg?.info[0]?.teamId || "9999";
+          temp.teamName = resTeamMsg?.info[0]?.teamName || '公司';
+          temp.outFlag = resTeamMsg?.info[0]?.outFlag || "2";
+          this.costOfferDetailsForm.push(temp);
+        }
+      }
+      // const resSheBao = await fetchApi.queryOutsourceTeamMsg(formData);
+      // if (resSheBao.code == 1) {
+      //   this.outsourcePersonPerformanceDetailSheBaoInfo =
+      //     resSheBao.info as OutsourceShebaoInfoItem[];
+      // }
     },
   },
 });

@@ -279,25 +279,41 @@
         </a-row>
         <a-row :gutter="24">
           <a-col :span="12">         
-            <a-form-item label="客户管理" name="keZhaoGongShi" :labelCol="{span: 4}">
-             <a-input v-model:value="outsourceFormulaForm.keZhaoGongShi" placeholder="请输入客户管理" />
+            <a-form-item :label="outsourceFormulaForm.jobType == '兼职' ? '客户招聘(社会)' : '客户招聘'" name="keZhaoGongShi" :labelCol="{span: 4}">
+             <span class="ant-input-number-gongshi" v-for="(item, index) in keZhaoGongShiArr" :key="index">
+              <a-input v-model:value="keZhaoGongShiArr[index]" placeholder="请输入客户招聘" />
+              <span v-if="index === 0" @click="handleAddKeZhaoGongShi(index)"><PlusOutlined/></span>
+              <span v-else  @click="handleDelKeZhaoGongShi(index)"><MinusOutlined/></span>
+              </span>
             </a-form-item>
           </a-col>
           <a-col :span="12">         
-            <a-form-item label="公司管理" name="gongZhaoGongShi" :labelCol="{span: 4}">
-              <a-input v-model:value="outsourceFormulaForm.gongZhaoGongShi" placeholder="请输入公司管理" />
+            <a-form-item :label="outsourceFormulaForm.jobType == '兼职' ? '公司招聘(社会)' : '公司招聘'" name="gongZhaoGongShi" :labelCol="{span: 4}">
+             <span class="ant-input-number-gongshi" v-for="(item, index) in gongZhaoGongShiArr" :key="index">
+              <a-input v-model:value="gongZhaoGongShiArr[index]" placeholder="请输入公司管理" />
+              <span v-if="index === 0" @click="handleAddGongZhaoGongShi(index)"><PlusOutlined/></span>
+              <span v-else  @click="handleDelGongZhaoGongShi(index)"><MinusOutlined/></span>
+              </span>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row :gutter="24" v-if="outsourceFormulaForm.jobType == '兼职'">
           <a-col :span="12">         
-            <a-form-item label="客户管理(学生)" name="keZhaoGongShiStudent" :labelCol="{span: 5}">
-             <a-input v-model:value="outsourceFormulaForm.keZhaoGongShiStudent" placeholder="请输入客户管理" />
+            <a-form-item label="客户招聘(学生)" name="keZhaoGongShiStudent" :labelCol="{span: 5}">
+             <span class="ant-input-number-gongshi" v-for="(item, index) in keZhaoGongShiStudentArr" :key="index">
+             <a-input v-model:value="keZhaoGongShiStudentArr[index]" placeholder="请输入客户管理" />
+             <span v-if="index === 0" @click="handleAddKeZhaoGongShiStudent(index)"><PlusOutlined/></span>
+              <span v-else  @click="handleDelKeZhaoGongShiStudent(index)"><MinusOutlined/></span>
+             </span>
             </a-form-item>
           </a-col>
           <a-col :span="12">         
-            <a-form-item label="公司管理(学生)" name="gongZhaoGongShiStudent" :labelCol="{span: 5}">
-              <a-input v-model:value="outsourceFormulaForm.gongZhaoGongShiStudent" placeholder="请输入公司管理" />
+            <a-form-item label="公司招聘(学生)" name="gongZhaoGongShiStudent" :labelCol="{span: 5}">
+             <span class="ant-input-number-gongshi" v-for="(item, index) in gongZhaoGongShiStudentArr" :key="index">
+              <a-input v-model:value="gongZhaoGongShiStudentArr[index]" placeholder="请输入公司管理" />
+              <span v-if="index === 0" @click="handleAddGongZhaoGongShiStudent(index)"><PlusOutlined/></span>
+              <span v-else  @click="handleDelGongZhaoGongShiStudent(index)"><MinusOutlined/></span>
+              </span>
             </a-form-item>
           </a-col>
         </a-row>
@@ -320,7 +336,7 @@ import { storeToRefs } from 'pinia';
 import { debounce } from 'lodash-es';
 import { message } from 'ant-design-vue';
 import { cycleFormulaOption } from '/@/api/outsourceDetail/constants';
-import { CloseOutlined } from '@ant-design/icons-vue';
+import { CloseOutlined, PlusOutlined, MinusOutlined, } from '@ant-design/icons-vue';
 import { OutsourceFormulaItem } from '/@/api/outsourceDetail/model';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
@@ -328,6 +344,83 @@ const { outsourceFormulaForm, addOutsourceFormulaFlag, getOutsourceCompanyAll, g
 const drawerWidth = ref(Math.max(600, window.innerWidth * 0.7));
 const labelCol = { span: 6 };
 const iconLoading = ref(false);
+const keZhaoGongShiArr = ref<string[]>([]);
+const gongZhaoGongShiArr = ref<string[]>([]);
+const keZhaoGongShiStudentArr = ref<string[]>([]);
+const gongZhaoGongShiStudentArr = ref<string[]>([]);
+
+watch(() => outsourceFormulaForm.value.keZhaoGongShi, (val) => {
+  if (val) {
+    keZhaoGongShiArr.value = val.split(',');
+  } else {
+    keZhaoGongShiArr.value = [''];
+  }
+}, { immediate: true });
+
+watch(keZhaoGongShiArr, (val) => {
+  outsourceFormulaForm.value.keZhaoGongShi = val.join(',');
+}, { deep: true });
+
+watch(() => outsourceFormulaForm.value.gongZhaoGongShi, (val) => {
+  if (val) {
+    gongZhaoGongShiArr.value = val.split(',');
+  } else {
+    gongZhaoGongShiArr.value = [''];
+  }
+}, { immediate: true });
+
+watch(gongZhaoGongShiArr, (val) => {
+  outsourceFormulaForm.value.gongZhaoGongShi = val.join(',');
+}, { deep: true });
+
+watch(() => outsourceFormulaForm.value.keZhaoGongShiStudent, (val) => {
+  if (val) {
+    keZhaoGongShiStudentArr.value = val.split(',');
+  } else {
+    keZhaoGongShiStudentArr.value = [''];
+  }
+}, { immediate: true });
+
+watch(keZhaoGongShiStudentArr, (val) => {
+  outsourceFormulaForm.value.keZhaoGongShiStudent = val.join(',');
+}, { deep: true });
+
+watch(() => outsourceFormulaForm.value.gongZhaoGongShiStudent, (val) => {
+  if (val) {
+    gongZhaoGongShiStudentArr.value = val.split(',');
+  } else {
+    gongZhaoGongShiStudentArr.value = [''];
+  }
+}, { immediate: true });
+
+watch(gongZhaoGongShiStudentArr, (val) => {
+  outsourceFormulaForm.value.gongZhaoGongShiStudent = val.join(',');
+}, { deep: true });
+const handleAddKeZhaoGongShi = (index: number) => {
+  keZhaoGongShiArr.value.splice(index + 1, 0, '');
+}
+const handleDelKeZhaoGongShi = (index: number) => {
+  keZhaoGongShiArr.value.splice(index, 1);
+}
+const handleAddGongZhaoGongShi = (index: number) => {
+  gongZhaoGongShiArr.value.splice(index + 1, 0, '');
+}
+const handleDelGongZhaoGongShi = (index: number) => {
+  gongZhaoGongShiArr.value.splice(index, 1);
+}
+const handleAddKeZhaoGongShiStudent = (index: number) => {
+  keZhaoGongShiStudentArr.value.splice(index + 1, 0, '');
+}
+const handleDelKeZhaoGongShiStudent = (index: number) => {
+  keZhaoGongShiStudentArr.value.splice(index, 1);
+}
+const handleAddGongZhaoGongShiStudent = (index: number) => {
+  gongZhaoGongShiStudentArr.value.splice(index + 1, 0, '');
+}
+const handleDelGongZhaoGongShiStudent = (index: number) => {
+  gongZhaoGongShiStudentArr.value.splice(index, 1);
+}
+
 const handleHoursTypeChange = (value) => {
   if (value === "预估工时") {
     outsourceFormulaForm.value.chuqinSalary = "基本工资/全勤工时*本月预估";
@@ -386,5 +479,10 @@ const handleSubmit = () => {
 </script>
 
 <style lang="less" scoped>
-
+  .ant-input-number-gongshi {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
 </style>

@@ -23,6 +23,7 @@
       <ComprehensiveCostAllocation />
     </div>
   </a-drawer>
+  <ComprehensiveCostDetail />
 </template>
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
@@ -34,6 +35,7 @@ import ComprehensiveSalaryAttend from './salaryComponents/ComprehensiveSalaryAtt
 import ComprehensiveSalaryMonth from './salaryComponents/ComprehensiveSalaryMonth.vue';
 import ComprehensiveCost from './salaryComponents/ComprehensiveCost.vue';
 import ComprehensiveCostAllocation from './salaryComponents/ComprehensiveCostAllocation.vue';
+import ComprehensiveCostDetail from './salaryComponents/ComprehensiveCostDetail.vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
 const { outsourcePersonPerformanceDetailFlag } = storeToRefs(outsourceDetailStore);

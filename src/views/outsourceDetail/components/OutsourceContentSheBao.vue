@@ -149,6 +149,20 @@
       <a-tag v-if="column.key === 'yijinStandard' && record.yijinStandard === '3'" color="red">特殊基数</a-tag>
       <!-- 添加类型断言和存在性检查以修复TypeScript索引类型错误 -->
       <span v-if="(typeof column.dataIndex === 'string' && (record[column.dataIndex] === null || record[column.dataIndex] === ''))">-</span>
+     <template v-if="column.key === 'operation'">
+          <a-dropdown>
+            <span class="ant-dropdown-link" style="cursor: pointer;" @click.prevent>
+              <MenuUnfoldOutlined style="font-size: 15px;"/>
+            </span>
+            <template #overlay>
+              <a-menu>
+                 <a-menu-item>
+                  <a href="javascript:;" @click="handleUpdateOutsourceSheBaoMonth(record)">社保同步</a>
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+     </template>
     </template>
   
   </a-table>
@@ -180,7 +194,9 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import type { TableColumnsType } from 'ant-design-vue';
+import { MenuUnfoldOutlined } from '@ant-design/icons-vue';
 import { currentDate } from '/@/utils/dateUtil';
+import { message } from 'ant-design-vue';
 import OutsourceSocialSecurityCollect from '/@/views/outsourceDetail/components/personComponents/OutsourceSocialSecurityCollect.vue';
 import OutsourceSocialSecurityInfo from '/@/views/outsourceDetail/components/personComponents/OutsourceSocialSecurityInfo.vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
@@ -227,10 +243,12 @@ const columnsOutsourceDetail:TableColumnsType = [
   { title: '比例', dataIndex: 'yijinRate', key: 'yijinRate', width: 30, ellipsis: true },
   { title: '单位', dataIndex: 'yijinCompany', key: 'yijinCompany', width: 40, ellipsis: true },
   { title: '个人', dataIndex: 'yijinPerson', key: 'yijinPerson', width: 40, ellipsis: true },
+  { title: '操作', dataIndex: 'operation', key: 'operation', fixed: 'right', width: 25, ellipsis: true },
 ]
 const clearFromState = () => {
   formStateSheBao.value = {currentStatus: '',yearAndMonth: currentDate('YYYY-MM')} as SearchSheBaoItem;
 }
+
  const handleSearchOutsourcePerson = (status) => {
     if (status != '4') {
       formStateSheBao.value.currentStatus = status;
@@ -257,6 +275,16 @@ const handleSheBaoCollect = () => {
 const handleSheBaoInfo = () => {
   outsourceSocialSecuritInfoFlag.value = true;
   outsourceDetailStore.queryOutsourceShebaoInfo();
+}
+const handleUpdateOutsourceSheBaoMonth = async (record) => {
+  await outsourceDetailStore.updateOutsourceSheBaoMonth(record.personId, record.yearAndMonth).then(res => {
+    if (res.code == 1) {
+      onSearch();
+      message.success("操作成功");
+    } else {
+      message.error("操作失败");
+    }
+  });
 }
 </script>
 

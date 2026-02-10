@@ -311,7 +311,7 @@ watch(getOutsourceFormulaList, (newVal) => {
     outsourceAttendForm.value.quanqinHours = newVal[0].totalWorkHours;
     outsourceAttendForm.value.isYugu = newVal[0].hoursType === '预估工时' ? '是' : '否';
     if (outsourceAttendForm.value.isYugu == '是') {
-      outsourceAttendForm.value.lastMonthYuHours = newVal[0].totalWorkHours;
+      outsourceAttendForm.value.lastMonthYuHours = outsourceAttendForm.value.lastMonthYuHours || newVal[0].totalWorkHours;
       outsourceAttendForm.value.currentMonthYuHours = newVal[0].totalWorkHours;
     }
     if (newVal[0].zhanDanMonth == '当月') {
@@ -503,7 +503,8 @@ const salaryTiaocha = computed(() => {
  if (salaryDetail.value && salaryDetail.value.length > 0) {
     const baseSalary = parseFloat(salaryDetail.value[0].dixin || '0'); // 基本工资
     const totalWorkHours = parseFloat(outsourceAttendForm.value.quanqinHours || '0'); // 全勤工时
-    const yuCha = parseFloat((parseFloat(outsourceAttendForm.value.lastMonthShiHours || '0') - totalWorkHours).toString()) || 0; // 当月差额
+    const lastMonthYuHours = parseFloat(outsourceAttendForm.value.lastMonthYuHours || '0'); // 上月预估
+    const yuCha = parseFloat((parseFloat(outsourceAttendForm.value.lastMonthShiHours || '0') - lastMonthYuHours).toString()) || 0; // 当月差额
     if (outsourceAttendForm.value.isYugu === "否") {
       return 0;
     }
@@ -518,7 +519,8 @@ const canbuTiaocha = computed(() => {
   if (salaryDetail.value && salaryDetail.value.length > 0) {
     const canbu = parseFloat(salaryDetail.value[0].canbu || '0'); // 餐补
     const totalWorkHours = parseFloat(outsourceAttendForm.value.quanqinHours || '0'); // 全勤工时
-    const yuCha = parseFloat((parseFloat(outsourceAttendForm.value.lastMonthShiHours || '0') - totalWorkHours).toString()) || 0; // 当月差额
+    const lastMonthYuHours = parseFloat(outsourceAttendForm.value.lastMonthYuHours || '0'); // 上月预估
+    const yuCha = parseFloat((parseFloat(outsourceAttendForm.value.lastMonthShiHours || '0') - lastMonthYuHours).toString()) || 0; // 当月差额
     if (outsourceAttendForm.value.isYugu === "否") {
       return 0;
     }
@@ -533,7 +535,8 @@ const jintirTiaocha = computed(() => {
   if (salaryDetail.value && salaryDetail.value.length > 0) {
     const jintie = parseFloat(salaryDetail.value[0].jintie || '0'); // 津贴
     const totalWorkHours = parseFloat(outsourceAttendForm.value.quanqinHours || '0'); // 全勤工时
-    const yuCha = parseFloat((parseFloat(outsourceAttendForm.value.lastMonthShiHours || '0') - totalWorkHours).toString()) || 0; // 当月差额
+    const lastMonthYuHours = parseFloat(outsourceAttendForm.value.lastMonthYuHours || '0'); // 上月预估
+    const yuCha = parseFloat((parseFloat(outsourceAttendForm.value.lastMonthShiHours || '0') - lastMonthYuHours).toString()) || 0; // 当月差额
     if (outsourceAttendForm.value.isYugu === "否") {
       return 0;
     }
@@ -548,7 +551,8 @@ const quanqinTiaocha = computed(() => {
   if (salaryDetail.value && salaryDetail.value.length > 0) {
     const quanqin = parseFloat(salaryDetail.value[0].quanqin || '0'); // 全勤
     const totalWorkHours = parseFloat(outsourceAttendForm.value.quanqinHours || '0'); // 全勤工时
-    const yuCha = parseFloat((parseFloat(outsourceAttendForm.value.lastMonthShiHours || '0') - totalWorkHours).toString()) || 0; // 当月差额
+    const lastMonthYuHours = parseFloat(outsourceAttendForm.value.lastMonthYuHours || '0'); // 上月预估
+    const yuCha = parseFloat((parseFloat(outsourceAttendForm.value.lastMonthShiHours || '0') - lastMonthYuHours).toString()) || 0; // 当月差额
     if (outsourceAttendForm.value.isYugu === "否") {
       return 0;
     }
