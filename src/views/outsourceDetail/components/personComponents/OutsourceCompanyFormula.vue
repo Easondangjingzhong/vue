@@ -18,9 +18,10 @@
         <a-button @click="handleAddOutsourceFormula" style="background-color: #eee" size="small">新增</a-button>
       </span>
     </a-row>
+    <a-row>
     <a-table
       size="small"
-      :pagination="pageOutsourceFormulaList"
+      :pagination="false"
       rowKey="key"
       :columns="columns"
       :dataSource="getOutsourceFormulaList"
@@ -124,6 +125,26 @@
       </span>
     </template>
     </a-table>
+    </a-row>
+    <a-row style="justify-content: end; margin-top: 10px">
+      <a-pagination
+        v-model:current="pageOutsourceFormulaList.pageNumber"
+        :pageSize="pageOutsourceFormulaList.pageSize"
+        @change="handleOutsourceFormulaListData"
+        :total="pageOutsourceFormulaList.total"
+        :showSizeChanger="false"
+        :showQuickJumper="true"
+        :hideOnSinglePage="true"
+        size="small"
+        :show-total="(total) => `共 ${total} 条`"
+      >
+        <template #itemRender="{ type, originalElement }">
+          <a v-if="type === 'prev'">上一页</a>
+          <a v-else-if="type === 'next'">下一页</a>
+          <component :is="originalElement" v-else></component>
+        </template>
+      </a-pagination>
+    </a-row>
   </a-drawer>
   <OutsourceCompanyFormulaUpdate />
 </template>
@@ -344,6 +365,9 @@ const columns:TableColumnsType = [
 
 const handleAddOutsourceFormula = () => {
   addOutsourceFormulaFlag.value = true;       
+}
+const handleOutsourceFormulaListData = () => {
+  outsourceDetailStore.queryOutsourceFormula();
 }
 const handleEditClick = (record) => {
   outsourceFormulaForm.value = _.cloneDeep(record);

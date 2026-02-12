@@ -316,9 +316,11 @@ const monthGeshui = computed(() => {
   return (taxAmount - parseFloat(yearGeshuiPre.value || '0')).toFixed(2).toString();
   }
   if (parseFloat(outsourceMonthSalaryForm.value.monthTax || '0') - 4000 <= 0) {
-    return ((parseFloat(outsourceMonthSalaryForm.value.monthTax || '0') -800)* 0.2).toFixed(2).toString();
+    const tax = ((parseFloat(outsourceMonthSalaryForm.value.monthTax || '0') -800)* 0.2);
+    return tax < 0 ? '0' : tax.toFixed(2).toString();
   }
-  return ((parseFloat(outsourceMonthSalaryForm.value.monthTax || '0') - parseFloat(outsourceMonthSalaryForm.value.monthTax || '0')* 0.2) * 0.2).toFixed(2).toString();
+  const tax = ((parseFloat(outsourceMonthSalaryForm.value.monthTax || '0') - parseFloat(outsourceMonthSalaryForm.value.monthTax || '0')* 0.2) * 0.2);
+  return tax < 0 ? '0' : tax.toFixed(2).toString();
 });
 const yearTax = computed(() => {
   return (parseFloat(yearTaxPre.value || '0') + parseFloat(outsourceMonthSalaryForm.value.monthTax || '0')).toFixed(2).toString();

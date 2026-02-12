@@ -763,6 +763,7 @@ export interface OutsourceAttendItem {
   yearAndMonth?: string;
   flag?: string;
 
+  AllHours?: string;
   // 工时相关字段
   currentMonthShiHours?: string;
   currentMonthYuHours?: string;

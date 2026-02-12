@@ -70,6 +70,7 @@
           </a-col>
           <a-col :span="4" class="outsourceAttendCol">倍数</a-col>
         </a-row>
+        <div v-if="outsourceAttendForm.jobType === '全职'">
         <a-row :gutter="24">
           <a-col :span="8">
             <a-form-item name="lastMonthYuHours" label="上月预估" :rules="[{ required: outsourceAttendForm.isYugu === '是' ? true : false, message: '请输入上月预估' }]">
@@ -104,8 +105,20 @@
             </a-form-item>
           </a-col>
           <a-col :span="8">
-            <a-form-item name="currentMonthShiHours" label="本月实际" :rules="[{ required: outsourceAttendForm.isYugu === '是' ? false : true, message: '请输入本月实际' }]">
-              <a-input v-model:value="outsourceAttendForm.currentMonthShiHours" :disabled="outsourceAttendForm.isYugu === '是'" @change="handleTotalChaShiHours" />
+            <a-form-item name="AllHours" label="本月实际">
+              <a-input v-model:value="outsourceAttendForm.AllHours" disabled />
+            </a-form-item>
+          </a-col>
+          <a-col :span="4">
+           <a-form-item>
+             <a-input value="1" disabled/>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24" v-if="outsourceAttendForm.isYugu === '否'">
+          <a-col :span="8">
+            <a-form-item name="currentMonthShiHours" label="标准工时" :rules="[{ required: true, message: '请输入标准工时' }]">
+              <a-input v-model:value="outsourceAttendForm.currentMonthShiHours" @change="handleTotalChaShiHours" />
             </a-form-item>
           </a-col>
           <a-col :span="4">
@@ -263,6 +276,65 @@
           </a-col>
           <a-col :span="4"></a-col>
         </a-row>
+        </div>
+        <div v-if="outsourceAttendForm.jobType === '兼职'">
+          <a-row :gutter="24">
+           <a-col :span="8">
+            <a-form-item name="AllHours" label="本月实际">
+              <a-input v-model:value="outsourceAttendForm.AllHours" disabled />
+            </a-form-item>
+          </a-col>
+          <a-col :span="4">
+           <a-form-item>
+             <a-input value="1" disabled/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="8">
+            <a-form-item name="currentMonthShiHours" label="标准工时" :rules="[{ required: outsourceAttendForm.isYugu === '是' ? true : false, message: '请输入标准工时' }]">
+              <a-input v-model:value="outsourceAttendForm.currentMonthShiHours" :disabled="outsourceAttendForm.isYugu === '是'" @change="handleTotalChaShiHours" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="4">
+           <a-form-item>
+             <a-input value="1" disabled/>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="8">
+            <a-form-item name="holidayOverHours" label="国定加班" :rules="[{ required: false, message: '请输入国定加班' }]">
+              <a-input v-model:value="outsourceAttendForm.holidayOverHours" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="4">
+           <a-form-item name="holidayOverDouble" :rules="[{ required: false, message: '请输入国定加班倍数' }]">
+             <a-input v-model:value="outsourceAttendForm.holidayOverDouble" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="8">
+            <a-form-item name="restOverHours" label="休息加班" :rules="[{ required: false, message: '请输入休息加班' }]">
+              <a-input v-model:value="outsourceAttendForm.restOverHours" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="4">
+           <a-form-item name="restOverDouble" :rules="[{ required: false, message: '请输入休息加班倍数' }]">
+             <a-input v-model:value="outsourceAttendForm.restOverDouble" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="8">
+            <a-form-item name="overHours" label="正常加班" :rules="[{ required: false, message: '请输入正常加班' }]">
+              <a-input v-model:value="outsourceAttendForm.overHours" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="4">
+           <a-form-item name="overDouble" :rules="[{ required: false, message: '请输入加班倍数' }]">
+             <a-input v-model:value="outsourceAttendForm.overDouble" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+        </div>
         <a-row :gutter="24">
           <a-col :span="24" style="text-align: right;">
             <a-button type="primary" :loading="iconLoading" html-type="submit">
@@ -306,7 +378,7 @@ function getPreviousMonth(yearMonth) {
   return `${year}-${formattedMonth}`;
 }
 // 监听 getOutsourceFormulaList 变化，自动设置 quanqinHours
-watch(getOutsourceFormulaList, (newVal) => {
+watch(() => getOutsourceFormulaList.value, (newVal) => {
   if (newVal && newVal.length > 0 && newVal[0].totalWorkHours) {
     outsourceAttendForm.value.quanqinHours = newVal[0].totalWorkHours;
     outsourceAttendForm.value.isYugu = newVal[0].hoursType === '预估工时' ? '是' : '否';
@@ -357,12 +429,15 @@ const chuqinSalary = computed(() => {
     } else {
       // 实际工时
       if (outsourceAttendForm.value.jobType === '全职') {
+        if (outsourceAttendForm.value.companyName === '艾派品' && (Number(outsourceAttendForm.value?.currentMonthShiHours) - 166 < 0)) {
+          // 全职员工: 基本工资/21.75/8*本月实际
+          return totalWorkHours > 0 ? (baseSalary / 21.75 / 8) * currentMonthShiHours : 0;
+        }
         // 全职员工: 基本工资/全勤工时*本月实际
         return totalWorkHours > 0 ? (baseSalary / totalWorkHours) * currentMonthShiHours : 0;
-      } else {
-        // 非全职员工: 基本工资*本月实际
-        return baseSalary * currentMonthShiHours;
       }
+      // 非全职员工: 基本工资*本月实际
+      return baseSalary * currentMonthShiHours;
     }
   }
   
@@ -439,10 +514,10 @@ const quanqin = computed(() => {
     // 根据工时类型和员工性质计算出勤工资
     if (outsourceAttendForm.value.isYugu === "是") {
       // 预估工时
-      return currentMonthYuHours - totalWorkHours > 0 ? quanqin : 0;
+      return currentMonthYuHours - totalWorkHours >= 0 ? quanqin : 0;
     } else {
       // 实际工时
-      return currentMonthShiHours - totalWorkHours > 0 ? quanqin : 0;
+      return currentMonthShiHours - totalWorkHours >= 0 ? quanqin : 0;
     }
   }
   return 0;
@@ -456,12 +531,15 @@ const zhengchangJiaban = computed(() => {
     
     // 根据工时类型和员工性质计算出勤工资
    if (outsourceAttendForm.value.jobType === '全职') {
-        // 全职员工: 基本工资/全勤工时*本月预估
-        return totalWorkHours > 0 ? (baseSalary / totalWorkHours) * overHours * overDouble : 0;
-      } else {
-        // 非全职员工: 基本工资*本月预估
-        return baseSalary * overHours * overDouble;
+      if (outsourceAttendForm.value.companyName === '艾派品') {
+        // 全职员工: 基本工资/21.75/8*正常加班
+        return totalWorkHours > 0 ? (baseSalary / 21.75 / 8) * overHours * overDouble : 0;
       }
+        // 全职员工: 基本工资/全勤工时*正常加班
+        return totalWorkHours > 0 ? (baseSalary / totalWorkHours) * overHours * overDouble : 0;
+      }
+      // 非全职员工: 基本工资*正常加班
+      return baseSalary * overHours * overDouble;
   }
   return 0;
 });
@@ -473,12 +551,15 @@ const fadingJiaban = computed(() => {
     const holidayOverDouble = parseFloat(outsourceAttendForm.value.holidayOverDouble || '0'); // 国定加班
     // 根据工时类型和员工性质计算出勤工资
     if (outsourceAttendForm.value.jobType === '全职') {
-      // 全职员工: 基本工资/全勤工时*递减加班
+      if (outsourceAttendForm.value.companyName === '艾派品') {
+        // 全职员工: 基本工资/21.75/8*法定加班
+        return totalWorkHours > 0 ? (baseSalary / 21.75 / 8) * holidayOverHours * holidayOverDouble : 0;
+      }
+      // 全职员工: 基本工资/全勤工时*法定加班
       return totalWorkHours > 0 ? (baseSalary / totalWorkHours) * holidayOverHours * holidayOverDouble : 0;
-    } else {
-      // 非全职员工: 基本工资*递减加班
-      return baseSalary * holidayOverHours * holidayOverDouble;
     }
+    // 非全职员工: 基本工资*法定加班
+    return baseSalary * holidayOverHours * holidayOverDouble;
   }
   return 0;
 });
@@ -490,12 +571,15 @@ const restJiaban = computed(() => {
     const restOverDouble = parseFloat(outsourceAttendForm.value.restOverDouble || '0'); // 休息加班
     // 根据工时类型和员工性质计算出勤工资
     if (outsourceAttendForm.value.jobType === '全职') {
-      // 全职员工: 基本工资/全勤工时*递减加班
+      if (outsourceAttendForm.value.companyName === '艾派品') {
+        // 全职员工: 基本工资/21.75/8*休息加班
+        return totalWorkHours > 0 ? (baseSalary / 21.75 / 8) * restOverHours * restOverDouble : 0;
+      }
+      // 全职员工: 基本工资/全勤工时*休息加班
       return totalWorkHours > 0 ? (baseSalary / totalWorkHours) * restOverHours * restOverDouble : 0;
-    } else {
-      // 非全职员工: 基本工资*递减加班
-      return baseSalary * restOverHours * restOverDouble;
     }
+    // 非全职员工: 基本工资*休息加班
+    return baseSalary * restOverHours * restOverDouble;
   }
   return 0;
 });
@@ -568,6 +652,11 @@ const quanqinTiaocha = computed(() => {
   return 0;
 });
 const drawerWidth = ref(Math.max(600, window.innerWidth * 0.4));
+watch(() => outsourceAttendForm.value, () => {
+  if (outsourceAttendForm.value.isYugu == "否") {
+    outsourceAttendForm.value.AllHours = (parseFloat(outsourceAttendForm.value.currentMonthShiHours || '0') + parseFloat(outsourceAttendForm.value.overHours || '0') + parseFloat(outsourceAttendForm.value.holidayOverHours || '0') + parseFloat(outsourceAttendForm.value.restOverHours || '0') + parseFloat(outsourceAttendForm.value.daixinBingjiaHours || '0') + parseFloat(outsourceAttendForm.value.kouxinBingjiaHours || '0') + parseFloat(outsourceAttendForm.value.otherDaixinHours || '0') + parseFloat(outsourceAttendForm.value.shijiaHours || '0') + parseFloat(outsourceAttendForm.value.nianjianHours || '0') + parseFloat(outsourceAttendForm.value.hunjiaHours || '0') + parseFloat(outsourceAttendForm.value.sanjiaHours || '0') + parseFloat(outsourceAttendForm.value.utHours || '0')).toString();
+  }
+ }, { deep: true });
 const labelCol = {
   span: 9,
 };
@@ -658,6 +747,8 @@ const handleTotalChaHours = () => {
     outsourceAttendForm.value.totalChaHours = leijiChae.value?.toString();
     return;
   }
+  outsourceAttendForm.value.AllHours = "";
+  outsourceAttendForm.value.currentMonthShiHours = "";
   outsourceAttendForm.value.totalChaHours = (parseFloat(outsourceAttendForm.value.lastMonthShiHours || '0') -
     parseFloat(outsourceAttendForm.value.lastMonthYuHours || '0') + leijiChae.value).toString();
 }

@@ -43,7 +43,7 @@
           </a-col>
           <a-col :span="8">
             <a-form-item label="性质" name="jobType">
-              <a-select v-model:value="outsourceFormulaForm.jobType" disabled>
+              <a-select v-model:value="outsourceFormulaForm.jobType">
                 <a-select-option value="全职">全职</a-select-option>
                 <a-select-option value="兼职">兼职</a-select-option>
               </a-select>
@@ -91,10 +91,7 @@
           </a-col>
           <a-col :span="8">         
             <a-form-item label="总工时" name="totalWorkHours" :rules="[{ required: true, message: '请输入总工时' }]">
-              <a-select v-model:value="outsourceFormulaForm.totalWorkHours">
-                <a-select-option value="174">174</a-select-option>
-                <a-select-option value="166">166</a-select-option>
-              </a-select>
+              <a-input v-model:value="outsourceFormulaForm.totalWorkHours" placeholder="请输入总工时" />
             </a-form-item>
           </a-col>
           <a-col :span="8">         

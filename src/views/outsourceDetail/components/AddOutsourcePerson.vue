@@ -57,7 +57,7 @@
             </a-form-item>
           </a-col>
            <a-col :span="8">
-            <a-form-item name="email" label="邮箱" :rules="[{ required: true, message: '请输入邮箱' }]">
+            <a-form-item name="email" label="邮箱" :rules="[{ required: false, message: '请输入邮箱' }]">
               <a-input v-model:value="addOutsourcePersonForm.email" placeholder="请输入邮箱" />
             </a-form-item>
           </a-col>
@@ -163,6 +163,7 @@
               <a-select v-model:value="addOutsourcePersonForm.currentStatus" placeholder="请选择状态">
                 <a-select-option value="1">待入</a-select-option>
                 <a-select-option value="2">在职</a-select-option>
+                <a-select-option value="3">离职</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -222,6 +223,13 @@
               :options="getOutsourceRecruitList"
               optionFilterProp="label">
             </a-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
+         <a-row :gutter="24">
+          <a-col :span="8">
+            <a-form-item name="idCard" label="身份证号">
+              <a-input v-model:value="addOutsourcePersonForm.idCard" placeholder="请输入身份证号" />
             </a-form-item>
           </a-col>
         </a-row>

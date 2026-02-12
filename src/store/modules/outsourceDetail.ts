@@ -522,7 +522,9 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     getOutsourceFormulaList: (state) =>
       state.outsourceFormulaList.map((item, index) => ({
         ...item,
-        index: index + 1,
+        index:  state.pageOutsourceFormulaList.pageSize *
+                (state.pageOutsourceFormulaList.pageNumber - 1) +
+              (index + 1),
         startTime: item.startTime ? formatToDate(item.startTime) : '',
         endTime: item.endTime ? formatToDate(item.endTime) : '',
         mId: item.mId?.toString(),
@@ -1222,6 +1224,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       formData.append('offerTime', this.addOutsourcePersonForm.offerTime || '');
       formData.append('currentStatus', this.addOutsourcePersonForm.currentStatus || '');
       formData.append('resumeId', this.addOutsourcePersonForm.resumeId?.toString() || '');
+      formData.append('idCard', this.addOutsourcePersonForm.idCard || '');
       const res = await fetchApi.addOutsourceBasic(formData);
       if (res.code == 1) {
         this.addOutsourcePersonForm = {} as OutsourcePersonItem;
@@ -1434,6 +1437,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     async updateOutsourceAttend() {
       const res = await fetchApi.updateOutsourceAttend(this.outsourceAttendForm);
       if (res) {
+        this.formStateAttend.currentStatus = '1';
         this.queryOutsourceAttend();
       }
       return res;
