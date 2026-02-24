@@ -372,7 +372,39 @@ const calcCost = () => {
   const totalFeeTwoTax = Number(costDetailForm.value.zhuanChargeTax || 0);
   const odsTotalMoney = totalFeeOneTax + totalFeeTwoTax;
   const rate = 1.0672;
-  console.log(costOfferDetailsForm.value);
+  //console.log(costOfferDetailsForm.value);
+  const calculateDetails = (configList) => {
+      const newDetails: OfferDetailsItem[] = [];
+      for (const config of configList) {
+        const detail = costOfferDetailsForm?.value.filter(item => item.orderType === config.type)[0];
+        if (!detail) continue;
+
+        const isOutFlag1 = detail.outFlag === '1';
+        const currentRate1 = isOutFlag1 ? config.rate1_out : config.rate1;
+        
+        // 计算含税金额
+        detail.taxIncluded = (totalFeeOneTax * currentRate1 + totalFeeTwoTax * config.rate2).toFixed(2);
+        
+        // 计算money和ratio
+        detail.money = (Number(detail.taxIncluded) / rate).toFixed(2);
+        detail.ratio = (Number(detail.money) / odsTotalMoney).toString();
+        detail.offerNum = (config.offerNum * 1).toString();
+        
+        // 计算管理费1
+        const manageChargeAfter = (parseFloat(totalFeeOneTax.toString() || "0") * currentRate1).toFixed(2);
+        detail.manageChargeTax = manageChargeAfter;
+        detail.manageChargeRate = (currentRate1 * 100) + '%';
+        detail.manageChargeAfter = (parseFloat(manageChargeAfter) / 1.0672).toFixed(2);
+        
+        // 计算管理费2
+        detail.zhuanChargeTax = (parseFloat(totalFeeTwoTax.toString() || "0") * config.rate2).toFixed(2);
+        detail.zhuanChargeRate = (config.rate2 * 100) + '%';
+        detail.zhuanChargeAfter = (parseFloat(totalFeeTwoTax.toString() || "0") * config.rate2 / 1.0672).toFixed(2) || '0';
+        
+        newDetails.push(detail);
+      }
+      return newDetails;
+    };
   if (getHaveZhaoFlag.value === '有招') {
      /*
               有单独招聘费的收费模式:
@@ -393,6 +425,14 @@ const calcCost = () => {
     // 企顾税后: 招聘费用10%
     // 服顾税后: 管理费1:40% + 管理费2:25%
     // 开顾税后: 管理费1:30% + 管理费2:25%
+    // 定义计算配置
+    const calcConfig = [
+      { type: '1', rate1: 0, rate1_out: 0, rate2: 0.25, offerNum: 0 },
+      { type: '2', rate1: 0.3, rate1_out: 0.3, rate2: 0.25, offerNum: 0 },
+      { type: '3', rate1: 0.4, rate1_out: 0.4, rate2: 0.25, offerNum: 0 },
+      { type: '4', rate1: 0.3, rate1_out: 0.3, rate2: 0.25, offerNum: 0 }
+    ];
+    costOfferDetailsForm.value = calculateDetails(calcConfig);
   } else {
     /*
               无单独招聘费的收费模式:
@@ -408,83 +448,16 @@ const calcCost = () => {
     
     // 推顾税后: 管理费1:46% + 管理费2:25%
     //outFlag 是1时 分配是 管理费1:49%
-    const orderOfferDetailsOne = costOfferDetailsForm?.value.filter(item => item.orderType === '1')[0];
-    if (orderOfferDetailsOne?.outFlag === '1') {
-      orderOfferDetailsOne.taxIncluded = (totalFeeOneTax * 0.49 + totalFeeTwoTax * 0.25).toFixed(2);
-    } else {
-      orderOfferDetailsOne.taxIncluded = (totalFeeOneTax * 0.46 + totalFeeTwoTax * 0.25).toFixed(2);
-    }
-    orderOfferDetailsOne.money = (Number(orderOfferDetailsOne.taxIncluded) / rate).toFixed(2);
-    orderOfferDetailsOne.ratio = (Number(orderOfferDetailsOne.money) / odsTotalMoney).toString();
-    orderOfferDetailsOne.offerNum = (0.5 * 1).toString();
-    const manageChargeAfterOne = orderOfferDetailsOne?.outFlag === '1' ? (parseFloat(totalFeeOneTax.toString() || "0") * 0.49).toFixed(2) : (parseFloat(totalFeeOneTax.toString() || "0") * 0.46).toFixed(2);
-    orderOfferDetailsOne.manageChargeTax = manageChargeAfterOne;
-    orderOfferDetailsOne.manageChargeRate = orderOfferDetailsOne?.outFlag === '1' ? '49%' : '46%';
-    orderOfferDetailsOne.manageChargeAfter = (parseFloat(manageChargeAfterOne) / 1.0672).toFixed(2);
-    orderOfferDetailsOne.zhuanChargeTax = (parseFloat(costDetailForm.value.zhuanChargeAfter || "0") * 0.25 * 1.0672).toFixed(2) || '0';
-    orderOfferDetailsOne.zhuanChargeRate = '25%';
-    orderOfferDetailsOne.zhuanChargeAfter = (parseFloat(costDetailForm.value.zhuanChargeAfter || "0") * 0.25).toFixed(2);
-    // 企顾税后: 管理费1:18% + 管理费2:25%
-    //outFlag 是1时 分配是 管理费1:17%
-    const orderOfferDetailsTwo = costOfferDetailsForm?.value.filter(item => item.orderType === '2')[0];
-    if (orderOfferDetailsTwo?.outFlag === '1') {
-      orderOfferDetailsTwo.taxIncluded = (totalFeeOneTax * 0.17 + totalFeeTwoTax * 0.25).toFixed(2);
-    } else {
-      orderOfferDetailsTwo.taxIncluded = (totalFeeOneTax * 0.18 + totalFeeTwoTax * 0.25).toFixed(2);
-    }
-    orderOfferDetailsTwo.money = (Number(orderOfferDetailsTwo.taxIncluded) / rate).toFixed(2);
-    orderOfferDetailsTwo.ratio = (Number(orderOfferDetailsTwo.money) / odsTotalMoney).toString();
-    orderOfferDetailsTwo.offerNum = (0.063 * 1).toString();
-    const manageChargeAfterTwo = orderOfferDetailsTwo?.outFlag === '1' ? (parseFloat(totalFeeOneTax.toString() || '0') * 0.17).toFixed(2) : (parseFloat(totalFeeOneTax.toString() || '0') * 0.18).toFixed(2);
-    orderOfferDetailsTwo.manageChargeTax = manageChargeAfterTwo;
-    orderOfferDetailsTwo.manageChargeRate = orderOfferDetailsTwo?.outFlag === '1' ? '17%' : '18%';
-    orderOfferDetailsTwo.manageChargeAfter = (parseFloat(manageChargeAfterTwo) / 1.0672).toFixed(2);
-    orderOfferDetailsTwo.zhuanChargeTax = (parseFloat(costDetailForm.value.zhuanChargeAfter|| '0') * 0.25 * 1.0672).toFixed(2) || '0';
-    orderOfferDetailsTwo.zhuanChargeRate = '25%';
-    orderOfferDetailsTwo.zhuanChargeAfter = (parseFloat(costDetailForm.value.zhuanChargeAfter|| '0') * 0.25).toFixed(2);
-    // 服顾税后: 管理费1:18% + 管理费2:25%
-    //outFlag 是1时 分配是 管理费1:17%
-    const orderOfferDetailsThree = costOfferDetailsForm?.value.filter(item => item.orderType === '3')[0];
-    if (orderOfferDetailsThree?.outFlag === '1') {
-      orderOfferDetailsThree.taxIncluded = (totalFeeOneTax * 0.17 + totalFeeTwoTax * 0.25).toFixed(2);
-    } else {
-      orderOfferDetailsThree.taxIncluded = (totalFeeOneTax * 0.18 + totalFeeTwoTax * 0.25).toFixed(2);
-    }
-    orderOfferDetailsThree.money = (Number(orderOfferDetailsThree.taxIncluded) / rate).toFixed(2);
-    orderOfferDetailsThree.ratio = (Number(orderOfferDetailsThree.money) / odsTotalMoney).toString();
-    orderOfferDetailsThree.offerNum = (0.063 * 1).toString();
-    const manageChargeAfterThree = orderOfferDetailsThree?.outFlag === '1' ? (parseFloat(totalFeeOneTax.toString() || '0') * 0.17).toFixed(2) : (parseFloat(totalFeeOneTax.toString() || '0') * 0.18).toFixed(2);
-    orderOfferDetailsThree.manageChargeTax = manageChargeAfterThree;
-    orderOfferDetailsThree.manageChargeRate = orderOfferDetailsThree?.outFlag === '1' ? '17%' : '18%';
-    orderOfferDetailsThree.manageChargeAfter = (parseFloat(manageChargeAfterThree) / 1.0672).toFixed(2);
-    orderOfferDetailsThree.zhuanChargeTax = (parseFloat(costDetailForm.value.zhuanChargeAfter || '0') * 0.25 * 1.0672).toFixed(2) || '0';
-    orderOfferDetailsThree.zhuanChargeRate = '25%';
-    orderOfferDetailsThree.zhuanChargeAfter = (parseFloat(costDetailForm.value.zhuanChargeAfter || '0') * 0.25).toFixed(2);
-    // 开顾税后: 管理费1:18% + 管理费2:25%
-    //outFlag 是1时 分配是 管理费1:17%
-    const orderOfferDetailsFour = costOfferDetailsForm?.value.filter(item => item.orderType === '4')[0];
-    if (orderOfferDetailsFour?.outFlag === '1') {
-      orderOfferDetailsFour.taxIncluded = (totalFeeOneTax * 0.17 + totalFeeTwoTax * 0.25).toFixed(2);
-    } else {
-      orderOfferDetailsFour.taxIncluded = (totalFeeOneTax * 0.18 + totalFeeTwoTax * 0.25).toFixed(2);
-    }
-    orderOfferDetailsFour.money = (Number(orderOfferDetailsFour.taxIncluded) / rate).toFixed(2);
-    orderOfferDetailsFour.ratio = (Number(orderOfferDetailsFour.money) / odsTotalMoney).toString();
-    orderOfferDetailsFour.offerNum = (0.063 * 1).toString();
-    const manageChargeAfterFour = orderOfferDetailsFour?.outFlag === '1' ? (parseFloat(totalFeeOneTax.toString() || '0') * 0.17).toFixed(2) : (parseFloat(totalFeeOneTax.toString() || '0') * 0.18).toFixed(2);
-    orderOfferDetailsFour.manageChargeTax = manageChargeAfterFour;
-    orderOfferDetailsFour.manageChargeRate = orderOfferDetailsFour?.outFlag === '1' ? '17%' : '18%';
-    orderOfferDetailsFour.manageChargeAfter = (parseFloat(manageChargeAfterFour) / 1.0672).toFixed(2);
-    orderOfferDetailsFour.zhuanChargeTax = (parseFloat(costDetailForm.value.zhuanChargeAfter || '0') * 0.25 * 1.0672).toFixed(2) || '0';
-    orderOfferDetailsFour.zhuanChargeRate = '25%';
-    orderOfferDetailsFour.zhuanChargeAfter = (parseFloat(costDetailForm.value.zhuanChargeAfter || '0') * 0.25).toFixed(2);
-    costOfferDetailsForm.value = [];
-    costOfferDetailsForm.value.push(orderOfferDetailsOne);
-    costOfferDetailsForm.value.push(orderOfferDetailsTwo);
-    costOfferDetailsForm.value.push(orderOfferDetailsThree);
-    costOfferDetailsForm.value.push(orderOfferDetailsFour);
+    // 定义计算配置
+    const calcConfig = [
+      { type: '1', rate1: 0.46, rate1_out: 0.49, rate2: 0.25, offerNum: 0.5 },
+      { type: '2', rate1: 0.18, rate1_out: 0.17, rate2: 0.25, offerNum: 0.063 },
+      { type: '3', rate1: 0.18, rate1_out: 0.17, rate2: 0.25, offerNum: 0.063 },
+      { type: '4', rate1: 0.18, rate1_out: 0.17, rate2: 0.25, offerNum: 0.063 }
+    ];
+    costOfferDetailsForm.value = calculateDetails(calcConfig);
   }
-  console.log(costOfferDetailsForm.value);
+  //console.log(costOfferDetailsForm.value);
 }
 const handleSubmit = () => {
   iconLoading.value = true;
