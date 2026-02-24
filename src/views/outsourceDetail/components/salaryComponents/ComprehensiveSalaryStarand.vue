@@ -69,36 +69,36 @@ const columns:TableColumnsType = [
     key: 'tuanti',
     width: 40,
   },
-   {
-    title: '特殊',
-    dataIndex: 'teshu',
-    key: 'teshu',
-    width: 40,
-  },
-   {
-    title: '激励',
-    dataIndex: 'jili',
-    key: 'jili',
-    width: 40,
-  },
-   {
-    title: '达成',
-    dataIndex: 'dacheng',
-    key: 'dacheng',
-    width: 40,
-  },
-   {
-    title: '商保',
-    dataIndex: 'shangbao',
-    key: 'shangbao',
-    width: 40,
-  },
-   {
-    title: '残保',
-    dataIndex: 'joinTime',
-    key: 'joinTime',
-    width: 40,
-  },
+  //  {
+  //   title: '特殊',
+  //   dataIndex: 'teshu',
+  //   key: 'teshu',
+  //   width: 40,
+  // },
+  //  {
+  //   title: '激励',
+  //   dataIndex: 'jili',
+  //   key: 'jili',
+  //   width: 40,
+  // },
+  //  {
+  //   title: '达成',
+  //   dataIndex: 'dacheng',
+  //   key: 'dacheng',
+  //   width: 40,
+  // },
+  //  {
+  //   title: '商保',
+  //   dataIndex: 'shangbao',
+  //   key: 'shangbao',
+  //   width: 40,
+  // },
+  //  {
+  //   title: '残保',
+  //   dataIndex: 'joinTime',
+  //   key: 'joinTime',
+  //   width: 40,
+  // },
 ]
 
 </script>

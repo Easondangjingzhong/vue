@@ -523,6 +523,7 @@ export interface OutsourceMonthSalaryItem {
   chenbenTiaochaKe?: string;//调差调整金额
   chenbenTiaochaStr?: string;//调差调整金额
   chenbenTiaochaKeStr?: string;//调差调整金额
+  otherCha?: string;//其他差额
   offerOutSourceDetails?: OfferDetailsItem[];
 }
 //用工成本

@@ -150,6 +150,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import _ from 'lodash';
+import { message } from 'ant-design-vue';
 import { MenuUnfoldOutlined } from '@ant-design/icons-vue';
 import type { TableColumnsType } from 'ant-design-vue';
 import { SearchMonthSalaryItem } from '/@/api/outsourceDetail/model';
@@ -247,6 +248,10 @@ const handleOutsourceMonthSalaryOfferListData = () => {
   outsourceDetailStore.queryOutsourceMonthSalaryOffer();
 }
 const handleOutsourceMonthSalaryOfferAllocation = (record) => {
+  // if (!record.haveZhao) {
+  //   message.error('请先填写招聘方式');
+  //   return;
+  // }
   outsourceDetailStore.handleOutsourceMonthSalaryOfferAllocation(_.cloneDeep(record));
 }
 </script>

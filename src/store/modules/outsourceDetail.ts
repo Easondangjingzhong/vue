@@ -154,7 +154,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     outsourceMonthSalaryOfferList: [] as OutsourceMonthSalaryItem[], //外包人员业绩分配
     pageOutsourceMonthSalaryOfferList: {
       pageNumber: 1,
-      pageSize: 16,
+      pageSize: 13,
       total: 0,
     } as PageItem,
     costDetailFlag: false, //外包用工成本详情控制
@@ -701,12 +701,12 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           item.serviceMoney != '公式'
             ? parseFloat(item.serviceMoney || '0').toFixed(2)
             : item.serviceMoney,
-        companyTotal: parseFloat(((item?.companyTotal || 0) - (item.yijinCompany || 0)).toFixed(2)),
-        personTotal: parseFloat(((item?.personTotal || 0) - (item.yijinPerson || 0)).toFixed(2)),
+        companyTotal: parseFloat(((item?.companyTotal || 0)).toFixed(2)),
+        personTotal: parseFloat(((item?.personTotal || 0)).toFixed(2)),
         shangbaoTotal: parseFloat(
           (
-            parseFloat(((item?.companyTotal || 0) - (item.yijinCompany || 0)).toFixed(2)) +
-            parseFloat(((item?.personTotal || 0) - (item.yijinPerson || 0)).toFixed(2)) +
+            parseFloat(((item?.companyTotal || 0)).toFixed(2)) +
+            parseFloat(((item?.personTotal || 0)).toFixed(2)) +
             parseFloat(item.serviceMoney != '公式' ? item.serviceMoney?.toString() || '0' : '0')
           ).toString(),
         ).toFixed(2),
@@ -1150,7 +1150,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       this.outsourceBasicFlag = true;
       this.outsourceBasicForm = {
         ...this.outsourcePersonDetail,
-        currentStatus: '2',
+        currentStatus: this.outsourcePersonDetail.currentStatus === '1' ? '2' : this.outsourcePersonDetail.currentStatus,
         realEntryTime: this.outsourcePersonDetail.planEntryTime
           ? formatToDate(this.outsourcePersonDetail.planEntryTime)
           : '',

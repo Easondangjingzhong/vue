@@ -95,7 +95,7 @@
         <a-row :gutter="24">
           <a-col :span="6">
             <a-form-item name="keShangbao" label="企业商保">
-              <a-input v-model:value="costDetailForm.keShangbao" disabled/>
+              <a-input v-model:value="costDetailForm.keShangbao" />
             </a-form-item>
           </a-col>
           <a-col :span="6">
@@ -105,7 +105,7 @@
           </a-col>
           <a-col :span="6">
             <a-form-item name="shiShangbao" label="企业商保">
-              <a-input v-model:value="costDetailForm.shiShangbao" disabled/>
+              <a-input v-model:value="costDetailForm.shiShangbao" />
             </a-form-item>
           </a-col>
           <a-col :span="6">
@@ -117,7 +117,7 @@
         <a-row :gutter="24">
           <a-col :span="6">
             <a-form-item name="canBao" label="企业残保">
-              <a-input v-model:value="costDetailForm.canBao" disabled/>
+              <a-input v-model:value="costDetailForm.canBao" />
             </a-form-item>
           </a-col>
           <a-col :span="6">
@@ -127,7 +127,7 @@
           </a-col>
           <a-col :span="6">
             <a-form-item label="企业残保">
-              <a-input v-model:value="costDetailForm.canBao" disabled/>
+              <a-input v-model:value="costDetailForm.canBao" />
             </a-form-item>
           </a-col>
           <a-col :span="6">
@@ -300,10 +300,10 @@ watch(costDetailFlag,() => {
   costDetailFormPerformanceDetail();
 })
 const costTotalke = computed(() => {
-  return (Number(costDetailForm.value.companyShebaoKe || 0) + Number(costDetailForm.value.companyYijinKe || 0) + Number(costDetailForm.value.welfareKe || 0) + Number(costDetailForm.value.keShangbao || 0) + Number(costDetailForm.value.otherPayKe || 0) + Number(costDetailForm.value.otherPay || 0)).toFixed(2);
+  return (Number(costDetailForm.value.monthTax || 0) + Number(costDetailForm.value.canBao || 0) + Number(costDetailForm.value.companyShebaoKe || 0) + Number(costDetailForm.value.companyYijinKe || 0) + Number(costDetailForm.value.welfareKe || 0) + Number(costDetailForm.value.keShangbao || 0) + Number(costDetailForm.value.otherPayKe || 0) + Number(costDetailForm.value.otherPay || 0)).toFixed(2);
 })
 const costTotal = computed(() => {
-  return (Number(costDetailForm.value.companyShebao || 0) + Number(costDetailForm.value.companyYijin || 0) + Number(costDetailForm.value.welfare || 0) + Number(costDetailForm.value.otherPay || 0) + Number(costDetailForm.value.shiShangbao || 0) + Number(costDetailForm.value.serviceMoney || 0)).toFixed(2);
+  return (Number(costDetailForm.value.monthTax || 0) + Number(costDetailForm.value.canBao || 0) + Number(costDetailForm.value.companyShebao || 0) + Number(costDetailForm.value.companyYijin || 0) + Number(costDetailForm.value.welfare || 0) + Number(costDetailForm.value.otherPay || 0) + Number(costDetailForm.value.shiShangbao || 0) + Number(costDetailForm.value.serviceMoney || 0)).toFixed(2);
 })
 const handleManageGongShiChange = (val: string) => {
   costDetailForm.value.manageGongShi = val;
@@ -317,14 +317,14 @@ const handleManageGongShiChange = (val: string) => {
 }
 const handleManageChargeRate = () => {
   //税前管理
-  const total = Number(costDetailForm.value.manageChargeTax || 0);
+  const total = Number(costTotalke.value || 0) + Number(costDetailForm.value.manageChargeTax || 0);
   const rateNum = Number(costDetailForm.value.manageChargeRate || 0);
   const after = total / (1 + rateNum);
   costDetailForm.value.manageChargeAfter = after.toFixed(2);
   //税金 = (成本总计 + 税前管理) * 税率
   costDetailForm.value.manageChargeTaxMoney = (total * rateNum).toFixed(2);
   //总营收费 = 成本总计 + 税前管理 + 税金
-  costDetailForm.value.moneyCahrgeTax = (Number(costTotalke.value || 0) + Number(total || 0) + Number(costDetailForm.value.manageChargeTaxMoney || 0)).toFixed(2);
+  costDetailForm.value.moneyCahrgeTax = (Number(total || 0) + Number(costDetailForm.value.manageChargeTaxMoney || 0)).toFixed(2);
   handleZhuanChargeTax();
 }
 const handleZhuanChargeTax = () => {
@@ -368,8 +368,8 @@ const costDetailFormPerformanceDetailResult = () => {
 }
 const calcCost = () => {
   //const personInfo = getOutsourcePersonPerformanceDetailPersonInfo?.value[0];
-  const totalFeeOneTax = Number(costDetailForm.value.manageChargeAfter || 0);
-  const totalFeeTwoTax = Number(costDetailForm.value.zhuanChargeAfter || 0);
+  const totalFeeOneTax = Number(costDetailForm.value.manageChargeTax || 0);
+  const totalFeeTwoTax = Number(costDetailForm.value.handleZhuanChargeTax || 0);
   const odsTotalMoney = totalFeeOneTax + totalFeeTwoTax;
   const rate = 1.0672;
   console.log(costOfferDetailsForm.value);
@@ -410,17 +410,17 @@ const calcCost = () => {
     //outFlag 是1时 分配是 管理费1:49%
     const orderOfferDetailsOne = costOfferDetailsForm?.value.filter(item => item.orderType === '1')[0];
     if (orderOfferDetailsOne?.outFlag === '1') {
-      orderOfferDetailsOne.money = (totalFeeOneTax * 0.49 + totalFeeTwoTax * 0.25).toFixed(2);
+      orderOfferDetailsOne.taxIncluded = (totalFeeOneTax * 0.49 + totalFeeTwoTax * 0.25).toFixed(2);
     } else {
-      orderOfferDetailsOne.money = (totalFeeOneTax * 0.46 + totalFeeTwoTax * 0.25).toFixed(2);
+      orderOfferDetailsOne.taxIncluded = (totalFeeOneTax * 0.46 + totalFeeTwoTax * 0.25).toFixed(2);
     }
-    orderOfferDetailsOne.taxIncluded = (Number(orderOfferDetailsOne.money) * rate).toFixed(2);
+    orderOfferDetailsOne.money = (Number(orderOfferDetailsOne.taxIncluded) / rate).toFixed(2);
     orderOfferDetailsOne.ratio = (Number(orderOfferDetailsOne.money) / odsTotalMoney).toString();
     orderOfferDetailsOne.offerNum = (0.5 * 1).toString();
-    const manageChargeAfterOne = orderOfferDetailsOne?.outFlag === '1' ? (parseFloat(costDetailForm.value.manageChargeAfter || "0") * 0.49).toFixed(2) : (parseFloat(costDetailForm.value.manageChargeAfter || "0") * 0.46).toFixed(2);
-    orderOfferDetailsOne.manageChargeTax = (parseFloat(manageChargeAfterOne) * 1.0672).toFixed(2);
+    const manageChargeAfterOne = orderOfferDetailsOne?.outFlag === '1' ? (parseFloat(totalFeeOneTax.toString() || "0") * 0.49).toFixed(2) : (parseFloat(totalFeeOneTax.toString() || "0") * 0.46).toFixed(2);
+    orderOfferDetailsOne.manageChargeTax = manageChargeAfterOne;
     orderOfferDetailsOne.manageChargeRate = orderOfferDetailsOne?.outFlag === '1' ? '49%' : '46%';
-    orderOfferDetailsOne.manageChargeAfter = manageChargeAfterOne;
+    orderOfferDetailsOne.manageChargeAfter = (parseFloat(manageChargeAfterOne) / 1.0672).toFixed(2);
     orderOfferDetailsOne.zhuanChargeTax = (parseFloat(costDetailForm.value.zhuanChargeAfter || "0") * 0.25 * 1.0672).toFixed(2) || '0';
     orderOfferDetailsOne.zhuanChargeRate = '25%';
     orderOfferDetailsOne.zhuanChargeAfter = (parseFloat(costDetailForm.value.zhuanChargeAfter || "0") * 0.25).toFixed(2);
@@ -428,17 +428,17 @@ const calcCost = () => {
     //outFlag 是1时 分配是 管理费1:17%
     const orderOfferDetailsTwo = costOfferDetailsForm?.value.filter(item => item.orderType === '2')[0];
     if (orderOfferDetailsTwo?.outFlag === '1') {
-      orderOfferDetailsTwo.money = (totalFeeOneTax * 0.17 + totalFeeTwoTax * 0.25).toFixed(2);
+      orderOfferDetailsTwo.taxIncluded = (totalFeeOneTax * 0.17 + totalFeeTwoTax * 0.25).toFixed(2);
     } else {
-      orderOfferDetailsTwo.money = (totalFeeOneTax * 0.18 + totalFeeTwoTax * 0.25).toFixed(2);
+      orderOfferDetailsTwo.taxIncluded = (totalFeeOneTax * 0.18 + totalFeeTwoTax * 0.25).toFixed(2);
     }
-    orderOfferDetailsTwo.taxIncluded = (Number(orderOfferDetailsTwo.money) * rate).toFixed(2);
+    orderOfferDetailsTwo.money = (Number(orderOfferDetailsTwo.taxIncluded) / rate).toFixed(2);
     orderOfferDetailsTwo.ratio = (Number(orderOfferDetailsTwo.money) / odsTotalMoney).toString();
     orderOfferDetailsTwo.offerNum = (0.063 * 1).toString();
-    const manageChargeAfterTwo = orderOfferDetailsTwo?.outFlag === '1' ? (parseFloat(costDetailForm.value.manageChargeAfter|| '0') * 0.17).toFixed(2) : (parseFloat(costDetailForm.value.manageChargeAfter|| '0') * 0.18).toFixed(2);
-    orderOfferDetailsTwo.manageChargeTax = (parseFloat(manageChargeAfterTwo) * 1.0672).toFixed(2);
+    const manageChargeAfterTwo = orderOfferDetailsTwo?.outFlag === '1' ? (parseFloat(totalFeeOneTax.toString() || '0') * 0.17).toFixed(2) : (parseFloat(totalFeeOneTax.toString() || '0') * 0.18).toFixed(2);
+    orderOfferDetailsTwo.manageChargeTax = manageChargeAfterTwo;
     orderOfferDetailsTwo.manageChargeRate = orderOfferDetailsTwo?.outFlag === '1' ? '17%' : '18%';
-    orderOfferDetailsTwo.manageChargeAfter = manageChargeAfterTwo;
+    orderOfferDetailsTwo.manageChargeAfter = (parseFloat(manageChargeAfterTwo) / 1.0672).toFixed(2);
     orderOfferDetailsTwo.zhuanChargeTax = (parseFloat(costDetailForm.value.zhuanChargeAfter|| '0') * 0.25 * 1.0672).toFixed(2) || '0';
     orderOfferDetailsTwo.zhuanChargeRate = '25%';
     orderOfferDetailsTwo.zhuanChargeAfter = (parseFloat(costDetailForm.value.zhuanChargeAfter|| '0') * 0.25).toFixed(2);
@@ -446,17 +446,17 @@ const calcCost = () => {
     //outFlag 是1时 分配是 管理费1:17%
     const orderOfferDetailsThree = costOfferDetailsForm?.value.filter(item => item.orderType === '3')[0];
     if (orderOfferDetailsThree?.outFlag === '1') {
-      orderOfferDetailsThree.money = (totalFeeOneTax * 0.17 + totalFeeTwoTax * 0.25).toFixed(2);
+      orderOfferDetailsThree.taxIncluded = (totalFeeOneTax * 0.17 + totalFeeTwoTax * 0.25).toFixed(2);
     } else {
-      orderOfferDetailsThree.money = (totalFeeOneTax * 0.18 + totalFeeTwoTax * 0.25).toFixed(2);
+      orderOfferDetailsThree.taxIncluded = (totalFeeOneTax * 0.18 + totalFeeTwoTax * 0.25).toFixed(2);
     }
-    orderOfferDetailsThree.taxIncluded = (Number(orderOfferDetailsThree.money) * rate).toFixed(2);
+    orderOfferDetailsThree.money = (Number(orderOfferDetailsThree.taxIncluded) / rate).toFixed(2);
     orderOfferDetailsThree.ratio = (Number(orderOfferDetailsThree.money) / odsTotalMoney).toString();
     orderOfferDetailsThree.offerNum = (0.063 * 1).toString();
-    const manageChargeAfterThree = orderOfferDetailsThree?.outFlag === '1' ? (parseFloat(costDetailForm.value.manageChargeAfter || '0') * 0.17).toFixed(2) : (parseFloat(costDetailForm.value.manageChargeAfter || '0') * 0.18).toFixed(2);
-    orderOfferDetailsThree.manageChargeTax = (parseFloat(manageChargeAfterThree) * 1.0672).toFixed(2);
+    const manageChargeAfterThree = orderOfferDetailsThree?.outFlag === '1' ? (parseFloat(totalFeeOneTax.toString() || '0') * 0.17).toFixed(2) : (parseFloat(totalFeeOneTax.toString() || '0') * 0.18).toFixed(2);
+    orderOfferDetailsThree.manageChargeTax = manageChargeAfterThree;
     orderOfferDetailsThree.manageChargeRate = orderOfferDetailsThree?.outFlag === '1' ? '17%' : '18%';
-    orderOfferDetailsThree.manageChargeAfter = manageChargeAfterThree;
+    orderOfferDetailsThree.manageChargeAfter = (parseFloat(manageChargeAfterThree) / 1.0672).toFixed(2);
     orderOfferDetailsThree.zhuanChargeTax = (parseFloat(costDetailForm.value.zhuanChargeAfter || '0') * 0.25 * 1.0672).toFixed(2) || '0';
     orderOfferDetailsThree.zhuanChargeRate = '25%';
     orderOfferDetailsThree.zhuanChargeAfter = (parseFloat(costDetailForm.value.zhuanChargeAfter || '0') * 0.25).toFixed(2);
@@ -464,17 +464,17 @@ const calcCost = () => {
     //outFlag 是1时 分配是 管理费1:17%
     const orderOfferDetailsFour = costOfferDetailsForm?.value.filter(item => item.orderType === '4')[0];
     if (orderOfferDetailsFour?.outFlag === '1') {
-      orderOfferDetailsFour.money = (totalFeeOneTax * 0.17 + totalFeeTwoTax * 0.25).toFixed(2);
+      orderOfferDetailsFour.taxIncluded = (totalFeeOneTax * 0.17 + totalFeeTwoTax * 0.25).toFixed(2);
     } else {
-      orderOfferDetailsFour.money = (totalFeeOneTax * 0.18 + totalFeeTwoTax * 0.25).toFixed(2);
+      orderOfferDetailsFour.taxIncluded = (totalFeeOneTax * 0.18 + totalFeeTwoTax * 0.25).toFixed(2);
     }
-    orderOfferDetailsFour.taxIncluded = (Number(orderOfferDetailsFour.money) * rate).toFixed(2);
+    orderOfferDetailsFour.money = (Number(orderOfferDetailsFour.taxIncluded) / rate).toFixed(2);
     orderOfferDetailsFour.ratio = (Number(orderOfferDetailsFour.money) / odsTotalMoney).toString();
     orderOfferDetailsFour.offerNum = (0.063 * 1).toString();
-    const manageChargeAfterFour = orderOfferDetailsFour?.outFlag === '1' ? (parseFloat(costDetailForm.value.manageChargeAfter || '0') * 0.17).toFixed(2) : (parseFloat(costDetailForm.value.manageChargeAfter || '0') * 0.18).toFixed(2);
-    orderOfferDetailsFour.manageChargeTax = (parseFloat(manageChargeAfterFour) * 1.0672).toFixed(2);
+    const manageChargeAfterFour = orderOfferDetailsFour?.outFlag === '1' ? (parseFloat(totalFeeOneTax.toString() || '0') * 0.17).toFixed(2) : (parseFloat(totalFeeOneTax.toString() || '0') * 0.18).toFixed(2);
+    orderOfferDetailsFour.manageChargeTax = manageChargeAfterFour;
     orderOfferDetailsFour.manageChargeRate = orderOfferDetailsFour?.outFlag === '1' ? '17%' : '18%';
-    orderOfferDetailsFour.manageChargeAfter = manageChargeAfterFour;
+    orderOfferDetailsFour.manageChargeAfter = (parseFloat(manageChargeAfterFour) / 1.0672).toFixed(2);
     orderOfferDetailsFour.zhuanChargeTax = (parseFloat(costDetailForm.value.zhuanChargeAfter || '0') * 0.25 * 1.0672).toFixed(2) || '0';
     orderOfferDetailsFour.zhuanChargeRate = '25%';
     orderOfferDetailsFour.zhuanChargeAfter = (parseFloat(costDetailForm.value.zhuanChargeAfter || '0') * 0.25).toFixed(2);

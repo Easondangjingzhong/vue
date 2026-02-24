@@ -33,6 +33,8 @@
      <a-tag v-if="column.key === 'currentStatus' && record.currentStatus === '4'" color="red">
       未入
     </a-tag>
+    <a-tag v-if="column.key === 'jobType' && record.jobType == '兼职'" color="orange">兼职</a-tag>
+    <a-tag v-if="column.key === 'jobType' && record.jobType == '全职'" color="green">全职</a-tag>
     <template v-if="column.key === 'xinXi'">
       <a-tag
         v-if="record.infoTableFlag === '信息待填'"
@@ -160,7 +162,7 @@ const { getOutsourcePersonProcessList,
    contractInfomatiomFlag,
    LeaveInfomatiomFlag,
    } = storeToRefs(outsourceDetailStore);
-const drawerWidth = ref(Math.max(600, window.innerWidth * 0.8));
+const drawerWidth = ref(Math.max(600, window.innerWidth * 0.9));
 const columns: TableColumnsType<any> = [
   {
     title: '编号',
@@ -224,25 +226,32 @@ const columns: TableColumnsType<any> = [
   //   width: 30,
   //   ellipsis: true,
   // },
-  // {
-  //   title: '职位',
-  //   dataIndex: 'positions',
-  //   key: 'positions',
-  //   width: 50,
-  //   ellipsis: true,
-  // },
   {
     title: '性质',
     dataIndex: 'jobType',
     key: 'jobType',
-    width: 20,
+    width: 23,
+    ellipsis: true,
+  },
+  {
+    title: '预计入职',
+    dataIndex: 'planEntryTime',
+    key: 'planEntryTime',
+    width: 35,
+    ellipsis: true,
+  },
+   {
+    title: '预计离职',
+    dataIndex: 'planLeaveTime',
+    key: 'planLeaveTime',
+    width: 35,
     ellipsis: true,
   },
   {
     title: '',
     dataIndex: 'xinXi',
     key: 'xinXi',
-    width: 25,
+    width: 26,
     ellipsis: true,
   },
   {

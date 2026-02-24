@@ -145,7 +145,7 @@ const handleMarkIdSearch = debounce((value?: string) => {
     outsourceDetailStore.queryMarkListSearch(outsourceBasicForm.value.city,value || "");
   },1000);
 const loadingMarkIdSearch = () => {
-  outsourceDetailStore.queryMarkListSearch(outsourceBasicForm.value.city,"");
+  outsourceDetailStore.queryMarkListSearch(outsourceBasicForm.value.city,outsourceBasicForm.value.market || "");
 }
 watch(() => outsourceBasicForm.value.city, () => {
   loadingMarkIdSearch();

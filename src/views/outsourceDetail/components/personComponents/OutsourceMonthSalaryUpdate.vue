@@ -96,87 +96,107 @@
             </a-form-item>
           </div>
         </div>
+        <div class="salaryDiv">
+          <div>
+            <a-form-item name="thirteenthSalary" label="十三薪" :rules="[{ required: false, message: '请输入十三薪' }]">
+              <a-input v-model:value="outsourceMonthSalaryForm.thirteenthSalary"/>
+            </a-form-item>
+          </div>
+          <div>
+           <a-form-item name="yearEndBouns" label="年终奖" :rules="[{ required: false, message: '请输入年终奖' }]">
+              <a-input v-model:value="outsourceMonthSalaryForm.yearEndBouns"/>
+            </a-form-item>
+          </div>
+          <div>
+           <a-form-item name="otherCha" label="其他差额" :rules="[{ required: false, message: '请输入其他差额' }]">
+              <a-input v-model:value="outsourceMonthSalaryForm.otherCha"/>
+            </a-form-item>
+          </div>
+          <div>&nbsp;</div>
+          <div>&nbsp;</div>
+        </div>
         <a-divider style="margin: 0  0 16px 0;" />
         <div class="salaryDiv">
-          <div style="flex: 1;">
+          <div>
             <a-form-item name="zinvJiaoyu" label="子女教育" :rules="[{ required: false, message: '请输入子女教育' }]">
               <a-input v-model:value="outsourceMonthSalaryForm.zinvJiaoyu"/>
             </a-form-item>
           </div>
-          <div style="flex: 1;">
+          <div>
            <a-form-item name="jixuJiaoyu" label="继续教育" :rules="[{ required: false, message: '请选择继续教育' }]">
               <a-input v-model:value="outsourceMonthSalaryForm.jixuJiaoyu"/>
             </a-form-item>
           </div>
-          <div style="flex: 1;">
+          <div>
            <a-form-item name="fangdaiLixi" label="房贷利息" :rules="[{ required: false, message: '请输入房贷利息' }]">
               <a-input v-model:value="outsourceMonthSalaryForm.fangdaiLixi"/>
             </a-form-item>
           </div>
-          <div style="flex: 1;">
+          <div>
              <a-form-item name="fangzu" label="房租" :rules="[{ required: false, message: '请输入房租' }]">
               <a-input v-model:value="outsourceMonthSalaryForm.fangzu"/>
             </a-form-item>
           </div>
-          <div style="flex: 1;">
+          <div>
            <a-form-item name="shangyangFumu" label="赡养父母" :rules="[{ required: false, message: '请输入赡养父母' }]">
               <a-input v-model:value="outsourceMonthSalaryForm.shangyangFumu"/>
             </a-form-item>
           </div>
         </div>
         <div class="salaryDiv">
-          <div style="flex: 1;">
+          <div>
              <a-form-item name="monthZhuankou" label="月度专扣" :rules="[{ required: false, message: '请选择月度专扣' }]">
                 <a-input v-model:value="outsourceMonthSalaryForm.monthZhuankou" disabled/>
               </a-form-item>
           </div>
-            <div style="flex: 1;">
+            <div>
            <a-form-item name="monthMianzheng" label="月度免征" :rules="[{ required: false, message: '请输入月度免征' }]">
               <a-input v-model:value="outsourceMonthSalaryForm.monthMianzheng" disabled/>
             </a-form-item>
           </div>
-          <div style="flex: 1;">
+          <div>
            <a-form-item name="monthTax" label="月度薪资" :rules="[{ required: false, message: '请输入月度薪资' }]">
               <a-input v-model:value="outsourceMonthSalaryForm.monthTax" disabled/>
             </a-form-item>
           </div>
-           <div style="flex: 1;">
+           <div>
            <a-form-item name="monthShebao" label="月度社保" :rules="[{ required: false, message: '请输入月度社保' }]">
               <a-input v-model:value="outsourceMonthSalaryForm.monthShebao" disabled/>
             </a-form-item>
           </div>
-          <div style="flex: 1;">
+          <div>
            <a-form-item name="yijin" label="公积金" :rules="[{ required: false, message: '请输入月度社保' }]">
               <a-input v-model:value="outsourceMonthSalaryForm.yijin" disabled/>
             </a-form-item>
           </div>
           </div>
           <div class="salaryDiv">
-            <div style="flex: 1;">
+            <div>
            <a-form-item name="yearTax" label="年度工资" :rules="[{ required: false, message: '请输入年度工资' }]">
               <a-input v-model:value="outsourceMonthSalaryForm.yearTax" disabled/>
             </a-form-item>
           </div>
-          <div style="flex: 1;">
+          <div>
            <a-form-item name="yearShebao" label="年度社保" :rules="[{ required: false, message: '请输入年度社保' }]">
               <a-input v-model:value="outsourceMonthSalaryForm.yearShebao" disabled/>
             </a-form-item>
           </div>
-          <div style="flex: 1;">
+          <div>
            <a-form-item name="monthGeshui" label="月度个税" :rules="[{ required: false, message: '请输入月度个税' }]">
               <a-input v-model:value="outsourceMonthSalaryForm.monthGeshui" disabled/>
             </a-form-item>
           </div>
-          <div style="flex: 1;">
+          <div>
            <a-form-item name="shouxuMoney" label="手续费" :rules="[{ required: false, message: '请输入手续费' }]">
               <a-select v-model:value="outsourceMonthSalaryForm.shouxuMoney" placeholder="请输入手续费">
                   <a-select-option value="0">0</a-select-option>
                   <a-select-option value="0.8">0.8</a-select-option>
+                  <a-select-option value="1.6">1.6</a-select-option>
                   <a-select-option value="5">5</a-select-option>
               </a-select>
             </a-form-item>
           </div>
-          <div style="flex: 1;">
+          <div>
              <a-form-item name="salaryAfterTax" label="实发工资" :rules="[{ required: false, message: '请输入实发工资' }]">
                 <a-input v-model:value="outsourceMonthSalaryForm.salaryAfterTax"  disabled/>
               </a-form-item>
@@ -216,9 +236,9 @@ const handleClose = () => {
 //月度薪资
 const monthTax = computed(() => {
   if (parseFloat(outsourceMonthSalaryForm.value.jiangjinTotal || '0') - parseFloat(outsourceMonthSalaryForm.value.baodiJiangjin || '0') <= 0) {
-    return (parseFloat(outsourceMonthSalaryForm.value.chuqinSalary || '0') + parseFloat(outsourceMonthSalaryForm.value.canbu || '0') + parseFloat(outsourceMonthSalaryForm.value.jintie || '0') + parseFloat(outsourceMonthSalaryForm.value.quanqin || '0') + parseFloat(outsourceMonthSalaryForm.value.jiabanSalary || '0') + parseFloat(outsourceMonthSalaryForm.value.baodiJiangjin || '0') + parseFloat(outsourceMonthSalaryForm.value.tiaochaTotal || '0')).toFixed(2).toString();
+    return (parseFloat(outsourceMonthSalaryForm.value.chuqinSalary || '0') + parseFloat(outsourceMonthSalaryForm.value.canbu || '0') + parseFloat(outsourceMonthSalaryForm.value.jintie || '0') + parseFloat(outsourceMonthSalaryForm.value.quanqin || '0') + parseFloat(outsourceMonthSalaryForm.value.jiabanSalary || '0') + parseFloat(outsourceMonthSalaryForm.value.baodiJiangjin || '0') + parseFloat(outsourceMonthSalaryForm.value.tiaochaTotal || '0') + parseFloat(outsourceMonthSalaryForm.value.thirteenthSalary || '0') + parseFloat(outsourceMonthSalaryForm.value.yearEndBouns || '0') + parseFloat(outsourceMonthSalaryForm.value.otherCha || '0')).toFixed(2).toString();
   }
-  return (parseFloat(outsourceMonthSalaryForm.value.chuqinSalary || '0') + parseFloat(outsourceMonthSalaryForm.value.canbu || '0') + parseFloat(outsourceMonthSalaryForm.value.jintie || '0') + parseFloat(outsourceMonthSalaryForm.value.quanqin || '0') + parseFloat(outsourceMonthSalaryForm.value.jiabanSalary || '0') + parseFloat(outsourceMonthSalaryForm.value.jiangjinTotal || '0') + parseFloat(outsourceMonthSalaryForm.value.tiaochaTotal || '0')).toFixed(2).toString();
+  return (parseFloat(outsourceMonthSalaryForm.value.chuqinSalary || '0') + parseFloat(outsourceMonthSalaryForm.value.canbu || '0') + parseFloat(outsourceMonthSalaryForm.value.jintie || '0') + parseFloat(outsourceMonthSalaryForm.value.quanqin || '0') + parseFloat(outsourceMonthSalaryForm.value.jiabanSalary || '0') + parseFloat(outsourceMonthSalaryForm.value.jiangjinTotal || '0') + parseFloat(outsourceMonthSalaryForm.value.tiaochaTotal || '0') + parseFloat(outsourceMonthSalaryForm.value.thirteenthSalary || '0') + parseFloat(outsourceMonthSalaryForm.value.yearEndBouns || '0') + parseFloat(outsourceMonthSalaryForm.value.otherCha || '0')).toFixed(2).toString();
 });
 watch(monthTax, () => {
   outsourceMonthSalaryForm.value.monthTax = monthTax.value;
@@ -358,6 +378,9 @@ const handleSubmit = () => {
 <style lang="less" scoped>
 .salaryDiv {
   display: flex;
+}
+.salaryDiv > div {
+  flex: 1;
 }
 :deep(.outsourceAttendCol .ant-form-item) {
   margin-bottom: 0;

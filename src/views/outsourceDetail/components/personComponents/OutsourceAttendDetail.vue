@@ -646,7 +646,7 @@ const quanqinTiaocha = computed(() => {
       // 预估工时
       if (outsourceAttendForm.value.jobType === '全职') {
         // 全职员工: 基本工资/全勤工时*本月预估
-        return totalWorkHours > 0 ? (quanqin / totalWorkHours) * yuCha : 0;
+        return (totalWorkHours > 0 && outsourceAttendForm.value.isQuanqin == "是") ? (quanqin / totalWorkHours) * yuCha : 0;
       }
   }
   return 0;
@@ -729,8 +729,9 @@ const handleSubmit = () => {
   });
 }
 const handleTotalChaShiHours = () => {
-  if (parseFloat(outsourceAttendForm.value.currentMonthShiHours || '0') -
-    parseFloat(outsourceAttendForm.value.quanqinHours || '0') >= 0) {
+  if ((parseFloat(outsourceAttendForm.value.currentMonthShiHours || '0') -
+    parseFloat(outsourceAttendForm.value.quanqinHours || '0') >= 0) || (parseFloat(outsourceAttendForm.value.lastMonthShiHours || '0') -
+    parseFloat(outsourceAttendForm.value.quanqinHours || '0') >= 0)){
       outsourceAttendForm.value.isQuanqin = '是';
   } else {
     outsourceAttendForm.value.isQuanqin = '否';
