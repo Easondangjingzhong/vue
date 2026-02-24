@@ -369,7 +369,7 @@ const costDetailFormPerformanceDetailResult = () => {
 const calcCost = () => {
   //const personInfo = getOutsourcePersonPerformanceDetailPersonInfo?.value[0];
   const totalFeeOneTax = Number(costDetailForm.value.manageChargeTax || 0);
-  const totalFeeTwoTax = Number(costDetailForm.value.handleZhuanChargeTax || 0);
+  const totalFeeTwoTax = Number(costDetailForm.value.zhuanChargeTax || 0);
   const odsTotalMoney = totalFeeOneTax + totalFeeTwoTax;
   const rate = 1.0672;
   console.log(costOfferDetailsForm.value);
