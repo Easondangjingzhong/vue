@@ -235,7 +235,7 @@ import { CloseOutlined } from '@ant-design/icons-vue';
 import type { OutsourceSheBaoItem,OfferDetailsItem } from '/@/api/outsourceDetail/model';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { costDetailFlag, costDetailForm, getOutsourcePersonPerformanceDetail, getOutsourcePersonPerformanceDetailSheBaoInfo, getOutsourcePersonPerformanceDetailPersonInfo, getOutsourcePersonPerformanceDetailGongShi, outsourcePersonPerformanceDetail, costOfferDetailsForm, getHaveZhaoFlag} = storeToRefs(outsourceDetailStore);
+const { offerNumDetail, costDetailFlag, costDetailForm, getOutsourcePersonPerformanceDetail, getOutsourcePersonPerformanceDetailSheBaoInfo, getOutsourcePersonPerformanceDetailPersonInfo, getOutsourcePersonPerformanceDetailGongShi, outsourcePersonPerformanceDetail, costOfferDetailsForm, getHaveZhaoFlag} = storeToRefs(outsourceDetailStore);
 const drawerWidth = ref(Math.max(600, window.innerWidth * 0.6));
 const labelCol = {
   span: 8,
@@ -388,7 +388,7 @@ const calcCost = () => {
         // 计算money和ratio
         detail.money = (Number(detail.taxIncluded) / rate).toFixed(2);
         detail.ratio = (Number(detail.money) / odsTotalMoney).toString();
-        detail.offerNum = (config.offerNum * 1).toString();
+        detail.offerNum = (config.offerNum * Number(offerNumDetail.value)).toString();
         
         // 计算管理费1
         const manageChargeAfter = (parseFloat(totalFeeOneTax.toString() || "0") * currentRate1).toFixed(2);

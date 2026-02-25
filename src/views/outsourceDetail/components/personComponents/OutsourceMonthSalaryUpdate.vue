@@ -182,6 +182,11 @@
             </a-form-item>
           </div>
           <div>
+             <a-form-item name="geshuiCha" label="个税差额" :rules="[{ required: false, message: '请输入个税差额' }]">
+                <a-input v-model:value="outsourceMonthSalaryForm.geshuiCha" @change="handleGeshuiChaChange"/>
+              </a-form-item>
+          </div>
+          <div>
            <a-form-item name="monthGeshui" label="月度个税" :rules="[{ required: false, message: '请输入月度个税' }]">
               <a-input v-model:value="outsourceMonthSalaryForm.monthGeshui" disabled/>
             </a-form-item>
@@ -196,22 +201,25 @@
               </a-select>
             </a-form-item>
           </div>
+        </div>
+        <div class="salaryDiv">
           <div>
              <a-form-item name="salaryAfterTax" label="实发工资" :rules="[{ required: false, message: '请输入实发工资' }]">
                 <a-input v-model:value="outsourceMonthSalaryForm.salaryAfterTax"  disabled/>
               </a-form-item>
           </div>
-        </div>
-        <a-row :gutter="24">
-          <a-col :span="24" style="text-align: right;">
+          <div>&nbsp;</div>
+          <div>&nbsp;</div>
+          <div>&nbsp;</div>
+          <div style="text-align: right;">
              <a-button type="primary" :loading="iconLoading" html-type="submit">
               保存
             </a-button>
             <a-button style="margin-left: 10px" @click="handleClose">
               取消
             </a-button>
-          </a-col>
-        </a-row>
+          </div>
+        </div>
       </a-form>
     </div>
   </a-drawer>
@@ -333,15 +341,18 @@ const monthGeshui = computed(() => {
     taxAmount = 36000 * 0.03 + (144000 - 36000) * 0.1 + (300000 - 144000) * 0.2 + (adjustedTaxableIncome - 300000) * 0.2;
   }
   // 返回计算结果，保留两位小数
-  return (taxAmount - parseFloat(yearGeshuiPre.value || '0')).toFixed(2).toString();
+  return (taxAmount - parseFloat(yearGeshuiPre.value || '0')+ parseFloat(outsourceMonthSalaryForm.value?.geshuiCha || '0')).toFixed(2).toString();
   }
   if (parseFloat(outsourceMonthSalaryForm.value.monthTax || '0') - 4000 <= 0) {
-    const tax = ((parseFloat(outsourceMonthSalaryForm.value.monthTax || '0') -800)* 0.2);
+    const tax = ((parseFloat(outsourceMonthSalaryForm.value.monthTax || '0') -800)* 0.2) + parseFloat(outsourceMonthSalaryForm.value?.geshuiCha || '0');
     return tax < 0 ? '0' : tax.toFixed(2).toString();
   }
-  const tax = ((parseFloat(outsourceMonthSalaryForm.value.monthTax || '0') - parseFloat(outsourceMonthSalaryForm.value.monthTax || '0')* 0.2) * 0.2);
+  const tax = ((parseFloat(outsourceMonthSalaryForm.value.monthTax || '0') - parseFloat(outsourceMonthSalaryForm.value.monthTax || '0')* 0.2) * 0.2) + parseFloat(outsourceMonthSalaryForm.value?.geshuiCha || '0');
   return tax < 0 ? '0' : tax.toFixed(2).toString();
 });
+const handleGeshuiChaChange = () => {
+  outsourceMonthSalaryForm.value.monthGeshui = monthGeshui.value;
+}
 const yearTax = computed(() => {
   return (parseFloat(yearTaxPre.value || '0') + parseFloat(outsourceMonthSalaryForm.value.monthTax || '0')).toFixed(2).toString();
 });

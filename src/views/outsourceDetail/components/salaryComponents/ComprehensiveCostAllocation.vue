@@ -93,6 +93,12 @@ const columns:TableColumnsType = [
     key: 'money',
     width: 40,
   },
+  {
+    title: '单数',
+    dataIndex: 'offerNum',
+    key: 'offerNum',
+    width: 40,
+  },
 ]
 
 </script>

@@ -80,7 +80,7 @@ const updateOutsourceDetail = async (data: any) =>
   post<any>({ url: URL.update_outsource_detail, data});
 /**
  * 查询外包人员比例
- * @param data collectId
+ * @param data personId
  * @param data rId
  * @param data companyName
  * @param data phoneNumber

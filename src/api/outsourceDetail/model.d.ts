@@ -435,6 +435,7 @@ export interface OutsourceMonthSalaryItem {
   markTidian?: string; // 可为null
   markYingshou?: string; // 可为null
   marketDachengRate?: string; // 可为null
+  geshuiCha?: string; // 可为null
   monthGeshui?: string; // 可为null
   monthMianzheng?: string; // 可为null
   monthShebao?: string; // 可为null
