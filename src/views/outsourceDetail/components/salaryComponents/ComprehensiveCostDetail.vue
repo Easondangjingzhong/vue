@@ -292,7 +292,10 @@ const costDetailFormPerformanceDetail = () => {
   }
 }
 watch(costDetailFlag,() => {
-  const gongZhaoGongShi = getOutsourcePersonPerformanceDetailGongShi.value[0]?.gongZhaoGongShi || "";
+  let gongZhaoGongShi = getOutsourcePersonPerformanceDetailGongShi.value[0]?.gongZhaoGongShi || "";
+  if (outsourcePersonPerformanceDetail.value.recruitParty== "客户") {
+      gongZhaoGongShi = getOutsourcePersonPerformanceDetailGongShi.value[0]?.keZhaoGongShi || ""
+  }
   manageGongShiOptions.value = [{
     value: gongZhaoGongShi,
     label: gongZhaoGongShi,

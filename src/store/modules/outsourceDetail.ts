@@ -1106,6 +1106,12 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       this.outsourceContractForm = {
         ...this.outsourceContractForm,
         offerTime: this.outsourcePersonDetail.offerTime,
+        offerSign: this.outsourceContractForm.offerSign || this.outsourcePersonDetail.offerFlag,
+        signType: this.outsourceContractForm.signType || '入职签署',
+        contractFlag: this.outsourceContractForm.contractFlag || '等待发起',
+        contractStatus: this.outsourceContractForm.contractStatus || '生效中',
+        contractType: this.outsourceContractForm.contractType || (this.outsourcePersonDetail.jobType == '全职' ? '全职合同' : '兼职合同'),
+        contractCycle: this.outsourceContractForm.contractCycle || (this.outsourcePersonDetail.jobType == '全职' ? '' : '长期'),
       } as PersonContractItem;
       this.outsourceContractFlag = true;
     },

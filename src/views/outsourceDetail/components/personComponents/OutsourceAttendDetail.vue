@@ -514,10 +514,10 @@ const quanqin = computed(() => {
     // 根据工时类型和员工性质计算出勤工资
     if (outsourceAttendForm.value.isYugu === "是") {
       // 预估工时
-      return currentMonthYuHours - totalWorkHours >= 0 ? quanqin : 0;
+      return currentMonthYuHours - totalWorkHours >= 0 && outsourceAttendForm.value.isQuanqin == "是"? quanqin : 0;
     } else {
       // 实际工时
-      return currentMonthShiHours - totalWorkHours >= 0 ? quanqin : 0;
+      return currentMonthShiHours - totalWorkHours >= 0 && outsourceAttendForm.value.isQuanqin == "是"? quanqin : 0;
     }
   }
   return 0;
