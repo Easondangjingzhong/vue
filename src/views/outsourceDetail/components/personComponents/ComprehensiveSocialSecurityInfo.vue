@@ -80,6 +80,7 @@
             <a-tag v-if="getOutsourceSocialSecurityDetailList.length === 0" color="orange">待录</a-tag>
              <a-tag v-if="socialSecurity.shangbaoStatus === '1'" color="red">不缴</a-tag>
              <a-tag v-if="socialSecurity.shangbaoStatus === '2'" color="green">缴纳</a-tag>
+             <a-tag v-if="socialSecurity.shangbaoStatus === '3'" color="red">停缴</a-tag>
           </td>
           <td>客户收费</td>
           <td>{{ socialSecurity.keShangbao ? socialSecurity.keShangbao : '-' }}</td>

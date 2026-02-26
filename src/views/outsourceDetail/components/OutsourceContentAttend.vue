@@ -92,6 +92,8 @@
           <a-button @click="handleSearchOutsourcePerson('3')" :class="{'active': formStateAttend.currentStatus === '3'}" style="margin-right: 5px;" size="small">离职</a-button>
           <a-button @click="handleSearchOutsourcePerson('1')" :class="{'active': formStateAttend.currentStatus === ''}" style="margin-right: 5px;" size="small">全部</a-button>
           <a-button @click="handleSearchOutsourcePerson('4')" :class="{'active': formStateAttend.companyArrange === '1'}" style="margin-right: 5px;" size="small" title="按公司排序">排序</a-button>
+          <a-button @click="handleSearchOutsourcePersonFlag('1')" :class="{'active': formStateAttend.flag === '1'}" style="margin-right: 5px;" size="small">待录</a-button>
+          <a-button @click="handleSearchOutsourcePersonFlag('2')" :class="{'active': formStateAttend.flag === '2'}" style="margin-right: 5px;" size="small">已录</a-button>
         </span>
     </a-row>
     <a-row>
@@ -189,6 +191,10 @@ const clearFromState = () => {
     }
     onSearch();
   }
+const handleSearchOutsourcePersonFlag = (status) => {
+   formStateAttend.value.flag = status;
+   onSearch();
+}
 const onSearch = () => {
   pageOutsourceAttendList.value = {
       ...pageOutsourceAttendList.value,

@@ -1822,7 +1822,6 @@ const offerSignCompanyOptions = ref([
 const faXinDayOptions = ref([
   {value: '5日', label: '5日'},
   {value: '15日', label: '15日'},
-  {value: '30日', label: '30日'},
   {value: '31日', label: '31日'},
 ])
 const addFamilyMember = () => {

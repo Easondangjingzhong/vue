@@ -62,7 +62,16 @@ enum URL {
   query_outsource_checkNum = '/candidateRecommend/resume-vue-query-offer-outSoure-checkNum.action',
   update_outsource_detail = '/candidateRecommend/resume-vue-update-offer-outSoure-detail.action',
   update_outsource_shebao_month = '/employee-group/resume-vue-updateOut-SheBaoMonth-JinxinMonth.action',
+  update_outsource_salary_sign = '/candidateRecommend/update-out-month-sally-sign.action',
 }
+/**
+ * 业绩分配
+ * @param data id
+ * @param data sign 1未核 2已核
+ * @returns 
+ */
+const updateOutsourceSalarySign = async (data: any) =>
+  post<any>({ url: URL.update_outsource_salary_sign, data});
 /**
  * 业绩分配
  * @param data personId
@@ -516,6 +525,7 @@ const queryOutsourceMonthSalary = async (data: any) =>
   post<any>({ url: URL.query_outsource_month_salary, data});
 
 export default { 
+  updateOutsourceSalarySign,
   updateOutsourceSheBaoMonth,
   updateOutsourceDetail,
   queryOutsourceCheckNum,

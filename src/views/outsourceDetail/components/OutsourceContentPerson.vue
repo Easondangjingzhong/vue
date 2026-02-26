@@ -69,7 +69,12 @@
           </a-select>
           </a-form-item>
         </a-col>
-         <a-col :span="4">
+        <a-col :span="3">
+          <a-form-item name="bankNum" label="银行卡">
+            <a-input v-model:value="formStatePerson.bankNum"/>
+          </a-form-item>
+        </a-col>
+         <a-col :span="3">
           <a-button style="margin: 0 0 0 8px" type="primary" html-type="submit">搜索</a-button>
           <a-button style="margin: 0 8px" @click="clearFromState">清空</a-button>
          </a-col>
@@ -236,6 +241,7 @@
   </div>
   <FileYuLanInfo/>
   <AddOutsourcePerson/>
+  <!-- <AddOutsourcePersonNew/> -->
   <LeaveInfomationForm/>
   <ContractInfomationForm/>
   <NewJoinerPersonalInformationForm/>
@@ -252,6 +258,7 @@ import { handleToResumeDetails } from '/@/router/index';
 import type { TableColumnsType } from 'ant-design-vue';
 import FileYuLanInfo from '/@/views/outsourceDetail/components/personComponents/FileYuLanInfo.vue';
 import AddOutsourcePerson from '/@/views/outsourceDetail/components/AddOutsourcePerson.vue';
+//import AddOutsourcePersonNew from '/@/views/outsourceDetail/components/AddOutsourcePersonNew.vue';
 import OutsourcePersonProcess from '/@/views/outsourceDetail/components/personComponents/OutsourcePersonProcess.vue'
 import LeaveInfomationForm from '/@/views/outsourceDetail/components/personComponents/LeaveInfomationForm.vue'
 import ContractInfomationForm from '/@/views/outsourceDetail/components/personComponents/ContractInfomationForm.vue'

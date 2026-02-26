@@ -112,7 +112,7 @@
             <template #overlay>
               <a-menu>
                 <a-menu-item>
-                  <a href="javascript:;">业绩核对</a>
+                  <a href="javascript:;" @click="handleOutsourceSalarySign(record.id)">业绩核对</a>
                 </a-menu-item>
                  <a-menu-item>
                   <a href="javascript:;" @click="handleOutsourceMonthSalaryOfferAllocation(record)">业绩分配</a>
@@ -253,6 +253,10 @@ const handleOutsourceMonthSalaryOfferAllocation = (record) => {
   //   return;
   // }
   outsourceDetailStore.handleOutsourceMonthSalaryOfferAllocation(_.cloneDeep(record));
+}
+const handleOutsourceSalarySign = (id: number) => {
+  outsourceDetailStore.updateOutsourceSalarySign(id, "2");
+  handleOutsourceMonthSalaryOfferListData();
 }
 </script>
 

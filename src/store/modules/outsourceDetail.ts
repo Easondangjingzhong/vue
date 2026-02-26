@@ -827,6 +827,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       params.append('companyName', this.formStatePerson.companyName || '');
       params.append('companyArrange', this.formStatePerson.companyArrange || '');
       params.append('jobType', this.formStatePerson.jobType || '');
+      params.append('bankNum', this.formStatePerson.bankNum || '');
       this.personIsLoading = true;
       try {
         const res = await fetchApi.queryOutsourcePerson(params);
@@ -963,6 +964,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       params.append('companyArrange', this.formStateAttend.companyArrange || '');
       params.append('jobType', this.formStateAttend.jobType || '');
       params.append('yearAndMonth', this.formStateAttend.yearAndMonth || '');
+      params.append('flag', this.formStateAttend.flag || '');
       this.attendIsLoading = true;
       try {
         const res = await fetchApi.queryOutsourceAttend(params);
@@ -1364,6 +1366,10 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         ...this.outsourceSocialSecurityForm,
         personId: this.outsourcePersonDetail.id,
         shebaoCity: this.outsourcePersonDetail.city || '',
+        shebaoYujiaoTime: this.outsourceSocialSecurityForm.shebaoYujiaoTime || this.outsourcePersonDetail.planEntryTime ? formatToDate(this.outsourcePersonDetail.planEntryTime) : '',
+        shebaoYutingTime: this.outsourceSocialSecurityForm.shebaoYutingTime || this.outsourcePersonDetail.planLeaveTime ? formatToDate(this.outsourcePersonDetail.planLeaveTime) : '',
+        yijinYujiaoTime: this.outsourceSocialSecurityForm.yijinYujiaoTime || this.outsourcePersonDetail.planEntryTime ? formatToDate(this.outsourcePersonDetail.planEntryTime) : '',
+        yijinYutingTime: this.outsourceSocialSecurityForm.yijinYutingTime || this.outsourcePersonDetail.planLeaveTime  ? formatToDate(this.outsourcePersonDetail.planLeaveTime) : '',
       };
     },
     /**
@@ -2196,6 +2202,22 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       //   this.outsourcePersonPerformanceDetailSheBaoInfo =
       //     resSheBao.info as OutsourceShebaoInfoItem[];
       // }
+    },
+    /**
+     * 核对薪资
+     * @param params id sign
+     * @returns
+     */
+    async updateOutsourceSalarySign(id: number, sign: string) {
+      try {
+        const formData = new FormData();
+        formData.append('id', id.toString() || '');
+        formData.append('sign', sign || '');
+        const res = await fetchApi.updateOutsourceSalarySign(formData);
+        return res;
+      } catch (error) {
+        return null;
+      }
     },
   },
 });

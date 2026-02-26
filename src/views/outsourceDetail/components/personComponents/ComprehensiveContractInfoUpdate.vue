@@ -176,6 +176,10 @@ const offerSignOption = ref([
     label: '签署完成',
     value: '签署完成',
   },
+   {
+    label: '无需签署',
+    value: '无需签署',
+  },
 ]);
 const contractTypeOption = ref([
   {

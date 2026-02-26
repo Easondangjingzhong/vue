@@ -139,6 +139,7 @@ export interface SearchPersonItem {
   companyArrange: string;
   jobType: string;
   companyName: string;
+  bankNum: string;
 }
 /**
  * 外包外包月度薪资
@@ -743,6 +744,7 @@ export interface SearchAttendItem {
   companyArrange: string;
   companyName: string;
   yearAndMonth: string;
+  flag: string;
 }
 /**
  * 外包考勤
