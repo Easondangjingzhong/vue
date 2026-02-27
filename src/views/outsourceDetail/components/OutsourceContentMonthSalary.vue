@@ -116,6 +116,14 @@
     <template v-if="column.key === 'salaryAfterTax'">
       <span style="font-weight: 600;">{{ record.salaryAfterTax }}</span>
     </template>
+     <a-popover v-if="column.key === 'otherPayKe' && record.otherPayKe">
+        <template #content>
+          <div v-for="(item, index) in record.otherPayKeStr.split(';')" :key="index">
+            {{ item }}
+          </div>
+        </template>
+        <span style="cursor: pointer;">{{ record.otherPayKe }}</span>
+      </a-popover>
     <template v-if="column.key === 'operation' && record['personId']">
           <a-dropdown>
             <span class="ant-dropdown-link" style="cursor: pointer;" @click.prevent>
@@ -210,15 +218,16 @@ const columnsOutsourceMonthSalary:TableColumnsType = [
   { title: '激励奖金', dataIndex: 'jili', key: 'jili', width: 50, },
   { title: '特殊奖金', dataIndex: 'teshu', key: 'teshu', width: 50, },
   { title: '达成奖金', dataIndex: 'dacheng', key: 'dacheng', width: 50, },
+  { title: '奖金总计', dataIndex: 'jiangjinTotal', key: 'jiangjinTotal', width: 50, },
   { title: '十三薪', dataIndex: 'thirteenthSalary', key: 'thirteenthSalary', width: 50, },
   { title: '年终奖金', dataIndex: 'yearEndBouns', key: 'yearEndBouns', width: 50, },
-  { title: '奖金总计', dataIndex: 'jiangjinTotal', key: 'jiangjinTotal', width: 50, },
   { title: '保底奖金', dataIndex: 'baodiJiangjin', key: 'baodiJiangjin', width: 50, },
   { title: '工资调差', dataIndex: 'salaryTiaocha', key: 'salaryTiaocha', width: 50, },
   { title: '全勤调差', dataIndex: 'quanqinTiaocha', key: 'quanqinTiaocha', width: 50, },
   { title: '餐补调差', dataIndex: 'canbuTiaocha', key: 'canbuTiaocha', width: 50, },
   { title: '津贴调差', dataIndex: 'jintieTiaocha', key: 'jintieTiaocha', width: 50, },
   { title: '调差合计', dataIndex: 'tiaochaTotal', key: 'tiaochaTotal', width: 50, },
+  { title: '其他支出', dataIndex: 'otherPayKe', key: 'otherPayKe', width: 50, },
   { title: '月度工资', dataIndex: 'monthTax', key: 'monthTax', width: 50, },
   { title: '年度工资', dataIndex: 'yearTax', key: 'yearTax', width: 50, },
   { title: '养老保险', dataIndex: 'yanglao', key: 'yanglao', width: 50, },

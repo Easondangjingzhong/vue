@@ -128,7 +128,7 @@
             </a-form-item>
           </a-col>
         </a-row>
-         <a-row :gutter="24">
+         <a-row :gutter="24" style='display: none;'>
           <a-col :span="12">
             <a-form-item label="有招费率" name="youzhaoRate" :labelCol="{span: 4}">
                <a-select v-model:value="outsourceFormulaForm.youzhaoRate">
@@ -276,7 +276,7 @@
         </a-row>
         <a-row :gutter="24">
           <a-col :span="12">         
-            <a-form-item :label="outsourceFormulaForm.jobType == '兼职' ? '客户招聘(社会)' : '客户招聘'" name="keZhaoGongShi" :labelCol="{span: 4}">
+            <a-form-item :label="outsourceFormulaForm.jobType == '兼职' ? '客户招聘(社会)' : '客户招聘'" name="keZhaoGongShi" :labelCol="{span: (outsourceFormulaForm.jobType == '兼职' ? 5 : 4)}">
              <span class="ant-input-number-gongshi" v-for="(item, index) in keZhaoGongShiArr" :key="index">
               <a-input v-model:value="keZhaoGongShiArr[index]" placeholder="请输入客户招聘" />
               <span v-if="index === 0" @click="handleAddKeZhaoGongShi(index)"><PlusOutlined/></span>
@@ -285,7 +285,7 @@
             </a-form-item>
           </a-col>
           <a-col :span="12">         
-            <a-form-item :label="outsourceFormulaForm.jobType == '兼职' ? '公司招聘(社会)' : '公司招聘'" name="gongZhaoGongShi" :labelCol="{span: 4}">
+            <a-form-item :label="outsourceFormulaForm.jobType == '兼职' ? '公司招聘(社会)' : '公司招聘'" name="gongZhaoGongShi" :labelCol="{span: (outsourceFormulaForm.jobType == '兼职' ? 5 : 4)}">
              <span class="ant-input-number-gongshi" v-for="(item, index) in gongZhaoGongShiArr" :key="index">
               <a-input v-model:value="gongZhaoGongShiArr[index]" placeholder="请输入公司管理" />
               <span v-if="index === 0" @click="handleAddGongZhaoGongShi(index)"><PlusOutlined/></span>

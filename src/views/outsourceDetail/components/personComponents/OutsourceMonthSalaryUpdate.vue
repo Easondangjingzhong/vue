@@ -107,10 +107,18 @@
               <a-input v-model:value="outsourceMonthSalaryForm.yearEndBouns"/>
             </a-form-item>
           </div>
-          <div>
-           <a-form-item name="otherCha" label="其他差额" :rules="[{ required: false, message: '请输入其他差额' }]">
-              <a-input v-model:value="outsourceMonthSalaryForm.otherCha"/>
+          <div class="outsourceAttendCol">
+           <a-form-item name="otherPayKe" label="其他支出" :rules="[{ required: false, message: '请输入其他差额' }]">
+            <span class="ant-input-number-other">
+              <a-input v-model:value="outsourceMonthSalaryForm.otherPayKe" disabled/>
+              <span @click="addOtherPayKe" style="cursor: pointer;"><PlusOutlined/></span>
+            </span>
             </a-form-item>
+            <div class="ant-input-number-other" v-for="(item, index) in otherPayKeArr" :key="index">
+              <a-input v-model:value="item.label" @change="updateOtherPayKeTotal"/>
+              <a-input v-model:value="item.value" @change="updateOtherPayKeTotal"/>
+              <span @click="removeOtherPayKe(index)" style="cursor: pointer;"><MinusOutlined/></span>
+            </div>
           </div>
           <div>&nbsp;</div>
           <div>&nbsp;</div>
@@ -204,11 +212,15 @@
         </div>
         <div class="salaryDiv">
           <div>
+            <a-form-item name="gongziCha" label="工资差额" :rules="[{ required: false, message: '请输入实发工资' }]">
+                <a-input v-model:value="outsourceMonthSalaryForm.gongziCha"/>
+              </a-form-item>
+          </div>
+          <div>
              <a-form-item name="salaryAfterTax" label="实发工资" :rules="[{ required: false, message: '请输入实发工资' }]">
                 <a-input v-model:value="outsourceMonthSalaryForm.salaryAfterTax"  disabled/>
               </a-form-item>
           </div>
-          <div>&nbsp;</div>
           <div>&nbsp;</div>
           <div>&nbsp;</div>
           <div style="text-align: right;">
@@ -228,7 +240,7 @@
 import { storeToRefs } from 'pinia';
 import { message } from 'ant-design-vue';
 import { OutsourceMonthSalaryItem } from '/@/api/outsourceDetail/model';
-import { CloseOutlined } from '@ant-design/icons-vue';
+import { CloseOutlined, PlusOutlined, MinusOutlined, } from '@ant-design/icons-vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
 const { outsourceMonthSalaryFlag, outsourceMonthSalaryForm } = storeToRefs(outsourceDetailStore);
@@ -238,18 +250,26 @@ const labelCol = {
 };
 const iconLoading = ref(false);
 const handleClose = () => {
+  otherPayKeArr.value = [] as OtherPayKeItem[];
   outsourceMonthSalaryFlag.value = false;
   outsourceMonthSalaryForm.value = {} as OutsourceMonthSalaryItem;
 }
 //月度薪资
 const monthTax = computed(() => {
   if (parseFloat(outsourceMonthSalaryForm.value.jiangjinTotal || '0') - parseFloat(outsourceMonthSalaryForm.value.baodiJiangjin || '0') <= 0) {
-    return (parseFloat(outsourceMonthSalaryForm.value.chuqinSalary || '0') + parseFloat(outsourceMonthSalaryForm.value.canbu || '0') + parseFloat(outsourceMonthSalaryForm.value.jintie || '0') + parseFloat(outsourceMonthSalaryForm.value.quanqin || '0') + parseFloat(outsourceMonthSalaryForm.value.jiabanSalary || '0') + parseFloat(outsourceMonthSalaryForm.value.baodiJiangjin || '0') + parseFloat(outsourceMonthSalaryForm.value.tiaochaTotal || '0') + parseFloat(outsourceMonthSalaryForm.value.thirteenthSalary || '0') + parseFloat(outsourceMonthSalaryForm.value.yearEndBouns || '0') + parseFloat(outsourceMonthSalaryForm.value.otherCha || '0')).toFixed(2).toString();
+    return (parseFloat(outsourceMonthSalaryForm.value.chuqinSalary || '0') + parseFloat(outsourceMonthSalaryForm.value.canbu || '0') + parseFloat(outsourceMonthSalaryForm.value.jintie || '0') + parseFloat(outsourceMonthSalaryForm.value.quanqin || '0') + parseFloat(outsourceMonthSalaryForm.value.jiabanSalary || '0') + parseFloat(outsourceMonthSalaryForm.value.baodiJiangjin || '0') + parseFloat(outsourceMonthSalaryForm.value.tiaochaTotal || '0') + parseFloat(outsourceMonthSalaryForm.value.thirteenthSalary || '0') + parseFloat(outsourceMonthSalaryForm.value.yearEndBouns || '0') + parseFloat(outsourceMonthSalaryForm.value.otherPayKe || '0')).toFixed(2).toString();
   }
-  return (parseFloat(outsourceMonthSalaryForm.value.chuqinSalary || '0') + parseFloat(outsourceMonthSalaryForm.value.canbu || '0') + parseFloat(outsourceMonthSalaryForm.value.jintie || '0') + parseFloat(outsourceMonthSalaryForm.value.quanqin || '0') + parseFloat(outsourceMonthSalaryForm.value.jiabanSalary || '0') + parseFloat(outsourceMonthSalaryForm.value.jiangjinTotal || '0') + parseFloat(outsourceMonthSalaryForm.value.tiaochaTotal || '0') + parseFloat(outsourceMonthSalaryForm.value.thirteenthSalary || '0') + parseFloat(outsourceMonthSalaryForm.value.yearEndBouns || '0') + parseFloat(outsourceMonthSalaryForm.value.otherCha || '0')).toFixed(2).toString();
+  return (parseFloat(outsourceMonthSalaryForm.value.chuqinSalary || '0') + parseFloat(outsourceMonthSalaryForm.value.canbu || '0') + parseFloat(outsourceMonthSalaryForm.value.jintie || '0') + parseFloat(outsourceMonthSalaryForm.value.quanqin || '0') + parseFloat(outsourceMonthSalaryForm.value.jiabanSalary || '0') + parseFloat(outsourceMonthSalaryForm.value.jiangjinTotal || '0') + parseFloat(outsourceMonthSalaryForm.value.tiaochaTotal || '0') + parseFloat(outsourceMonthSalaryForm.value.thirteenthSalary || '0') + parseFloat(outsourceMonthSalaryForm.value.yearEndBouns || '0') + parseFloat(outsourceMonthSalaryForm.value.otherPayKe || '0')).toFixed(2).toString();
 });
 watch(monthTax, () => {
   outsourceMonthSalaryForm.value.monthTax = monthTax.value;
+  if (outsourceMonthSalaryForm.value.jobType === '兼职') {
+    if (Number(monthTax.value) - 4000 <= 0) {
+      outsourceMonthSalaryForm.value.monthMianzheng = '800';
+    } else {
+      outsourceMonthSalaryForm.value.monthMianzheng = (Number(monthTax.value) * 0.2).toFixed(2).toString();
+    }
+  }
 })
 //奖金总计
 const jiangjinTotal = computed(() => {
@@ -265,11 +285,37 @@ const monthZhuankou = computed(() => {
 watch(monthZhuankou, () => {
   outsourceMonthSalaryForm.value.monthZhuankou = monthZhuankou.value;
 })
-
+interface OtherPayKeItem {
+  label: string;
+  value: number;
+}
+const otherPayKeArr = ref<OtherPayKeItem[]>([])
+const addOtherPayKe = () => {
+  otherPayKeArr.value.push({
+    label: '',
+    value: 0
+  })
+}
+const removeOtherPayKe = (index: number) => {
+  otherPayKeArr.value.splice(index, 1);
+  updateOtherPayKeTotal();
+}
+const updateOtherPayKeTotal = () => {
+  outsourceMonthSalaryForm.value.otherPayKe = otherPayKeArr.value.reduce((pre, cur) => pre + Number(cur.value), 0).toFixed(2).toString();
+  outsourceMonthSalaryForm.value.monthTax = monthTax.value;
+  outsourceMonthSalaryForm.value.otherPayKeStr = otherPayKeArr.value.map(item => `${item.label}:${item.value}`).join(';');
+  console.log(outsourceMonthSalaryForm.value.otherPayKeStr);
+}
 const yearTaxPre = ref('0');
 const yearGeshuiPre = ref('0');
 watch(outsourceMonthSalaryFlag, () => {
   if (outsourceMonthSalaryFlag.value) {
+    if (outsourceMonthSalaryForm.value.otherPayKeStr) {
+      otherPayKeArr.value = outsourceMonthSalaryForm.value.otherPayKeStr.split(';').map(item => ({
+        label: item.split(':')[0],
+        value: Number(item.split(':')[1] || 0)
+      }))
+    }
     outsourceDetailStore.queryOutsourceYearTotalPre(outsourceMonthSalaryForm.value.personId?.toString() || '', outsourceMonthSalaryForm.value.jinxinMonth || '').then(res => {
   if (res.code === 1) {
     yearTaxPre.value = res.info.yearTax || '0';
@@ -364,9 +410,12 @@ watch(yearTax, () => {
 })
 //实发工资
 const salaryAfterTax = computed(() => {
-  return (parseFloat(outsourceMonthSalaryForm.value.monthTax || '0') - parseFloat(outsourceMonthSalaryForm.value.monthShebao || '0') - parseFloat(outsourceMonthSalaryForm.value.yijin || '0') - parseFloat(outsourceMonthSalaryForm.value.monthGeshui || '0') - parseFloat(outsourceMonthSalaryForm.value.shouxuMoney || '0')).toFixed(2).toString();
+  return (parseFloat(outsourceMonthSalaryForm.value.monthTax || '0') - parseFloat(outsourceMonthSalaryForm.value.monthShebao || '0') - parseFloat(outsourceMonthSalaryForm.value.yijin || '0') - parseFloat(outsourceMonthSalaryForm.value.monthGeshui || '0') - parseFloat(outsourceMonthSalaryForm.value.shouxuMoney || '0') + parseFloat(outsourceMonthSalaryForm.value.gongziCha || '0')).toFixed(2).toString();
 });
 watch(salaryAfterTax, () => {
+  outsourceMonthSalaryForm.value.salaryAfterTax = salaryAfterTax.value;
+})
+watch(() => outsourceMonthSalaryForm.value.gongziCha, () => {
   outsourceMonthSalaryForm.value.salaryAfterTax = salaryAfterTax.value;
 })
 const handleSubmit = () => {
@@ -395,5 +444,11 @@ const handleSubmit = () => {
 }
 :deep(.outsourceAttendCol .ant-form-item) {
   margin-bottom: 0;
+}
+.ant-input-number-other {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 10px;
 }
 </style>

@@ -81,6 +81,19 @@ const drawerWidth = ref(Math.max(600, window.innerWidth * 0.5));
 const labelCol = {
   span: 4,
 };
+watch(outsourceMonthSalaryShiJiFlag,() => {
+  if(outsourceMonthSalaryShiJiFlag.value) {
+    outsourceMonthSalaryYearForm.value = {
+      personId: outsourceMonthSalaryForm.value?.personId?.toString() || '',
+      jinxinMonth: outsourceMonthSalaryForm.value.jinxinMonth || '',
+      yearShebaoPre: outsourceMonthSalaryForm.value?.yearShebaoPre || '',
+      yearGeshuiPre: outsourceMonthSalaryForm.value?.yearGeshuiPre || '',
+      yearMianzhengPre: outsourceMonthSalaryForm?.value.yearMianzhengPre || '',
+      yearTaxPre: outsourceMonthSalaryForm.value?.yearTaxPre || '',
+      yearZhuankouPre: outsourceMonthSalaryForm.value?.yearZhuankouPre || '',
+    }
+  }
+})
 const iconLoading = ref(false);
 const handleClose = () => {
   outsourceMonthSalaryShiJiFlag.value = false;
@@ -96,8 +109,6 @@ const handleClose = () => {
 }
 const handleSubmit = () => {
   iconLoading.value = true;
-  outsourceMonthSalaryYearForm.value.personId = outsourceMonthSalaryForm.value?.personId?.toString() || "";
-  outsourceMonthSalaryYearForm.value.jinxinMonth = outsourceMonthSalaryForm.value.jinxinMonth || "";
   outsourceDetailStore.addUpdateOutsourceSalaryMonthYearlPre(outsourceMonthSalaryYearForm.value).then(res => {
         if (res.code == 1) {
           message.success('操作成功');

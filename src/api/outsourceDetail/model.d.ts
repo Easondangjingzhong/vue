@@ -527,6 +527,12 @@ export interface OutsourceMonthSalaryItem {
   chenbenTiaochaKeStr?: string;//调差调整金额
   otherCha?: string;//其他差额
   offerOutSourceDetails?: OfferDetailsItem[];
+  yearShebaoPre?: string;//年社保
+  yearGeshuiPre?: string;//年个税
+  yearMianzhengPre?: string;//年免征
+  yearTaxPre?: string;//年个税
+  yearZhuankouPre?: string;//年专扣
+  gongziCha?: string;//工资差额
 }
 //用工成本
 export interface CostItem {
