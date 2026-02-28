@@ -141,6 +141,10 @@ const loseReasonOption = ref([
 ]);
 const contractStatusOption = ref([
   {
+    label: '待生效',
+    value: '待生效',
+  },
+  {
     label: '生效中',
     value: '生效中',
   },

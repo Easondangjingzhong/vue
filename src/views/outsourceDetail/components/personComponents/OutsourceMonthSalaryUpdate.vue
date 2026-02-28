@@ -304,7 +304,6 @@ const updateOtherPayKeTotal = () => {
   outsourceMonthSalaryForm.value.otherPayKe = otherPayKeArr.value.reduce((pre, cur) => pre + Number(cur.value), 0).toFixed(2).toString();
   outsourceMonthSalaryForm.value.monthTax = monthTax.value;
   outsourceMonthSalaryForm.value.otherPayKeStr = otherPayKeArr.value.map(item => `${item.label}:${item.value}`).join(';');
-  console.log(outsourceMonthSalaryForm.value.otherPayKeStr);
 }
 const yearTaxPre = ref('0');
 const yearGeshuiPre = ref('0');

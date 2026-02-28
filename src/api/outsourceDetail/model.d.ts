@@ -639,7 +639,7 @@ export interface WelfareItem {
   collectId?: string;
   personId?: string;
   name?: string;
-  money?: string;
+  money?: number;
 }
 /**
  * 外包分页

@@ -70,7 +70,7 @@
             </a-form-item>
           </a-col>
         </a-row>
-        <a-row :gutter="24">
+        <a-row :gutter="24" class="outsourceAttendCol">
           <a-col :span="6">
             <a-form-item name="companyYijinKe" label="企业一金">
               <a-input v-model:value="costDetailForm.companyYijinKe" disabled/>
@@ -78,8 +78,16 @@
           </a-col>
            <a-col :span="6">
             <a-form-item name="chenbenTiaochaKe" label="调差调整">
+              <span class="ant-input-number-other">
               <a-input v-model:value="costDetailForm.chenbenTiaochaKe" disabled/>
+              <span @click="addChenbenTiaochaKe" style="cursor: pointer;"><PlusOutlined/></span>
+              </span>
             </a-form-item>
+             <div class="ant-input-number-other" v-for="(item, index) in chenbenTiaochaKeArr" :key="index">
+              <a-input v-model:value="item.label" @change="updateChenbenTiaochaKeTotal"/>
+              <a-input v-model:value="item.value" @change="updateChenbenTiaochaKeTotal"/>
+              <span @click="removeChenbenTiaochaKe(index)" style="cursor: pointer;"><MinusOutlined/></span>
+            </div>
           </a-col>
          <a-col :span="6">
             <a-form-item name="companyYijin" label="企业一金">
@@ -88,11 +96,19 @@
           </a-col>
            <a-col :span="6">
             <a-form-item name="chenbenTiaocha" label="调差调整">
+              <span class="ant-input-number-other">
               <a-input v-model:value="costDetailForm.chenbenTiaocha" disabled/>
+              <span @click="addChenbenTiaocha" style="cursor: pointer;"><PlusOutlined/></span>
+              </span>
             </a-form-item>
+            <div class="ant-input-number-other" v-for="(item, index) in chenbenTiaochaArr" :key="index">
+              <a-input v-model:value="item.label" @change="updateChenbenTiaochaTotal"/>
+              <a-input v-model:value="item.value" @change="updateChenbenTiaochaTotal"/>
+              <span @click="removeChenbenTiaocha(index)" style="cursor: pointer;"><MinusOutlined/></span>
+            </div>
           </a-col>
         </a-row>
-        <a-row :gutter="24">
+        <a-row :gutter="24" class="outsourceAttendCol">
           <a-col :span="6">
             <a-form-item name="keShangbao" label="企业商保">
               <a-input v-model:value="costDetailForm.keShangbao" />
@@ -100,8 +116,16 @@
           </a-col>
           <a-col :span="6">
             <a-form-item name="otherPayKe" label="其他支出">
+              <span class="ant-input-number-other">
               <a-input v-model:value="costDetailForm.otherPayKe" disabled/>
+              <span @click="addOtherPayKe" style="cursor: pointer;"><PlusOutlined/></span>
+              </span>
             </a-form-item>
+            <div class="ant-input-number-other" v-for="(item, index) in otherPayKeArr" :key="index">
+              <a-input v-model:value="item.label" @change="updateOtherPayKeTotal"/>
+              <a-input v-model:value="item.value" @change="updateOtherPayKeTotal"/>
+              <span @click="removeOtherPayKe(index)" style="cursor: pointer;"><MinusOutlined/></span>
+            </div>
           </a-col>
           <a-col :span="6">
             <a-form-item name="shiShangbao" label="企业商保">
@@ -110,11 +134,19 @@
           </a-col>
           <a-col :span="6">
             <a-form-item name="otherPay" label="其他支出">
+              <span class="ant-input-number-other">
               <a-input v-model:value="costDetailForm.otherPay" disabled/>
+              <span @click="addOtherPay" style="cursor: pointer;"><PlusOutlined/></span>
+              </span>
             </a-form-item>
+            <div class="ant-input-number-other" v-for="(item, index) in otherPayArr" :key="index">
+              <a-input v-model:value="item.label" @change="updateOtherPayTotal"/>
+              <a-input v-model:value="item.value" @change="updateOtherPayTotal"/>
+              <span @click="removeOtherPay(index)" style="cursor: pointer;"><MinusOutlined/></span>
+            </div>
           </a-col>
         </a-row>
-        <a-row :gutter="24">
+        <a-row :gutter="24" class="outsourceAttendCol">
           <a-col :span="6">
             <a-form-item name="canBao" label="企业残保">
               <a-input v-model:value="costDetailForm.canBao" />
@@ -122,15 +154,23 @@
           </a-col>
           <a-col :span="6">
             <a-form-item name="welfareKe" label="员工福利">
+              <span class="ant-input-number-other">
               <a-input v-model:value="costDetailForm.welfareKe" disabled/>
+              <span @click="addWelfareKe" style="cursor: pointer;"><PlusOutlined/></span>
+              </span>
             </a-form-item>
+            <div class="ant-input-number-other" v-for="(item, index) in welfareKeArr" :key="index">
+              <a-input v-model:value="item.name" @change="updateWelfareKeTotal"/>
+              <a-input v-model:value="item.money" @change="updateWelfareKeTotal"/>
+              <span @click="removeWelfareKe(index)" style="cursor: pointer;"><MinusOutlined/></span>
+            </div>
           </a-col>
           <a-col :span="6">
             <a-form-item label="企业残保">
               <a-input v-model:value="costDetailForm.canBao" />
             </a-form-item>
           </a-col>
-          <a-col :span="6">
+          <a-col :span="6" style="display: none; ">
             <a-form-item name="welfare" label="员工福利">
               <a-input v-model:value="costDetailForm.welfare" disabled/>
             </a-form-item>
@@ -231,7 +271,7 @@
 import { storeToRefs } from 'pinia';
 import { message } from 'ant-design-vue';
 import type { ComprehensiveCostItem } from '/@/api/outsourceDetail/model';
-import { CloseOutlined } from '@ant-design/icons-vue';
+import { CloseOutlined, PlusOutlined, MinusOutlined, } from '@ant-design/icons-vue';
 import type { OutsourceSheBaoItem,OfferDetailsItem } from '/@/api/outsourceDetail/model';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
@@ -257,7 +297,95 @@ const rateOptions = ref([
     value: '0.06',
   },
 ])
-
+interface LabelAndValueItem {
+  label: string;
+  value: number;
+}
+//公司账单调差调整
+const chenbenTiaochaArr = ref<LabelAndValueItem[]>([])
+const addChenbenTiaocha = () => {
+  chenbenTiaochaArr.value.push({
+    label: '',
+    value: 0
+  })
+}
+const removeChenbenTiaocha = (index: number) => {
+  chenbenTiaochaArr.value.splice(index, 1);
+  updateChenbenTiaochaTotal();
+}
+const updateChenbenTiaochaTotal = () => {
+  costDetailForm.value.chenbenTiaocha = chenbenTiaochaArr.value.reduce((pre, cur) => pre + Number(cur.value), 0).toFixed(2).toString();
+  costDetailForm.value.chenbenTiaochaStr = chenbenTiaochaArr.value.map(item => `${item.label}:${item.value}`).join(';');
+}
+//客户账单调差调整
+const chenbenTiaochaKeArr = ref<LabelAndValueItem[]>([])
+const addChenbenTiaochaKe = () => {
+  chenbenTiaochaKeArr.value.push({
+    label: '',
+    value: 0
+  })
+}
+const removeChenbenTiaochaKe = (index: number) => {
+  chenbenTiaochaKeArr.value.splice(index, 1);
+  updateChenbenTiaochaKeTotal();
+}
+const updateChenbenTiaochaKeTotal = () => {
+  costDetailForm.value.chenbenTiaochaKe = chenbenTiaochaKeArr.value.reduce((pre, cur) => pre + Number(cur.value), 0).toFixed(2).toString();
+  costDetailForm.value.chenbenTiaochaKeStr = chenbenTiaochaKeArr.value.map(item => `${item.label}:${item.value}`).join(';');
+}
+//公司账单其他支出
+const otherPayArr = ref<LabelAndValueItem[]>([])
+const addOtherPay = () => {
+  otherPayArr.value.push({
+    label: '',
+    value: 0
+  })
+}
+const removeOtherPay = (index: number) => {
+  otherPayArr.value.splice(index, 1);
+  updateOtherPayTotal();
+}
+const updateOtherPayTotal = () => {
+  costDetailForm.value.otherPay = otherPayArr.value.reduce((pre, cur) => pre + Number(cur.value), 0).toFixed(2).toString();
+  costDetailForm.value.otherPayStr = otherPayArr.value.map(item => `${item.label}:${item.value}`).join(';');
+}
+//客户账单其他支出
+const otherPayKeArr = ref<LabelAndValueItem[]>([])
+const addOtherPayKe = () => {
+  otherPayKeArr.value.push({
+    label: '',
+    value: 0
+  })
+}
+const removeOtherPayKe = (index: number) => {
+  otherPayKeArr.value.splice(index, 1);
+  updateOtherPayKeTotal();
+}
+const updateOtherPayKeTotal = () => {
+  costDetailForm.value.otherPayKe = otherPayKeArr.value.reduce((pre, cur) => pre + Number(cur.value), 0).toFixed(2).toString();
+  costDetailForm.value.otherPayKeStr = otherPayKeArr.value.map(item => `${item.label}:${item.value}`).join(';');
+}
+//客户账单员工福利
+interface WelfareKeItem {
+  personId?: string;
+  name?: string;
+  money?: number;
+}
+const welfareKeArr = ref<WelfareKeItem[]>([])
+const addWelfareKe = () => {
+  welfareKeArr.value.push({
+    personId: getOutsourcePersonPerformanceDetail.value[0].personId?.toString() || "",
+    name: '',
+    money: 0
+  })
+}
+const removeWelfareKe = (index: number) => {
+  welfareKeArr.value.splice(index, 1);
+  updateWelfareKeTotal();
+}
+const updateWelfareKeTotal = () => {
+  costDetailForm.value.welfareKe = welfareKeArr.value.reduce((pre, cur) => pre + Number(cur.money), 0).toFixed(2).toString();
+}
 const costDetailFormPerformanceDetail = () => {
   if(getOutsourcePersonPerformanceDetail.value.length > 0) {
     const temp = getOutsourcePersonPerformanceDetail.value[0];
@@ -276,7 +404,7 @@ const costDetailFormPerformanceDetail = () => {
     costDetailForm.value.otherPayKe = temp?.otherPayKe || "0";
     costDetailForm.value.shiShangbao = sheBao?.shiShangbao?.toString() || "0";
     costDetailForm.value.otherPay = temp?.otherPay || "0";
-    costDetailForm.value.canBao = temp?.monthTax ? (Number(temp.monthTax || 0) * 0.015).toFixed(2) : "0";
+    costDetailForm.value.canBao = (temp?.monthTax && temp?.jobType == '全职')? (Number(temp.monthTax || 0) * 0.015).toFixed(2) : "0";
     costDetailForm.value.chenbenTiaochaKe = temp?.chenbenTiaochaKe || "0";
     costDetailForm.value.chenbenTiaocha = temp?.chenbenTiaocha || "0";
     costDetailForm.value.manageChargeTax = temp?.manageChargeTax || "0";
@@ -289,6 +417,27 @@ const costDetailFormPerformanceDetail = () => {
     costDetailForm.value.totalCharge = temp?.totalCharge || "0";
     costDetailForm.value.manageChargeRate = temp?.manageChargeRate?.toString() || "0.0672";
     costDetailForm.value.zhuanChargeRate = temp?.zhuanChargeRate?.toString() || "0.0672";
+    costDetailForm.value.otherPayKeStr = temp?.otherPayKeStr;
+    otherPayKeArr.value = costDetailForm.value?.otherPayKeStr ? costDetailForm.value?.otherPayKeStr?.split(';')?.map(item => ({
+      label: item.split(':')[0],
+      value: Number(item.split(':')[1])
+    })) : [] as LabelAndValueItem[];  
+    costDetailForm.value.otherPayStr = temp?.otherPayStr;
+    otherPayArr.value = costDetailForm.value?.otherPayStr ? costDetailForm.value?.otherPayStr?.split(';')?.map(item => ({
+      label: item.split(':')[0],
+      value: Number(item.split(':')[1])
+    })) : [] as LabelAndValueItem[];  
+    costDetailForm.value.chenbenTiaochaKeStr = temp?.chenbenTiaochaKeStr;
+    chenbenTiaochaKeArr.value = costDetailForm.value?.chenbenTiaochaKeStr ? costDetailForm.value?.chenbenTiaochaKeStr?.split(';')?.map(item => ({
+      label: item.split(':')[0],
+      value: Number(item.split(':')[1])
+    })) : [] as LabelAndValueItem[];  
+    costDetailForm.value.chenbenTiaochaStr = temp?.chenbenTiaochaStr;
+    chenbenTiaochaArr.value = costDetailForm.value?.chenbenTiaochaStr ? costDetailForm.value?.chenbenTiaochaStr?.split(';')?.map(item => ({
+      label: item.split(':')[0],
+      value: Number(item.split(':')[1])
+    })) : [] as LabelAndValueItem[];  
+    welfareKeArr.value = temp?.welfareList || [] as WelfareKeItem[];
   }
 }
 watch(costDetailFlag,() => {
@@ -303,10 +452,10 @@ watch(costDetailFlag,() => {
   costDetailFormPerformanceDetail();
 })
 const costTotalke = computed(() => {
-  return (Number(costDetailForm.value.monthTax || 0) + Number(costDetailForm.value.canBao || 0) + Number(costDetailForm.value.companyShebaoKe || 0) + Number(costDetailForm.value.companyYijinKe || 0) + Number(costDetailForm.value.welfareKe || 0) + Number(costDetailForm.value.keShangbao || 0) + Number(costDetailForm.value.otherPayKe || 0) + Number(costDetailForm.value.otherPay || 0)).toFixed(2);
+  return (Number(costDetailForm.value.monthTax || 0) + Number(costDetailForm.value.canBao || 0) + Number(costDetailForm.value.companyShebaoKe || 0) + Number(costDetailForm.value.companyYijinKe || 0) + Number(costDetailForm.value.welfareKe || 0) + Number(costDetailForm.value.keShangbao || 0) + Number(costDetailForm.value.otherPayKe || 0) + Number(costDetailForm.value.chenbenTiaochaKe || 0) + Number(costDetailForm.value.otherPay || 0)).toFixed(2);
 })
 const costTotal = computed(() => {
-  return (Number(costDetailForm.value.monthTax || 0) + Number(costDetailForm.value.canBao || 0) + Number(costDetailForm.value.companyShebao || 0) + Number(costDetailForm.value.companyYijin || 0) + Number(costDetailForm.value.welfare || 0) + Number(costDetailForm.value.otherPay || 0) + Number(costDetailForm.value.shiShangbao || 0) + Number(costDetailForm.value.serviceMoney || 0)).toFixed(2);
+  return (Number(costDetailForm.value.monthTax || 0) + Number(costDetailForm.value.canBao || 0) + Number(costDetailForm.value.companyShebao || 0) + Number(costDetailForm.value.companyYijin || 0) + Number(costDetailForm.value.welfare || 0) + Number(costDetailForm.value.otherPay || 0) + Number(costDetailForm.value.shiShangbao || 0) + Number(costDetailForm.value.chenbenTiaocha || 0) + Number(costDetailForm.value.serviceMoney || 0)).toFixed(2);
 })
 const handleManageGongShiChange = (val: string) => {
   costDetailForm.value.manageGongShi = val;
@@ -342,6 +491,11 @@ const handleZhuanChargeTax = () => {
 const handleClose = () => {
   costDetailFlag.value = false;
   costDetailForm.value = {} as ComprehensiveCostItem;
+  chenbenTiaochaArr.value = [] as LabelAndValueItem[];
+  chenbenTiaochaKeArr.value = [] as LabelAndValueItem[];
+  otherPayArr.value = [] as LabelAndValueItem[];
+  otherPayKeArr.value = [] as LabelAndValueItem[];
+  welfareKeArr.value = [] as WelfareKeItem[];
 }
 const costDetailFormPerformanceDetailResult = () => {
   outsourcePersonPerformanceDetail.value.companyShebaoKe = costDetailForm.value.companyShebaoKe || "";
@@ -368,6 +522,11 @@ const costDetailFormPerformanceDetailResult = () => {
   outsourcePersonPerformanceDetail.value.zhuanChargeRate = costDetailForm.value.zhuanChargeRate || "";
   outsourcePersonPerformanceDetail.value.manageGongShi = costDetailForm.value.manageGongShi || "";
   outsourcePersonPerformanceDetail.value.offerOutSourceDetails = costOfferDetailsForm.value;
+  outsourcePersonPerformanceDetail.value.otherPayKeStr = costDetailForm.value.otherPayKeStr || "";
+  outsourcePersonPerformanceDetail.value.otherPayStr = costDetailForm.value.otherPayStr || "";
+  outsourcePersonPerformanceDetail.value.chenbenTiaochaKeStr = costDetailForm.value.chenbenTiaochaKeStr || "";
+  outsourcePersonPerformanceDetail.value.chenbenTiaochaStr = costDetailForm.value.chenbenTiaochaStr || "";
+  outsourcePersonPerformanceDetail.value.welfareList = welfareKeArr.value || [];
 }
 const calcCost = () => {
   //const personInfo = getOutsourcePersonPerformanceDetailPersonInfo?.value[0];
@@ -462,11 +621,19 @@ const calcCost = () => {
   }
   //console.log(costOfferDetailsForm.value);
 }
+const updateWelfareKeTotalUpload = () => {
+  if (welfareKeArr.value.length > 0) {
+    outsourceDetailStore.addOutsourceWelfare(welfareKeArr.value);
+  } else {
+    outsourceDetailStore.deleteOutsourceWelfare(getOutsourcePersonPerformanceDetail.value[0]?.personId?.toString());
+  }
+}
 const handleSubmit = () => {
   iconLoading.value = true;
   calcCost();
   outsourceDetailStore.addUpdateOutsourceCostDetail(costDetailForm.value).then(res => {
         if (res.code == 1) {
+          updateWelfareKeTotalUpload();
           outsourceDetailStore.updateOutsourceDetail(costOfferDetailsForm.value).then(res => {
             if (res.code == 1) {
               message.success('操作成功');
@@ -491,5 +658,11 @@ const handleSubmit = () => {
 <style lang="less" scoped>
 :deep(.outsourceAttendCol .ant-form-item) {
   margin-bottom: 0;
+}
+.ant-input-number-other {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 10px;
 }
 </style>

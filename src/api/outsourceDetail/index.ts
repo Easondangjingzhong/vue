@@ -63,7 +63,22 @@ enum URL {
   update_outsource_detail = '/candidateRecommend/resume-vue-update-offer-outSoure-detail.action',
   update_outsource_shebao_month = '/employee-group/resume-vue-updateOut-SheBaoMonth-JinxinMonth.action',
   update_outsource_salary_sign = '/candidateRecommend/update-out-month-sally-sign.action',
+  add_outsource_welfare = '/candidateRecommend/resume-vue-add-offer-outSoure-welFare.action',
+  del_outsource_welfare = '/candidateRecommend/resume-vue-delete-offer-outSoure-welFare.action',
 }
+/**
+ * 删除员工福利
+ * param personId
+ * @returns 
+ */
+const deleteOutsourceWelfare = async (data: any) =>
+  post<any>({ url: URL.del_outsource_welfare, data});
+/**
+ * 员工福利
+ * @returns 
+ */
+const addOutsourceWelfare = async (data: any) =>
+  post<any>({ url: URL.add_outsource_welfare, data});
 /**
  * 业绩分配
  * @param data id
@@ -525,6 +540,8 @@ const queryOutsourceMonthSalary = async (data: any) =>
   post<any>({ url: URL.query_outsource_month_salary, data});
 
 export default { 
+  deleteOutsourceWelfare,
+  addOutsourceWelfare,
   updateOutsourceSalarySign,
   updateOutsourceSheBaoMonth,
   updateOutsourceDetail,

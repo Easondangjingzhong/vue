@@ -334,6 +334,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           Number(item.welfareKe || 0) +
           Number(item.keShangbao || 0) +
           Number(item.otherPayKe || 0) +
+          ((item.monthTax && item.jobType == '全职') ? Number(item.monthTax || 0)* 0.015 : 0) +
           Number(item.otherPay || 0)
         ).toFixed(2),
         costTotal: (
@@ -342,6 +343,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           Number(item.welfare || 0) +
           Number(item.otherPay || 0) +
           Number(item.shiShangbao || 0) +
+          ((item.monthTax && item.jobType == '全职') ? Number(item.monthTax || 0)* 0.015 : 0) +
           Number(item.serviceMoney || 0)
         ).toFixed(2),
         totalChargeAfter: item.totalCharge
@@ -2217,6 +2219,33 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         formData.append('id', id.toString() || '');
         formData.append('sign', sign || '');
         const res = await fetchApi.updateOutsourceSalarySign(formData);
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+     /**
+     * 员工福利
+     * @returns
+     */
+    async addOutsourceWelfare(welfareKeArr) {
+      try {
+        const res = await fetchApi.addOutsourceWelfare(welfareKeArr);
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+    /**
+     * 删除员工福利
+     * @param params personId
+     * @returns
+     */
+    async deleteOutsourceWelfare(personId?: string) {
+      try {
+        const formData = new FormData();
+        formData.append('personId', personId || '');
+        const res = await fetchApi.deleteOutsourceWelfare(formData);
         return res;
       } catch (error) {
         return null;
