@@ -106,7 +106,7 @@
       :loading="monthSalaryIsLoading"
       :columns="columnsOutsourceMonthSalary"
       :dataSource="getOutsourceMonthSalaryList"
-      :scroll="{ x: 4100 }"
+      :scroll="{ x: 4200 }"
     >
     <template #bodyCell="{ column, record }">
        <a-tag v-if="column.key === 'sign' && record.sign === '1'" color="orange">待核</a-tag>
@@ -123,6 +123,14 @@
           </div>
         </template>
         <span style="cursor: pointer;">{{ record.otherPayKe }}</span>
+      </a-popover>
+      <a-popover v-if="column.key === 'welfareKe' && record.welfareKe">
+        <template #content>
+          <div v-for="(item, index) in record.welfareList" :key="index">
+            {{ item.name }}：{{ item.money }}
+          </div>
+        </template>
+        <span style="cursor: pointer;">{{ record.welfareKe }}</span>
       </a-popover>
     <template v-if="column.key === 'operation' && record['personId']">
           <a-dropdown>
@@ -228,6 +236,7 @@ const columnsOutsourceMonthSalary:TableColumnsType = [
   { title: '津贴调差', dataIndex: 'jintieTiaocha', key: 'jintieTiaocha', width: 50, },
   { title: '调差合计', dataIndex: 'tiaochaTotal', key: 'tiaochaTotal', width: 50, },
   { title: '其他支出', dataIndex: 'otherPayKe', key: 'otherPayKe', width: 50, },
+  { title: '员工福利', dataIndex: 'welfareKe', key: 'welfareKe', width: 50, },
   { title: '月度工资', dataIndex: 'monthTax', key: 'monthTax', width: 50, },
   { title: '年度工资', dataIndex: 'yearTax', key: 'yearTax', width: 50, },
   { title: '养老保险', dataIndex: 'yanglao', key: 'yanglao', width: 50, },

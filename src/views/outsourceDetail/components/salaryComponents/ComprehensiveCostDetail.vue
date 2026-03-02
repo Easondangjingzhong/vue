@@ -118,13 +118,13 @@
             <a-form-item name="otherPayKe" label="其他支出">
               <span class="ant-input-number-other">
               <a-input v-model:value="costDetailForm.otherPayKe" disabled/>
-              <span @click="addOtherPayKe" style="cursor: pointer;"><PlusOutlined/></span>
+              <!-- <span @click="addOtherPayKe" style="cursor: pointer;"><PlusOutlined/></span> -->
               </span>
             </a-form-item>
             <div class="ant-input-number-other" v-for="(item, index) in otherPayKeArr" :key="index">
-              <a-input v-model:value="item.label" @change="updateOtherPayKeTotal"/>
-              <a-input v-model:value="item.value" @change="updateOtherPayKeTotal"/>
-              <span @click="removeOtherPayKe(index)" style="cursor: pointer;"><MinusOutlined/></span>
+              <a-input v-model:value="item.label" @change="updateOtherPayKeTotal" disabled/>
+              <a-input v-model:value="item.value" @change="updateOtherPayKeTotal" disabled/>
+              <!-- <span @click="removeOtherPayKe(index)" style="cursor: pointer;"><MinusOutlined/></span> -->
             </div>
           </a-col>
           <a-col :span="6">
@@ -148,25 +148,25 @@
         </a-row>
         <a-row :gutter="24" class="outsourceAttendCol">
           <a-col :span="6">
-            <a-form-item name="canBao" label="企业残保">
-              <a-input v-model:value="costDetailForm.canBao" />
+            <a-form-item name="canBaoKe" label="企业残保">
+              <a-input v-model:value="costDetailForm.canBaoKe" />
             </a-form-item>
           </a-col>
           <a-col :span="6">
             <a-form-item name="welfareKe" label="员工福利">
               <span class="ant-input-number-other">
               <a-input v-model:value="costDetailForm.welfareKe" disabled/>
-              <span @click="addWelfareKe" style="cursor: pointer;"><PlusOutlined/></span>
+              <!-- <span @click="addWelfareKe" style="cursor: pointer;"><PlusOutlined/></span> -->
               </span>
             </a-form-item>
             <div class="ant-input-number-other" v-for="(item, index) in welfareKeArr" :key="index">
-              <a-input v-model:value="item.name" @change="updateWelfareKeTotal"/>
-              <a-input v-model:value="item.money" @change="updateWelfareKeTotal"/>
-              <span @click="removeWelfareKe(index)" style="cursor: pointer;"><MinusOutlined/></span>
+              <a-input v-model:value="item.name" @change="updateWelfareKeTotal" disabled/>
+              <a-input v-model:value="item.money" @change="updateWelfareKeTotal" disabled/>
+              <!-- <span @click="removeWelfareKe(index)" style="cursor: pointer;"><MinusOutlined/></span> -->
             </div>
           </a-col>
           <a-col :span="6">
-            <a-form-item label="企业残保">
+            <a-form-item name="canBao" label="企业残保">
               <a-input v-model:value="costDetailForm.canBao" />
             </a-form-item>
           </a-col>
@@ -199,6 +199,11 @@
           <a-col :span="12">
             <a-form-item name="manageGongShi" :label-col="{span: 3.5}" label="管理公式">
               <a-select v-model:value="costDetailForm.manageGongShi" :options="manageGongShiOptions" allowClear @change="handleManageGongShiChange"></a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :span="6">
+            <a-form-item name="chenbenTiaochaKeFlag" label="调差管理">
+              <a-select v-model:value="costDetailForm.chenbenTiaochaKeFlag" :options="chenbenTiaochaKeFlagOptions" allowClear @change="handleChenbenTiaochaKeFlag"></a-select>
             </a-form-item>
           </a-col>
         </a-row>
@@ -248,6 +253,11 @@
         </a-row>
         <a-row :gutter="24">
           <a-col :span="6">
+            <a-form-item name="totalChargeCha" label="收费差额">
+              <a-input v-model:value="costDetailForm.totalChargeCha" @change="handleZhuanChargeTax"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="6">
             <a-form-item name="totalCharge" label="总收费">
               <a-input v-model:value="costDetailForm.totalCharge" disabled/>
             </a-form-item>
@@ -281,6 +291,16 @@ const labelCol = {
   span: 8,
 };
 const iconLoading = ref(false);
+const chenbenTiaochaKeFlagOptions = ref([
+  {
+    value: "1",
+    label: "是",
+  },
+  {
+    value: "2",
+    label: "否",
+  }
+]);
 const manageGongShiOptions = ref([
   {
     value: "",
@@ -400,11 +420,12 @@ const costDetailFormPerformanceDetail = () => {
     costDetailForm.value.manageGongShi = temp?.manageGongShi || "";
     costDetailForm.value.companyYijin = sheBao?.yijinCompany?.toString() || "0";
     costDetailForm.value.welfare = temp?.welfare || "0";
-    costDetailForm.value.keShangbao = sheBao?.keShangbao?.toString() || "0";
+    costDetailForm.value.keShangbao = temp?.keShangbao || sheBao?.keShangbao?.toString() || "0";
     costDetailForm.value.otherPayKe = temp?.otherPayKe || "0";
-    costDetailForm.value.shiShangbao = sheBao?.shiShangbao?.toString() || "0";
+    costDetailForm.value.shiShangbao = temp?.shiShangbao || sheBao?.shiShangbao?.toString() || "0";
     costDetailForm.value.otherPay = temp?.otherPay || "0";
-    costDetailForm.value.canBao = (temp?.monthTax && temp?.jobType == '全职')? (Number(temp.monthTax || 0) * 0.015).toFixed(2) : "0";
+    costDetailForm.value.canBaoKe = temp?.canBaoKe || (temp?.monthTax && temp?.jobType == '全职') ? (Number(temp.monthTax || 0) * 0.015).toFixed(2) : "0";
+    costDetailForm.value.canBao = temp?.canBao || (temp?.monthTax && temp?.jobType == '全职') ? (Number(temp.monthTax || 0) * 0.015).toFixed(2) : "0";
     costDetailForm.value.chenbenTiaochaKe = temp?.chenbenTiaochaKe || "0";
     costDetailForm.value.chenbenTiaocha = temp?.chenbenTiaocha || "0";
     costDetailForm.value.manageChargeTax = temp?.manageChargeTax || "0";
@@ -414,7 +435,9 @@ const costDetailFormPerformanceDetail = () => {
     costDetailForm.value.zhuanChargeTaxMoney = temp?.zhuanChargeTaxMoney || "0";
     costDetailForm.value.moneyCahrgeTax = temp?.moneyCahrgeTax || "0";
     costDetailForm.value.zhuanChargeAfter = temp?.zhuanChargeAfter || "0";
+    costDetailForm.value.totalChargeCha = temp?.totalChargeCha || "0";
     costDetailForm.value.totalCharge = temp?.totalCharge || "0";
+    costDetailForm.value.chenbenTiaochaKeFlag = temp?.chenbenTiaochaKeFlag || "1";
     costDetailForm.value.manageChargeRate = temp?.manageChargeRate?.toString() || "0.0672";
     costDetailForm.value.zhuanChargeRate = temp?.zhuanChargeRate?.toString() || "0.0672";
     costDetailForm.value.otherPayKeStr = temp?.otherPayKeStr;
@@ -452,26 +475,36 @@ watch(costDetailFlag,() => {
   costDetailFormPerformanceDetail();
 })
 const costTotalke = computed(() => {
-  return (Number(costDetailForm.value.monthTax || 0) + Number(costDetailForm.value.canBao || 0) + Number(costDetailForm.value.companyShebaoKe || 0) + Number(costDetailForm.value.companyYijinKe || 0) + Number(costDetailForm.value.welfareKe || 0) + Number(costDetailForm.value.keShangbao || 0) + Number(costDetailForm.value.otherPayKe || 0) + Number(costDetailForm.value.chenbenTiaochaKe || 0) + Number(costDetailForm.value.otherPay || 0)).toFixed(2);
+  return (Number(costDetailForm.value.monthTax || 0) + Number(costDetailForm.value.canBao || 0) + Number(costDetailForm.value.companyShebaoKe || 0) + Number(costDetailForm.value.companyYijinKe || 0) - Number(costDetailForm.value.welfareKe || 0) + Number(costDetailForm.value.keShangbao || 0) + Number(costDetailForm.value.chenbenTiaochaKe || 0) + Number(costDetailForm.value.otherPay || 0)).toFixed(2);
 })
 const costTotal = computed(() => {
   return (Number(costDetailForm.value.monthTax || 0) + Number(costDetailForm.value.canBao || 0) + Number(costDetailForm.value.companyShebao || 0) + Number(costDetailForm.value.companyYijin || 0) + Number(costDetailForm.value.welfare || 0) + Number(costDetailForm.value.otherPay || 0) + Number(costDetailForm.value.shiShangbao || 0) + Number(costDetailForm.value.chenbenTiaocha || 0) + Number(costDetailForm.value.serviceMoney || 0)).toFixed(2);
 })
 const handleManageGongShiChange = (val: string) => {
   costDetailForm.value.manageGongShi = val;
+  if (!costDetailForm.value.manageGongShi) {
+    return;
+  }
   const rate = Number(val.split("*")[1]?.replace('%', '')) / 100;
+  let chenbenTiaochaKeTemp = 0;
+  if (costDetailForm.value.chenbenTiaochaKeFlag == "2") {
+    chenbenTiaochaKeTemp = Number(costDetailForm.value.chenbenTiaochaKe || 0);
+  }
   if(val.includes("员工福利")) {
-    costDetailForm.value.manageChargeTax = (Number(costTotalke.value || 0) * rate).toFixed(2);
+    costDetailForm.value.manageChargeTax = ((Number(costTotalke.value || 0) - chenbenTiaochaKeTemp + Number(costDetailForm.value.welfareKe || 0)) * rate).toFixed(2);
   } else {
-    costDetailForm.value.manageChargeTax = ((Number(costTotalke.value || 0) - Number(costDetailForm.value.welfareKe || 0)) * rate).toFixed(2);
+    costDetailForm.value.manageChargeTax = ((Number(costTotalke.value || 0) - chenbenTiaochaKeTemp) * rate).toFixed(2);
   }
   handleManageChargeRate();
 }
+const handleChenbenTiaochaKeFlag = () => {
+  handleManageGongShiChange(costDetailForm.value.manageGongShi || "");
+}
 const handleManageChargeRate = () => {
   //税前管理
-  const total = Number(costTotalke.value || 0) + Number(costDetailForm.value.manageChargeTax || 0);
+  const total = Number(costTotalke.value || 0) + Number(costDetailForm.value.manageChargeTax || 0) + Number(costDetailForm.value.welfareKe || 0);
   const rateNum = Number(costDetailForm.value.manageChargeRate || 0);
-  const after = total / (1 + rateNum);
+  const after = Number(costDetailForm.value.manageChargeTax || 0) / (1 + rateNum);
   costDetailForm.value.manageChargeAfter = after.toFixed(2);
   //税金 = (成本总计 + 税前管理) * 税率
   costDetailForm.value.manageChargeTaxMoney = (total * rateNum).toFixed(2);
@@ -486,8 +519,9 @@ const handleZhuanChargeTax = () => {
   //税前转换的税金 = 税前转换 * 税率
   costDetailForm.value.zhuanChargeTaxMoney = (Number(costDetailForm.value.zhuanChargeTax || 0) * rate).toFixed(2);
   //总收费 = 总营收费 + 税前转换 + 税前转换的税金
-  costDetailForm.value.totalCharge = (Number(costDetailForm.value.moneyCahrgeTax || 0) + Number(costDetailForm.value.zhuanChargeTax || 0) + Number(costDetailForm.value.zhuanChargeTaxMoney || 0)).toFixed(2);
+  costDetailForm.value.totalCharge = (Number(costDetailForm.value.moneyCahrgeTax || 0) + Number(costDetailForm.value.zhuanChargeTax || 0) + Number(costDetailForm.value.zhuanChargeTaxMoney || 0) + Number(costDetailForm.value.totalChargeCha || 0)).toFixed(2);
 }
+
 const handleClose = () => {
   costDetailFlag.value = false;
   costDetailForm.value = {} as ComprehensiveCostItem;
@@ -526,6 +560,10 @@ const costDetailFormPerformanceDetailResult = () => {
   outsourcePersonPerformanceDetail.value.otherPayStr = costDetailForm.value.otherPayStr || "";
   outsourcePersonPerformanceDetail.value.chenbenTiaochaKeStr = costDetailForm.value.chenbenTiaochaKeStr || "";
   outsourcePersonPerformanceDetail.value.chenbenTiaochaStr = costDetailForm.value.chenbenTiaochaStr || "";
+  outsourcePersonPerformanceDetail.value.canBaoKe = costDetailForm.value.canBaoKe || "";
+  outsourcePersonPerformanceDetail.value.canBao = costDetailForm.value.canBao || "";
+  outsourcePersonPerformanceDetail.value.totalChargeCha = costDetailForm.value.totalChargeCha || "";
+  outsourcePersonPerformanceDetail.value.chenbenTiaochaKeFlag = costDetailForm.value.chenbenTiaochaKeFlag || "";
   outsourcePersonPerformanceDetail.value.welfareList = welfareKeArr.value || [];
 }
 const calcCost = () => {

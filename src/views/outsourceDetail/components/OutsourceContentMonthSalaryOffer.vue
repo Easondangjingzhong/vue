@@ -99,8 +99,9 @@
     <template #bodyCell="{ column, record }">
        <a-tag v-if="column.key === 'sign' && record.sign === '1'" color="orange">待核</a-tag>
       <a-tag v-if="column.key === 'sign' && record.sign === '2'" color="green">已核</a-tag>
+      <span v-if="column.key === 'manageChargeTaxMoneyRate'">{{ (Number(record.manageChargeTax || 0) * 0.0672).toFixed(2) }}</span>
     <!-- 添加类型断言和存在性检查以修复TypeScript索引类型错误 -->
-    <span v-if="(typeof column.dataIndex === 'string' && column.key !== 'operation'  && (record[column.dataIndex] === null || record[column.dataIndex] === '' || record[column.dataIndex] === undefined))">-</span>
+    <span v-if="(typeof column.dataIndex === 'string' && column.key !== 'operation' && column.key !== 'manageChargeTaxMoneyRate' && (record[column.dataIndex] === null || record[column.dataIndex] === '' || record[column.dataIndex] === undefined))">-</span>
     <template v-if="column.key === 'salaryAfterTax'">
       <span style="font-weight: 600;">{{ record.salaryAfterTax }}</span>
     </template>
@@ -208,7 +209,7 @@ const columnsOutsourceMonthSalary:TableColumnsType = [
     className: 'customer-info-header',
     children: [
       { title: '税前管理', dataIndex: 'manageChargeTax', key: 'manageChargeTax', width: 50, },
-      { title: '税金', dataIndex: 'manageChargeRate', key: 'manageChargeRate', width: 50, },
+      { title: '税金', dataIndex: 'manageChargeTaxMoneyRate', key: 'manageChargeTaxMoneyRate', width: 50, },
       { title: '税后管理', dataIndex: 'manageChargeAfter', key: 'manageChargeAfter', width: 50, },
     ]
   },

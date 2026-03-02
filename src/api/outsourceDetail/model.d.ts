@@ -1,3 +1,5 @@
+import { S } from "mockjs";
+
 /**
  * 外包个人信息
  */
@@ -533,6 +535,10 @@ export interface OutsourceMonthSalaryItem {
   yearTaxPre?: string;//年个税
   yearZhuankouPre?: string;//年专扣
   gongziCha?: string;//工资差额
+  canBaoKe?: string;//企业残保(客户)
+  canBao?: string;//企业残保(公司)
+  totalChargeCha?: string;//收费调差
+  chenbenTiaochaKeFlag?: string;//调差调整 是否计算管理费
 }
 //用工成本
 export interface CostItem {
@@ -629,7 +635,11 @@ export interface ComprehensiveCostItem {
   chenbenTiaocha?: string;//调差调整金额
   chenbenTiaochaKe?: string;//调差调整金额
   chenbenTiaochaStr?: string;//调差调整金额
-  chenbenTiaochaKeStr?: string;//调差调整金额    
+  chenbenTiaochaKeStr?: string;//调差调整金额  
+  canBaoKe?: string;//企业残保(客户)
+  canBao?: string;//企业残保(公司)
+  totalChargeCha?: string;//收费调差
+  chenbenTiaochaKeFlag?: string;//调差调整 是否计算管理费
 }
 /**
  * 外包福利
