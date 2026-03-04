@@ -12,6 +12,13 @@
       :data-source="costOfferDetailsForm"
       :pagination="false"
     >
+    <template #bodyCell="{ column, record }">
+      <span v-if="column.key === 'orderType' && record.orderType === '1'">推顾</span>
+      <span v-if="column.key === 'orderType' && record.orderType === '2'">企顾</span>
+      <span v-if="column.key === 'orderType' && record.orderType === '3'">服顾</span>
+      <span v-if="column.key === 'orderType' && record.orderType === '4' && record.isMain === '1'">开顾1</span>
+      <span v-if="column.key === 'orderType' && record.orderType === '4' && record.isMain === '3'">开顾2</span>
+    </template>
   </a-table>
   </a-col>
 </a-row>

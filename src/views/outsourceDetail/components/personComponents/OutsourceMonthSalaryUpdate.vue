@@ -428,7 +428,7 @@ const monthGeshui = computed(() => {
     taxAmount = 36000 * 0.03 + (144000 - 36000) * 0.1 + (300000 - 144000) * 0.2 + (adjustedTaxableIncome - 300000) * 0.2;
   }
   // 返回计算结果，保留两位小数
-  return (taxAmount - parseFloat(yearGeshuiPre.value || '0')+ parseFloat(outsourceMonthSalaryForm.value?.geshuiCha || '0')).toFixed(2).toString();
+  return (taxAmount - parseFloat(yearGeshuiPre.value || '0') < 0 ? '0' : (taxAmount - parseFloat(yearGeshuiPre.value || '0')+ parseFloat(outsourceMonthSalaryForm.value?.geshuiCha || '0')).toFixed(2).toString());
   }
   if (parseFloat(outsourceMonthSalaryForm.value.monthTax || '0') - 4000 <= 0) {
     const tax = ((parseFloat(outsourceMonthSalaryForm.value.monthTax || '0') -800)* 0.2) + parseFloat(outsourceMonthSalaryForm.value?.geshuiCha || '0');

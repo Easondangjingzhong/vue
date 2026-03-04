@@ -424,8 +424,8 @@ const costDetailFormPerformanceDetail = () => {
     costDetailForm.value.otherPayKe = temp?.otherPayKe || "0";
     costDetailForm.value.shiShangbao = temp?.shiShangbao || sheBao?.shiShangbao?.toString() || "0";
     costDetailForm.value.otherPay = temp?.otherPay || "0";
-    costDetailForm.value.canBaoKe = temp?.canBaoKe || (temp?.monthTax && temp?.jobType == '全职') ? (Number(temp.monthTax || 0) * 0.015).toFixed(2) : "0";
-    costDetailForm.value.canBao = temp?.canBao || (temp?.monthTax && temp?.jobType == '全职') ? (Number(temp.monthTax || 0) * 0.015).toFixed(2) : "0";
+    costDetailForm.value.canBaoKe = temp?.canBaoKe || ((temp?.monthTax && temp?.jobType == '全职') ? (Number(temp.monthTax || 0) * 0.015).toFixed(2) : "0");
+    costDetailForm.value.canBao = temp?.canBao || ((temp?.monthTax && temp?.jobType == '全职') ? (Number(temp.monthTax || 0) * 0.015).toFixed(2) : "0");
     costDetailForm.value.chenbenTiaochaKe = temp?.chenbenTiaochaKe || "0";
     costDetailForm.value.chenbenTiaocha = temp?.chenbenTiaocha || "0";
     costDetailForm.value.manageChargeTax = temp?.manageChargeTax || "0";
@@ -475,7 +475,7 @@ watch(costDetailFlag,() => {
   costDetailFormPerformanceDetail();
 })
 const costTotalke = computed(() => {
-  return (Number(costDetailForm.value.monthTax || 0) + Number(costDetailForm.value.canBao || 0) + Number(costDetailForm.value.companyShebaoKe || 0) + Number(costDetailForm.value.companyYijinKe || 0) - Number(costDetailForm.value.welfareKe || 0) + Number(costDetailForm.value.keShangbao || 0) + Number(costDetailForm.value.chenbenTiaochaKe || 0) + Number(costDetailForm.value.otherPay || 0)).toFixed(2);
+  return (Number(costDetailForm.value.monthTax || 0) + Number(costDetailForm.value.canBaoKe || 0) + Number(costDetailForm.value.companyShebaoKe || 0) + Number(costDetailForm.value.companyYijinKe || 0) - Number(costDetailForm.value.welfareKe || 0) + Number(costDetailForm.value.keShangbao || 0) + Number(costDetailForm.value.chenbenTiaochaKe || 0) + Number(costDetailForm.value.otherPay || 0)).toFixed(2);
 })
 const costTotal = computed(() => {
   return (Number(costDetailForm.value.monthTax || 0) + Number(costDetailForm.value.canBao || 0) + Number(costDetailForm.value.companyShebao || 0) + Number(costDetailForm.value.companyYijin || 0) + Number(costDetailForm.value.welfare || 0) + Number(costDetailForm.value.otherPay || 0) + Number(costDetailForm.value.shiShangbao || 0) + Number(costDetailForm.value.chenbenTiaocha || 0) + Number(costDetailForm.value.serviceMoney || 0)).toFixed(2);
@@ -576,7 +576,7 @@ const calcCost = () => {
   const calculateDetails = (configList) => {
       const newDetails: OfferDetailsItem[] = [];
       for (const config of configList) {
-        const detail = costOfferDetailsForm?.value.filter(item => item.orderType === config.type)[0];
+        const detail = costOfferDetailsForm?.value.filter(item => item.orderType === config.type && item.isMain === config.isMain)[0];
         if (!detail) continue;
 
         const isOutFlag1 = detail.outFlag === '1';
@@ -626,12 +626,22 @@ const calcCost = () => {
     // 服顾税后: 管理费1:40% + 管理费2:25%
     // 开顾税后: 管理费1:30% + 管理费2:25%
     // 定义计算配置
-    const calcConfig = [
-      { type: '1', rate1: 0, rate1_out: 0, rate2: 0.25, offerNum: 0 },
-      { type: '2', rate1: 0.3, rate1_out: 0.3, rate2: 0.25, offerNum: 0 },
-      { type: '3', rate1: 0.4, rate1_out: 0.4, rate2: 0.25, offerNum: 0 },
-      { type: '4', rate1: 0.3, rate1_out: 0.3, rate2: 0.25, offerNum: 0 }
+    let calcConfig = [
+      { type: '1', isMain: '1', rate1: 0, rate1_out: 0, rate2: 0.25, offerNum: 0 },
+      { type: '2', isMain: '1', rate1: 0.3, rate1_out: 0.3, rate2: 0.25, offerNum: 0 },
+      { type: '3', isMain: '1', rate1: 0.4, rate1_out: 0.4, rate2: 0.25, offerNum: 0 },
+      { type: '4', isMain: '1', rate1: 0.3, rate1_out: 0.3, rate2: 0.25, offerNum: 0 }
     ];
+    const temp = getOutsourcePersonPerformanceDetail.value[0];
+    if (temp.discover2RecruitId) {
+      calcConfig = [
+      { type: '1', isMain: '1', rate1: 0, rate1_out: 0, rate2: 0.25, offerNum: 0 },
+      { type: '2', isMain: '1', rate1: 0.3, rate1_out: 0.3, rate2: 0.25, offerNum: 0 },
+      { type: '3', isMain: '1', rate1: 0.4, rate1_out: 0.4, rate2: 0.25, offerNum: 0 },
+      { type: '4', isMain: '1', rate1: 0.15, rate1_out: 0.15, rate2: 0.125, offerNum: 0 },
+      { type: '4', isMain: '3', rate1: 0.15, rate1_out: 0.15, rate2: 0.125, offerNum: 0 },
+      ];
+    }
     costOfferDetailsForm.value = calculateDetails(calcConfig);
   } else {
     /*
@@ -649,12 +659,22 @@ const calcCost = () => {
     // 推顾税后: 管理费1:46% + 管理费2:25%
     //outFlag 是1时 分配是 管理费1:49%
     // 定义计算配置
-    const calcConfig = [
-      { type: '1', rate1: 0.46, rate1_out: 0.49, rate2: 0.25, offerNum: 0.5 },
-      { type: '2', rate1: 0.18, rate1_out: 0.17, rate2: 0.25, offerNum: 0.063 },
-      { type: '3', rate1: 0.18, rate1_out: 0.17, rate2: 0.25, offerNum: 0.063 },
-      { type: '4', rate1: 0.18, rate1_out: 0.17, rate2: 0.25, offerNum: 0.063 }
+    let calcConfig = [
+      { type: '1', isMain: '1', rate1: 0.46, rate1_out: 0.49, rate2: 0.25, offerNum: 0.5 },
+      { type: '2', isMain: '1', rate1: 0.18, rate1_out: 0.17, rate2: 0.25, offerNum: 0.063 },
+      { type: '3', isMain: '1', rate1: 0.18, rate1_out: 0.17, rate2: 0.25, offerNum: 0.063 },
+      { type: '4', isMain: '1', rate1: 0.18, rate1_out: 0.17, rate2: 0.25, offerNum: 0.063 }
     ];
+    const temp = getOutsourcePersonPerformanceDetail.value[0];
+    if (temp.discover2RecruitId) {
+      calcConfig = [
+      { type: '1', isMain: '1', rate1: 0.46, rate1_out: 0.49, rate2: 0.25, offerNum: 0.5 },
+      { type: '2', isMain: '1', rate1: 0.18, rate1_out: 0.17, rate2: 0.25, offerNum: 0.063 },
+      { type: '3', isMain: '1', rate1: 0.18, rate1_out: 0.17, rate2: 0.25, offerNum: 0.063 },
+      { type: '4', isMain: '1', rate1: 0.09, rate1_out: 0.085, rate2: 0.125, offerNum: 0.0315 },
+      { type: '4', isMain: '3', rate1: 0.09, rate1_out: 0.085, rate2: 0.125, offerNum: 0.0315 },
+    ];
+    }
     costOfferDetailsForm.value = calculateDetails(calcConfig);
   }
   //console.log(costOfferDetailsForm.value);

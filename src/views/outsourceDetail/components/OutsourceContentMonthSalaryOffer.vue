@@ -151,7 +151,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import _ from 'lodash';
-import { message } from 'ant-design-vue';
+import { message, Modal } from 'ant-design-vue';
 import { MenuUnfoldOutlined } from '@ant-design/icons-vue';
 import type { TableColumnsType } from 'ant-design-vue';
 import { SearchMonthSalaryItem } from '/@/api/outsourceDetail/model';
@@ -256,8 +256,16 @@ const handleOutsourceMonthSalaryOfferAllocation = (record) => {
   outsourceDetailStore.handleOutsourceMonthSalaryOfferAllocation(_.cloneDeep(record));
 }
 const handleOutsourceSalarySign = (id: number) => {
-  outsourceDetailStore.updateOutsourceSalarySign(id, "2");
-  handleOutsourceMonthSalaryOfferListData();
+  Modal.confirm({
+    title: '提示',
+    content: '确认业绩核对吗？',
+    async onOk() {
+      await outsourceDetailStore.updateOutsourceSalarySign(id, "2").then(() => {
+        message.success('业绩核对成功');
+      });
+      handleOutsourceMonthSalaryOfferListData();
+    }
+  });
 }
 </script>
 
