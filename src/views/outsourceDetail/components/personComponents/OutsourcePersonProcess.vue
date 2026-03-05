@@ -105,7 +105,7 @@
     </template>
     
     <template v-if="column.key === 'liShen'">
-      <a-tag v-if="record.contractCompany === '签署完成' && record.proofFlag === '等待发起'" color="orange" style="cursor: pointer;" @click="handleLeaveInfomationForm(record)">离申签署</a-tag>
+      <a-tag v-if="record.proofFlag === '等待发起'" color="orange" style="cursor: pointer;" @click="handleLeaveInfomationForm(record)">离申签署</a-tag>
       <a-tag v-else-if="record.proofFlag === '等待签署'" color="red">离申签署</a-tag>
       <a-tag v-else-if="record.proofFlag === '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(record.leavePath,3)">离申签署</a-tag>
       <a-tag v-else color="default" style="cursor: not-allowed;">离申签署</a-tag>

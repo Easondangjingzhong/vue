@@ -539,6 +539,8 @@ export interface OutsourceMonthSalaryItem {
   canBao?: string;//企业残保(公司)
   totalChargeCha?: string;//收费调差
   chenbenTiaochaKeFlag?: string;//调差调整 是否计算管理费
+  signSalary?: string;//月度薪资标识 null 未核 1 已核
+  oldCollectId?: string;//老的外包业绩统计id
 }
 //用工成本
 export interface CostItem {
@@ -640,6 +642,8 @@ export interface ComprehensiveCostItem {
   canBao?: string;//企业残保(公司)
   totalChargeCha?: string;//收费调差
   chenbenTiaochaKeFlag?: string;//调差调整 是否计算管理费
+  signSalary?: string;//月度薪资标识 null 未核 1 已核
+  oldCollectId?: string;//老的外包业绩统计id
 }
 /**
  * 外包福利

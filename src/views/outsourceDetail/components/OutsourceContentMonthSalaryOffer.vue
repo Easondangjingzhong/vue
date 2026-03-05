@@ -102,9 +102,6 @@
       <span v-if="column.key === 'manageChargeTaxMoneyRate'">{{ (Number(record.manageChargeTax || 0) * 0.0672).toFixed(2) }}</span>
     <!-- 添加类型断言和存在性检查以修复TypeScript索引类型错误 -->
     <span v-if="(typeof column.dataIndex === 'string' && column.key !== 'operation' && column.key !== 'manageChargeTaxMoneyRate' && (record[column.dataIndex] === null || record[column.dataIndex] === '' || record[column.dataIndex] === undefined))">-</span>
-    <template v-if="column.key === 'salaryAfterTax'">
-      <span style="font-weight: 600;">{{ record.salaryAfterTax }}</span>
-    </template>
     <template v-if="column.key === 'operation' && record['personId']">
           <a-dropdown>
             <span class="ant-dropdown-link" style="cursor: pointer;" @click.prevent>
@@ -112,11 +109,11 @@
             </span>
             <template #overlay>
               <a-menu>
-                <a-menu-item>
-                  <a href="javascript:;" @click="handleOutsourceSalarySign(record.id)">业绩核对</a>
-                </a-menu-item>
                  <a-menu-item>
                   <a href="javascript:;" @click="handleOutsourceMonthSalaryOfferAllocation(record)">业绩分配</a>
+                </a-menu-item>
+                 <a-menu-item>
+                  <a href="javascript:;" @click="handleOutsourceSalarySign(record.id)">业绩核对</a>
                 </a-menu-item>
               </a-menu>
             </template>
@@ -222,9 +219,13 @@ const columnsOutsourceMonthSalary:TableColumnsType = [
       { title: '服顾', dataIndex: 'fMoney', key: 'fMoney', width: 50, },
       { title: '开顾1', dataIndex: 'dMoney', key: 'dMoney', width: 50, },
       { title: '开顾2', dataIndex: 'd2Money', key: 'd2Money', width: 50, },
+    ]
+  },
+  {
+    title: '',
+    children: [
       { title: '税后总计', dataIndex: 'totalCharge', key: 'totalCharge', width: 50, },
       { title: '含税总计', dataIndex: 'totalChargeAfter', key: 'totalChargeAfter', width: 50, },
-      
     ]
   },
   {

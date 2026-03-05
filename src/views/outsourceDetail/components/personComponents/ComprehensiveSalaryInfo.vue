@@ -39,6 +39,17 @@ import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
 const { outsourceSalaryFlag, getOutsourceSalaryDetailList, outsourceSalaryForm,outsourcePersonDetail } = storeToRefs(outsourceDetailStore);
 
+const normalizeSalaryForm = (rec: any): OutsourceSalaryItem => {
+  const r = _.cloneDeep(rec) as any;
+  r.companyShebao = r.companyShebao != null ? String(r.companyShebao) : '';
+  r.personShebao = r.personShebao != null ? String(r.personShebao) : '';
+  r.companyYijin = r.companyYijin != null ? String(r.companyYijin) : '';
+  r.personYijin = r.personYijin != null ? String(r.personYijin) : '';
+  r.keShangbao = r.keShangbao != null ? String(r.keShangbao) : '';
+  r.shiShangbao = r.shiShangbao != null ? String(r.shiShangbao) : '';
+  return r as OutsourceSalaryItem;
+}
+
 const columns:TableColumnsType = [
   {
     title: '编号',
@@ -206,12 +217,12 @@ watch(() => outsourcePersonDetail.value.id, () => {
 outsourceDetailStore.queryOutsourceSalaryByPersonId();
 const handleComprehensiveSalaryInfoUpdate = () => {
   outsourceDetailStore.queryOutsourceBankName();
-  outsourceSalaryForm.value = {} as OutsourceSalaryItem;
+  outsourceSalaryForm.value = getOutsourceSalaryDetailList.value.length > 0 ? normalizeSalaryForm(getOutsourceSalaryDetailList.value[0]) : {} as OutsourceSalaryItem;
   outsourceSalaryFlag.value = true;
 }
 const handleEditClick = (record) => {
   outsourceDetailStore.queryOutsourceBankName();
-  outsourceSalaryForm.value = _.cloneDeep(record);
+  outsourceSalaryForm.value = normalizeSalaryForm(record);
   outsourceSalaryFlag.value = true;
 }
 </script>

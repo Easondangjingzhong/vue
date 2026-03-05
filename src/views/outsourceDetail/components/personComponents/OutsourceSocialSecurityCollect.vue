@@ -34,10 +34,10 @@
       <div style="background-color: #fafafa; padding: 8px 8px 8px 0;">
       <a-table :columns="innerColumns" :data-source="record.detaillist" :pagination="false">
         <template #bodyCell="{ column, record }">
-          <!-- <a-popconfirm v-if="column.key === 'checkFlag' && record.checkFlag === '1'" title="社保核对" :overlay-style="{ width: '130px' }" @confirm="handleChecked(2,record)">
+          <a-popconfirm v-if="column.key === 'checkFlag' && record.checkFlag === '1'" title="社保核对" :overlay-style="{ width: '130px' }" @confirm="handleChecked(2,record)">
             <a-tag style="cursor: pointer;" color="red">未核</a-tag>
-          </a-popconfirm> -->
-          <a-tag v-if="column.key === 'checkFlag' && record.checkFlag === '1'" color="red">未核</a-tag>
+          </a-popconfirm>
+          <!-- <a-tag v-if="column.key === 'checkFlag' && record.checkFlag === '1'" color="red">未核</a-tag> -->
           <a-tag v-if="column.key === 'checkFlag' && record.checkFlag === '2'" color="green">已核</a-tag>
         </template>
       </a-table>

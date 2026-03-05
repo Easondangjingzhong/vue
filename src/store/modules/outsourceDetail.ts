@@ -155,7 +155,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     outsourceMonthSalaryOfferList: [] as OutsourceMonthSalaryItem[], //外包人员业绩分配
     pageOutsourceMonthSalaryOfferList: {
       pageNumber: 1,
-      pageSize: 13,
+      pageSize: 12,
       total: 0,
     } as PageItem,
     costDetailFlag: false, //外包用工成本详情控制
@@ -319,9 +319,11 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       state.outsourceMonthSalaryOfferList.map((item, index) => ({
         ...item,
         index:
-          state.pageOutsourceMonthSalaryOfferList.pageSize *
-            (state.pageOutsourceMonthSalaryOfferList.pageNumber - 1) +
-          (index + 1),
+        index < state.outsourceMonthSalaryOfferList.length - 1
+            ? state.pageOutsourceMonthSalaryOfferList.pageSize *
+                (state.pageOutsourceMonthSalaryOfferList.pageNumber - 1) +
+              (index + 1)
+            : '',
         jinxinMonth: item.jinxinMonth ? formatToMonth(item.jinxinMonth) : '',
         realEntryTime: item.realEntryTime ? formatToDate(item.realEntryTime) : '',
         realLeaveTime: item.realLeaveTime ? formatToDate(item.realLeaveTime) : '',
@@ -1020,7 +1022,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           this.monthSalaryIsLoading = false;
           const totalNum = res.info.totalNum;
           this.outsourceMonthSalaryList = res.info.pager.list as OutsourceMonthSalaryItem[];
-          this.outsourceMonthSalaryList.push(totalNum);
+          this.outsourceMonthSalaryList.push({...totalNum,signSalary: '2'});
           this.pageOutsourceMonthSalaryList = {
             pageNumber: res.info.pager.pageNumber,
             pageSize: res.info.pager.pageSize,
@@ -1063,9 +1065,9 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         const res = await fetchApi.queryOutsourceMonthSalary(params);
         if (res.code == 1) {
           this.monthSalaryIsLoading = false;
-          //const totalNum = res.info.totalNum;
+          const totalNum = res.info.totalNum;
           this.outsourceMonthSalaryOfferList = res.info.pager.list as OutsourceMonthSalaryItem[];
-          //this.outsourceMonthSalaryOfferList.push(totalNum);
+          this.outsourceMonthSalaryOfferList.push(totalNum);
           this.pageOutsourceMonthSalaryOfferList = {
             pageNumber: res.info.pager.pageNumber,
             pageSize: res.info.pager.pageSize,
@@ -1368,7 +1370,15 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
      */
     async addSocialSecurityInfo() {
       this.outsourceSocialSecurityFlag = true;
-      this.outsourceSocialSecurityForm = {
+      if (this.outsourcePersonDetail.jobType == '兼职') {
+        this.outsourceSocialSecurityForm = {
+          ...this.outsourceSocialSecurityForm,
+          personId: this.outsourcePersonDetail.id,
+          shebaoStatus: '1',
+          shangbaoStatus: '1',
+        };
+      } else {
+        this.outsourceSocialSecurityForm = {
         ...this.outsourceSocialSecurityForm,
         personId: this.outsourcePersonDetail.id,
         shebaoCity: this.outsourcePersonDetail.city || '',
@@ -1376,7 +1386,8 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         shebaoYutingTime: this.outsourceSocialSecurityForm.shebaoYutingTime || this.outsourcePersonDetail.planLeaveTime ? formatToDate(this.outsourcePersonDetail.planLeaveTime) : '',
         yijinYujiaoTime: this.outsourceSocialSecurityForm.yijinYujiaoTime || this.outsourcePersonDetail.planEntryTime ? formatToDate(this.outsourcePersonDetail.planEntryTime) : '',
         yijinYutingTime: this.outsourceSocialSecurityForm.yijinYutingTime || this.outsourcePersonDetail.planLeaveTime  ? formatToDate(this.outsourcePersonDetail.planLeaveTime) : '',
-      };
+        };
+      }
     },
     /**
      * 新增外包人员社保信息
@@ -2295,7 +2306,23 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       // }
     },
     /**
-     * 核对薪资
+     * 核对外包月度薪资
+     * @param params id sign
+     * @returns
+     */
+    async updateOutsourceMonthSalarySign(id: number, signSalary: string) {
+      try {
+        const formData = new FormData();
+        formData.append('id', id.toString() || '');
+        formData.append('signSalary', signSalary || '');
+        const res = await fetchApi.updateOutsourceMonthSalarySign(formData);
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+    /**
+     * 核对外包业绩
      * @param params id sign
      * @returns
      */

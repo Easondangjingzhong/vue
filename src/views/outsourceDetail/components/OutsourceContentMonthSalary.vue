@@ -109,10 +109,11 @@
       :scroll="{ x: 4200 }"
     >
     <template #bodyCell="{ column, record }">
-       <a-tag v-if="column.key === 'sign' && record.sign === '1'" color="orange">待核</a-tag>
-      <a-tag v-if="column.key === 'sign' && record.sign === '2'" color="green">已核</a-tag>
+      <a-tag v-if="column.key === 'signSalary' && record.signSalary !== '1' && record.signSalary !== '2'" color="orange">待核</a-tag>
+      <a-tag v-if="column.key === 'signSalary' && record.signSalary === '1'" color="green">已核</a-tag>
+      <span v-if="column.key === 'signSalary' && record.signSalary === '2'" color="green">-</span>
     <!-- 添加类型断言和存在性检查以修复TypeScript索引类型错误 -->
-    <span v-if="(typeof column.dataIndex === 'string' && column.key !== 'operation'  && (record[column.dataIndex] === null || record[column.dataIndex] === '' || record[column.dataIndex] === undefined))">-</span>
+    <span v-if="(typeof column.dataIndex === 'string' && column.key !== 'operation' && column.key !== 'signSalary' && (record[column.dataIndex] === null || record[column.dataIndex] === '' || record[column.dataIndex] === undefined))">-</span>
     <template v-if="column.key === 'salaryAfterTax'">
       <span style="font-weight: 600;">{{ record.salaryAfterTax }}</span>
     </template>
@@ -144,6 +145,9 @@
                 </a-menu-item>
                 <a-menu-item>
                  <a href="javascript:;" @click="handleEditYearClick(record)">年度累计</a>
+                </a-menu-item>
+                <a-menu-item>
+                  <a href="javascript:;" @click="handleOutsourceSalarySign(record.id)">业绩核对</a>
                 </a-menu-item>
               </a-menu>
             </template>
@@ -181,6 +185,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import _ from 'lodash';
+import { message, Modal } from 'ant-design-vue';
 import { MenuUnfoldOutlined } from '@ant-design/icons-vue';
 import type { TableColumnsType } from 'ant-design-vue';
 import { SearchMonthSalaryItem } from '/@/api/outsourceDetail/model';
@@ -194,7 +199,7 @@ const { monthSalaryIsLoading,pageOutsourceMonthSalaryList,getOutsourceMonthSalar
 const columnsOutsourceMonthSalary:TableColumnsType = [
   { title: '编号', dataIndex: 'index', key: 'index', fixed: 'left', width: 30, },
   { title: '计薪月', dataIndex: 'jinxinMonth', key: 'jinxinMonth', fixed: 'left', width: 40, },
-  { title: '标识', dataIndex: 'sign', key: 'sign', fixed: 'left', width: 30, },
+  { title: '标识', dataIndex: 'signSalary', key: 'signSalary', fixed: 'left', width: 30, },
   { title: '姓名', dataIndex: 'userNameCn', key: 'userNameCn', fixed: 'left', width: 55, ellipsis: true, },
   { title: '公司', dataIndex: 'companyName', key: 'companyName', fixed: 'left', width: 45, ellipsis: true, },
   { title: '城市', dataIndex: 'city', key: 'city', fixed: 'left', width: 30, },
@@ -296,6 +301,18 @@ const handleEditYearClick = (record) => {
 }
 const handleOutsourceMoney = () => {
   outsourceDetailStore.outsourcePersonMoneyFlag = true;
+}
+const handleOutsourceSalarySign = (id: number) => {
+  Modal.confirm({
+    title: '提示',
+    content: '确认月度薪资核对吗？',
+    async onOk() {
+      await outsourceDetailStore.updateOutsourceMonthSalarySign(id, "1").then(() => {
+        message.success('月度薪资成功');
+      });
+      handleOutsourceMonthSalaryListData();
+    }
+  });
 }
 </script>
 

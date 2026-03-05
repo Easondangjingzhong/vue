@@ -44,7 +44,7 @@
         </a-row>
           <a-row :gutter="24">
             <a-col :span="12" v-if="componentsShow?.length > 0" v-for="item in componentsShow" :key="item.componentId">
-              <a-form-item :label="item.label" :name="item.componentProps" :key="item.componentProps" v-if="item.componentName !== '骑缝章' && item.componentName !== '签署区'">
+              <a-form-item :label="item.label" :name="item.componentProps" :key="item.componentProps" v-if="item.componentName !== '骑缝章' && item.componentName !== '签署区' && item.componentName !== '企业章1' && item.componentName !== '骑缝签署区1'">
                 <a-date-picker v-if="item.componentType === 3" v-model:value="contractInfomatiomForm[item.componentProps]" value-format="YYYY-MM-DD"/>
                 <a-input-number v-else-if="item.componentType === 2" v-model:value="contractInfomatiomForm[item.componentProps]" style="width: 100%"/>
                 <a-input v-else v-model:value="contractInfomatiomForm[item.componentProps]"/>
@@ -168,7 +168,7 @@ watch(getEsignTemplateDetail, () => {
 })
 const componentsShow = computed(() => {
    // 首先过滤掉不需要的组件
-  const filteredComponents = components.value?.filter(item => item?.componentName !== '骑缝章' && item?.componentName !== '签署区');
+  const filteredComponents = components.value?.filter(item => item?.componentName !== '骑缝章' && item?.componentName !== '签署区' && item?.componentName !== '企业章1' && item?.componentName !== '骑缝签署区1');
   // 使用Map进行去重，确保相同componentName只保留一个
   const uniqueComponentsMap = new Map();
   filteredComponents?.forEach(item => {
@@ -255,7 +255,7 @@ const componentsReal= () => {
   });
   
   // 第二轮遍历：保留所有组件，但确保相同componentName的值一致
-  return components.value.filter(item => item.componentName !== '骑缝章' && item.componentName !== '签署区').map(item => {
+  return components.value.filter(item => item.componentName !== '骑缝章' && item.componentName !== '签署区' && item?.componentName !== '企业章1' && item?.componentName !== '骑缝签署区1').map(item => {
     // 获取该componentName应该使用的一致值
     const consistentValue = item.componentName ? valueMap.get(item.componentName) : null;
     

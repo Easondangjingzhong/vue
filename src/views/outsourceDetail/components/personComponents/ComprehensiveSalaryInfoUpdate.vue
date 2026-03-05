@@ -73,19 +73,25 @@
          <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item name="geti" label="个人奖金" :rules="[{ required: true, message: '请填写个人奖金' }]">
-              <a-input v-model:value="outsourceSalaryForm.geti"/>
+              <a-select v-model:value="outsourceSalaryForm.geti">
+                <a-select-option value="有" label="有"></a-select-option>
+                <a-select-option value="无" label="无"></a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
            <a-col :span="12">
             <a-form-item name="tuanti" label="团队奖金" :rules="[{ required: true, message: '请填写团队奖金' }]">
-              <a-input v-model:value="outsourceSalaryForm.tuanti"/>
+              <a-select v-model:value="outsourceSalaryForm.tuanti">
+                <a-select-option value="有" label="有"></a-select-option>
+                <a-select-option value="无" label="无"></a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
         </a-row>
          <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item name="bankName" label="银行名称"
-            :rules="[{ required: true, message: '请选择银行名称' }]">
+            :rules="[{ required: false, message: '请选择银行名称' }]">
               <a-select
                 v-model:value="outsourceSalaryForm.bankName"
                 placeholder="请选择银行名称"
@@ -108,7 +114,7 @@
             </a-form-item>
           </a-col>
            <a-col :span="12">
-            <a-form-item name="bankCard" label="卡号" :rules="[{ required: true, message: '请填写卡号' }]">
+            <a-form-item name="bankCard" label="卡号" :rules="[{ required: false, message: '请填写卡号' }]">
               <a-input v-model:value="outsourceSalaryForm.bankCard"/>
             </a-form-item>
           </a-col>
@@ -149,6 +155,10 @@ const changeReasonOption = ref([
   {
     label: '入职薪资',
     value: '入职薪资',
+  },
+   {
+    label: '社保调整',
+    value: '社保调整',
   },
 ]);
 const bankNameOption = ref(getOutsourceBankName.value);
