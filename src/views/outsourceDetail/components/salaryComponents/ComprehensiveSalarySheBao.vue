@@ -72,8 +72,8 @@ const columns:TableColumnsType = [
   },
    {
     title: '实商',
-    dataIndex: 'shangbao',
-    key: 'shangbao',
+    dataIndex: 'shiShangbao',
+    key: 'shiShangbao',
     width: 40,
   },
    {

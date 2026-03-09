@@ -1,7 +1,7 @@
 <template>
  <a-drawer
     v-model:open="outsourceSocialSecurityInfoFormFlag"
-    :title="outsourceSocialSecurityInfoFormType === '1' ? '新增社保基数' : '修改社保基数'"
+    :title="(outsourceSocialSecurityInfoFormType === '1' || outsourceSocialSecurityInfoFormType === '3') ? '新增社保基数' : '修改社保基数'"
     :maskClosable="false"
     :keyboard="false"
     :closable="false"
@@ -33,7 +33,7 @@
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item label="城市" name="city">
-              <a-input v-model:value="outsourceSocialSecurityInfoForm.city" disabled/>
+              <a-select v-model:value="outsourceSocialSecurityInfoForm.city" :disabled="outsourceSocialSecurityInfoFormType !== '3'" :options="getProvince" allowClear showSearch></a-select>
             </a-form-item>
           </a-col>
           <a-col :span="12">
@@ -254,7 +254,7 @@ import { companyJiaoOption } from '/@/api/outsourceDetail/constants';
 import { OutsourceShebaoInfoItem } from '/@/api/outsourceDetail/model';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { outsourceSocialSecurityInfoFormFlag,outsourceSocialSecurityInfoForm,outsourceSocialSecurityInfoFormType } = storeToRefs(outsourceDetailStore);
+const { outsourceSocialSecurityInfoFormFlag,outsourceSocialSecurityInfoForm,outsourceSocialSecurityInfoFormType,getProvince } = storeToRefs(outsourceDetailStore);
 const drawerWidth = ref(Math.max(600, window.innerWidth * 0.4));
 const labelCol = {
   span: 7,
@@ -296,7 +296,7 @@ const handleSubmit = () => {
 :deep(.row_col_space) {
     display: flex;
     width: 100%;
-    justify-content: space-between;
+    justify-content: end;
     padding-right: 6px;
   }
   :deep(.row_col_space_left) {

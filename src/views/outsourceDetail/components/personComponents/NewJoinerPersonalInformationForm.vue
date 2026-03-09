@@ -322,6 +322,7 @@
             <a-select-option value="Father 父亲">Father 父亲</a-select-option>
             <a-select-option value="Mother 母亲">Mother 母亲</a-select-option>
             <a-select-option value="Spouse 配偶">Spouse 配偶</a-select-option>
+            <a-select-option value="Sister 姐姐">Sister 姐姐</a-select-option>
           </a-select>
         </a-col>
         <a-col :span="3" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">
@@ -1636,7 +1637,7 @@ import { OutsourcePersonItem, NewJoinerPersonalInfoItem, } from '/@/api/outsourc
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 import SimHeiFontUrl from '/@/assets/fonts/simhei.ttf?url';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { newJoinerPersonalInformationFlag, newJoinerPersonalInformationFormTemp } = storeToRefs(outsourceDetailStore);
+const { newJoinerPersonalInformationFlag, newJoinerPersonalInformationFormTemp, getOutsourceSalaryDetailList } = storeToRefs(outsourceDetailStore);
 const drawerWidth = ref(Math.min(900, window.innerWidth * 0.9));
 const isloading = ref(false);
 const labelCol = { span: 5 };
@@ -1769,8 +1770,13 @@ watch(newJoinerPersonalInformationFormTemp, (newVal) => {
     newJoinerPersonalInformationForm.value.email = newVal.email;
     newJoinerPersonalInformationForm.value.city = newVal.city;
     newJoinerPersonalInformationForm.value.jobType = newVal.jobType;
+    offerInformationForm.value.startTime = newVal?.planEntryTime ? newVal?.planEntryTime : "";
     if (newVal.jobType == '兼职') {
       offerInformationForm.value.offerType = '兼职合同';
+      jianzhiSalary.value = Number(newVal?.salaryStructure?.split("/")[0] || 0);
+      handleJianzhiSalaryChange();
+    } else {
+      offerInformationForm.value.basicSalary = newVal?.salaryStructure?.split("/")[0] || "0";
     }
     // newJoinerPersonalInformationForm.value.department = newVal.department;
     newJoinerPersonalInformationForm.value.placeOfBirth = newVal.placeOfBirth;
@@ -1922,6 +1928,7 @@ const closeDrawer = () => {
   jobTypeOffer.value = '1'
   newJoinerPersonalInformationFlag.value = false;
   newJoinerPersonalInformationFormTemp.value = {} as OutsourcePersonItem;
+  //@ts-ignore
   newJoinerPersonalInformationForm.value = {} as NewJoinerPersonalInfoItem;
   offerInformationForm.value = {} as OfferInformationItem;
 }
@@ -2548,6 +2555,7 @@ const generatePDF = async () => {
       await nextTick();
       const blob = await generatePDFText();
       const filename = `新员工个人信息登记表_${newJoinerPersonalInformationForm.value.userNameCn || ''}.pdf`;
+      //@ts-ignore
       generatedPdfFile.value = new File([blob], filename, { type: 'application/pdf' });
       outsourceDetailStore.uploadMessageEsignFile(generatedPdfFile.value).then((res) => {
         if (res.code == 1) {

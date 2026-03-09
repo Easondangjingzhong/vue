@@ -13,6 +13,11 @@
     <template #extra>
       <CloseOutlined @click="outsourceSocialSecuritInfoFlag = false" />
     </template>
+     <a-row :gutter="24">
+      <a-col :span="24" class="comprehensive-contract-info">
+      <a-button class="comprehensive-contract-info-btn" size="small" @click="handleAddClick">新增</a-button>
+      </a-col>
+    </a-row>
     <a-table
       size="small"
       :pagination="false"
@@ -287,11 +292,36 @@ const handleUpdateSocialSecurity = (record, type) => {
   outsourceSocialSecurityInfoFormFlag.value = true;
   outsourceSocialSecurityInfoFormType.value = type;
 }
+const handleAddClick = () => {
+  outsourceSocialSecurityInfoForm.value = {};
+  outsourceSocialSecurityInfoFormFlag.value = true;
+  outsourceSocialSecurityInfoFormType.value = "3";
+}
 const handleCityNumClick = (city) => {
   outsourceDetailStore.queryOutsourceShebaoInfoDetails(city);
 }
 </script>
 
 <style lang="less" scoped>
-
+.comprehensive-contract-info {
+  display: flex;
+  justify-content: space-between;
+}
+  .comprehensive-contract-info-title {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    flex: auto;
+    color: rgba(0, 0, 0, 0.88);
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 10px;
+    margin-top: 10px;
+  }
+  .comprehensive-contract-info-btn {
+    line-height: 1.5;
+    margin-bottom: 10px;
+    margin-top: 10px;
+  }
 </style>

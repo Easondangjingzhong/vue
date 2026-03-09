@@ -490,17 +490,29 @@ const handleManageGongShiChange = (val: string) => {
   if (costDetailForm.value.chenbenTiaochaKeFlag == "2") {
     chenbenTiaochaKeTemp = Number(costDetailForm.value.chenbenTiaochaKe || 0);
   }
-  if(val.includes("员工福利")) {
-    costDetailForm.value.manageChargeTax = ((Number(costTotalke.value || 0) - chenbenTiaochaKeTemp + Number(costDetailForm.value.welfareKe || 0)) * rate).toFixed(2);
+  if (val === '10000-客户用工成本') {
+    costDetailForm.value.manageChargeTax = (10000 - (Number(costTotalke.value || 0) - chenbenTiaochaKeTemp)).toFixed(2);
   } else {
-    costDetailForm.value.manageChargeTax = ((Number(costTotalke.value || 0) - chenbenTiaochaKeTemp) * rate).toFixed(2);
+    if(val.includes("员工福利")) {
+      costDetailForm.value.manageChargeTax = ((Number(costTotalke.value || 0) - chenbenTiaochaKeTemp + Number(costDetailForm.value.welfareKe || 0)) * rate).toFixed(2);
+    } else {
+      costDetailForm.value.manageChargeTax = ((Number(costTotalke.value || 0) - chenbenTiaochaKeTemp) * rate).toFixed(2);
+    }
   }
+  
   handleManageChargeRate();
 }
 const handleChenbenTiaochaKeFlag = () => {
   handleManageGongShiChange(costDetailForm.value.manageGongShi || "");
 }
 const handleManageChargeRate = () => {
+  /**
+   * 请假差额(不收税)=固定收费/174*(上月实际出勤工时-上月预估出勤工时-事假工时)-固定收费/174*病假工时*40%
+   * 加班差额(收税) = 加班总计
+   * 税金 = 加班差额*6.72%
+   * 总营收费 = 10000+请假差额+加班差额+加班差额*6.72%
+   * 总管理费=总营收费(税后)-人才支出-公司支出（五险一金+手续费）
+   */
   //税前管理
   const total = Number(costTotalke.value || 0) + Number(costDetailForm.value.manageChargeTax || 0) + Number(costDetailForm.value.welfareKe || 0);
   const rateNum = Number(costDetailForm.value.manageChargeRate || 0);

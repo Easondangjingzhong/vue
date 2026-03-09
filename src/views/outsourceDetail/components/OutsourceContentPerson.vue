@@ -71,7 +71,15 @@
         </a-col>
         <a-col :span="3">
           <a-form-item name="bankNum" label="银行卡">
-            <a-input v-model:value="formStatePerson.bankNum"/>
+            <a-select
+              optionFilterProp="label"
+              v-model:value="formStatePerson.bankNum"
+              :showArrow="false"
+              showSearch
+              allowClear
+            >
+              <a-select-option value="1">未填</a-select-option>
+          </a-select>
           </a-form-item>
         </a-col>
          <a-col :span="3">

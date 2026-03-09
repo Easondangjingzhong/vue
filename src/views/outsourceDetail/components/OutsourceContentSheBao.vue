@@ -220,7 +220,7 @@ const columnsOutsourceDetail:TableColumnsType = [
   { title: '手续', dataIndex: 'serviceMoney', key: 'serviceMoney', width: 30, ellipsis: true },
   { title: '社金总计', dataIndex: 'shangbaoTotal', key: 'shangbaoTotal', width: 40, ellipsis: true },
   { title: '客商', dataIndex: 'keShangbao', key: 'keShangbao', width: 30, ellipsis: true },
-  { title: '实商', dataIndex: 'shangbao', key: 'shangbao', width: 30, ellipsis: true },
+  { title: '实商', dataIndex: 'shiShangbao', key: 'shiShangbao', width: 30, ellipsis: true },
   { title: '社保标准', dataIndex: 'shebaoStandard', key: 'shebaoStandard', width: 40, },
   { title: '单位', dataIndex: 'companyTotalSelf', key: 'companyTotalSelf', width: 40, ellipsis: true },
   { title: '个人', dataIndex: 'personTotalSelf', key: 'personTotalSelf', width: 40, ellipsis: true },
