@@ -66,7 +66,15 @@ enum URL {
   update_outsource_month_salary_sign = '/candidateRecommend/update-offer-outSoure-signSalary.action',
   add_outsource_welfare = '/candidateRecommend/resume-vue-add-offer-outSoure-welFare.action',
   del_outsource_welfare = '/candidateRecommend/resume-vue-delete-offer-outSoure-welFare.action',
+  query_outsource_old_collectId_by_personId = '/candidateRecommend/resume-vue-get-outSource-oldcollectId.action',
 }
+/**
+ * 查询老的外包系统的id
+ * param personId  jinxinMonth
+ * @returns 
+ */
+const queryOutsourceOldCollectIdByPersonId = async (data: any) =>
+  post<any>({ url: URL.query_outsource_old_collectId_by_personId, data});
 /**
  * 删除员工福利
  * param personId
@@ -549,6 +557,7 @@ const queryOutsourceMonthSalary = async (data: any) =>
   post<any>({ url: URL.query_outsource_month_salary, data});
 
 export default { 
+  queryOutsourceOldCollectIdByPersonId,
   deleteOutsourceWelfare,
   addOutsourceWelfare,
   updateOutsourceMonthSalarySign,

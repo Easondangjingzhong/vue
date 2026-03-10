@@ -148,7 +148,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     outsourcePersonPerformanceDetail: {} as OutsourceMonthSalaryItem, //外包人员绩效详情月度薪资
     outsourcePersonPerformanceDetailPersonInfo: [] as OutsourcePersonItem[], //外包人员绩效详情基本信息
     outsourcePersonPerformanceDetailSalaryInfo: [] as OutsourceSalaryItem[], //外包人员绩效详情薪资标准
-    outsourcePersonPerformanceDetailAttendInfo: [] as OutsourceAttendItem[], //外包人员绩效详情薪资标准
+    outsourcePersonPerformanceDetailAttendInfo: [] as OutsourceAttendItem[], //外包人员绩效详情出勤
     outsourcePersonPerformanceDetailSheBaoInfo: [] as OutsourceSheBaoItem[], //外包人员绩效详情月度社保
     outsourcePersonPerformanceDetailGongShi: [] as OutsourceFormulaItem[], //公司公式
     formStateMonthSalaryOffer: {} as SearchMonthSalaryItem,
@@ -2395,6 +2395,22 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         const formData = new FormData();
         formData.append('personId', personId || '');
         const res = await fetchApi.deleteOutsourceWelfare(formData);
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+    /**
+     * 查询老的外包系统的id
+     * @param params personId jinxinMonth
+     * @returns
+     */
+    async queryOutsourceOldCollectIdByPersonId(personId: string,jinxinMonth: string) {
+      try {
+        const formData = new FormData();
+        formData.append('personId', personId || '');
+        formData.append('jinxinMonth', jinxinMonth || '');
+        const res = await fetchApi.queryOutsourceOldCollectIdByPersonId(formData);
         return res;
       } catch (error) {
         return null;

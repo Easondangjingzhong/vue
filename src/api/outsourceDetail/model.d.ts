@@ -210,6 +210,7 @@ export interface OutsourceSalaryItem {
   keShangbao: string;
   shiShangbao: string;
   bankName: string;
+  bankCard: string;
   shebaoCompany: string;
 }
 /**

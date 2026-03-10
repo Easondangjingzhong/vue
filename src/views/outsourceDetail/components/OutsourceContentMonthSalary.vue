@@ -147,7 +147,7 @@
                  <a href="javascript:;" @click="handleEditYearClick(record)">年度累计</a>
                 </a-menu-item>
                 <a-menu-item>
-                  <a href="javascript:;" @click="handleOutsourceSalarySign(record.id)">业绩核对</a>
+                  <a href="javascript:;" @click="handleOutsourceSalarySign(record.id)">薪资核对</a>
                 </a-menu-item>
               </a-menu>
             </template>

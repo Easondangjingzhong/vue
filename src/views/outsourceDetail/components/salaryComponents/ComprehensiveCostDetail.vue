@@ -48,10 +48,12 @@
            公司账单
           </a-col>
         </a-row>
-        <a-row :gutter="24">
+        <a-row :gutter="24" class="outsourceAttendCol">
           <a-col :span="6">
             <a-form-item name="monthTax" label="人才支出">
+              <span class="ant-input-number-other">
               <a-input v-model:value="costDetailForm.monthTax" disabled/>
+              </span>
             </a-form-item>
           </a-col>
           <a-col :span="6">
@@ -170,6 +172,11 @@
               <a-input v-model:value="costDetailForm.canBao" />
             </a-form-item>
           </a-col>
+          <a-col :span="6">
+            <a-form-item name="serviceMoney" label="三方服务">
+              <a-input v-model:value="costDetailForm.serviceMoney"/>
+            </a-form-item>
+          </a-col>
           <a-col :span="6" style="display: none; ">
             <a-form-item name="welfare" label="员工福利">
               <a-input v-model:value="costDetailForm.welfare" disabled/>
@@ -285,7 +292,7 @@ import { CloseOutlined, PlusOutlined, MinusOutlined, } from '@ant-design/icons-v
 import type { OutsourceSheBaoItem,OfferDetailsItem } from '/@/api/outsourceDetail/model';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { offerNumDetail, costDetailFlag, costDetailForm, getOutsourcePersonPerformanceDetail, getOutsourcePersonPerformanceDetailSheBaoInfo, getOutsourcePersonPerformanceDetailPersonInfo, getOutsourcePersonPerformanceDetailGongShi, outsourcePersonPerformanceDetail, costOfferDetailsForm, getHaveZhaoFlag} = storeToRefs(outsourceDetailStore);
+const { offerNumDetail, costDetailFlag, costDetailForm, getOutsourcePersonPerformanceDetail, getOutsourcePersonPerformanceDetailSheBaoInfo, getOutsourcePersonPerformanceDetailAttendInfo, getOutsourcePersonPerformanceDetailGongShi, outsourcePersonPerformanceDetail, costOfferDetailsForm, getHaveZhaoFlag} = storeToRefs(outsourceDetailStore);
 const drawerWidth = ref(Math.max(600, window.innerWidth * 0.6));
 const labelCol = {
   span: 8,
@@ -413,6 +420,7 @@ const costDetailFormPerformanceDetail = () => {
     costDetailForm.value.jinxinMonth = temp?.jinxinMonth?.toString() || "";
     costDetailForm.value.personId = temp?.personId?.toString() || "";
     costDetailForm.value.monthTax = temp?.monthTax || "0";
+    costDetailForm.value.companyName = temp?.companyName || "";
     costDetailForm.value.companyShebaoKe = (Number(sheBao?.companyTotal || 0) - Number(sheBao?.yijinCompany || 0)).toFixed(2);
     costDetailForm.value.companyShebao = (Number(sheBao?.companyTotal || 0) - Number(sheBao?.yijinCompany || 0)).toFixed(2);
     costDetailForm.value.companyYijinKe = sheBao?.yijinCompany?.toString() || "0";
@@ -461,6 +469,13 @@ const costDetailFormPerformanceDetail = () => {
       value: Number(item.split(':')[1])
     })) : [] as LabelAndValueItem[];  
     welfareKeArr.value = temp?.welfareList || [] as WelfareKeItem[];
+    if (!costDetailForm.value.serviceMoney) {
+      if (sheBao.shebaoCompany == "51社保") {
+        //员工薪水=员工实发+个税 发薪服务费计算规则是：（员工实发+个税）*6.77%；
+        //costDetailForm.value.serviceMoney = (21.25 +(Number(sheBao?.companyTotal || 0) + Number(sheBao?.personTotal || 0))* 0.0677 + (Number(temp?.salaryAfterTax || 0) + Number(temp?.monthGeshui || 0)) * 0.0677).toFixed(2);
+        costDetailForm.value.serviceMoney = (21.25 + Number(sheBao?.serviceMoney || 0) + (Number(temp?.salaryAfterTax || 0) + Number(temp?.monthGeshui || 0)) * 0.0677).toFixed(2);
+      }
+    }
   }
 }
 watch(costDetailFlag,() => {
@@ -490,29 +505,42 @@ const handleManageGongShiChange = (val: string) => {
   if (costDetailForm.value.chenbenTiaochaKeFlag == "2") {
     chenbenTiaochaKeTemp = Number(costDetailForm.value.chenbenTiaochaKe || 0);
   }
-  if (val === '10000-客户用工成本') {
-    costDetailForm.value.manageChargeTax = (10000 - (Number(costTotalke.value || 0) - chenbenTiaochaKeTemp)).toFixed(2);
-  } else {
-    if(val.includes("员工福利")) {
-      costDetailForm.value.manageChargeTax = ((Number(costTotalke.value || 0) - chenbenTiaochaKeTemp + Number(costDetailForm.value.welfareKe || 0)) * rate).toFixed(2);
-    } else {
-      costDetailForm.value.manageChargeTax = ((Number(costTotalke.value || 0) - chenbenTiaochaKeTemp) * rate).toFixed(2);
-    }
-  }
-  
-  handleManageChargeRate();
-}
-const handleChenbenTiaochaKeFlag = () => {
-  handleManageGongShiChange(costDetailForm.value.manageGongShi || "");
-}
-const handleManageChargeRate = () => {
-  /**
+  if (val === '10000-客户用工成本' && costDetailForm.value.companyName) {
+     /**
    * 请假差额(不收税)=固定收费/174*(上月实际出勤工时-上月预估出勤工时-事假工时)-固定收费/174*病假工时*40%
    * 加班差额(收税) = 加班总计
    * 税金 = 加班差额*6.72%
    * 总营收费 = 10000+请假差额+加班差额+加班差额*6.72%
    * 总管理费=总营收费(税后)-人才支出-公司支出（五险一金+手续费）
    */
+    const temp = getOutsourcePersonPerformanceDetail.value[0];
+    const attend = getOutsourcePersonPerformanceDetailAttendInfo.value[0];
+    const qingJiaCha = 10000 / 174 * (Number(attend.lastMonthShiHours || 0)-Number(attend.lastMonthYuHours || 0)-Number(attend.shijiaHours || 0)) - 10000 / 174 * Number(attend.daixinBingjiaHours || 0) * 0.4;
+    const jiaBanCha = Number(temp.jiabanSalary || 0);
+    const rateNum = Number(costDetailForm.value.manageChargeRate || 0);
+    //税金 = 加班差额*6.72%
+    costDetailForm.value.manageChargeTaxMoney = (jiaBanCha * rateNum).toFixed(2);
+    //总营收费 = 10000+请假差额+加班差额+加班差额*6.72%
+    costDetailForm.value.moneyCahrgeTax = (10000 + qingJiaCha + jiaBanCha + (jiaBanCha * rateNum)).toFixed(2);
+    //总管理费=总营收费(税后)-人才支出-公司支出（五险一金+手续费）
+    costDetailForm.value.manageChargeTax = (Number(costDetailForm.value.moneyCahrgeTax || 0) / (1 + rateNum) - Number(costDetailForm.value.monthTax || 0) - Number(costDetailForm.value.serviceMoney || 0) - Number(costDetailForm.value.companyShebao || 0) - Number(costDetailForm.value.companyYijinKe || 0)).toFixed(2);
+    const after = Number(costDetailForm.value.manageChargeTax || 0) / (1 + rateNum);
+    costDetailForm.value.manageChargeAfter = after.toFixed(2);
+    handleZhuanChargeTax();
+  } else {
+    if(val.includes("员工福利")) {
+      costDetailForm.value.manageChargeTax = ((Number(costTotalke.value || 0) - chenbenTiaochaKeTemp + Number(costDetailForm.value.welfareKe || 0)) * rate).toFixed(2);
+    } else {
+      costDetailForm.value.manageChargeTax = ((Number(costTotalke.value || 0) - chenbenTiaochaKeTemp) * rate).toFixed(2);
+    }
+    handleManageChargeRate();
+  }
+  
+}
+const handleChenbenTiaochaKeFlag = () => {
+  handleManageGongShiChange(costDetailForm.value.manageGongShi || "");
+}
+const handleManageChargeRate = () => {
   //税前管理
   const total = Number(costTotalke.value || 0) + Number(costDetailForm.value.manageChargeTax || 0) + Number(costDetailForm.value.welfareKe || 0);
   const rateNum = Number(costDetailForm.value.manageChargeRate || 0);
@@ -575,6 +603,7 @@ const costDetailFormPerformanceDetailResult = () => {
   outsourcePersonPerformanceDetail.value.canBaoKe = costDetailForm.value.canBaoKe || "";
   outsourcePersonPerformanceDetail.value.canBao = costDetailForm.value.canBao || "";
   outsourcePersonPerformanceDetail.value.totalChargeCha = costDetailForm.value.totalChargeCha || "";
+  outsourcePersonPerformanceDetail.value.serviceMoney = costDetailForm.value.serviceMoney || "";
   outsourcePersonPerformanceDetail.value.chenbenTiaochaKeFlag = costDetailForm.value.chenbenTiaochaKeFlag || "";
   outsourcePersonPerformanceDetail.value.welfareList = welfareKeArr.value || [];
 }

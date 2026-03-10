@@ -357,27 +357,35 @@ watch(outsourceMonthSalaryFlag, () => {
         money: Number(item.money || 0)
       }))
     }
+    if (!outsourceMonthSalaryForm.value.oldCollectId) {
+      outsourceDetailStore.queryOutsourceOldCollectIdByPersonId(outsourceMonthSalaryForm.value.personId?.toString() || '', outsourceMonthSalaryForm.value.jinxinMonth || '').then(res => {
+        if (res.code === 1) {
+          outsourceMonthSalaryForm.value.oldCollectId = res.info || '';
+        }
+      })
+    }
     outsourceDetailStore.queryOutsourceYearTotalPre(outsourceMonthSalaryForm.value.personId?.toString() || '', outsourceMonthSalaryForm.value.jinxinMonth || '').then(res => {
-  if (res.code === 1) {
+    if (res.code === 1) {
     yearTaxPre.value = res.info.yearTax || '0';
     yearGeshuiPre.value = res.info.yearGeshui || '0';
     //缴纳单位：51社保-0元
-    // 缴纳单位：北京博瑞-浦发银行：0.8元
+    // 缴纳单位：北京博瑞-浦发银行：0元
     // 缴纳单位：北京博瑞-其他银行：5元
-    // 缴纳单位：北京我推-招商银行: 0.8
+    // 缴纳单位：北京我推-招商银行: 0
+    // 缴纳单位：北京我推-浦发银行: 0
     // 缴纳单位：北京我推-其他银行: 5
-    if (!outsourceMonthSalaryForm.value.shouxuMoney) {
+    if (!outsourceMonthSalaryForm.value.shouxuMoney && outsourceMonthSalaryForm.value.shouxuMoney !== "0") {
       if (res.info.shebaoCompany === '51社保') {
       outsourceMonthSalaryForm.value.shouxuMoney = '0';
     } else if (res.info.shebaoCompany === '北京博瑞') {
       if (res.info.bankName === '浦发银行') {
-        outsourceMonthSalaryForm.value.shouxuMoney = '0.8';
+        outsourceMonthSalaryForm.value.shouxuMoney = '0';
       } else {
         outsourceMonthSalaryForm.value.shouxuMoney = '5';
       }
     } else if (res.info.shebaoCompany === '北京我推') {
-      if (res.info.bankName === '招商银行') {
-        outsourceMonthSalaryForm.value.shouxuMoney = '0.8';
+      if (res.info.bankName === '招商银行' || res.info.bankName === '浦发银行') {
+        outsourceMonthSalaryForm.value.shouxuMoney = '0';
       } else {
         outsourceMonthSalaryForm.value.shouxuMoney = '5';
       }
