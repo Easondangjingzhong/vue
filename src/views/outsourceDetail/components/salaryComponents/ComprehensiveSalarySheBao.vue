@@ -11,7 +11,7 @@
       :columns="columns"
       :data-source="getOutsourcePersonPerformanceDetailSheBaoInfo"
       :pagination="false"
-      :scroll="{ x: 1600 }"
+      :scroll="{ x: 1400 }"
     >
   </a-table>
   </a-col>
@@ -50,13 +50,13 @@ const columns:TableColumnsType = [
     title: '补差',
     dataIndex: 'buchaMoney',
     key: 'buchaMoney',
-    width: 40,
+    width: 20,
   },
    {
     title: '手续',
     dataIndex: 'serviceMoney',
     key: 'serviceMoney',
-    width: 40,
+    width: 20,
   },
    {
     title: '社保总计',
@@ -68,13 +68,37 @@ const columns:TableColumnsType = [
     title: '客商',
     dataIndex: 'keShangbao',
     key: 'keShangbao',
-    width: 40,
+    width: 20,
   },
    {
     title: '实商',
     dataIndex: 'shiShangbao',
     key: 'shiShangbao',
+    width: 20,
+  },
+  {
+    title: '一金标准',
+    dataIndex: 'yijinStandard',
+    key: 'yijinStandard',
     width: 40,
+  },
+  {
+    title: '一金基数',
+    dataIndex: 'yijinCompanyJishu',
+    key: 'yijinCompanyJishu',
+    width: 40,
+  },
+{
+    title: '单位',
+    dataIndex: 'yijinCompany',
+    key: 'yijinCompany',
+    width: 20,
+  },
+   {
+    title: '个人',
+    dataIndex: 'yijinPerson',
+    key: 'yijinPerson',
+    width: 20,
   },
    {
     title: '社保标准',
@@ -92,13 +116,13 @@ const columns:TableColumnsType = [
     title: '单位',
     dataIndex: 'yanglaoCompany',
     key: 'yanglaoCompany',
-    width: 40,
+    width: 20,
   },
    {
     title: '个人',
     dataIndex: 'yanglaoPerson',
     key: 'yanglaoPerson',
-    width: 40,
+    width: 20,
   },
    {
     title: '失业基数',
@@ -110,13 +134,13 @@ const columns:TableColumnsType = [
     title: '单位',
     dataIndex: 'shiyeCompany',
     key: 'shiyeCompany',
-    width: 40,
+    width: 20,
   },
    {
     title: '个人',
     dataIndex: 'shiyePerson',
     key: 'shiyePerson',
-    width: 40,
+    width: 20,
   },
    {
     title: '医疗基数',
@@ -128,13 +152,13 @@ const columns:TableColumnsType = [
     title: '单位',
     dataIndex: 'yiliaoCompany',
     key: 'yiliaoCompany',
-    width: 40,
+    width: 20,
   },
    {
     title: '个人',
     dataIndex: 'yiliaoPerson',
     key: 'yiliaoPerson',
-    width: 40,
+    width: 20,
   },
    {
     title: '大病基数',
@@ -146,13 +170,13 @@ const columns:TableColumnsType = [
     title: '单位',
     dataIndex: 'dabingCompany',
     key: 'dabingCompany',
-    width: 40,
+    width: 20,
   },
    {
     title: '个人',
     dataIndex: 'dabingPerson',
     key: 'dabingPerson',
-    width: 40,
+    width: 20,
   },
 ]
 

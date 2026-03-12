@@ -67,7 +67,15 @@ enum URL {
   add_outsource_welfare = '/candidateRecommend/resume-vue-add-offer-outSoure-welFare.action',
   del_outsource_welfare = '/candidateRecommend/resume-vue-delete-offer-outSoure-welFare.action',
   query_outsource_old_collectId_by_personId = '/candidateRecommend/resume-vue-get-outSource-oldcollectId.action',
+  update_outsource_pay_zonghe = '/candidateRecommend/resume-vue-update-offer-outSoure-pay-ajax-ZongheNew.action',
 }
+/**
+ * 更新老系统成本
+ * param OfferOutsource
+ * @returns 
+ */
+const updateOutsourcePayZonghe = async (data: any) =>
+  post<any>({ url: URL.update_outsource_pay_zonghe, data});
 /**
  * 查询老的外包系统的id
  * param personId  jinxinMonth
@@ -557,6 +565,7 @@ const queryOutsourceMonthSalary = async (data: any) =>
   post<any>({ url: URL.query_outsource_month_salary, data});
 
 export default { 
+  updateOutsourcePayZonghe,
   queryOutsourceOldCollectIdByPersonId,
   deleteOutsourceWelfare,
   addOutsourceWelfare,

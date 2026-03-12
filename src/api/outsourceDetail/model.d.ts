@@ -481,6 +481,8 @@ export interface OutsourceMonthSalaryItem {
   manageChargeTaxMoney?: string;//管理费税金
   manageChargeRate?: string;//管理费税率
   manageChargeAfter?: string;//管理费税后金额
+  manageChargeAllocationTax?: string;//可分管理费金额
+  manageChargeAllocationAfter?: string;//可分管理费税后金额
   zhuanChargeTax?: string;//转换金额
   zhuanChargeTaxMoney?: string;//转换税金
   zhuanChargeRate?: string;//转换税率
@@ -566,6 +568,7 @@ export interface CostItem {
   zhuanChargeTaxMoney?: string;
   zhuanChargeAfter?: string;
   totalCharge?: string;     
+  manageChargeAllocationTax?: string;     
 }
 //外包用工成本详情
 export interface ComprehensiveCostItem {
@@ -592,6 +595,8 @@ export interface ComprehensiveCostItem {
   manageChargeTaxMoney?: string;//管理费税金
   manageChargeRate?: string;//管理费税率
   manageChargeAfter?: string;//管理费税后金额
+  manageChargeAllocationTax?: string;//可分管理费金额
+  manageChargeAllocationAfter?: string;//可分管理费税后金额
   zhuanChargeTax?: string;//转换金额
   zhuanChargeTaxMoney?: string;//转换税金
   zhuanChargeRate?: string;//转换税率

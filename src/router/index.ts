@@ -36,7 +36,7 @@ export const routerQuery = async () => {
     localStorage.removeItem("loginVueUser");
     localStorage.setItem("loginVueUser",JSON.stringify({"loginId": getQueryVariable("loginId"),"loginName": getQueryVariable("loginName"),"loginTocken": getQueryVariable("loginTocken"),"loginType": getQueryVariable("loginType"),"loginOutFlag": getQueryVariable("loginOutFlag")}));
     return true;
-  }
+ }
   //邮箱登录查看简历
    if (getQueryVariable("loginEmail")) {
     const loginVueUser: {loginName: "", loginId: "", loginTocken: "",loginType: ""} = JSON.parse(localStorage.getItem("loginVueUser"));

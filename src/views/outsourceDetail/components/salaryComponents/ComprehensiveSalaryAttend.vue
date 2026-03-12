@@ -11,7 +11,7 @@
       :columns="columns"
       :data-source="getOutsourcePersonPerformanceDetailAttendInfo"
       :pagination="false"
-      :scroll="{ x: 1600 }"
+      :scroll="{ x: 1400 }"
     >
   </a-table>
   </a-col>

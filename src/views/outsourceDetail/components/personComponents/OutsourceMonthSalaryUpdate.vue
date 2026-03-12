@@ -389,6 +389,12 @@ watch(outsourceMonthSalaryFlag, () => {
       } else {
         outsourceMonthSalaryForm.value.shouxuMoney = '5';
       }
+    } else {
+      if (res.info.bankName === '浦发银行') {
+        outsourceMonthSalaryForm.value.shouxuMoney = '0';
+      } else {
+        outsourceMonthSalaryForm.value.shouxuMoney = '5';
+      }
     }
     }
   }

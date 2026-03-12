@@ -11,7 +11,7 @@
       :columns="columns"
       :data-source="getOutsourcePersonPerformanceDetailCostInfo"
       :pagination="false"
-      :scroll="{ x: 1600 }"
+      :scroll="{ x: 1500 }"
     >
     <template #bodyCell="{ column, record }">
       <a-popover v-if="column.key === 'manageGongShi' && record.manageGongShi !== '-'">
@@ -50,6 +50,7 @@ const columns:TableColumnsType = [
     dataIndex: 'costType',
     key: 'costType',
     width: 40,
+    fixed: 'left',
   },
   {
     title: '人才支出',
@@ -127,13 +128,13 @@ const columns:TableColumnsType = [
     title: '税率',
     dataIndex: 'manageChargeRate',
     key: 'manageChargeRate',
-    width: 40,
+    width: 30,
   },
     {
     title: '税金',
     dataIndex: 'manageChargeTaxMoney',
     key: 'manageChargeTaxMoney',
-    width: 40,
+    width: 30,
   },
     {
     title: '总营收费',
@@ -151,13 +152,13 @@ const columns:TableColumnsType = [
     title: '税率',
     dataIndex: 'zhuanChargeRate',
     key: 'zhuanChargeRate',
-    width: 40,
+    width: 30,
   },
     {
     title: '税金',
     dataIndex: 'zhuanChargeTaxMoney',
     key: 'zhuanChargeTaxMoney',
-    width: 40,
+    width: 30,
   },
     {
     title: '税后转换',
@@ -171,12 +172,19 @@ const columns:TableColumnsType = [
     key: 'totalCharge',
     width: 40,
   },
+   {
+    title: '可分管理',
+    dataIndex: 'manageChargeAllocationTax',
+    key: 'manageChargeAllocationTax',
+    fixed: 'right',
+    width: 40,
+  },
   {
     title: '操作',
     dataIndex: 'operation',
     key: 'operation',
     fixed: 'right',
-    width: 20,
+    width: 25,
   },
 ]
 const handleEditClick = () => {

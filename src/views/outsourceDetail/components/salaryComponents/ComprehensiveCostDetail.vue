@@ -260,6 +260,11 @@
         </a-row>
         <a-row :gutter="24">
           <a-col :span="6">
+            <a-form-item name="manageChargeAllocationTax" label="可分管理">
+              <a-input v-model:value="costDetailForm.manageChargeAllocationTax" disabled/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="6">
             <a-form-item name="totalChargeCha" label="收费差额">
               <a-input v-model:value="costDetailForm.totalChargeCha" @change="handleZhuanChargeTax"/>
             </a-form-item>
@@ -439,6 +444,8 @@ const costDetailFormPerformanceDetail = () => {
     costDetailForm.value.manageChargeTax = temp?.manageChargeTax || "0";
     costDetailForm.value.manageChargeTaxMoney = temp?.manageChargeTaxMoney || "0";
     costDetailForm.value.manageChargeAfter = temp?.manageChargeAfter || "0";
+    costDetailForm.value.manageChargeAllocationTax = temp?.manageChargeAllocationTax || "0";
+    costDetailForm.value.manageChargeAllocationAfter = temp?.manageChargeAllocationAfter || "0";
     costDetailForm.value.zhuanChargeTax = temp?.zhuanChargeTax || "0";
     costDetailForm.value.zhuanChargeTaxMoney = temp?.zhuanChargeTaxMoney || "0";
     costDetailForm.value.moneyCahrgeTax = temp?.moneyCahrgeTax || "0";
@@ -474,6 +481,8 @@ const costDetailFormPerformanceDetail = () => {
         //员工薪水=员工实发+个税 发薪服务费计算规则是：（员工实发+个税）*6.77%；
         //costDetailForm.value.serviceMoney = (21.25 +(Number(sheBao?.companyTotal || 0) + Number(sheBao?.personTotal || 0))* 0.0677 + (Number(temp?.salaryAfterTax || 0) + Number(temp?.monthGeshui || 0)) * 0.0677).toFixed(2);
         costDetailForm.value.serviceMoney = (21.25 + Number(sheBao?.serviceMoney || 0) + (Number(temp?.salaryAfterTax || 0) + Number(temp?.monthGeshui || 0)) * 0.0677).toFixed(2);
+      } else {
+        costDetailForm.value.serviceMoney = Number(sheBao?.serviceMoney || 0).toFixed(2);
       }
     }
   }
@@ -505,8 +514,8 @@ const handleManageGongShiChange = (val: string) => {
   if (costDetailForm.value.chenbenTiaochaKeFlag == "2") {
     chenbenTiaochaKeTemp = Number(costDetailForm.value.chenbenTiaochaKe || 0);
   }
-  if (val === '10000-客户用工成本' && costDetailForm.value.companyName) {
-     /**
+  if (val === '10000-客户用工成本' && costDetailForm.value.companyName == "古驰") {
+  /**
    * 请假差额(不收税)=固定收费/174*(上月实际出勤工时-上月预估出勤工时-事假工时)-固定收费/174*病假工时*40%
    * 加班差额(收税) = 加班总计
    * 税金 = 加班差额*6.72%
@@ -560,6 +569,10 @@ const handleZhuanChargeTax = () => {
   costDetailForm.value.zhuanChargeTaxMoney = (Number(costDetailForm.value.zhuanChargeTax || 0) * rate).toFixed(2);
   //总收费 = 总营收费 + 税前转换 + 税前转换的税金
   costDetailForm.value.totalCharge = (Number(costDetailForm.value.moneyCahrgeTax || 0) + Number(costDetailForm.value.zhuanChargeTax || 0) + Number(costDetailForm.value.zhuanChargeTaxMoney || 0) + Number(costDetailForm.value.totalChargeCha || 0)).toFixed(2);
+  //可分管理=总营收费-公司账单里的成本总计
+  costDetailForm.value.manageChargeAllocationTax = (Number(costDetailForm.value.moneyCahrgeTax || 0) /(1 + rate) - Number(costTotal.value || 0)).toFixed(2);
+  //可分管理费税后金额=可分管理费税后金额/（1+税率）
+  costDetailForm.value.manageChargeAllocationAfter = (Number(costDetailForm.value.manageChargeAllocationTax || 0) / (1 + rate)).toFixed(2);
 }
 
 const handleClose = () => {
@@ -587,6 +600,8 @@ const costDetailFormPerformanceDetailResult = () => {
   outsourcePersonPerformanceDetail.value.manageChargeTax = costDetailForm.value.manageChargeTax || "";
   outsourcePersonPerformanceDetail.value.manageChargeTaxMoney = costDetailForm.value.manageChargeTaxMoney || "";
   outsourcePersonPerformanceDetail.value.manageChargeAfter = costDetailForm.value.manageChargeAfter || "";
+  outsourcePersonPerformanceDetail.value.manageChargeAllocationTax = costDetailForm.value.manageChargeAllocationTax || "";
+  outsourcePersonPerformanceDetail.value.manageChargeAllocationAfter = costDetailForm.value.manageChargeAllocationAfter || "";
   outsourcePersonPerformanceDetail.value.zhuanChargeTax = costDetailForm.value.zhuanChargeTax || "";
   outsourcePersonPerformanceDetail.value.zhuanChargeTaxMoney = costDetailForm.value.zhuanChargeTaxMoney || "";
   outsourcePersonPerformanceDetail.value.moneyCahrgeTax = costDetailForm.value.moneyCahrgeTax || "";
@@ -609,7 +624,7 @@ const costDetailFormPerformanceDetailResult = () => {
 }
 const calcCost = () => {
   //const personInfo = getOutsourcePersonPerformanceDetailPersonInfo?.value[0];
-  const totalFeeOneTax = Number(costDetailForm.value.manageChargeTax || 0);
+  const totalFeeOneTax = Number(costDetailForm.value.manageChargeAllocationTax || 0);
   const totalFeeTwoTax = Number(costDetailForm.value.zhuanChargeTax || 0);
   const odsTotalMoney = totalFeeOneTax + totalFeeTwoTax;
   const rate = 1.0672;
@@ -622,7 +637,7 @@ const calcCost = () => {
 
         const isOutFlag1 = detail.outFlag === '1';
         const currentRate1 = isOutFlag1 ? config.rate1_out : config.rate1;
-        
+        detail.collectId = getOutsourcePersonPerformanceDetail.value[0]?.oldCollectId || "";
         // 计算含税金额
         detail.taxIncluded = (totalFeeOneTax * currentRate1 + totalFeeTwoTax * config.rate2).toFixed(2);
         
@@ -727,9 +742,36 @@ const updateWelfareKeTotalUpload = () => {
     outsourceDetailStore.deleteOutsourceWelfare(getOutsourcePersonPerformanceDetail.value[0]?.personId?.toString());
   }
 }
+const updateOutsourcePayZonghe = () => {
+  /**
+   * 公司账单
+   * SUM(BASE_PAY+SUBSIDY_PAY+OVERTIME_PAY+COMMISSION_PAY+THIRTEENTH_PAY+ANNUAL_BOUNS+OTHER_PAY+BASIC_PAY) as WAGE_COST //月度工资 BASE_PAY basePay== costDetailForm.value.monthTax
+   * SUM(SOCIAL_COMPANY+PROCIDENT_COMPANY+COMMERCIAL_INSURANCE+DISABILITY_INSURANCE) as INSURANCE_COST //无限一金+残保金 SOCIAL_COMPANY socialCompany == companyShebao + companyYijin + canBao + shiShangbao
+   * SUM(OTHER_EXPEND+HANDING_FEE) as OTHER_COST //三方服务费加其他支出 HANDING_FEE handingFee == serviceMoney+otherPay+chenbenTiaocha
+   * SUM(MANAGE_CHARGE_TAX)as MANAGEMENT_MONEY //总管理 MANAGE_CHARGE_TAX manageChargeTax == costDetailForm.value.manageChargeAllocationTax
+   * SUM(MONEY_CAHRGE_TAX+IFNULL(WELFARE,0))as TOTAL_MONEY //总营收费 总收费 MONEY_CAHRGE_TAX moneyChargeTax == totalCharge  moneyChargeTax // moneyCharge税后的钱
+   * manageCharge == manageChargeAllocationAfter 管理费   yongongShijiZongji == costTotal // 外包员工到期后转为客户员工产生的额外费用
+   * 往老系统里补充数据
+   * basePay socialCompany handingFee manageChargeTax moneyChargeTax moneyCharge manageCharge yongongShijiZongji id
+   */
+  let offerOutsource = {};
+  offerOutsource = {
+    basePay: costDetailForm.value.monthTax,
+    socialCompany: (Number(costDetailForm.value.companyShebao || 0) + Number(costDetailForm.value.companyYijin || 0) + Number(costDetailForm.value.canBao || 0) + Number(costDetailForm.value.shiShangbao || 0)).toFixed(2),
+    handingFee: (Number(costDetailForm.value.serviceMoney || 0) + Number(costDetailForm.value.otherPay || 0) + Number(costDetailForm.value.chenbenTiaocha || 0)).toFixed(2),
+    manageChargeTax: costDetailForm.value.manageChargeAllocationTax,
+    manageCharge: costDetailForm.value.manageChargeAllocationAfter,
+    moneyChargeTax: costDetailForm.value.totalCharge,
+    moneyCharge: (Number(costDetailForm.value.totalCharge || 0) / 1.0672).toFixed(2),
+    yongongShijiZongji: costTotal.value,
+    id: getOutsourcePersonPerformanceDetail.value[0]?.oldCollectId,
+  };
+  outsourceDetailStore.updateOutsourcePayZonghe(offerOutsource);
+}
 const handleSubmit = () => {
   iconLoading.value = true;
   calcCost();
+  updateOutsourcePayZonghe();
   outsourceDetailStore.addUpdateOutsourceCostDetail(costDetailForm.value).then(res => {
         if (res.code == 1) {
           updateWelfareKeTotalUpload();

@@ -741,6 +741,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           ).toString(),
         ).toFixed(2),
         shebaoStandard: shebaoStandardMap[item.shebaoStandard || ''] || '',
+        yijinStandard: shebaoStandardMap[item.yijinStandard || ''] || '',
       }));
     },
     getOutsourcePersonPerformanceDetailCostInfo: (state) => {
@@ -785,6 +786,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         zhuanChargeTaxMoney: costMap.zhuanChargeTaxMoney,
         zhuanChargeAfter: costMap.zhuanChargeAfter,
         totalCharge: costMap.totalCharge,
+        manageChargeAllocationTax: costMap.manageChargeAllocationTax,
       });
       costArr.push({
         costType: '公司账单',
@@ -798,8 +800,8 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         welfare: costMap.welfare,
         otherPay: costMap.otherPay,
         chenbenTiaocha: costMap.chenbenTiaocha,
-        serviceMoney: costMap.serviceMoney || '-',
-        costTotal: '-',
+        serviceMoney: costMap.serviceMoney || '0',
+        costTotal: (Number(costMap.monthTax || 0) + Number(costMap.companyShebao || 0) + Number(costMap.companyYijin || 0) + Number(costMap.shiShangbao || 0) + Number(canBao || 0) + Number(costMap.otherPay || 0) + Number(costMap.chenbenTiaocha || 0) + Number(costMap.serviceMoney || 0)).toFixed(2).toString(),
         manageGongShi: '-',
         manageChargeTax: '-',
         manageChargeRate: '-',
@@ -810,6 +812,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         zhuanChargeTaxMoney: '-',
         zhuanChargeAfter: '-',
         totalCharge: '-',
+        manageChargeAllocationTax: '-',
       });
       return costArr;
     },
@@ -960,9 +963,9 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       if (this.attendIsLoading) {
         return;
       }
-      if (!this.formStateAttend.currentStatus) {
-        this.formStateAttend.currentStatus = '2';
-      }
+      // if (!this.formStateAttend.currentStatus) {
+      //   this.formStateAttend.currentStatus = '2';
+      // }
       if (!this.formStateAttend.yearAndMonth) {
         const now = dayjs();
         this.formStateAttend.yearAndMonth =
@@ -977,7 +980,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       params.append('city', this.formStateAttend.city || '');
       params.append('bId', this.formStateAttend.bId || '');
       params.append('positionId', this.formStateAttend.positionId || '');
-      params.append('currentStatus', this.formStateAttend.currentStatus);
+      params.append('currentStatus', this.formStateAttend.currentStatus || "");
       params.append('userName', this.formStateAttend.userName || '');
       params.append('companyName', this.formStateAttend.companyName || '');
       params.append('companyArrange', this.formStateAttend.companyArrange || '');
@@ -2411,6 +2414,19 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         formData.append('personId', personId || '');
         formData.append('jinxinMonth', jinxinMonth || '');
         const res = await fetchApi.queryOutsourceOldCollectIdByPersonId(formData);
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+    /**
+     * 更新老系统成本
+     * @param OfferOutsource
+     * @returns
+     */
+    async updateOutsourcePayZonghe(offerOutsource) {
+      try {
+        const res = await fetchApi.updateOutsourcePayZonghe(offerOutsource);
         return res;
       } catch (error) {
         return null;
