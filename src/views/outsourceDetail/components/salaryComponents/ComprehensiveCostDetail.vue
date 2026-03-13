@@ -476,6 +476,8 @@ const costDetailFormPerformanceDetail = () => {
       value: Number(item.split(':')[1])
     })) : [] as LabelAndValueItem[];  
     welfareKeArr.value = temp?.welfareList || [] as WelfareKeItem[];
+    costDetailForm.value.serviceMoney = temp?.serviceMoney;
+    if (!costDetailForm.value.serviceMoney && costDetailForm.value.serviceMoney != "0") {
       if (sheBao.shebaoCompany == "51社保") {
         //员工薪水=员工实发+个税 发薪服务费计算规则是：（员工实发+个税）*6.77%；
         //costDetailForm.value.serviceMoney = (21.25 +(Number(sheBao?.companyTotal || 0) + Number(sheBao?.personTotal || 0))* 0.0677 + (Number(temp?.salaryAfterTax || 0) + Number(temp?.monthGeshui || 0)) * 0.0677).toFixed(2);
@@ -483,8 +485,6 @@ const costDetailFormPerformanceDetail = () => {
       } else {
         costDetailForm.value.serviceMoney = Number(sheBao?.serviceMoney || 0).toFixed(2);
       }
-    if (!costDetailForm.value.serviceMoney) {
-    
     }
   }
 }
@@ -538,10 +538,29 @@ const handleManageGongShiChange = (val: string) => {
     costDetailForm.value.manageChargeAfter = after.toFixed(2);
     handleZhuanChargeTax();
   } else {
-    if(val.includes("员工福利")) {
-      costDetailForm.value.manageChargeTax = ((Number(costTotalke.value || 0) - chenbenTiaochaKeTemp + Number(costDetailForm.value.welfareKe || 0)) * rate).toFixed(2);
+    if (val === '本月实际工时*5元' && costDetailForm.value.companyName == "林弥珥") {
+      /**
+       * 本月实际工时 = 本月实际 currentMonthShiHours+ 正常加班 overHours + 国定加班 holidayOverHours + 休息加班 restOverHours
+       * 总管理费=本月实际工时*5元
+       */
+      const attend = getOutsourcePersonPerformanceDetailAttendInfo.value[0];
+      const currentMonthShiHours = Number(attend.currentMonthShiHours || 0);
+      const overHours = Number(attend.overHours || 0);
+      const holidayOverHours = Number(attend.holidayOverHours || 0);
+      const restOverHours = Number(attend.restOverHours || 0);
+      const totalHours = currentMonthShiHours + overHours + holidayOverHours + restOverHours;
+      costDetailForm.value.manageChargeTax = (totalHours * 5).toFixed(2);
+    } else if (costDetailForm.value.companyName == "碧朗诗") {
+      /**
+       * 总管理费=固定收费500
+       */
+      costDetailForm.value.manageChargeTax = "500";
     } else {
-      costDetailForm.value.manageChargeTax = ((Number(costTotalke.value || 0) - chenbenTiaochaKeTemp) * rate).toFixed(2);
+      if(val.includes("员工福利")) {
+        costDetailForm.value.manageChargeTax = ((Number(costTotalke.value || 0) - chenbenTiaochaKeTemp + Number(costDetailForm.value.welfareKe || 0)) * rate).toFixed(2);
+      } else {
+        costDetailForm.value.manageChargeTax = ((Number(costTotalke.value || 0) - chenbenTiaochaKeTemp) * rate).toFixed(2);
+      }
     }
     handleManageChargeRate();
   }
@@ -573,7 +592,7 @@ const handleZhuanChargeTax = () => {
   //可分管理=总营收费-公司账单里的成本总计
   costDetailForm.value.manageChargeAllocationTax = (Number(costDetailForm.value.moneyCahrgeTax || 0) /(1 + rate) - Number(costTotal.value || 0)).toFixed(2);
   //可分管理费税后金额=可分管理费税后金额/（1+税率）
-  costDetailForm.value.manageChargeAllocationAfter = (Number(costDetailForm.value.manageChargeAllocationTax || 0) / (1 + rate)).toFixed(2);
+  costDetailForm.value.manageChargeAllocationAfter = (Number(costDetailForm.value.manageChargeAllocationTax || 0) / (1 + Number(costDetailForm.value.manageChargeRate || 0))).toFixed(2);
 }
 
 const handleClose = () => {

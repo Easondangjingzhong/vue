@@ -1265,6 +1265,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       formData.append('market', this.outsourceBasicForm.market || '');
       formData.append('userNameEn', this.outsourceBasicForm.userNameEn || '');
       formData.append('haveZhao', this.outsourceBasicForm.haveZhao || '');
+      formData.append('phoneNumber', this.outsourceBasicForm.phoneNumber || '');
       const res = await fetchApi.addUpdateOutsourceBasic(formData);
       if (res.code == 1) {
         this.outsourcePersonDetail = {
