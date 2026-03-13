@@ -68,65 +68,90 @@ enum URL {
   del_outsource_welfare = '/candidateRecommend/resume-vue-delete-offer-outSoure-welFare.action',
   query_outsource_old_collectId_by_personId = '/candidateRecommend/resume-vue-get-outSource-oldcollectId.action',
   update_outsource_pay_zonghe = '/candidateRecommend/resume-vue-update-offer-outSoure-pay-ajax-ZongheNew.action',
+  query_outsource_company_excel = '/candidateRecommend/resume-vue-query-out-company-excel.action',
+  add_outsource_company_excel = '/candidateRecommend/resume-vue-insert-update-out-company-excel.action',
+  downLoad_outsource_company_excel = '/candidateRecommend/resume-vue-select-out-salary-downLoad-excel.action',
 }
+/**
+ * 公司导出表格
+ * @param companyName
+ * @param yearAndMonth
+ * @returns
+ */
+const downLoadOutsourceCompanyExcel = async (data: any) =>
+  post<any>({ url: URL.downLoad_outsource_company_excel, data, responseType: 'blob' });
+/**
+ * 查询公司导出表格标题
+ * @param companyName
+ * @returns
+ */
+const queryOutsourceCompanyExcel = async (data: any) =>
+  post<any>({ url: URL.query_outsource_company_excel, data });
+/**
+ * 添加公司导出表格标题
+ * @param OfferOutsourceCompanyExcel
+ * @returns
+ */
+const addOutsourceCompanyExcel = async (data: any) =>
+  post<any>({ url: URL.add_outsource_company_excel, data });
 /**
  * 更新老系统成本
  * param OfferOutsource
- * @returns 
+ * @returns
  */
 const updateOutsourcePayZonghe = async (data: any) =>
-  post<any>({ url: URL.update_outsource_pay_zonghe, data});
+  post<any>({ url: URL.update_outsource_pay_zonghe, data });
 /**
  * 查询老的外包系统的id
  * param personId  jinxinMonth
- * @returns 
+ * @returns
  */
 const queryOutsourceOldCollectIdByPersonId = async (data: any) =>
-  post<any>({ url: URL.query_outsource_old_collectId_by_personId, data});
+  post<any>({ url: URL.query_outsource_old_collectId_by_personId, data });
 /**
  * 删除员工福利
  * param personId
- * @returns 
+ * @returns
  */
 const deleteOutsourceWelfare = async (data: any) =>
-  post<any>({ url: URL.del_outsource_welfare, data});
+  post<any>({ url: URL.del_outsource_welfare, data });
 /**
  * 员工福利
- * @returns 
+ * @returns
  */
 const addOutsourceWelfare = async (data: any) =>
-  post<any>({ url: URL.add_outsource_welfare, data});
+  post<any>({ url: URL.add_outsource_welfare, data });
 /**
  * 月度信息核对
  * @param data id
  * @param data signSalary 1未核 2已核
- * @returns 
+ * @returns
  */
 const updateOutsourceMonthSalarySign = async (data: any) =>
-  post<any>({ url: URL.update_outsource_month_salary_sign, data});
+  post<any>({ url: URL.update_outsource_month_salary_sign, data });
 /**
  * 业绩分配核对
  * @param data id
  * @param data sign 1未核 2已核
- * @returns 
+ * @returns
  */
 const updateOutsourceSalarySign = async (data: any) =>
-  post<any>({ url: URL.update_outsource_salary_sign, data});
+  post<any>({ url: URL.update_outsource_salary_sign, data });
 /**
  * 业绩分配
  * @param data personId
  * @param data jinxinMonth
- * @returns 
+ * @returns
  */
 const updateOutsourceSheBaoMonth = async (data: any) =>
-  post<any>({ url: URL.update_outsource_shebao_month, data});
+  post<any>({ url: URL.update_outsource_shebao_month, data });
 /**
  * 业绩分配
  * @param data collectId
- * @returns 
+ * @returns
  */
 const updateOutsourceDetail = async (data: any) =>
-  post<any>({ url: URL.update_outsource_detail, data});
+  post<any>({ url: URL.update_outsource_detail, data });
 /**
  * 查询外包人员比例
  * @param data personId
@@ -135,17 +160,17 @@ const updateOutsourceDetail = async (data: any) =>
  * @param data phoneNumber
  * @param data jinxinStart
  * @param data jinxinEnd
- * @returns 
+ * @returns
  */
 const queryOutsourceCheckNum = async (data: any) =>
-  post<any>({ url: URL.query_outsource_checkNum, data});
+  post<any>({ url: URL.query_outsource_checkNum, data });
 /**
  * 查询外包人员团队数据
  * @param data id
- * @returns 
+ * @returns
  */
 const queryOutsourceTeamMsg = async (data: any) =>
-  post<any>({ url: URL.query_outsource_team_msg, data});
+  post<any>({ url: URL.query_outsource_team_msg, data });
 /**
  * 查询外包人员业绩分配出勤月份
  * @param data companyName
@@ -154,417 +179,406 @@ const queryOutsourceTeamMsg = async (data: any) =>
  * @param data jobType
  * @param data jinxinMonth
  * @param data mId
- * @returns 
+ * @returns
  */
 const queryOutsourceGongShiByCompany = async (data: any) =>
-  post<any>({ url: URL.query_outsource_gongshi_by_companyName, data});
+  post<any>({ url: URL.query_outsource_gongshi_by_companyName, data });
 /**
  * 查询外包人员业绩分配出勤月份
  * @param data personId
  * @param data jinXinMonth
- * @returns 
+ * @returns
  */
 const queryOutsourceAttendMonthPersonId = async (data: any) =>
-  post<any>({ url: URL.query_outsource_attend_Month_personId, data});
+  post<any>({ url: URL.query_outsource_attend_Month_personId, data });
 /**
  * 查询外包人员业绩分配基本信息
  * @param data personId
  * @param data jinXinMonth
- * @returns 
+ * @returns
  */
 const queryOutsourcePersonByPersonId = async (data: any) =>
-  post<any>({ url: URL.query_outsource_person_byPersonId, data});
+  post<any>({ url: URL.query_outsource_person_byPersonId, data });
 /**
  * 查询外包人员业绩分配薪资标准
  * @param data personId
  * @param data jinXinMonth
- * @returns 
+ * @returns
  */
 const queryOutsourceSalaryByPersonId = async (data: any) =>
-  post<any>({ url: URL.query_outsource_salary_by_personId, data});
+  post<any>({ url: URL.query_outsource_salary_by_personId, data });
 /**
  * 查询外包人员业绩分配月度社保
  * @param data personId
  * @param data jinXinMonth
- * @returns 
+ * @returns
  */
 const queryOutsourceShebaoByPersonId = async (data: any) =>
-  post<any>({ url: URL.query_outsource_shebao_by_personId, data});
+  post<any>({ url: URL.query_outsource_shebao_by_personId, data });
 /**
  * 更新外包店铺简称
  * @param data yearAndMonth companyName
- * @returns 
+ * @returns
  */
 const outsourcePersonMarketName = async (data: any) =>
-  post<any>({ url: URL.update_outsource_person_marketName, data});
+  post<any>({ url: URL.update_outsource_person_marketName, data });
 /**
  * 请款单
  * @param data yearAndMonth companyName
- * @returns 
+ * @returns
  */
 const outsourcePersonMoney = async (data: any) =>
-  post<any>({ url: URL.query_outsource_person_money, data});
+  post<any>({ url: URL.query_outsource_person_money, data });
 /**
  * 同步姓名
  * @param data rId resumeId
- * @returns 
+ * @returns
  */
-const updateUserName = async (data: any) =>
-  post<any>({ url: URL.update_user_name, data});
+const updateUserName = async (data: any) => post<any>({ url: URL.update_user_name, data });
 /**
  * 信息表签署
  * @param data personId jinxinMonth
- * @returns 
+ * @returns
  */
-const uploadMessageEsignFile = async (data: any) =>
-  post<any>({ url: URL.upload_esign_file, data});
+const uploadMessageEsignFile = async (data: any) => post<any>({ url: URL.upload_esign_file, data });
 /**
  * 信息表签署
  * @param data personId jinxinMonth
- * @returns 
+ * @returns
  */
-const personMessageEsign = async (data: any) =>
-  post<any>({ url: URL.person_msg_esign, data});
+const personMessageEsign = async (data: any) => post<any>({ url: URL.person_msg_esign, data });
 /**
  * 添加修改年度累计
  * @param data personId jinxinMonth
- * @returns 
+ * @returns
  */
 const addUpdateOutsourceSalaryMonthYearlPre = async (data: any) =>
-  post<any>({ url: URL.update_outsource_yearTotalPre, data});
+  post<any>({ url: URL.update_outsource_yearTotalPre, data });
 /**
  * 添加修改月度薪资
  * @param data personId jinxinMonth
- * @returns 
+ * @returns
  */
 const queryOutsourceYearTotalPre = async (data: any) =>
-  post<any>({ url: URL.query_outsource_yearTotalPre, data});
+  post<any>({ url: URL.query_outsource_yearTotalPre, data });
 /**
  * 添加修改月度薪资
  * @param data personId jinxinMonth
- * @returns 
+ * @returns
  */
 const queryOutsourceLeijiChae = async (data: any) =>
-  post<any>({ url: URL.query_outsource_leiji_chae, data});
+  post<any>({ url: URL.query_outsource_leiji_chae, data });
 
 /**
  * 添加修改月度薪资
  * @param data OfferOutsourceMonthSalary
- * @returns 
+ * @returns
  */
 const addUpdateOutsourceSalaryMonth = async (data: any) =>
-  post<any>({ url: URL.add_update_outsource_salary_month, data});
+  post<any>({ url: URL.add_update_outsource_salary_month, data });
 /**
  * 查询外包公司公式
  * @param data companyName
- * @returns 
+ * @returns
  */
 const queryOutsourceFormula = async (data: any) =>
-  post<any>({ url: URL.query_outsource_formula, data});
+  post<any>({ url: URL.query_outsource_formula, data });
 /**
  * 删除外包公司公式
  * @param data id
- * @returns 
+ * @returns
  */
 const deleteOutsourceFormula = async (data: any) =>
-  post<any>({ url: URL.delete_outsource_formula, data});
+  post<any>({ url: URL.delete_outsource_formula, data });
 
 /**
  * 新增或更新外包公司公式
  * @param data OfferOutsourcepGongshi
- * @returns 
+ * @returns
  */
 const addUpdateOutsourceFormula = async (data: any) =>
-  post<any>({ url: URL.add_update_outsource_formula, data});
+  post<any>({ url: URL.add_update_outsource_formula, data });
 
 /**
  * 更新外包人员信息表
- * @param data 
- * @returns 
+ * @param data
+ * @returns
  */
-const updateOutsourcePersonMsg = async (data: any) => 
-  post<any>({ url: URL.update_outsource_person_msg, data});
+const updateOutsourcePersonMsg = async (data: any) =>
+  post<any>({ url: URL.update_outsource_person_msg, data });
 /**
  * 查询经办人信息
  * @param data psnAccount ruCompanyName
- * @returns 
+ * @returns
  */
-const handleChangePsnAccount = async (data: any) => 
-  post<any>({ url: URL.query_esign_personId_by_phone, data});
+const handleChangePsnAccount = async (data: any) =>
+  post<any>({ url: URL.query_esign_personId_by_phone, data });
 /**
  * 查询签署模板列表
  * @param data pageNumber pageSize ruCompanyName status  //1启用 2未启用
- * @returns 
+ * @returns
  */
-const queryEsignTemplateList = async (data: any) => 
-  post<any>({ url: URL.query_esign_template_list, data});
+const queryEsignTemplateList = async (data: any) =>
+  post<any>({ url: URL.query_esign_template_list, data });
 /**
  * 查询签署模板详情
  * @param data templateId ruCompanyName
- * @returns 
+ * @returns
  */
-const queryEsignTemplateDetail = async (data: any) => 
-  post<any>({ url: URL.query_esign_template_detail, data});
+const queryEsignTemplateDetail = async (data: any) =>
+  post<any>({ url: URL.query_esign_template_detail, data });
 /**
  * 查询签署模板拟定合同
  * @param data TemplateDetail
- * @returns 
+ * @returns
  */
-const queryEsignTemplateBySign = async (data: any) => 
-  post<any>({ url: URL.query_esign_template_by_sign, data});
+const queryEsignTemplateBySign = async (data: any) =>
+  post<any>({ url: URL.query_esign_template_by_sign, data });
 /**
  * 查询签署模板离职申请
  * @param data TemplateDetail
- * @returns 
+ * @returns
  */
-const queryEsignTemplateBySignLeave = async (data: any) => 
-  post<any>({ url: URL.query_esign_template_by_sign_leave, data});
+const queryEsignTemplateBySignLeave = async (data: any) =>
+  post<any>({ url: URL.query_esign_template_by_sign_leave, data });
 /**
  * 查询顾问列表
- * @returns 
+ * @returns
  */
-const queryCounselorList = async () =>
-  post<any>({ url: URL.query_counselor_list});
+const queryCounselorList = async () => post<any>({ url: URL.query_counselor_list });
 /**
  * 根据城市和店铺名称查询店铺列表
  * @param data city marketName
- * @returns 
+ * @returns
  */
-const queryMarkList = async (data: any) =>
-  post<any>({ url: URL.query_mark_list, data});
+const queryMarkList = async (data: any) => post<any>({ url: URL.query_mark_list, data });
 /**
  * 根据resumeId查询工作经历
  * @param data resumeId
- * @returns 
+ * @returns
  */
 const handleQueryWorkByResumeId = async (data: any) =>
-  post<any>({ url: URL.query_work__by_resumeId, data});
+  post<any>({ url: URL.query_work__by_resumeId, data });
 /**
  * 根据手机号查询简历基础信息
  * @param data phoneNumber
- * @returns 
+ * @returns
  */
 const queryOutsourcePersonMsg = async (data: any) =>
-  post<any>({ url: URL.query_outsource_person_msg, data});
+  post<any>({ url: URL.query_outsource_person_msg, data });
 /**
  * 新增外包社保基数信息
  * @param data id
- * @returns 
+ * @returns
  */
-const addOutsourceInfo = async (data: any) =>
-  post<any>({ url: URL.add_outsource_info, data});
+const addOutsourceInfo = async (data: any) => post<any>({ url: URL.add_outsource_info, data });
 /**
  * 修改外包社保基数信息
  * @param data id
- * @returns 
+ * @returns
  */
 const updateOutsourceInfo = async (data: any) =>
-  post<any>({ url: URL.update_outsource_info, data});
+  post<any>({ url: URL.update_outsource_info, data });
 /**
  * 删除外包考勤月度明细
  * @param data id
- * @returns 
+ * @returns
  */
 const deleteOutsourceAttendById = async (data: any) =>
-  post<any>({ url: URL.delete_outsource_attend_by_id, data});
+  post<any>({ url: URL.delete_outsource_attend_by_id, data });
 /**
  * 查询外包社保基数信息
  * @param data city
  * @returns 外包社保基数信息
  */
 const queryOutsourceShebaoInfo = async (data: any) =>
-  post<any>({ url: URL.query_outsource_shebao_info, data});
+  post<any>({ url: URL.query_outsource_shebao_info, data });
 /**
  * 修改外包社保月度是否已核对
- * @param data 
- * @returns 
+ * @param data
+ * @returns
  */
 const updateOutsourceShebaoChecked = async (data: any) =>
-  post<any>({ url: URL.update_outsource_shebao_collect, data});
+  post<any>({ url: URL.update_outsource_shebao_collect, data });
 /**
  * 修改考勤信息
- * @param data 
- * @returns 
+ * @param data
+ * @returns
  */
 const updateOutsourceAttend = async (data: any) =>
-  post<any>({ url: URL.update_outsource_attend, data});
+  post<any>({ url: URL.update_outsource_attend, data });
 
 /**
  * 查询外包社保月度总计
  * @param data year yearAndMonth
- * @returns 
+ * @returns
  */
 const queryOutsourceShebaoCollect = async (data: any) =>
-  post<any>({ url: URL.query_outsource_shebao_collect, data});
+  post<any>({ url: URL.query_outsource_shebao_collect, data });
 
 /**
  * 删除外包社保月度明细
  * @param data id
- * @returns 
+ * @returns
  */
 const deleteOutsourceShebaoById = async (data: any) =>
-  post<any>({ url: URL.delete_outsource_shebao_by_id, data});
+  post<any>({ url: URL.delete_outsource_shebao_by_id, data });
 /**
  * 查询外包银行名称
  * @param data personId
- * @returns 
+ * @returns
  */
-const queryOutsourceBankName = async () =>
-  post<any>({ url: URL.query_outsource_bankName, });
+const queryOutsourceBankName = async () => post<any>({ url: URL.query_outsource_bankName });
 
 /**
  * 查询所有外包公司品牌
  * @param data companyName
- * @returns 
+ * @returns
  */
-const queryCompanyBrand = async (data: any) =>
-  post<any>({ url: URL.query_company_brand, data});
+const queryCompanyBrand = async (data: any) => post<any>({ url: URL.query_company_brand, data });
 /**
  * 查询所有公司
  * @param data jobType
- * @returns 
+ * @returns
  */
-const queryCompanyAll = async (data: any) =>
-  post<any>({ url: URL.query_company_all, data});
+const queryCompanyAll = async (data: any) => post<any>({ url: URL.query_company_all, data });
 /**
  * 搜索条件外包公司
- * @returns 
+ * @returns
  */
-const queryOutsourceCompany = async () =>
-  get<any>({ url: URL.query_outsource_company}); 
+const queryOutsourceCompany = async () => get<any>({ url: URL.query_outsource_company });
 /**
  * 搜索条件岗位
- * @returns 
+ * @returns
  */
-const queryOutsourcePosition = async () =>
-  get<any>({ url: URL.query_outsource_position}); 
+const queryOutsourcePosition = async () => get<any>({ url: URL.query_outsource_position });
 /**
  * 搜索条件城市
- * @returns 
+ * @returns
  */
-const queryOutsourceCity = async () =>
-  get<any>({ url: URL.query_outsource_city}); 
+const queryOutsourceCity = async () => get<any>({ url: URL.query_outsource_city });
 /**
  * 搜索条件品牌
- * @returns 
+ * @returns
  */
-const queryOutsourceBrand = async () =>
-  get<any>({ url: URL.query_outsource_brand});  
+const queryOutsourceBrand = async () => get<any>({ url: URL.query_outsource_brand });
 /**
  * 查询外包社保合同费率
  * @param data personId
- * @returns 
+ * @returns
  */
 const queryOutsourceShebaoContractRates = async (data: any) =>
-  post<any>({ url: URL.query_outsource_shebao_contractRates, data});
+  post<any>({ url: URL.query_outsource_shebao_contractRates, data });
 
 /**
  * 新增修改外包信息
  * @param data personId
- * @returns 
+ * @returns
  */
 const addUpdateOutsourceBasic = async (data: any) =>
-  post<any>({ url: URL.update_outsource_basic, data});
+  post<any>({ url: URL.update_outsource_basic, data });
 /**
  * 新增修改外包信息
  * @param data personId
- * @returns 
+ * @returns
  */
-const addOutsourceBasic = async (data: any) =>
-  post<any>({ url: URL.add_outsource_basic, data});
+const addOutsourceBasic = async (data: any) => post<any>({ url: URL.add_outsource_basic, data });
 /**
  * 新增外包社保
  * @param data personId
- * @returns 
+ * @returns
  */
 const addOutsourceShebaoByPerson = async (data: any) =>
-  post<any>({ url: URL.add_outsource_shebao_by_person, data});
+  post<any>({ url: URL.add_outsource_shebao_by_person, data });
 /**
  * 查询外包社保
  * @param data personId
- * @returns 
+ * @returns
  */
 const queryOutsourceShebaoByPerson = async (data: any) =>
-  post<any>({ url: URL.query_outsource_shebao_by_person, data});
+  post<any>({ url: URL.query_outsource_shebao_by_person, data });
 /**
  * 查询外包薪资
  * @param data personId
- * @returns 
+ * @returns
  */
 const queryOutsourceSalaryByPerson = async (data: any) =>
-  post<any>({ url: URL.query_outsource_salary_by_person, data});
+  post<any>({ url: URL.query_outsource_salary_by_person, data });
 /**
  * 新增外包薪资
  * @param data personId
- * @returns 
+ * @returns
  */
 const addOutsourceSalaryByPerson = async (data: any) =>
-  post<any>({ url: URL.add_outsource_salary_by_person, data});
+  post<any>({ url: URL.add_outsource_salary_by_person, data });
 /**
  * 新增修改合同信息
  * @param data personId
- * @returns 
+ * @returns
  */
 const addOutsourcePersonContract = async (data: any) =>
-  post<any>({ url: URL.add_outsource_person_contract, data});
+  post<any>({ url: URL.add_outsource_person_contract, data });
 /**
  * 查询合同信息
  * @param data personId
- * @returns 
+ * @returns
  */
 const queryOutsourcePersonContract = async (data: any) =>
-  post<any>({ url: URL.query_outsource_person_contract, data});
+  post<any>({ url: URL.query_outsource_person_contract, data });
 /**
  * 查询同一手机号的外包记录
  * @param data phoneNumber
- * @returns 
+ * @returns
  */
 const queryOutsourcePersonByPhone = async (data: any) =>
-  post<any>({ url: URL.query_outsource_person_byPhone, data});
+  post<any>({ url: URL.query_outsource_person_byPhone, data });
 /**
  * 外包个人信息上传身份证
  * @param data id file
- * @returns 
+ * @returns
  */
 const updateOutsourcePersonIdcard = async (data: any) =>
-  post<any>({ url: URL.update_out_person_idcard, data});
+  post<any>({ url: URL.update_out_person_idcard, data });
 /**
  * 查原本HR信息
  * @param data cId jobType companyName hrId
- * @returns 
+ * @returns
  */
 const queryOutsourcePerson = async (data: any) =>
-  post<any>({ url: URL.query_outsource_person, data});
+  post<any>({ url: URL.query_outsource_person, data });
 /**
  * 查外包薪资
  * @param data cId jobType companyName hrId
- * @returns 
+ * @returns
  */
 const queryOutsourceSalary = async (data: any) =>
-  post<any>({ url: URL.query_outsource_salary, data});
+  post<any>({ url: URL.query_outsource_salary, data });
 /**
  * 查外包社保
  * @param data cId jobType companyName hrId
- * @returns 
+ * @returns
  */
 const queryOutsourceSheBao = async (data: any) =>
-  post<any>({ url: URL.query_outsource_shebao, data});
+  post<any>({ url: URL.query_outsource_shebao, data });
 /**
  * 查外包考勤
  * @param data cId jobType companyName hrId
- * @returns 
+ * @returns
  */
 const queryOutsourceAttend = async (data: any) =>
-  post<any>({ url: URL.query_outsource_attend, data});
+  post<any>({ url: URL.query_outsource_attend, data });
 /**
  * 查外包月度薪资
  * @param data cId jobType companyName hrId
- * @returns 
+ * @returns
  */
 const queryOutsourceMonthSalary = async (data: any) =>
-  post<any>({ url: URL.query_outsource_month_salary, data});
+  post<any>({ url: URL.query_outsource_month_salary, data });
 
-export default { 
+export default {
+  downLoadOutsourceCompanyExcel,
+  queryOutsourceCompanyExcel,
+  addOutsourceCompanyExcel,
   updateOutsourcePayZonghe,
   queryOutsourceOldCollectIdByPersonId,
   deleteOutsourceWelfare,
@@ -615,22 +629,22 @@ export default {
   queryOutsourceBankName,
   queryCompanyBrand,
   queryCompanyAll,
-  queryOutsourceCity, 
-  queryOutsourceBrand, 
+  queryOutsourceCity,
+  queryOutsourceBrand,
   queryOutsourceCompany,
-  queryOutsourcePosition, 
-  queryOutsourceShebaoContractRates, 
-  addOutsourcePersonContract, 
+  queryOutsourcePosition,
+  queryOutsourceShebaoContractRates,
+  addOutsourcePersonContract,
   addUpdateOutsourceBasic,
   addOutsourceShebaoByPerson,
   queryOutsourceShebaoByPerson,
   addOutsourceSalaryByPerson,
   queryOutsourceSalaryByPerson,
-  queryOutsourcePersonContract, 
-  queryOutsourcePersonByPhone, 
-  updateOutsourcePersonIdcard, 
-  queryOutsourcePerson, 
-  queryOutsourceSalary, 
-  queryOutsourceSheBao, 
-  queryOutsourceMonthSalary 
+  queryOutsourcePersonContract,
+  queryOutsourcePersonByPhone,
+  updateOutsourcePersonIdcard,
+  queryOutsourcePerson,
+  queryOutsourceSalary,
+  queryOutsourceSheBao,
+  queryOutsourceMonthSalary,
 };

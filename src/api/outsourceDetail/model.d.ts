@@ -996,3 +996,12 @@ export interface OutsourcePersonMoneyItem {
   companyName?: string;
   yearAndMonth?: string;
 }
+export interface OutsourcePersonMoneyColumnsItem {
+  rowName: string;
+  rowOther: string;
+  show: boolean;
+  key: string;
+  fixed: string;
+  width: string;
+}
+

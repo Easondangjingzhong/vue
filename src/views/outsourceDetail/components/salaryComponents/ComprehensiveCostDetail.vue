@@ -433,12 +433,12 @@ const costDetailFormPerformanceDetail = () => {
     costDetailForm.value.manageGongShi = temp?.manageGongShi || "";
     costDetailForm.value.companyYijin = sheBao?.yijinCompany?.toString() || "0";
     costDetailForm.value.welfare = temp?.welfare || "0";
-    costDetailForm.value.keShangbao = temp?.keShangbao || sheBao?.keShangbao?.toString() || "0";
+    costDetailForm.value.keShangbao = (temp?.keShangbao || temp.keShangbao == "0") ? temp?.keShangbao : sheBao?.keShangbao?.toString();
     costDetailForm.value.otherPayKe = temp?.otherPayKe || "0";
-    costDetailForm.value.shiShangbao = temp?.shiShangbao || sheBao?.shiShangbao?.toString() || "0";
+    costDetailForm.value.shiShangbao = (temp?.shiShangbao || temp.shiShangbao == "0") ? temp?.shiShangbao : sheBao?.shiShangbao?.toString();
     costDetailForm.value.otherPay = temp?.otherPay || "0";
-    costDetailForm.value.canBaoKe = temp?.canBaoKe || ((temp?.monthTax && temp?.jobType == '全职') ? (Number(temp.monthTax || 0) * 0.015).toFixed(2) : "0");
-    costDetailForm.value.canBao = temp?.canBao || ((temp?.monthTax && temp?.jobType == '全职') ? (Number(temp.monthTax || 0) * 0.015).toFixed(2) : "0");
+    costDetailForm.value.canBaoKe = (temp?.canBaoKe || temp.canBaoKe == "0") ? temp?.canBaoKe : ((temp?.monthTax && temp?.jobType == '全职') ? (Number(temp.monthTax || 0) * 0.015).toFixed(2) : "0");
+    costDetailForm.value.canBao = (temp?.canBao || temp.canBao == "0")? temp?.canBao : ((temp?.monthTax && temp?.jobType == '全职') ? (Number(temp.monthTax || 0) * 0.015).toFixed(2) : "0");
     costDetailForm.value.chenbenTiaochaKe = temp?.chenbenTiaochaKe || "0";
     costDetailForm.value.chenbenTiaocha = temp?.chenbenTiaocha || "0";
     costDetailForm.value.manageChargeTax = temp?.manageChargeTax || "0";
@@ -476,7 +476,6 @@ const costDetailFormPerformanceDetail = () => {
       value: Number(item.split(':')[1])
     })) : [] as LabelAndValueItem[];  
     welfareKeArr.value = temp?.welfareList || [] as WelfareKeItem[];
-    if (!costDetailForm.value.serviceMoney) {
       if (sheBao.shebaoCompany == "51社保") {
         //员工薪水=员工实发+个税 发薪服务费计算规则是：（员工实发+个税）*6.77%；
         //costDetailForm.value.serviceMoney = (21.25 +(Number(sheBao?.companyTotal || 0) + Number(sheBao?.personTotal || 0))* 0.0677 + (Number(temp?.salaryAfterTax || 0) + Number(temp?.monthGeshui || 0)) * 0.0677).toFixed(2);
@@ -484,6 +483,8 @@ const costDetailFormPerformanceDetail = () => {
       } else {
         costDetailForm.value.serviceMoney = Number(sheBao?.serviceMoney || 0).toFixed(2);
       }
+    if (!costDetailForm.value.serviceMoney) {
+    
     }
   }
 }

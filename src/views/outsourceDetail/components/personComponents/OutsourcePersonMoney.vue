@@ -37,9 +37,11 @@
                 />
           </a-form-item>
         </a-col>
-         <a-col :span="4">
+         <a-col :span="8">
           <a-button style="margin: 0 0 0 8px" type="primary" html-type="submit">搜索</a-button>
-          <a-button style="margin: 0 8px" @click="clearFromState">清空</a-button>
+          <a-button style="margin: 0 0 0 8px" @click="clearFromState">清空</a-button>
+          <a-button style="margin: 0 0 0 8px" @click="exportTitle">设置标题</a-button>
+          <a-button style="margin: 0 0 0 8px" @click="downLoadOutsourceCompanyExcel">导出</a-button>
          </a-col>
       </a-row>
      </a-form>
@@ -62,6 +64,7 @@
       </a-layout>
   </div>
    </a-drawer>
+   <OutsourcePersonMoneyTitle/>
 </template>
 
 <script setup lang="ts">
@@ -71,10 +74,11 @@ import { CloseOutlined } from '@ant-design/icons-vue';
 import OutsourcePersonMoneyQing from './OutsourcePersonMoneyQing.vue';
 import OutsourcePersonMoneySheBao from './OutsourcePersonMoneySheBao.vue';
 import OutsourcePersonMoneySalary from './OutsourcePersonMoneySalary.vue';
+import OutsourcePersonMoneyTitle from './OutsourcePersonMoneyTitle.vue';  
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 import { OutsourcePersonMoneyItem } from '/@/api/outsourceDetail/model';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { outsourcePersonMoneyFlag, formStatePersonMoney, getOutsourceCompanyAll, } = storeToRefs(outsourceDetailStore);
+const { outsourcePersonMoneyFlag, formStatePersonMoney, getOutsourceCompanyAll, outsourcePersonMoneyTitleFlag} = storeToRefs(outsourceDetailStore);
 const drawerWidth = ref(Math.max(600, window.innerWidth * 0.9));
 const outsourceDetailMoneySider = ref('1');
 const onSearch = () => {
@@ -86,6 +90,20 @@ const clearFromState = () => {
 const handleClose = () => {
     outsourcePersonMoneyFlag.value = false;
   };
+const exportTitle = () => {
+  outsourcePersonMoneyTitleFlag.value = true;
+}
+const downLoadOutsourceCompanyExcel = async () => {
+  const res = await outsourceDetailStore.downLoadOutsourceCompanyExcel(formStatePersonMoney.value.companyName || '', formStatePersonMoney.value.yearAndMonth || '');
+  if (res) {
+    const blob = new Blob([res], { type: 'application/vnd.ms-excel' });
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.download = `${formStatePersonMoney.value.companyName || '导出数据'}.xls`;
+    link.click();
+    window.URL.revokeObjectURL(link.href);
+  }
+}
 </script>
 
 <style lang="less" scoped>

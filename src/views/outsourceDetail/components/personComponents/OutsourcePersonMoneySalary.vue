@@ -6,7 +6,7 @@
         :dataSource="getOfferOutsourceMonthSalary"
         :scroll="{ x: 5200 }"
       >
-      <template #summary>
+      <!-- <template #summary>
       <a-table-summary fixed>
         <a-table-summary-row>
           <a-table-summary-cell :index="0"></a-table-summary-cell>
@@ -67,7 +67,7 @@
           <a-table-summary-cell :index="55">{{ summaryData.salaryAfterTax }}</a-table-summary-cell>
         </a-table-summary-row>
       </a-table-summary>
-      </template>
+      </template> -->
     </a-table>
 </template>
 
@@ -76,8 +76,8 @@ import { storeToRefs } from 'pinia';
 import type { TableColumnsType } from 'ant-design-vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { getOfferOutsourceMonthSalary, getFormStatePersonMoney } = storeToRefs(outsourceDetailStore);
-const columns:TableColumnsType = [
+const { getOfferOutsourceMonthSalary, getFormStatePersonMoney, getOutsourceSalaryColumns } = storeToRefs(outsourceDetailStore);
+const defaultColumns = computed<TableColumnsType>(() => [
     {
       title: '序号',
       dataIndex: 'index',
@@ -416,7 +416,41 @@ const columns:TableColumnsType = [
       key: 'taxCity',
       width: 120,
     },
-  ];
+  ]);
+
+  const columns = computed(() => {
+    const saved = getOutsourceSalaryColumns.value;
+    if (saved && saved.length > 0) {
+      const savedMap = new Map(saved.map((c: any) => [c.key, c]));
+      return defaultColumns.value.map((col: any) => {
+        const s = savedMap.get(col.key);
+        if (s) {
+          // If saved, use saved title and visibility
+          if (s.show === false) return null;
+          return { ...col,
+             title: s.rowOther || s.rowName,
+             width: s.width || col.width,
+             fixed: s.fixed || col.fixed,
+             key: s.key,
+             dataIndex: s.key,
+          };
+        }
+        // If not in saved list, keep it default
+        return col;
+      }).filter((c: any) => c !== null);
+    }
+    return defaultColumns.value;
+  });
+  watch(() => getFormStatePersonMoney.value.currentMonth, () => {
+     // Trigger re-computation if month changes
+  });
+  // Watch company name to load config
+  watch(() => outsourceDetailStore.formStatePersonMoney.companyName, (val) => {
+    if (val) {
+      outsourceDetailStore.queryOutsourceCompanyExcel(val);
+    }
+  }, { immediate: true });
+
   const summaryData = computed(() => {
     let yuguGongshi = 0;
     let biaozhunSalary = 0;

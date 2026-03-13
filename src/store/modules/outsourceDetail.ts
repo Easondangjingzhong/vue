@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { store } from '/@/store';
-import { formatToDate, currentDate, formatToMonth, formatToDateTime } from '/@/utils/dateUtil';
+import { formatToDate, currentDate, formatToMonth } from '/@/utils/dateUtil';
 import dayjs from 'dayjs';
 import fetchApi from '/@/api/outsourceDetail';
 import {
@@ -24,6 +24,7 @@ import {
   OfferDetailsItem,
   OutsourcePersonMoneyItem, //外包人员请款单 表单信息
   ComprehensiveCostItem,
+  OutsourcePersonMoneyColumnsItem,
 } from '/@/api/outsourceDetail/model';
 const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: '' } = JSON.parse(
   localStorage.getItem('loginVueUser') || '{}',
@@ -139,8 +140,11 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       pageSize: 17,
       total: 0,
     } as PageItem,
+    outsourcePersonMoneyTitleFlag: false, //外包人员请款单标题
     outsourcePersonMoneyFlag: false, //外包人员请款单
     formStatePersonMoney: {} as OutsourcePersonMoneyItem, //外包人员请款单 表单信息
+    outsourceCompanyExcelId: "",
+    outsourceSalaryColumns: [] as OutsourcePersonMoneyColumnsItem[], // 外包人员请款单自定义列配置
     offerOutsourceMonthSalary: [] as OutsourceMonthSalaryItem[], //外包人员请款单 请款单
     offerOutsourceSheBao: [] as OutsourceSheBaoItem[], //外包人员请款单 社保信息
     outsourcePersonPerformanceDetailFlag: false, //外包人员绩效详情控制
@@ -571,6 +575,8 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       ];
       return orginalPathBlobTypeList[state.orginalPathBlobType] || '其他文件';
     },
+    getOutsourceCompanyExcelId: (state) => state.outsourceCompanyExcelId,
+    getOutsourceSalaryColumns: (state) => state.outsourceSalaryColumns,
     getOfferOutsourceSheBao: (state) =>
       state.offerOutsourceSheBao.map((item, index) => ({
         ...item,
@@ -801,7 +807,18 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         otherPay: costMap.otherPay,
         chenbenTiaocha: costMap.chenbenTiaocha,
         serviceMoney: costMap.serviceMoney || '0',
-        costTotal: (Number(costMap.monthTax || 0) + Number(costMap.companyShebao || 0) + Number(costMap.companyYijin || 0) + Number(costMap.shiShangbao || 0) + Number(canBao || 0) + Number(costMap.otherPay || 0) + Number(costMap.chenbenTiaocha || 0) + Number(costMap.serviceMoney || 0)).toFixed(2).toString(),
+        costTotal: (
+          Number(costMap.monthTax || 0) +
+          Number(costMap.companyShebao || 0) +
+          Number(costMap.companyYijin || 0) +
+          Number(costMap.shiShangbao || 0) +
+          Number(canBao || 0) +
+          Number(costMap.otherPay || 0) +
+          Number(costMap.chenbenTiaocha || 0) +
+          Number(costMap.serviceMoney || 0)
+        )
+          .toFixed(2)
+          .toString(),
         manageGongShi: '-',
         manageChargeTax: '-',
         manageChargeRate: '-',
@@ -980,7 +997,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       params.append('city', this.formStateAttend.city || '');
       params.append('bId', this.formStateAttend.bId || '');
       params.append('positionId', this.formStateAttend.positionId || '');
-      params.append('currentStatus', this.formStateAttend.currentStatus || "");
+      params.append('currentStatus', this.formStateAttend.currentStatus || '');
       params.append('userName', this.formStateAttend.userName || '');
       params.append('companyName', this.formStateAttend.companyName || '');
       params.append('companyArrange', this.formStateAttend.companyArrange || '');
@@ -2408,7 +2425,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
      * @param params personId jinxinMonth
      * @returns
      */
-    async queryOutsourceOldCollectIdByPersonId(personId: string,jinxinMonth: string) {
+    async queryOutsourceOldCollectIdByPersonId(personId: string, jinxinMonth: string) {
       try {
         const formData = new FormData();
         formData.append('personId', personId || '');
@@ -2427,6 +2444,74 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     async updateOutsourcePayZonghe(offerOutsource) {
       try {
         const res = await fetchApi.updateOutsourcePayZonghe(offerOutsource);
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+    /**
+     * 添加公司导出表格标题
+     * @param OfferOutsourceCompanyExcel
+     * @returns
+     */
+    async addOutsourceCompanyExcel(payload) {
+      try {
+        const res = await fetchApi.addOutsourceCompanyExcel(payload);
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+    /**
+     * 查询公司导出表格标题
+     * @param companyName
+     * @returns
+     */
+    async queryOutsourceCompanyExcel(companyName: string) {
+      try {
+        const formData = new FormData();
+        formData.append('companyName', companyName || '');
+        const res = await fetchApi.queryOutsourceCompanyExcel(formData);
+        if (res.code == 1 && res.info) {
+          // 假设返回的 info 中包含 columns 配置，如果 info 本身就是数组则直接赋值，否则根据实际结构调整
+          // 这里假设 res.info 是一个包含配置的对象或数组
+          // 如果后端返回的是 JSON 字符串，可能需要解析
+          try {
+            // if (typeof res.info === 'string') {
+            //   this.outsourceSalaryColumns = JSON.parse(res.info);
+            // } else if (res.info.excelTitle) {
+            //   this.outsourceSalaryColumns = JSON.parse(res.info.excelTitle);
+            // } else {
+            //   this.outsourceSalaryColumns = res.info;
+            // }
+            const temp = res.info[0];
+            this.outsourceCompanyExcelId = temp.id || "";
+            this.outsourceSalaryColumns = JSON.parse(temp.listText) as OutsourcePersonMoneyColumnsItem[];
+          } catch (e) {
+            console.error('Failed to parse columns config', e);
+            this.outsourceSalaryColumns = [] as OutsourcePersonMoneyColumnsItem[];
+          }
+        } else {
+          this.outsourceSalaryColumns = [] as OutsourcePersonMoneyColumnsItem[];
+        }
+        return res;
+      } catch (error) {
+        this.outsourceSalaryColumns = [] as OutsourcePersonMoneyColumnsItem[];
+        return null;
+      }
+    },
+    /**
+     * 公司导出表格
+     * @param companyName
+     * @param yearAndMonth
+     * @returns 
+     */
+    async downLoadOutsourceCompanyExcel(companyName: string,yearAndMonth: string) {
+      try {
+        const formdata = new FormData();
+        formdata.append('companyName', companyName || '');
+        formdata.append('yearAndMonth', yearAndMonth || '');
+        const res = await fetchApi.downLoadOutsourceCompanyExcel(formdata);
         return res;
       } catch (error) {
         return null;
