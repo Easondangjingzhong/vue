@@ -76,7 +76,7 @@ import { storeToRefs } from 'pinia';
 import type { TableColumnsType } from 'ant-design-vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { getOfferOutsourceMonthSalary, getFormStatePersonMoney, getOutsourceSalaryColumns } = storeToRefs(outsourceDetailStore);
+const { getOfferOutsourceMonthSalary, getFormStatePersonMoney, getOutsourceSalaryColumnsSalary } = storeToRefs(outsourceDetailStore);
 const defaultColumns = computed<TableColumnsType>(() => [
     {
       title: '序号',
@@ -419,7 +419,7 @@ const defaultColumns = computed<TableColumnsType>(() => [
   ]);
 
   const columns = computed(() => {
-    const saved = getOutsourceSalaryColumns.value;
+    const saved = getOutsourceSalaryColumnsSalary.value;
     if (saved && saved.length > 0) {
       const savedMap = new Map(saved.map((c: any) => [c.key, c]));
       return defaultColumns.value.map((col: any) => {

@@ -1,7 +1,7 @@
 <template>
    <a-drawer
     v-model:open="outsourcePersonMoneyTitleFlag"
-    title="工资单标题"
+    :title="formStatePersonMoney.companyName + '标题设置'"
     :maskClosable="false"
     :keyboard="false"
     :closable="false"
@@ -13,7 +13,11 @@
    <template #extra>
         <CloseOutlined @click="handleClose" />
       </template>
-      <div class="resume_container">
+      <a-layout>
+        <a-layout-content class="resume_content">
+           <a-tabs v-model:activeKey="moneyType" type="card">
+              <a-tab-pane key="1" tab="请款单">
+                  <div class="resume_container">
         <a-row class="header-row" :gutter="24">
           <a-col :span="8">
             标题名称
@@ -31,7 +35,7 @@
             固定
           </a-col>
         </a-row>
-        <a-row class="row" :gutter="24" v-for="(item, index) in configColumns" :key="index">
+        <a-row class="row" :gutter="24" v-for="(item, index) in configColumnsQing" :key="index">
           <a-col :span="8">
             <a-input v-model:value="item.rowName" disabled/>
           </a-col>
@@ -52,7 +56,93 @@
           </a-col>
         </a-row>
       </div>
-       <div class="resume-content-search" >
+              </a-tab-pane>
+              <a-tab-pane key="2" tab="工资单">
+                <div class="resume_container"">
+        <a-row class="header-row" :gutter="24">
+          <a-col :span="8">
+            标题名称
+          </a-col>
+          <a-col :span="7">
+            标题别名
+          </a-col>
+          <a-col :span="3">
+            显示
+          </a-col>
+          <a-col :span="3">
+            宽度
+          </a-col>
+          <a-col :span="3">
+            固定
+          </a-col>
+        </a-row>
+        <a-row class="row" :gutter="24" v-for="(item, index) in configColumnsSalary" :key="index">
+          <a-col :span="8">
+            <a-input v-model:value="item.rowName" disabled/>
+          </a-col>
+          <a-col :span="7">
+            <a-input v-model:value="item.rowOther"/>
+          </a-col>
+          <a-col :span="3" style="display: flex;flex-direction: column;justify-content: center;">
+            <a-checkbox v-model:checked="item.show">显示</a-checkbox>
+          </a-col>
+          <a-col :span="3">
+            <a-input v-model:value="item.width" type="number"/>
+          </a-col>
+          <a-col :span="3">
+            <a-select v-model:value="item.fixed" allowClear style="width:100%;">
+              <a-select-option value="left">左</a-select-option>
+              <a-select-option value="right">右</a-select-option>
+            </a-select>
+          </a-col>
+        </a-row>
+      </div>
+              </a-tab-pane>
+              <a-tab-pane key="3" tab="社保">
+                <div class="resume_container">
+        <a-row class="header-row" :gutter="24">
+          <a-col :span="8">
+            标题名称
+          </a-col>
+          <a-col :span="7">
+            标题别名
+          </a-col>
+          <a-col :span="3">
+            显示
+          </a-col>
+          <a-col :span="3">
+            宽度
+          </a-col>
+          <a-col :span="3">
+            固定
+          </a-col>
+        </a-row>
+        <a-row class="row" :gutter="24" v-for="(item, index) in configColumnsSheBao" :key="index">
+          <a-col :span="8">
+            <a-input v-model:value="item.rowName" disabled/>
+          </a-col>
+          <a-col :span="7">
+            <a-input v-model:value="item.rowOther"/>
+          </a-col>
+          <a-col :span="3" style="display: flex;flex-direction: column;justify-content: center;">
+            <a-checkbox v-model:checked="item.show">显示</a-checkbox>
+          </a-col>
+          <a-col :span="3">
+            <a-input v-model:value="item.width" type="number"/>
+          </a-col>
+          <a-col :span="3">
+            <a-select v-model:value="item.fixed" allowClear style="width:100%;">
+              <a-select-option value="left">左</a-select-option>
+              <a-select-option value="right">右</a-select-option>
+            </a-select>
+          </a-col>
+        </a-row>
+      </div>
+              </a-tab-pane>
+          </a-tabs>
+        </a-layout-content>
+      </a-layout>
+    <div class="resume-content-search" >
         <a-form layout="inline">
           <a-form-item>
             <a-button type="primary" @click="handleSave">保存配置</a-button>
@@ -69,14 +159,16 @@ import { CloseOutlined } from '@ant-design/icons-vue';
 //import { OutsourcePersonMoneyColumnsItem }  from '/@/api/outsourceDetail/model';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { outsourcePersonMoneyTitleFlag, formStatePersonMoney, getOutsourceSalaryColumns, getOutsourceCompanyExcelId } = storeToRefs(outsourceDetailStore);
+const { outsourcePersonMoneyTitleFlag, formStatePersonMoney, getOutsourceSalaryColumnsQing, getOutsourceSalaryColumnsSalary, getOutsourceSalaryColumnsSheBao, getOutsourceCompanyExcelId } = storeToRefs(outsourceDetailStore);
 const drawerWidth = ref(Math.max(600, window.innerWidth * 0.6));
-const configColumns = ref<any[]>([]);
-
+const moneyType  = ref('1');
+const configColumnsQing = ref<any[]>([]);
+const configColumnsSalary = ref<any[]>([]);
+const configColumnsSheBao = ref<any[]>([]);
 const handleClose = () => {
     outsourcePersonMoneyTitleFlag.value = false;
   };
-const defaultColumns = [
+const defaultColumnsSalary = [
     {
       rowName: '序号',
       rowOther: '',
@@ -553,29 +645,275 @@ const defaultColumns = [
       width: 120,
     },
   ];
-
+const defaultColumnsQing = [
+    {
+      rowName: '序号',
+      rowOther: '',
+      show: true,
+      key: 'index',
+      fixed: 'left',
+      width: 40,
+    },
+    {
+      rowName: '服务类型',
+      rowOther: '',
+      show: true,
+      key: 'serviceType',
+      fixed: 'left',
+      width: 70,
+    },
+    {
+      rowName: '城市',
+      rowOther: '',
+      show: true,
+      key: 'city',
+      fixed: 'left',
+      width: 50,
+    },
+    {
+      rowName: '店铺',
+      rowOther: '',
+      show: true,
+      key: 'mkName',
+      fixed: 'left',
+      width: 50,
+    },
+    {
+      rowName: '姓名',
+      rowOther: '',
+      key: 'userName',
+      show: true,
+      fixed: 'left',
+      width: 90,
+    },
+    {
+      rowName: '职位',
+      rowOther: '',
+      key: 'positions',
+      show: true,
+      fixed: 'left',
+      width: 90,
+    },
+    {
+      rowName: '计薪日期',
+      rowOther: '',
+      show: true,
+      key: 'jinxinMonth',
+      fixed: '',
+      width: 150,
+    },
+    {
+      rowName: '应发工资',
+      rowOther: '',
+      show: true,
+      key: 'monthTax',
+      fixed: '',
+      width: 50,
+    },
+    {
+      rowName: '公司承担社保公积金',
+      rowOther: '',
+      show: true,
+      key: 'sheBaoMoney',
+      fixed: '',
+      width: 130,
+    },
+    {
+      rowName: '残保金',
+      rowOther: '',
+      show: true,
+      key: 'canBaoMoney',
+      fixed: '',
+      width: 50,
+    },
+    {
+      rowName: '经济补偿金',
+      rowOther: '',
+      show: true,
+      key: 'economicCompensation',
+      fixed: '',
+      width: 50,
+    },
+    {
+      rowName: '人员成本',
+      rowOther: '',
+      show: true,
+      key: 'personCost',
+      fixed: '',
+      width: 50,
+    },
+    {
+      rowName: '费率',
+      rowOther: '',
+      show: true,
+      key: 'rate',
+      fixed: '',
+      width: 50,
+    },
+    {
+      rowName: '服务费',
+      rowOther: '',
+      show: true,
+      key: 'serviceFee',
+      fixed: '',
+      width: 50,
+    },
+    {
+      rowName: '商业保险',
+      rowOther: '',
+      show: true,
+      key: 'shangbao',
+      fixed: '',
+      width: 50,
+    },
+    {
+      rowName: '税前汇总',
+      rowOther: '',
+      show: true,
+      key: 'salaryTax',
+      fixed: '',
+      width: 50,
+    },
+    {
+      rowName: '增值税率',
+      rowOther: '',
+      show: true,
+      key: 'salaryRate',
+      fixed: '',
+      width: 50,
+    },
+    {
+      rowName: '增值税金',
+      rowOther: '',
+      show: true,
+      key: 'salaryRateMoney',
+      fixed: '',
+      width: 50,
+    },
+    {
+      rowName: '费用合计',
+      rowOther: '',
+      show: true,
+      key: 'salaryTotal',
+      fixed: '',
+      width: 50,
+    },
+    {
+      rowName: '备注',
+      rowOther: '',
+      show: true,
+      key: 'remark',
+      fixed: '',
+      width: 50,
+    },
+  ];
+const defaultColumnsSheBao = [
+    {
+      rowName: '序号',
+      rowOther: '',
+      key: 'index',
+      show: true,
+      fixed: '',
+      width: 50,
+    },
+    {
+      rowName: '城市',
+      rowOther: '',
+      key: 'city',
+      show: true,
+      fixed: '',
+      width: 50,
+    },
+     {
+      rowName: '项目',
+      rowOther: '',
+      key: 'companyName',
+      fixed: '',
+      show: true,
+      width: 50,
+    },
+     {
+      rowName: '姓名',
+      rowOther: '',
+      key: 'userNameCn',
+      fixed: '',
+      show: true,
+      width: 50,
+    },
+     {
+      rowName: '职位',
+      rowOther: '',
+      key: 'positions',
+      fixed: '',
+      show: true,
+      width: 50,
+    },
+     {
+      rowName: '身份证号',
+      rowOther: '',
+      key: 'idCard',
+      fixed: '',
+      show: true,
+      width: 50,
+    },
+     {
+      rowName: '缴费月份',
+      rowOther: '',
+      key: 'yearAndMonth',
+      fixed: '',
+      show: true,
+      width: 50,
+    },
+     {
+          rowName: '公积金基数',
+          rowOther: '',
+          key: 'yijinCompanyJishu',
+      fixed: '',
+      show: true,
+      width: 50,
+        },
+        {
+          rowName: '单位',
+          rowOther: '',
+          key: 'yijinCompany',
+      fixed: '',
+      show: true,
+      width: 50,
+        },
+        {
+          rowName: '个人',
+          rowOther: '',
+          key: 'yijinPerson',
+      fixed: '',
+      show: true,
+      width: 50,
+        },
+     {
+      rowName: '单位合计',
+      rowOther: '',
+      key: 'companyTotal',
+      fixed: '',
+      show: true,
+      width: 50,
+    },
+     {
+      rowName: '个人合计',
+      rowOther: '',
+      key: 'personTotal',
+      fixed: '',
+      show: true,
+      width: 50,
+    },
+  ];
 watch(outsourcePersonMoneyTitleFlag, async (val) => {
   if (val && formStatePersonMoney.value.companyName) {
     await outsourceDetailStore.queryOutsourceCompanyExcel(formStatePersonMoney.value.companyName);
-    // Initialize configColumns
-    const savedColumns = getOutsourceSalaryColumns.value;
+    const savedColumns = getOutsourceSalaryColumnsSalary.value;
+    const savedColumnsQing = getOutsourceSalaryColumnsQing.value;
+    const savedColumnsSheBao = getOutsourceSalaryColumnsSheBao.value;
     if (savedColumns && savedColumns.length > 0) {
-      // Map saved columns to ensure we have all fields, preserving saved titles and visibility
-      // Wait, if saved columns are different (e.g. order), we should probably respect saved order?
-      // For now, let's just map the default columns and override with saved config if matching dataIndex found.
-      // Actually, if we want to support reordering, we should use the saved list as the base.
-      // But if new columns are added in code, they might be missing.
-      // Let's assume the saved list is authoritative for order and existence, 
-      // but we should also check if any default columns are missing and add them (maybe at the end or hidden).
-      
-      // Strategy: Use saved columns. If a column in defaultColumns is not in saved, add it (hidden by default?).
-      // Or simpler: Just load the saved columns.
-      
-      // Let's try to merge:
-      // 1. Create a map of saved columns
       const savedMap = new Map(savedColumns.map(c => [c.key, c]));
-      
-      configColumns.value = defaultColumns.map(col => {
+      configColumnsSalary.value = defaultColumnsSalary.map(col => {
         const saved = savedMap.get(col.key);
         return {
           ...col,
@@ -588,8 +926,7 @@ watch(outsourcePersonMoneyTitleFlag, async (val) => {
         };
       });
     } else {
-      // No saved config, use default
-      configColumns.value = defaultColumns.map(col => ({
+      configColumnsSalary.value = defaultColumnsSalary.map(col => ({
         ...col,
         rowName: col.rowName,
         rowOther: col.rowOther,
@@ -599,6 +936,56 @@ watch(outsourcePersonMoneyTitleFlag, async (val) => {
         fixed: col.fixed
       }));
     }
+    if (savedColumnsQing && savedColumnsQing.length > 0) {
+      const savedMapQing = new Map(savedColumnsQing.map(c => [c.key, c]));
+      configColumnsQing.value = defaultColumnsQing.map(col => {
+        const saved = savedMapQing.get(col.key);
+        return {
+          ...col,
+          rowName: saved ? saved.rowName : col.rowName,
+          rowOther: saved ? saved.rowOther : col.rowOther,
+          show: saved ? saved.show : true, // Default to true if not saved
+          key: col.key,
+          width: col.width,
+          fixed: col.fixed
+        };
+      });
+    } else {
+      configColumnsQing.value = defaultColumnsQing.map(col => ({
+        ...col,
+        rowName: col.rowName,
+        rowOther: col.rowOther,
+        show: true, // Default to true if not saved
+        key: col.key,
+        width: col.width,
+        fixed: col.fixed
+      }));
+    }
+    if (savedColumnsSheBao && savedColumnsSheBao.length > 0) {
+      const savedMapSheBao = new Map(savedColumnsSheBao.map(c => [c.key, c]));
+      configColumnsSheBao.value = defaultColumnsSheBao.map(col => {
+        const saved = savedMapSheBao.get(col.key);
+        return {
+          ...col,
+          rowName: saved ? saved.rowName : col.rowName,
+          rowOther: saved ? saved.rowOther : col.rowOther,
+          show: saved ? saved.show : true, // Default to true if not saved
+          key: col.key,
+          width: col.width,
+          fixed: col.fixed
+        };
+      });
+    } else {
+      configColumnsSheBao.value = defaultColumnsSheBao.map(col => ({
+        ...col,
+        rowName: col.rowName,
+        rowOther: col.rowOther,
+        show: true, // Default to true if not saved
+        key: col.key,
+        width: col.width,
+        fixed: col.fixed
+      }));
+  }
   }
 });
 
@@ -606,9 +993,7 @@ const handleSave = async () => {
   if (!formStatePersonMoney.value.companyName) {
     return;
   }
-  // Filter or map to what we want to save
-  // We save all columns configuration (title, checked status)
-  const columnsToSave = configColumns.value.map(col => ({
+  const columnsToSave = configColumnsSalary.value.map(col => ({
     rowName: col.rowName,
     rowOther: col.rowOther,
     show: col.show,
@@ -617,19 +1002,36 @@ const handleSave = async () => {
     fixed: col.fixed
   }));
   
-  // Assuming the API expects { companyName: string, excelTitle: string (JSON) }
-  // or maybe just the array if the backend handles it.
-  // Based on typical patterns, let's try sending an object.
+  const columnsToSaveQing = configColumnsQing.value.map(col => ({
+    rowName: col.rowName,
+    rowOther: col.rowOther,
+    show: col.show,
+    key: col.key,
+    width: col.width,
+    fixed: col.fixed
+  }));
+  
+  const columnsToSaveSheBao = configColumnsSheBao.value.map(col => ({
+    rowName: col.rowName,
+    rowOther: col.rowOther,
+    show: col.show,
+    key: col.key,
+    width: col.width,
+    fixed: col.fixed
+  }));
+  
   const payload = {
     id: getOutsourceCompanyExcelId.value || "",
     companyName: formStatePersonMoney.value.companyName,
-    listText: JSON.stringify(columnsToSave)
+    listText: JSON.stringify(columnsToSave),
+    qingkuanText: JSON.stringify(columnsToSaveQing),
+    shebaoText: JSON.stringify(columnsToSaveSheBao),
   };
-  
   const res = await outsourceDetailStore.addOutsourceCompanyExcel(payload);
   if (res && res.code === 1) {
-    // Update store state immediately so Salary component updates
-    outsourceDetailStore.outsourceSalaryColumns = columnsToSave;
+    outsourceDetailStore.outsourceSalaryColumnsQing = columnsToSaveQing;
+    outsourceDetailStore.outsourceSalaryColumnsSheBao = columnsToSave;
+    outsourceDetailStore.outsourceSalaryColumnsSalary = columnsToSaveSheBao;
     outsourcePersonMoneyTitleFlag.value = false;
   }
 };
@@ -690,5 +1092,8 @@ const handleSave = async () => {
     padding-bottom: 6px;
     margin-bottom: 8px !important;
     border-bottom: 1px solid #f0f0f0;
+  }
+  :deep(.ant-tabs-top >.ant-tabs-nav) {
+    margin-bottom: 0;
   }
 </style>

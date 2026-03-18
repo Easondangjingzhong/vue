@@ -13,8 +13,8 @@ import { storeToRefs } from 'pinia';
 import type { TableColumnsType } from 'ant-design-vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { getOfferOutsourceSheBao } = storeToRefs(outsourceDetailStore);
-const columns:TableColumnsType= [
+const { getOfferOutsourceSheBao, getOutsourceSalaryColumnsSheBao } = storeToRefs(outsourceDetailStore);
+const defaultColumns = computed<TableColumnsType>(() => [
     {
       title: '序号',
       dataIndex: 'index',
@@ -80,7 +80,35 @@ const columns:TableColumnsType= [
       dataIndex: 'personTotal',
       key: 'personTotal',
     },
-  ];
+  ]);
+  const columns = computed(() => {
+      const saved = getOutsourceSalaryColumnsSheBao.value;
+      if (saved && saved.length > 0) {
+        const savedMap = new Map(saved.map((c: any) => [c.key, c]));
+        return defaultColumns.value.map((col: any) => {
+          const s = savedMap.get(col.key);
+          if (s) {
+            // If saved, use saved title and visibility
+            if (s.show === false) return null;
+            return { ...col,
+               title: s.rowOther || s.rowName,
+               width: s.width || col.width,
+               fixed: s.fixed || col.fixed,
+               key: s.key,
+               dataIndex: s.key,
+            };
+          }
+          // If not in saved list, keep it default
+          return col;
+        }).filter((c: any) => c !== null);
+      }
+      return defaultColumns.value;
+    });
+    watch(() => outsourceDetailStore.formStatePersonMoney.companyName, (val) => {
+      if (val) {
+        outsourceDetailStore.queryOutsourceCompanyExcel(val);
+      }
+    }, { immediate: true });
 </script>
 
 <style lang="less" scoped>

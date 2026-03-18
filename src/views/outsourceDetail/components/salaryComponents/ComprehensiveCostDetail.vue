@@ -537,6 +537,14 @@ const handleManageGongShiChange = (val: string) => {
     const after = Number(costDetailForm.value.manageChargeTax || 0) / (1 + rateNum);
     costDetailForm.value.manageChargeAfter = after.toFixed(2);
     handleZhuanChargeTax();
+  } else if (val === '标准工时*12元+国定加班*12元*3' && costDetailForm.value.companyName == "艾秘") {
+  /**
+   * 总管理费=标准工时*12元+国定加班*12元*3
+   */
+    const attend = getOutsourcePersonPerformanceDetailAttendInfo.value[0];
+    //总管理费=标准工时*12元+国定加班*12元*3
+    costDetailForm.value.manageChargeTax = ((Number(attend.currentMonthShiHours || 0) * 12 + Number(attend.holidayOverHours || 0) * 12 * 3).toFixed(2));
+    handleManageChargeRate();
   } else {
     if (val === '本月实际工时*5元' && costDetailForm.value.companyName == "林弥珥") {
       /**

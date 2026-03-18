@@ -144,7 +144,9 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     outsourcePersonMoneyFlag: false, //外包人员请款单
     formStatePersonMoney: {} as OutsourcePersonMoneyItem, //外包人员请款单 表单信息
     outsourceCompanyExcelId: "",
-    outsourceSalaryColumns: [] as OutsourcePersonMoneyColumnsItem[], // 外包人员请款单自定义列配置
+    outsourceSalaryColumnsQing: [] as OutsourcePersonMoneyColumnsItem[], // 外包人员请款单自定义列配置
+    outsourceSalaryColumnsSalary: [] as OutsourcePersonMoneyColumnsItem[], // 外包人员请款单自定义列配置
+    outsourceSalaryColumnsSheBao: [] as OutsourcePersonMoneyColumnsItem[], // 外包人员请款单自定义列配置
     offerOutsourceMonthSalary: [] as OutsourceMonthSalaryItem[], //外包人员请款单 请款单
     offerOutsourceSheBao: [] as OutsourceSheBaoItem[], //外包人员请款单 社保信息
     outsourcePersonPerformanceDetailFlag: false, //外包人员绩效详情控制
@@ -576,7 +578,9 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       return orginalPathBlobTypeList[state.orginalPathBlobType] || '其他文件';
     },
     getOutsourceCompanyExcelId: (state) => state.outsourceCompanyExcelId,
-    getOutsourceSalaryColumns: (state) => state.outsourceSalaryColumns,
+    getOutsourceSalaryColumnsQing: (state) => state.outsourceSalaryColumnsQing,
+    getOutsourceSalaryColumnsSalary: (state) => state.outsourceSalaryColumnsSalary,
+    getOutsourceSalaryColumnsSheBao: (state) => state.outsourceSalaryColumnsSheBao,
     getOfferOutsourceSheBao: (state) =>
       state.offerOutsourceSheBao.map((item, index) => ({
         ...item,
@@ -2474,30 +2478,28 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         formData.append('companyName', companyName || '');
         const res = await fetchApi.queryOutsourceCompanyExcel(formData);
         if (res.code == 1 && res.info) {
-          // 假设返回的 info 中包含 columns 配置，如果 info 本身就是数组则直接赋值，否则根据实际结构调整
-          // 这里假设 res.info 是一个包含配置的对象或数组
-          // 如果后端返回的是 JSON 字符串，可能需要解析
           try {
-            // if (typeof res.info === 'string') {
-            //   this.outsourceSalaryColumns = JSON.parse(res.info);
-            // } else if (res.info.excelTitle) {
-            //   this.outsourceSalaryColumns = JSON.parse(res.info.excelTitle);
-            // } else {
-            //   this.outsourceSalaryColumns = res.info;
-            // }
             const temp = res.info[0];
             this.outsourceCompanyExcelId = temp.id || "";
-            this.outsourceSalaryColumns = JSON.parse(temp.listText) as OutsourcePersonMoneyColumnsItem[];
+            this.outsourceSalaryColumnsQing = JSON.parse(temp.qingkuanText) as OutsourcePersonMoneyColumnsItem[];
+            this.outsourceSalaryColumnsSalary = JSON.parse(temp.listText) as OutsourcePersonMoneyColumnsItem[];
+            this.outsourceSalaryColumnsSheBao = JSON.parse(temp.shebaoText) as OutsourcePersonMoneyColumnsItem[];
           } catch (e) {
             console.error('Failed to parse columns config', e);
-            this.outsourceSalaryColumns = [] as OutsourcePersonMoneyColumnsItem[];
+            this.outsourceSalaryColumnsQing = [] as OutsourcePersonMoneyColumnsItem[];
+            this.outsourceSalaryColumnsSalary = [] as OutsourcePersonMoneyColumnsItem[];
+            this.outsourceSalaryColumnsSheBao = [] as OutsourcePersonMoneyColumnsItem[];
           }
         } else {
-          this.outsourceSalaryColumns = [] as OutsourcePersonMoneyColumnsItem[];
+          this.outsourceSalaryColumnsQing = [] as OutsourcePersonMoneyColumnsItem[];
+          this.outsourceSalaryColumnsSalary = [] as OutsourcePersonMoneyColumnsItem[];
+          this.outsourceSalaryColumnsSheBao = [] as OutsourcePersonMoneyColumnsItem[];
         }
         return res;
       } catch (error) {
-        this.outsourceSalaryColumns = [] as OutsourcePersonMoneyColumnsItem[];
+        this.outsourceSalaryColumnsQing = [] as OutsourcePersonMoneyColumnsItem[];
+        this.outsourceSalaryColumnsSalary = [] as OutsourcePersonMoneyColumnsItem[];
+        this.outsourceSalaryColumnsSheBao = [] as OutsourcePersonMoneyColumnsItem[];
         return null;
       }
     },
