@@ -1005,3 +1005,38 @@ export interface OutsourcePersonMoneyColumnsItem {
   width: string;
 }
 
+export interface OutsourcePersonSalaryCommitDetailItem {
+  bankGroup?: string;
+  bankPurchaseStatus?: string;
+  caiGouStatus?: string;
+  checkStatus?: string;
+  companyName?: string;
+  faxinCompany?: string;
+  jinXinMonth?: string;
+  monthGeshui?: string;
+  monthShebao?: string;
+  monthTax?: string;
+  pepoleNum?: string;
+  salaryAfterTax?: string;
+  serviceMoney?: string;
+  shouxuMoney?: string;
+  totalMoney?: string;
+  excelPath?: string;
+}
+
+export interface OutsourcePersonSalaryCommitItem {
+  caiGouStatus?: string; 
+  bankPurchaseStatus?: string; 
+  checkStatus?: string; 
+  companyName: string; 
+  jinXinMonth?: string; 
+  monthGeshui?: string; 
+  monthShebao?: string; 
+  monthTax?: string; 
+  pepoleNum?: string; 
+  salaryAfterTax?: string; 
+  serviceMoney?: string; 
+  shouxuMoney?: string; 
+  totalMoney?: string;
+  detailList?: OutsourcePersonSalaryCommitDetailItem[]; 
+}

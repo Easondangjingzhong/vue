@@ -374,6 +374,9 @@ watch(outsourceMonthSalaryFlag, () => {
     // 缴纳单位：北京我推-招商银行: 0
     // 缴纳单位：北京我推-浦发银行: 0
     // 缴纳单位：北京我推-其他银行: 5
+    if (outsourceMonthSalaryForm.value.shouxuMoney || outsourceMonthSalaryForm.value.shouxuMoney == "0") {
+      return;
+    }
     if (!outsourceMonthSalaryForm.value.shouxuMoney && outsourceMonthSalaryForm.value.shouxuMoney !== "0") {
       if (res.info.shebaoCompany === '51社保') {
       outsourceMonthSalaryForm.value.shouxuMoney = '0';

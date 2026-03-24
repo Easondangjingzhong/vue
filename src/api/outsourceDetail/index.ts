@@ -71,7 +71,44 @@ enum URL {
   query_outsource_company_excel = '/candidateRecommend/resume-vue-query-out-company-excel.action',
   add_outsource_company_excel = '/candidateRecommend/resume-vue-insert-update-out-company-excel.action',
   downLoad_outsource_company_excel = '/candidateRecommend/resume-vue-select-out-salary-downLoad-excel.action',
+  query_outsource_salary_commit = '/candidateRecommend/resume-vue-select-out-TiCaiGou-Collect.action',
+  query_outsource_salary_commit_detail = '/candidateRecommend/resume-vue-select-out-TiCaiGou-Detail-peron.action',
+  query_outsource_salary_commit_collect_detail = '/candidateRecommend/resume-vue-select-out-TiCaiGou-Collect-peron.action',
+  add_outsource_salary_purchase = '/finance/add-bank-purchase-byOutScoure.action',
 }
+/**
+ * 工资发薪提交到采购系统
+ * @param List<OutsourceMonthSalaryCaigou>  发薪列表
+ * @param 实体类里 加 heBing  1 代表合并
+ * @returns
+ */
+const addOutsourceSalaryPurchase = async (data: any) =>
+  post<any>({ url: URL.add_outsource_salary_purchase, data});
+/**
+ * 工资发薪详情查询
+ * @param jinXinMonth
+ * @param companyName
+ * @returns
+ */
+const queryOutsourceSalaryCommitCollectDetail = async (data: any) =>
+  post<any>({ url: URL.query_outsource_salary_commit_collect_detail, data});
+/**
+ * 工资发薪查询
+ * @param jinXinMonth
+ * @returns
+ */
+const queryOutsourceSalaryCommit = async (data: any) =>
+  post<any>({ url: URL.query_outsource_salary_commit, data});
+/**
+ * 工资发薪详情查询
+ * @param jinXinMonth
+ * @param companyName
+ * @param faxinCompany
+ * @param bankGroup
+ * @returns
+ */
+const queryOutsourceSalaryCommitDetail = async (data: any) =>
+  post<any>({ url: URL.query_outsource_salary_commit_detail, data});
 /**
  * 公司导出表格
  * @param companyName
@@ -576,6 +613,10 @@ const queryOutsourceMonthSalary = async (data: any) =>
   post<any>({ url: URL.query_outsource_month_salary, data });
 
 export default {
+  addOutsourceSalaryPurchase,
+  queryOutsourceSalaryCommitCollectDetail,
+  queryOutsourceSalaryCommitDetail,
+  queryOutsourceSalaryCommit,
   downLoadOutsourceCompanyExcel,
   queryOutsourceCompanyExcel,
   addOutsourceCompanyExcel,

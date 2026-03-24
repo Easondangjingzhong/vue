@@ -25,6 +25,8 @@ import {
   OutsourcePersonMoneyItem, //外包人员请款单 表单信息
   ComprehensiveCostItem,
   OutsourcePersonMoneyColumnsItem,
+  OutsourcePersonSalaryCommitItem, //外包人员工资发薪详情
+  OutsourcePersonSalaryCommitDetailItem, //外包人员工资发薪详情
 } from '/@/api/outsourceDetail/model';
 const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: '' } = JSON.parse(
   localStorage.getItem('loginVueUser') || '{}',
@@ -143,7 +145,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     outsourcePersonMoneyTitleFlag: false, //外包人员请款单标题
     outsourcePersonMoneyFlag: false, //外包人员请款单
     formStatePersonMoney: {} as OutsourcePersonMoneyItem, //外包人员请款单 表单信息
-    outsourceCompanyExcelId: "",
+    outsourceCompanyExcelId: '',
     outsourceSalaryColumnsQing: [] as OutsourcePersonMoneyColumnsItem[], // 外包人员请款单自定义列配置
     outsourceSalaryColumnsSalary: [] as OutsourcePersonMoneyColumnsItem[], // 外包人员请款单自定义列配置
     outsourceSalaryColumnsSheBao: [] as OutsourcePersonMoneyColumnsItem[], // 外包人员请款单自定义列配置
@@ -168,6 +170,10 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     costDetailForm: {} as ComprehensiveCostItem, //外包用工成本详情控制
     costOfferDetailsForm: [] as OfferDetailsItem[], //外包用工成本详情控制
     haveZhaoFlag: '' as string, //是否有招
+    outsourcePersonSalaryCommitFlag: false, //工资发薪状态控制
+    outsourcePersonSalaryCommitDetailsFlag: false, //工资发薪状态详情控制
+    outsourcePersonSalaryCommit: [] as OutsourcePersonSalaryCommitItem[], //工资发薪
+    outsourcePersonSalaryCommitDetail: [] as any[], //工资发薪
   }),
   getters: {
     getOutsourcePersonList: (state) =>
@@ -840,6 +846,33 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     getHaveZhaoFlag: (state) => {
       return state.haveZhaoFlag;
     },
+    getOutsourcePersonSalaryCommit: (state) =>
+      state.outsourcePersonSalaryCommit.map((item, index) => ({
+        ...item,
+        index: index + 1,
+        serviceMoney: Number(item?.serviceMoney || '0').toFixed(2),
+        totalMoney: (
+          Number(item?.salaryAfterTax || '0') + Number(item?.serviceMoney || '0')
+        ).toFixed(2),
+        detailList:
+          item.detailList?.map((detailItem) => ({
+            ...detailItem,
+            serviceMoney: Number(detailItem?.serviceMoney || '0').toFixed(2),
+            totalMoney: (
+              Number(detailItem?.salaryAfterTax || '0') + Number(detailItem?.serviceMoney || '0')
+            ).toFixed(2),
+          })) || [],
+      })),
+    getOutsourcePersonSalaryCommitDetail: (state) =>
+      state.outsourcePersonSalaryCommitDetail.map((item, index) => ({
+        ...item,
+        index: index + 1,
+        userName: `${item?.userNameCn || ''}${item?.userNameEn || ''}`,
+        serviceMoney: Number(item?.serviceMoney || '0').toFixed(2),
+        totalMoney: (
+          Number(item?.salaryAfterTax || '0') + Number(item?.serviceMoney || '0')
+        ).toFixed(2),
+      })) || [],
   },
   actions: {
     /**
@@ -2480,10 +2513,16 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         if (res.code == 1 && res.info) {
           try {
             const temp = res.info[0];
-            this.outsourceCompanyExcelId = temp.id || "";
-            this.outsourceSalaryColumnsQing = JSON.parse(temp.qingkuanText) as OutsourcePersonMoneyColumnsItem[];
-            this.outsourceSalaryColumnsSalary = JSON.parse(temp.listText) as OutsourcePersonMoneyColumnsItem[];
-            this.outsourceSalaryColumnsSheBao = JSON.parse(temp.shebaoText) as OutsourcePersonMoneyColumnsItem[];
+            this.outsourceCompanyExcelId = temp.id || '';
+            this.outsourceSalaryColumnsQing = JSON.parse(
+              temp.qingkuanText,
+            ) as OutsourcePersonMoneyColumnsItem[];
+            this.outsourceSalaryColumnsSalary = JSON.parse(
+              temp.listText,
+            ) as OutsourcePersonMoneyColumnsItem[];
+            this.outsourceSalaryColumnsSheBao = JSON.parse(
+              temp.shebaoText,
+            ) as OutsourcePersonMoneyColumnsItem[];
           } catch (e) {
             console.error('Failed to parse columns config', e);
             this.outsourceSalaryColumnsQing = [] as OutsourcePersonMoneyColumnsItem[];
@@ -2507,14 +2546,106 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
      * 公司导出表格
      * @param companyName
      * @param yearAndMonth
-     * @returns 
+     * @returns
      */
-    async downLoadOutsourceCompanyExcel(companyName: string,yearAndMonth: string) {
+    async downLoadOutsourceCompanyExcel(companyName: string, yearAndMonth: string) {
       try {
         const formdata = new FormData();
         formdata.append('companyName', companyName || '');
         formdata.append('yearAndMonth', yearAndMonth || '');
         const res = await fetchApi.downLoadOutsourceCompanyExcel(formdata);
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+    /**
+     * 工资发薪查询
+     * @param jinXinMonth
+     * @returns
+     */
+    async queryOutsourceSalaryCommit(jinXinMonth: string) {
+      try {
+        const formdata = new FormData();
+        formdata.append('jinXinMonth', jinXinMonth || '');
+        const res = await fetchApi.queryOutsourceSalaryCommit(formdata);
+        if (res.code === 1) {
+          this.outsourcePersonSalaryCommit = res.info || [];
+        }
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+    /**
+     * 工资发薪详情查询
+     * @param jinXinMonth
+     * @param companyName
+     * @param faxinCompany
+     * @param bankGroup
+     * @returns
+     */
+    async queryOutsourceSalaryCommitDetail(
+      jinXinMonth: string,
+      companyName: string,
+      faxinCompany: string,
+      bankGroup: string,
+    ) {
+      try {
+        const formdata = new FormData();
+        formdata.append('jinXinMonth', jinXinMonth || '');
+        formdata.append('companyName', companyName || '');
+        formdata.append('faxinCompany', faxinCompany || '');
+        formdata.append('bankGroup', bankGroup || '');
+        const res = await fetchApi.queryOutsourceSalaryCommitDetail(formdata);
+        if (res.code === 1) {
+          this.outsourcePersonSalaryCommitDetailsFlag = true;
+          this.outsourcePersonSalaryCommitDetail = res.info || [];
+        }
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+    /**
+     * 工资发薪详情查询
+     * @param jinXinMonth
+     * @param companyName
+     * @param faxinCompany
+     * @param bankGroup
+     * @returns
+     */
+    async queryOutsourceSalaryCommitCollectDetail(jinXinMonth: string, companyName: string) {
+      try {
+        const formdata = new FormData();
+        formdata.append('jinXinMonth', jinXinMonth || '');
+        formdata.append('companyName', companyName || '');
+        const res = await fetchApi.queryOutsourceSalaryCommitCollectDetail(formdata);
+        if (res.code === 1) {
+          this.outsourcePersonSalaryCommitDetailsFlag = true;
+          this.outsourcePersonSalaryCommitDetail = res.info || [];
+        }
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+    /**
+     * 工资发薪提交到采购系统
+     * @param List<OutsourceMonthSalaryCaigou>  发薪列表
+     * @param 实体类里 加 heBing  1 代表合并
+     * @returns
+     */
+    async addOutsourceSalaryPurchase(outsourceMonthSalaryCaigou: any[]) {
+      try {
+        const payload = outsourceMonthSalaryCaigou
+          .filter((item) => item.bankPurchaseStatus === '待发')
+          .map((item) => ({
+            ...item,
+            applyRecruitId: loginVueUser.loginId || '',
+            applyRealNameEn: loginVueUser.loginName || '',
+          }));
+        const res = await fetchApi.addOutsourceSalaryPurchase(payload);
         return res;
       } catch (error) {
         return null;
