@@ -1776,7 +1776,7 @@ watch(newJoinerPersonalInformationFormTemp, (newVal) => {
       jianzhiSalary.value = Number(newVal?.salaryStructure?.split("/")[0] || 0);
       handleJianzhiSalaryChange();
     } else {
-      offerInformationForm.value.basicSalary = newVal?.salaryStructure?.split("/")[0] || "0";
+      offerInformationForm.value.basicSalary = newVal?.salaryStructure?.split("/")[0] ? Number(newVal?.salaryStructure?.split("/")[0]).toFixed(0):  "0";
     }
     // newJoinerPersonalInformationForm.value.department = newVal.department;
     newJoinerPersonalInformationForm.value.placeOfBirth = newVal.placeOfBirth;

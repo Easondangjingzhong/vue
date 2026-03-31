@@ -9,25 +9,19 @@
       <template #summary>
       <a-table-summary fixed>
         <a-table-summary-row>
-          <a-table-summary-cell :index="0"></a-table-summary-cell>
-          <a-table-summary-cell :index="1"></a-table-summary-cell>
-          <a-table-summary-cell :index="2"></a-table-summary-cell>
-          <a-table-summary-cell :index="3"></a-table-summary-cell>
-          <a-table-summary-cell :index="4"></a-table-summary-cell>
-          <a-table-summary-cell :index="5">合计</a-table-summary-cell>
-          <a-table-summary-cell :index="6"></a-table-summary-cell>
-          <a-table-summary-cell :index="7">{{ summaryData.monthTax }}</a-table-summary-cell>
-          <a-table-summary-cell :index="8">{{ summaryData.sheBaoMoney }}</a-table-summary-cell>
-          <a-table-summary-cell :index="9">{{ summaryData.canBaoMoney }}</a-table-summary-cell>
-          <a-table-summary-cell :index="10">{{ summaryData.economicCompensation }}</a-table-summary-cell>
-          <a-table-summary-cell :index="11">{{ summaryData.personCost }}</a-table-summary-cell>
-          <a-table-summary-cell :index="12">{{ summaryData.rate }}</a-table-summary-cell>
-          <a-table-summary-cell :index="13">{{ summaryData.serviceFee }}</a-table-summary-cell>
-          <a-table-summary-cell :index="14">{{ summaryData.shangbao }}</a-table-summary-cell>
-          <a-table-summary-cell :index="15">{{ summaryData.salaryTax }}</a-table-summary-cell>
-          <a-table-summary-cell :index="16">{{ summaryData.salaryRate }}</a-table-summary-cell>
-          <a-table-summary-cell :index="17">{{ summaryData.salaryRateMoney }}</a-table-summary-cell>
-          <a-table-summary-cell :index="18">{{ summaryData.salaryTotal }}</a-table-summary-cell>
+          <a-table-summary-cell
+            v-for="(col, index) in columns"
+            :key="col.key"
+            :index="index"
+          >
+            <template v-if="index === 0">合计</template>
+            <template v-else-if="['monthTax', 'sheBaoMoney', 'canBaoMoney', 'economicCompensation', 'personCost', 'serviceFee', 'shangbao', 'salaryTax', 'salaryRateMoney', 'salaryTotal'].includes(col.key)">
+              {{ summaryData[col.key] }}
+            </template>
+            <template v-else-if="['rate', 'salaryRate'].includes(col.key)">
+              {{ summaryData[col.key] }}
+            </template>
+          </a-table-summary-cell>
         </a-table-summary-row>
       </a-table-summary>
     </template>
@@ -89,7 +83,7 @@ const defaultColumns = computed<TableColumnsType>(() => [
       title: '计薪日期',
       dataIndex: 'jinxinMonth',
       key: 'jinxinMonth',
-      width: 150,
+      width: 100,
     },
     {
       title: '应发工资',
@@ -100,7 +94,7 @@ const defaultColumns = computed<TableColumnsType>(() => [
       title: '公司承担社保公积金',
       dataIndex: 'sheBaoMoney',
       key: 'sheBaoMoney',
-      width: 130,
+      width: 150,
     },
     {
       title: '残保金',
@@ -172,7 +166,8 @@ const columns = computed(() => {
              width: s.width || col.width,
              fixed: s.fixed || col.fixed,
              key: s.key,
-             dataIndex: s.key,
+             dataIndex: s.key,    
+             ellipsis: true,
           };
         }
         // If not in saved list, keep it default
@@ -187,44 +182,32 @@ const columns = computed(() => {
     }
   }, { immediate: true });
 const summaryData = computed(() => {
-  let monthTax = 0;
-  let sheBaoMoney = 0;
-  let canBaoMoney = 0;
-  let economicCompensation = 0;
-  let personCost = 0;
-  let rate = 0;
-  let serviceFee = 0;
-  let shangbao = 0;
-  let salaryTax = 0;
-  let salaryRate = 0;
-  let salaryRateMoney = 0;
-  let salaryTotal = 0;
-  getOfferOutsourceMonthSalary.value.forEach((item) => {
-    monthTax += Number(item?.monthTax || 0);
-    sheBaoMoney += Number(item?.sheBaoMoney || 0);
-    canBaoMoney += Number(item?.canBaoMoney || 0);
-    economicCompensation += Number(item?.economicCompensation || 0);
-    personCost += Number(item?.personCost || 0);
-    serviceFee += Number(item?.serviceFee || 0);
-    //shangbao += Number(item?.shangbao || 0);
-    salaryTax += Number(item?.salaryTax || 0);
-    salaryRateMoney += Number(item?.salaryRateMoney || 0);
-    salaryTotal += Number(item?.salaryTotal || 0);
-  });
+  const list = getOfferOutsourceMonthSalary.value || [];
+  const sum = (key: string) =>
+    list.reduce((acc, cur: any) => acc + Number.parseFloat(cur?.[key] || '0'), 0);
+  
+  const sumRate = (key: string) =>
+    list.reduce((acc, cur: any) => {
+      const raw = String(cur?.[key] ?? '');
+      const n = Number.parseFloat(raw.replace('%', ''));
+      return acc + (Number.isFinite(n) ? n : 0);
+    }, 0);
+  const formatRate = (n: number) => (n % 1 === 0 ? `${n.toFixed(0)}%` : `${n.toFixed(2)}%`);
+
   return {
-    monthTax: monthTax.toFixed(2),
-    sheBaoMoney: sheBaoMoney.toFixed(2),
-    canBaoMoney: canBaoMoney.toFixed(2),
-    economicCompensation: economicCompensation.toFixed(2),
-    personCost: personCost.toFixed(2),
-    rate: rate.toFixed(2),
-    serviceFee: serviceFee.toFixed(2),
-    shangbao: shangbao.toFixed(2),
-    salaryTax: salaryTax.toFixed(2),
-    salaryRate: salaryRate.toFixed(2),
-    salaryRateMoney: salaryRateMoney.toFixed(2),
-    salaryTotal: salaryTotal.toFixed(2),
-  };
+    monthTax: sum('monthTax').toFixed(2),
+    sheBaoMoney: sum('sheBaoMoney').toFixed(2),
+    canBaoMoney: sum('canBaoMoney').toFixed(2),
+    economicCompensation: sum('economicCompensation').toFixed(2),
+    personCost: sum('personCost').toFixed(2),
+    rate: formatRate(sumRate('rate')),
+    serviceFee: sum('serviceFee').toFixed(2),
+    shangbao: sum('shangbao').toFixed(2),
+    salaryTax: sum('salaryTax').toFixed(2),
+    salaryRate: formatRate(sumRate('salaryRate')),
+    salaryRateMoney: sum('salaryRateMoney').toFixed(2),
+    salaryTotal: sum('salaryTotal').toFixed(2),
+  } as Record<string, string>;
 });
 </script>
 

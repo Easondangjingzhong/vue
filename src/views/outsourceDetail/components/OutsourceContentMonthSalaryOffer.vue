@@ -179,7 +179,7 @@ const columnsOutsourceMonthSalary:TableColumnsType = [
     children: [
       { title: '人才支出', dataIndex: 'monthTax', key: 'monthTax', width: 50, },
       { title: '企业支出', dataIndex: 'costTotalke', key: 'costTotalke', width: 50, },
-      { title: '管理费', dataIndex: 'manageChargeTax', key: 'manageChargeTax', width: 50, },
+      { title: '管理费', dataIndex: 'manageChargeAfter', key: 'manageChargeAfter', width: 50, },
       { title: '税金', dataIndex: 'manageChargeTaxMoney', key: 'manageChargeTaxMoney', width: 50, },
       { title: '总营收费', dataIndex: 'moneyCahrgeTax', key: 'moneyCahrgeTax', width: 50, },
     ]
@@ -224,8 +224,8 @@ const columnsOutsourceMonthSalary:TableColumnsType = [
   {
     title: '',
     children: [
-      { title: '税后总计', dataIndex: 'totalCharge', key: 'totalCharge', width: 50, },
-      { title: '含税总计', dataIndex: 'totalChargeAfter', key: 'totalChargeAfter', width: 50, },
+      { title: '税后总计', dataIndex: 'totalChargeAfter', key: 'totalChargeAfter', width: 50, },
+      { title: '含税总计', dataIndex: 'totalCharge', key: 'totalCharge', width: 50, },
     ]
   },
   {

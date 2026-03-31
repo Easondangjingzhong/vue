@@ -216,8 +216,8 @@
         </a-row>
         <a-row :gutter="24">
           <a-col :span="6">
-            <a-form-item name="manageChargeTax" label="税前管理">
-              <a-input v-model:value="costDetailForm.manageChargeTax" disabled/>
+            <a-form-item name="manageChargeAfter" label="税后管理">
+              <a-input v-model:value="costDetailForm.manageChargeAfter" disabled/>
             </a-form-item>
           </a-col>
           <a-col :span="6">
@@ -260,8 +260,8 @@
         </a-row>
         <a-row :gutter="24">
           <a-col :span="6">
-            <a-form-item name="manageChargeAllocationTax" label="可分管理">
-              <a-input v-model:value="costDetailForm.manageChargeAllocationTax" disabled/>
+            <a-form-item name="manageChargeAllocationAfter" label="可分管理">
+              <a-input v-model:value="costDetailForm.manageChargeAllocationAfter" disabled/>
             </a-form-item>
           </a-col>
           <a-col :span="6">
@@ -533,9 +533,9 @@ const handleManageGongShiChange = (val: string) => {
     //总营收费 = 10000+请假差额+加班差额+加班差额*6.72%
     costDetailForm.value.moneyCahrgeTax = (10000 + qingJiaCha + jiaBanCha + (jiaBanCha * rateNum)).toFixed(2);
     //总管理费=总营收费(税后)-人才支出-公司支出（五险一金+手续费）
-    costDetailForm.value.manageChargeTax = (Number(costDetailForm.value.moneyCahrgeTax || 0) / (1 + rateNum) - Number(costDetailForm.value.monthTax || 0) - Number(costDetailForm.value.serviceMoney || 0) - Number(costDetailForm.value.companyShebao || 0) - Number(costDetailForm.value.companyYijinKe || 0)).toFixed(2);
-    const after = Number(costDetailForm.value.manageChargeTax || 0) / (1 + rateNum);
-    costDetailForm.value.manageChargeAfter = after.toFixed(2);
+    costDetailForm.value.manageChargeAfter = (Number(costDetailForm.value.moneyCahrgeTax || 0) / (1 + rateNum) - Number(costDetailForm.value.monthTax || 0) - Number(costDetailForm.value.serviceMoney || 0) - Number(costDetailForm.value.companyShebao || 0) - Number(costDetailForm.value.companyYijinKe || 0)).toFixed(2);
+    const after = Number(costDetailForm.value.manageChargeAfter || 0) * (1 + rateNum);
+    costDetailForm.value.manageChargeTax = after.toFixed(2);
     handleZhuanChargeTax();
   } else if (val === '标准工时*12元+国定加班*12元*3' && costDetailForm.value.companyName == "艾秘") {
   /**
@@ -543,7 +543,7 @@ const handleManageGongShiChange = (val: string) => {
    */
     const attend = getOutsourcePersonPerformanceDetailAttendInfo.value[0];
     //总管理费=标准工时*12元+国定加班*12元*3
-    costDetailForm.value.manageChargeTax = ((Number(attend.currentMonthShiHours || 0) * 12 + Number(attend.holidayOverHours || 0) * 12 * 3).toFixed(2));
+    costDetailForm.value.manageChargeAfter = ((Number(attend.currentMonthShiHours || 0) * 12 + Number(attend.holidayOverHours || 0) * 12 * 3).toFixed(2));
     handleManageChargeRate();
   } else {
     if (val === '本月实际工时*5元' && costDetailForm.value.companyName == "林弥珥") {
@@ -557,17 +557,17 @@ const handleManageGongShiChange = (val: string) => {
       const holidayOverHours = Number(attend.holidayOverHours || 0);
       const restOverHours = Number(attend.restOverHours || 0);
       const totalHours = currentMonthShiHours + overHours + holidayOverHours + restOverHours;
-      costDetailForm.value.manageChargeTax = (totalHours * 5).toFixed(2);
-    } else if (costDetailForm.value.companyName == "碧朗诗") {
+      costDetailForm.value.manageChargeAfter = (totalHours * 5).toFixed(2);
+  } else if (costDetailForm.value.companyName == "碧朗诗") {
       /**
        * 总管理费=固定收费500
        */
-      costDetailForm.value.manageChargeTax = "500";
+      costDetailForm.value.manageChargeAfter = "500";
     } else {
       if(val.includes("员工福利")) {
-        costDetailForm.value.manageChargeTax = ((Number(costTotalke.value || 0) - chenbenTiaochaKeTemp + Number(costDetailForm.value.welfareKe || 0)) * rate).toFixed(2);
+        costDetailForm.value.manageChargeAfter = ((Number(costTotalke.value || 0) - chenbenTiaochaKeTemp + Number(costDetailForm.value.welfareKe || 0)) * rate).toFixed(2);
       } else {
-        costDetailForm.value.manageChargeTax = ((Number(costTotalke.value || 0) - chenbenTiaochaKeTemp) * rate).toFixed(2);
+        costDetailForm.value.manageChargeAfter = ((Number(costTotalke.value || 0) - chenbenTiaochaKeTemp) * rate).toFixed(2);
       }
     }
     handleManageChargeRate();
@@ -578,14 +578,14 @@ const handleChenbenTiaochaKeFlag = () => {
   handleManageGongShiChange(costDetailForm.value.manageGongShi || "");
 }
 const handleManageChargeRate = () => {
-  //税前管理
-  const total = Number(costTotalke.value || 0) + Number(costDetailForm.value.manageChargeTax || 0) + Number(costDetailForm.value.welfareKe || 0);
+  //税后管理
+  const total = Number(costTotalke.value || 0) + Number(costDetailForm.value.manageChargeAfter || 0) + Number(costDetailForm.value.welfareKe || 0);
   const rateNum = Number(costDetailForm.value.manageChargeRate || 0);
-  const after = Number(costDetailForm.value.manageChargeTax || 0) / (1 + rateNum);
-  costDetailForm.value.manageChargeAfter = after.toFixed(2);
-  //税金 = (成本总计 + 税前管理) * 税率
+  const after = Number(costDetailForm.value.manageChargeAfter || 0) * (1 + rateNum);
+  costDetailForm.value.manageChargeTax = after.toFixed(2);
+  //税金 = (成本总计 + 税后管理) * 税率
   costDetailForm.value.manageChargeTaxMoney = (total * rateNum).toFixed(2);
-  //总营收费 = 成本总计 + 税前管理 + 税金
+  //总营收费 = 成本总计 + 税后管理 + 税金
   costDetailForm.value.moneyCahrgeTax = (Number(total || 0) + Number(costDetailForm.value.manageChargeTaxMoney || 0)).toFixed(2);
   handleZhuanChargeTax();
 }
@@ -595,12 +595,12 @@ const handleZhuanChargeTax = () => {
   costDetailForm.value.zhuanChargeAfter = after.toFixed(2);
   //税前转换的税金 = 税前转换 * 税率
   costDetailForm.value.zhuanChargeTaxMoney = (Number(costDetailForm.value.zhuanChargeTax || 0) * rate).toFixed(2);
-  //总收费 = 总营收费 + 税前转换 + 税前转换的税金
-  costDetailForm.value.totalCharge = (Number(costDetailForm.value.moneyCahrgeTax || 0) + Number(costDetailForm.value.zhuanChargeTax || 0) + Number(costDetailForm.value.zhuanChargeTaxMoney || 0) + Number(costDetailForm.value.totalChargeCha || 0)).toFixed(2);
-  //可分管理=总营收费-公司账单里的成本总计
-  costDetailForm.value.manageChargeAllocationTax = (Number(costDetailForm.value.moneyCahrgeTax || 0) /(1 + rate) - Number(costTotal.value || 0)).toFixed(2);
-  //可分管理费税后金额=可分管理费税后金额/（1+税率）
-  costDetailForm.value.manageChargeAllocationAfter = (Number(costDetailForm.value.manageChargeAllocationTax || 0) / (1 + Number(costDetailForm.value.manageChargeRate || 0))).toFixed(2);
+  //总收费 = 总营收费 + 税前转换
+  costDetailForm.value.totalCharge = (Number(costDetailForm.value.moneyCahrgeTax || 0) + Number(costDetailForm.value.zhuanChargeTax || 0) + Number(costDetailForm.value.totalChargeCha || 0)).toFixed(2);
+  //可分管理费税后金额=总营收费-公司账单里的成本总计
+  costDetailForm.value.manageChargeAllocationAfter = (Number(costDetailForm.value.moneyCahrgeTax || 0) /(1 + rate) - Number(costTotal.value || 0)).toFixed(2);
+  //可分管理税前金额=可分管理费税后金额*(1+税率)
+  costDetailForm.value.manageChargeAllocationTax = (Number(costDetailForm.value.manageChargeAllocationAfter || 0) * (1 + Number(costDetailForm.value.manageChargeRate || 0))).toFixed(2);
 }
 
 const handleClose = () => {

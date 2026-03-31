@@ -39,6 +39,7 @@ const defaultColumns = computed<TableColumnsType>(() => [
       title: '职位',
       dataIndex: 'positions',
       key: 'positions',
+      ellipsis: true,
     },
      {
       title: '身份证号',
@@ -51,9 +52,6 @@ const defaultColumns = computed<TableColumnsType>(() => [
       key: 'yearAndMonth',
     },
      {
-      title: '住房公积金',
-      children: [
-        {
           title: '公积金基数',
           dataIndex: 'yijinCompanyJishu',
           key: 'yijinCompanyJishu',
@@ -68,8 +66,6 @@ const defaultColumns = computed<TableColumnsType>(() => [
           dataIndex: 'yijinPerson',
           key: 'yijinPerson',
         },
-      ],
-    },
      {
       title: '单位合计',
       dataIndex: 'companyTotal',
@@ -96,6 +92,7 @@ const defaultColumns = computed<TableColumnsType>(() => [
                fixed: s.fixed || col.fixed,
                key: s.key,
                dataIndex: s.key,
+               ellipsis: true,
             };
           }
           // If not in saved list, keep it default

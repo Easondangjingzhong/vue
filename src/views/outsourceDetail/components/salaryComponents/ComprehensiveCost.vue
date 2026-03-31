@@ -119,9 +119,9 @@ const columns:TableColumnsType = [
     width: 40,
   },
     {
-    title: '税前管理',
-    dataIndex: 'manageChargeTax',
-    key: 'manageChargeTax',
+    title: '税后管理',
+    dataIndex: 'manageChargeAfter',
+    key: 'manageChargeAfter',
     width: 40,
   },
     {
@@ -174,8 +174,8 @@ const columns:TableColumnsType = [
   },
    {
     title: '可分管理',
-    dataIndex: 'manageChargeAllocationTax',
-    key: 'manageChargeAllocationTax',
+    dataIndex: 'manageChargeAllocationAfter',
+    key: 'manageChargeAllocationAfter',
     fixed: 'right',
     width: 40,
   },

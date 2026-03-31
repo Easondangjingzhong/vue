@@ -30,6 +30,8 @@
     >
     <a-tag style="cursor: pointer;" :title="record.bankCard">查看</a-tag>
     </a-popover>
+    <a-tag v-if="column.key === 'checkStatus' && record.checkStatus === '未核'" color="red">未核</a-tag>
+    <a-tag v-if="column.key === 'checkStatus' && record.checkStatus === '已核'" color="green">已核</a-tag>
     </template>
   </a-table>
   </div>
@@ -39,6 +41,7 @@
 <script setup lang="ts">
 import _ from 'lodash';
 import { storeToRefs } from 'pinia';
+import type { TableColumnsType } from 'ant-design-vue';
 import { CloseOutlined } from '@ant-design/icons-vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
@@ -47,16 +50,19 @@ const drawerWidth = ref(Math.max(600, window.innerWidth * 0.8));
 const handleClose = () => {
   outsourcePersonSalaryCommitDetailsFlag.value = false;
 };
-const columns = [
+const columns: TableColumnsType = [
   {
     title: '编号',
     dataIndex: 'index',
     key: 'index',
+    width: 40,
   },
   {
     title: '姓名',
     dataIndex: 'userName',
     key: 'userName',
+    width: 80,
+    ellipsis: true,
   },
    {
     title: '城市',
@@ -71,19 +77,21 @@ const columns = [
     ellipsis: true,
   },
    {
-    title: '发薪银行',
+    title: h('a-tooltip', { title: '公司发薪银行' }, h('span', {'style': 'background: linear-gradient(45deg, transparent 93%, #f90202 0);padding-right: 5px;'}, '发薪银行')),
     dataIndex: 'bankGroup',
     key: 'bankGroup',
     width: 70,
+    align: 'right',
   },
   {
-    title: '银行名称',
+    title: h('a-tooltip', { title: '人才工资卡银行名称' }, h('span', {'style': 'background: linear-gradient(45deg, transparent 93%, #f90202 0);padding-right: 5px;'}, '银行名称')),
     dataIndex: 'bankName',
     key: 'bankName',
     width: 70,
+    align: 'right',
   },
   {
-    title: '账户',
+    title: h('a-tooltip', { title: '人才工资卡账号' }, h('span', {'style': 'background: linear-gradient(45deg, transparent 90%, #f90202 0);padding-right: 5px;'}, '账户')),
     dataIndex: 'bankCard',
     key: 'bankCard',
   },
@@ -92,39 +100,46 @@ const columns = [
     dataIndex: 'monthTax',
     key: 'monthTax',
     width: 70,
+    align: 'right',
   },
     {
     title: '社保',
     dataIndex: 'monthShebao',
     key: 'monthShebao',
+    align: 'right',
   },
     {
     title: '个税',
     dataIndex: 'monthGeshui',
     key: 'monthGeshui',
+    align: 'right',
   },
     {
     title: '手续费',
     dataIndex: 'shouxuMoney',
     key: 'shouxuMoney',
-    width: 70,
+    width: 50,
+    align: 'right',
   },
     {
     title: '实发工资',
     dataIndex: 'salaryAfterTax',
     key: 'salaryAfterTax',
     width: 70,
+    align: 'right',
   },
   {
     title: '服务费',
     dataIndex: 'serviceMoney',
     key: 'serviceMoney',
     width: 70,
+    align: 'right',
   },
   {
     title: '总计',
     dataIndex: 'totalMoney',
     key: 'totalMoney',
+    align: 'right',
   },
   {
     title: '状态',

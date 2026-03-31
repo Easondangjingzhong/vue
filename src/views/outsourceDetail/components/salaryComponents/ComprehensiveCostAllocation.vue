@@ -18,6 +18,31 @@
       <span v-if="column.key === 'orderType' && record.orderType === '3'">服顾</span>
       <span v-if="column.key === 'orderType' && record.orderType === '4' && record.isMain === '1'">开顾1</span>
       <span v-if="column.key === 'orderType' && record.orderType === '4' && record.isMain === '3'">开顾2</span>
+      <span
+        v-if="(column.key === 'zhuanChargeTax' || column.key === 'zhuanChargeAfter' || column.key === 'zhuanChargeRate') && isZhuanZero(record)"
+        >-</span
+      >
+      <span v-else-if="column.key === 'zhuanChargeTax'">{{ record.zhuanChargeTax }}</span>
+      <span v-else-if="column.key === 'zhuanChargeAfter'">{{ record.zhuanChargeAfter }}</span>
+      <span v-else-if="column.key === 'zhuanChargeRate'">{{ record.zhuanChargeRate }}</span>
+    </template>
+    <template #summary>
+      <a-table-summary fixed>
+        <a-table-summary-row>
+          <a-table-summary-cell :index="0"></a-table-summary-cell>
+          <a-table-summary-cell :index="1"></a-table-summary-cell>
+          <a-table-summary-cell :index="2">合计</a-table-summary-cell>
+          <a-table-summary-cell :index="3">{{ summaryData.manageChargeTax }}</a-table-summary-cell>
+          <a-table-summary-cell :index="4">{{ summaryData.manageChargeAfter }}</a-table-summary-cell>
+          <a-table-summary-cell :index="5">{{ summaryData.manageChargeRate }}</a-table-summary-cell>
+          <a-table-summary-cell :index="6">{{ summaryData.zhuanZero ? '-' : summaryData.zhuanChargeTax }}</a-table-summary-cell>
+          <a-table-summary-cell :index="7">{{ summaryData.zhuanZero ? '-' : summaryData.zhuanChargeAfter }}</a-table-summary-cell>
+          <a-table-summary-cell :index="8">{{ summaryData.zhuanZero ? '-' : summaryData.zhuanChargeRate }}</a-table-summary-cell>
+          <a-table-summary-cell :index="9">{{ summaryData.taxIncluded }}</a-table-summary-cell>
+          <a-table-summary-cell :index="10">{{ summaryData.money }}</a-table-summary-cell>
+          <a-table-summary-cell :index="11">{{ summaryData.offerNum }}</a-table-summary-cell>
+        </a-table-summary-row>
+      </a-table-summary>
     </template>
   </a-table>
   </a-col>
@@ -27,11 +52,41 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import _ from 'lodash';
 import type { TableColumnsType } from 'ant-design-vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
 const { costOfferDetailsForm } = storeToRefs(outsourceDetailStore);
+const isZhuanZero = (record: any) =>
+  Number.parseFloat(record?.zhuanChargeTax || '0') === 0 &&
+  Number.parseFloat(record?.zhuanChargeAfter || '0') === 0;
+
+const summaryData = computed(() => {
+  const list = costOfferDetailsForm.value || [];
+  const sum = (key: string) =>
+    list.reduce((acc, cur: any) => acc + Number.parseFloat(cur?.[key] || '0'), 0);
+  const sumInt = (key: string) => list.reduce((acc, cur: any) => acc + Number(cur?.[key] || 0), 0);
+  const sumRate = (key: string) =>
+    list.reduce((acc, cur: any) => {
+      const raw = String(cur?.[key] ?? '');
+      const n = Number.parseFloat(raw.replace('%', ''));
+      return acc + (Number.isFinite(n) ? n : 0);
+    }, 0);
+  const formatRate = (n: number) => (n % 1 === 0 ? `${n.toFixed(0)}%` : `${n.toFixed(2)}%`);
+  const zhuanTaxSum = sum('zhuanChargeTax');
+  const zhuanAfterSum = sum('zhuanChargeAfter');
+  return {
+    manageChargeTax: sum('manageChargeTax').toFixed(2),
+    manageChargeAfter: sum('manageChargeAfter').toFixed(2),
+    manageChargeRate: formatRate(sumRate('manageChargeRate')),
+    zhuanChargeTax: zhuanTaxSum.toFixed(2),
+    zhuanChargeAfter: zhuanAfterSum.toFixed(2),
+    zhuanChargeRate: formatRate(sumRate('zhuanChargeRate')),
+    zhuanZero: zhuanTaxSum === 0 && zhuanAfterSum === 0,
+    taxIncluded: sum('taxIncluded').toFixed(2),
+    money: sum('money').toFixed(2),
+    offerNum: sumInt('offerNum').toString(),
+  };
+});
 
 const columns:TableColumnsType = [
   {

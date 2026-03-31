@@ -5,7 +5,8 @@
       rowKey="key"
       :loading="false"
       :columns="columns"
-      :dataSource="[]"
+      :scroll="{ y: 500 }"
+      :dataSource="getOutsourcePersonSalaryCommitCollectSheBao"
     >
    <!-- <template #bodyCell="{ column, record }">
     </template> -->
@@ -15,84 +16,107 @@
 <script setup lang="ts">
 import _ from 'lodash';
 import { storeToRefs } from 'pinia';
+import type { TableColumnsType } from 'ant-design-vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { outsourcePersonSalaryCommitDetailsFlag, } = storeToRefs(outsourceDetailStore);
-const columns = [
+const { getOutsourcePersonSalaryCommitCollectSheBao, } = storeToRefs(outsourceDetailStore);
+const columns:TableColumnsType = [
   {
     title: '编号',
     dataIndex: 'index',
     key: 'index',
+    width: 20,
   },
   {
     title: '社保周期',
     dataIndex: 'yearAndMonth',
     key: 'yearAndMonth',
+    width: 30,
   },
    {
     title: '姓名',
-    dataIndex: 'shebaoCompany',
-    key: 'shebaoCompany',
+    dataIndex: 'userName',
+    key: 'userName',
+    width: 50,
   },
    {
     title: '公司',
-    dataIndex: 'yijinCompany',
-    key: 'yijinCompany',
+    dataIndex: 'companyName',
+    key: 'companyName',
+    width: 40,
   },
    {
     title: '城市',
-    dataIndex: 'shebaoPerson',
-    key: 'shebaoPerson',
+    dataIndex: 'city',
+    key: 'city',
+    width: 30,
   },
   {
     title: '社保公司',
-    dataIndex: 'yijinPerson',
-    key: 'yijinPerson',
+    dataIndex: 'shebaoCompany',
+    key: 'shebaoCompany',
+    width: 30,
   },
   {
-    title: '单位总计',
+    title: h('a-tooltip', { title: '单位社保+单位一金' }, h('span', {'style': 'background: linear-gradient(45deg, transparent 93%, #f90202 0);padding-right: 5px;'}, '单位总计')),
     dataIndex: 'companyTotal',
     key: 'companyTotal',
+    width: 40,
+    align: 'right',
   },
     {
-    title: '个人总计',
+    title: h('a-tooltip', { title: '个人社保+个人一金' }, h('span', {'style': 'background: linear-gradient(45deg, transparent 93%, #f90202 0);padding-right: 5px;'}, '个人总计')),
     dataIndex: 'personTotal',
     key: 'personTotal',
+    width: 40,
+    align: 'right',
   },
     {
-    title: '补差',
-    dataIndex: 'serviceMoney',
-    key: 'serviceMoney',
+    title: h('a-tooltip', { title: '补差需要体现具体数据，请参考以下“补差”' }, h('span', {'style': 'background: linear-gradient(45deg, transparent 93%, #f90202 0);padding-right: 5px;'}, '补差总计')),
+    dataIndex: 'buchaMoney',
+    key: 'buchaMoney',
+    width: 30,
+    align: 'right',
   },
-    {
-    title: '社保总计',
+   {
+    title: '社保一金',
     dataIndex: 'shebaoTotal',
     key: 'shebaoTotal',
+    width: 40,
+    align: 'right',
   },
     {
     title: '残保金',
-    dataIndex: 'personNum',
-    key: 'personNum',
+    dataIndex: 'canbao',
+    key: 'canbao',
+    width: 30,
+    align: 'right',
   },
     {
-    title: '手续费',
-    dataIndex: 'checkFlag',
-    key: 'checkFlag',
+    title: '服务费',
+    dataIndex: 'serviceMoney',
+    key: 'serviceMoney',
+    width: 40,
+    align: 'right',
   },
   {
     title: '总计',
-    dataIndex: 'checkFlag',
-    key: 'checkFlag',
+    dataIndex: 'shangbaoTotal',
+    key: 'shangbaoTotal',
+    width: 40,
+    align: 'right',
   },
   {
     title: '标识',
     dataIndex: 'checkFlag',
     key: 'checkFlag',
+    width: 30,
   },
   {
     title: '账单月',
-    dataIndex: 'checkFlag',
-    key: 'checkFlag',
+    dataIndex: 'yearAndMonth',
+    key: 'yearAndMonth',
+    width: 30,
   },
 ];
 </script>

@@ -75,7 +75,42 @@ enum URL {
   query_outsource_salary_commit_detail = '/candidateRecommend/resume-vue-select-out-TiCaiGou-Detail-peron.action',
   query_outsource_salary_commit_collect_detail = '/candidateRecommend/resume-vue-select-out-TiCaiGou-Collect-peron.action',
   add_outsource_salary_purchase = '/finance/add-bank-purchase-byOutScoure.action',
+  query_outsource_salary_purchase = '/finance/query-bank-purchase-outsource-salary.action',
+  delete_outsource_salary_purchase = '/finance/resume-vue-delete-bank-purchase.action',
+  query_outsource_salary_commit_collect_shebao = '/candidateRecommend/resume-vue-select-out-TiCaiGou-Collect-shebao.action',
+  add_outsource_salary_purchase_excel = '/finance/add-purchase-Excel.action',
 }
+/**
+ * 51上传采购文件excel
+ * @param id
+ * @param purchaseId
+ * @param file
+ * @returns
+ */
+const addOutsourceSalaryPurchaseExcel = async (data: any) =>
+  post<any>({ url: URL.add_outsource_salary_purchase_excel, data});
+/**
+ * 采购记录删除
+ * @param ids
+ * @returns
+ */
+const deleteOutsourceSalaryPurchase = async (data: any) =>
+  post<any>({ url: URL.delete_outsource_salary_purchase, data});
+/**
+ * 采购记录查询
+ * @param pageNumber
+ * @param pageSize
+ * @returns
+ */
+const queryOutsourceSalaryPurchase = async (data: any) =>
+  post<any>({ url: URL.query_outsource_salary_purchase, data});
+/**
+ * 工资社保账单
+ * @param jinXinMonth
+ * @returns
+ */
+const queryOutsourceSalaryCommitCollectSheBao = async (data: any) =>
+  post<any>({ url: URL.query_outsource_salary_commit_collect_shebao, data});
 /**
  * 工资发薪提交到采购系统
  * @param List<OutsourceMonthSalaryCaigou>  发薪列表
@@ -613,6 +648,10 @@ const queryOutsourceMonthSalary = async (data: any) =>
   post<any>({ url: URL.query_outsource_month_salary, data });
 
 export default {
+  addOutsourceSalaryPurchaseExcel,
+  deleteOutsourceSalaryPurchase,
+  queryOutsourceSalaryPurchase,
+  queryOutsourceSalaryCommitCollectSheBao,
   addOutsourceSalaryPurchase,
   queryOutsourceSalaryCommitCollectDetail,
   queryOutsourceSalaryCommitDetail,

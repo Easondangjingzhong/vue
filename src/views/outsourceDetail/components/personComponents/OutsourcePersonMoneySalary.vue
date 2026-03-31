@@ -433,6 +433,7 @@ const defaultColumns = computed<TableColumnsType>(() => [
              fixed: s.fixed || col.fixed,
              key: s.key,
              dataIndex: s.key,
+             ellipsis: true,
           };
         }
         // If not in saved list, keep it default

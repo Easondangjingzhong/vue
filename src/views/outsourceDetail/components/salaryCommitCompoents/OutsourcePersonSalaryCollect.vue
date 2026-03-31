@@ -8,17 +8,33 @@
       :dataSource="getOutsourcePersonSalaryCommit"
       rowKey="companyName"
       :expandedRowKeys="expandedRowKeys"
-       :row-expandable="(record) => record.detailList && record.detailList.length > 0"
-       @expand="onExpand"
-       rowClassName="even-row"
+      :row-expandable="(record) => record.detailList && record.detailList.length > 0"
+      :expand-column-width="20"
+      @expand="onExpand"
+      rowClassName="even-row"
     >
     <template #bodyCell="{ column, record }">
-      <span v-if="column.key == 'pepoleNum'" style="cursor: pointer;" @click="handlePersonSalaryCollectDetail(record)"> {{ record.pepoleNum }}</span>
+      <span v-if="column.key == 'pepoleNum'" style="cursor: pointer;color: #1890FF;" @click="handlePersonSalaryCollectDetail(record)"> {{ record.pepoleNum }}</span>
       <span v-if="column.key == 'yiji'">0</span>
       <a-tag v-if="column.key == 'bankPurchaseStatus' && record.bankPurchaseStatus == '待发'" color="red">待发</a-tag>
       <a-tag v-if="column.key == 'bankPurchaseStatus' && record.bankPurchaseStatus == '采购'" color="orange">采购</a-tag>
       <a-tag v-if="column.key == 'bankPurchaseStatus' && record.bankPurchaseStatus == '已发'" color="green">已发</a-tag>
-      <a-button v-if="column.key == 'operation' && record.bankPurchaseStatus == '待发'" size="small" @click="handleAddOutsourceSalaryPurchaseCollect(record)">提交采购</a-button>
+    <a-tag v-if="column.key === 'checkStatus' && record.checkStatus === '未核'" color="red">未核</a-tag>
+    <a-tag v-if="column.key === 'checkStatus' && record.checkStatus === '已核'" color="green">已核</a-tag>
+    <template v-if="column.key === 'operation' && record.bankPurchaseStatus == '待发' && record.checkStatus === '已核'">
+          <a-dropdown>
+            <span class="ant-dropdown-link" style="cursor: pointer;" @click.prevent>
+              <MenuUnfoldOutlined style="font-size: 15px;"/>
+            </span>
+            <template #overlay>
+              <a-menu>
+                 <a-menu-item>
+                  <a href="javascript:;" @click="handleAddOutsourceSalaryPurchaseCollect(record)">提交采购</a>
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+     </template>
     </template>
     <template #expandedRowRender="{ record }">
       <div style="background-color: #fafafa; padding: 8px 8px 6px 0;">
@@ -32,8 +48,13 @@
         rowKey="__innerKey"
       >
      <template #bodyCell="{ column, record }">
-      <a-checkbox v-if="column.key == 'select'" :checked="isSelected(record.__innerKey)" :disabled="record.bankPurchaseStatus !== '待发'" @change="onSelectChange(record, $event.target.checked)" />
-      <span v-if="column.key == 'pepoleNum'" style="cursor: pointer;" @click="handlePersonSalaryDetail(record)"> {{ record.pepoleNum }}</span>
+      <a-checkbox
+        v-if="column.key == 'select'"
+        :checked="isSelected(record.__innerKey)"
+        :disabled="isCheckboxDisabled(record)"
+        @change="onSelectChange(record, $event.target.checked)"
+      />
+      <span v-if="column.key == 'pepoleNum'" style="cursor: pointer;color: #1890FF;" @click="handlePersonSalaryDetail(record)"> {{ record.pepoleNum }}</span>
       <span v-if="column.key == 'yiji'">0</span>
       <a-tag v-if="column.key == 'excelPath' && record.excelPath" style="cursor: pointer;">
          <a-popover placement="topLeft">
@@ -42,10 +63,25 @@
         <a-button size="small" style="margin-left: 5px;" @click="handleExcelPreview(record.excelPath)">查看</a-button>
       </template>查看</a-popover> 
       </a-tag>
-      <a-tag v-if="column.key == 'bankPurchaseStatus' && record.bankPurchaseStatus == '待发'" color="red">待发</a-tag>
-      <a-tag v-if="column.key == 'bankPurchaseStatus' && record.bankPurchaseStatus == '采购'" color="orange">采购</a-tag>
-      <a-tag v-if="column.key == 'bankPurchaseStatus' && record.bankPurchaseStatus == '已发'" color="green">已发</a-tag>
-      <a-button v-if="column.key == 'operation' && record.bankPurchaseStatus == '待发'" size="small" @click="handleAddOutsourceSalaryPurchase(record)">提交采购</a-button>
+      <a-tag style="margin-left: 1px;" v-if="column.key == 'bankPurchaseStatus' && record.bankPurchaseStatus == '待发'" color="red">待发</a-tag>
+      <a-tag style="margin-left: 1px;" v-if="column.key == 'bankPurchaseStatus' && record.bankPurchaseStatus == '采购'" color="orange">采购</a-tag>
+      <a-tag style="margin-left: 1px;" v-if="column.key == 'bankPurchaseStatus' && record.bankPurchaseStatus == '已发'" color="green">已发</a-tag>
+    <a-tag style="margin-left: 1px;" v-if="column.key === 'checkStatus' && record.checkStatus === '未核'" color="red">未核</a-tag>
+    <a-tag style="margin-left: 1px;" v-if="column.key === 'checkStatus' && record.checkStatus === '已核'" color="green">已核</a-tag>
+      <template v-if="column.key === 'operation' && record.bankPurchaseStatus == '待发' && record.checkStatus === '已核'">
+          <a-dropdown>
+            <span class="ant-dropdown-link" style="cursor: pointer;" @click.prevent>
+              <MenuUnfoldOutlined style="font-size: 15px;"/>
+            </span>
+            <template #overlay>
+              <a-menu>
+                 <a-menu-item>
+                  <a href="javascript:;" @click="handleAddOutsourceSalaryPurchase(record)">提交采购</a>
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+     </template>
     </template>
     </a-table>
       </div>
@@ -58,6 +94,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { message, Modal } from 'ant-design-vue';
+import { MenuUnfoldOutlined } from '@ant-design/icons-vue';
 import type { TableColumnsType } from 'ant-design-vue';
 import { OutsourcePersonSalaryCommitItem, OutsourcePersonSalaryCommitDetailItem } from '/@/api/outsourceDetail/model';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
@@ -111,11 +148,20 @@ const withInnerKeys = (details: any[] = [], parent: any) =>
 const selectedInnerDetailKeys = ref<string[]>([]);
 const selectedInnerDetails = ref<any[]>([]);
 const isSelected = (rowKey: string) => selectedInnerDetailKeys.value.includes(rowKey);
+const isCheckboxDisabled = (record: any) => {
+  if (record.bankPurchaseStatus !== '待发' || record.checkStatus !== '已核') return true;
+  if (selectedInnerDetails.value.length > 0) {
+    const first = selectedInnerDetails.value[0];
+    if (isSelected(record.__innerKey)) return false;
+    return record.faxinCompany !== first.faxinCompany || record.bankGroup !== first.bankGroup;
+  }
+  return false;
+};
 const onSelectChange = (rec: any, checked: boolean) => {
   const rowKey = rec.__innerKey;
   if (checked) {
-    if (rec.bankPurchaseStatus !== '待发') {
-      message.error('仅可选择待发记录');
+    if (rec.bankPurchaseStatus !== '待发' || rec.checkStatus !== '已核') {
+      message.error('仅可选择待发且已核对记录');
       return;
     }
     const first = selectedInnerDetails.value[0];
@@ -161,63 +207,63 @@ const columns: TableColumnsType = [
     align: 'right',
   },
    {
-    title: '应发工资',
+    title: h('a-tooltip', { title: '个人应发收入总和（不扣除社保、公积金和个税）' }, h('span', {'style': 'background: linear-gradient(45deg, transparent 93%, #f90202 0);padding-right: 5px;'}, '应发工资')),
     dataIndex: 'monthTax',
     key: 'monthTax',
     width: 40,
     align: 'right',
   },
   {
-    title: '计税不发',
+    title: h('a-tooltip', { title: '计税不发薪：解释为此金额计入缴税，但不发放' }, h('span', {'style': 'background: linear-gradient(45deg, transparent 93%, #f90202 0);padding-right: 5px;'}, '计税不发')),
     dataIndex: 'yiji',
     key: 'yiji',
     width: 40,
     align: 'right',
   },
   {
-    title: '实际税前',
+    title: h('a-tooltip', { title: '应发工资+计税不发=实际税前' }, h('span', {'style': 'background: linear-gradient(45deg, transparent 93%, #f90202 0);padding-right: 5px;'}, '实际税前')),
     dataIndex: 'monthTax',
     key: 'monthTax',
     width: 40,
     align: 'right',
   },
     {
-    title: '社保公积金',
+    title: h('a-tooltip', { title: '个人社保一金缴费总计' }, h('span', {'style': 'background: linear-gradient(45deg, transparent 93%, #f90202 0);padding-right: 5px;'}, '社保一金')),
     dataIndex: 'monthShebao',
     key: 'monthShebao',
-    width: 60,
+    width: 40,
     align: 'right',
   },
     {
-    title: '个税',
+    title: h('a-tooltip', { title: '实际税前金额对应的个税' }, h('span', {'style': 'background: linear-gradient(45deg, transparent 90%, #f90202 0);padding-right: 5px;'}, '个税')),
     dataIndex: 'monthGeshui',
     key: 'monthGeshui',
     width: 40,
     align: 'right',
   },
     {
-    title: '手续费',
+    title: h('a-tooltip', { title: '银行发薪手续费，银行代发工资不收取，非银行代发收取' }, h('span', {'style': 'background: linear-gradient(45deg, transparent 91%, #f90202 0);padding-right: 5px;'}, '手续费')),
     dataIndex: 'shouxuMoney',
     key: 'shouxuMoney',
     width: 40,
     align: 'right',
   },
     {
-    title: '实发工资',
+    title: h('a-tooltip', { title: '应发工资-社保一金-个税-手续费' }, h('span', {'style': 'background: linear-gradient(45deg, transparent 93%, #f90202 0);padding-right: 5px;'}, '实发工资')),
     dataIndex: 'salaryAfterTax',
     key: 'salaryAfterTax',
     width: 40,
     align: 'right',
   },
   {
-    title: '服务费',
+    title: h('a-tooltip', { title: '金元：60元/月/人；51社保：' }, h('span', {'style': 'background: linear-gradient(45deg, transparent 91%, #f90202 0);padding-right: 5px;'}, '服务费')),
     dataIndex: 'serviceMoney',
     key: 'serviceMoney',
     width: 40,
     align: 'right',
   },
   {
-    title: '总计',
+   title: h('a-tooltip', { title: h('div', [h('div', '51社保:实发工资+服务费+个税'), h('div', '非51社保:实发工资+服务费')]) }, h('span', {'style': 'background: linear-gradient(45deg, transparent 90%, #f90202 0);padding-right: 5px;'}, '总计')),
     dataIndex: 'totalMoney',
     key: 'totalMoney',
     width: 40,
@@ -253,7 +299,7 @@ const innerColumns: TableColumnsType = [
     title: '编号',
     dataIndex: 'index',
     key: 'index',
-    width: 20,
+    width: 2,
   },
   {
     title: '',
@@ -302,10 +348,10 @@ const innerColumns: TableColumnsType = [
     align: 'right',
   },
     {
-    title: '社保公积金',
+    title: '社保一金',
     dataIndex: 'monthShebao',
     key: 'monthShebao',
-    width: 60,
+    width: 40,
     align: 'right',
   },
     {

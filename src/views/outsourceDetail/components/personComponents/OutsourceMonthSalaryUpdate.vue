@@ -378,22 +378,22 @@ watch(outsourceMonthSalaryFlag, () => {
       return;
     }
     if (!outsourceMonthSalaryForm.value.shouxuMoney && outsourceMonthSalaryForm.value.shouxuMoney !== "0") {
-      if (res.info.shebaoCompany === '51社保') {
+      if (outsourceMonthSalaryForm.value.shebaoCompany === '51社保') {
       outsourceMonthSalaryForm.value.shouxuMoney = '0';
-    } else if (res.info.shebaoCompany === '北京博瑞') {
-      if (res.info.bankName === '浦发银行') {
+    } else if (outsourceMonthSalaryForm.value.shebaoCompany === '北京博瑞') {
+      if (outsourceMonthSalaryForm.value.bankName === '浦发银行') {
         outsourceMonthSalaryForm.value.shouxuMoney = '0';
       } else {
         outsourceMonthSalaryForm.value.shouxuMoney = '5';
       }
-    } else if (res.info.shebaoCompany === '北京我推') {
-      if (res.info.bankName === '招商银行' || res.info.bankName === '浦发银行') {
+    } else if (outsourceMonthSalaryForm.value.shebaoCompany === '北京我推') {
+      if (outsourceMonthSalaryForm.value.bankName === '招商银行' || outsourceMonthSalaryForm.value.bankName === '浦发银行') {
         outsourceMonthSalaryForm.value.shouxuMoney = '0';
       } else {
         outsourceMonthSalaryForm.value.shouxuMoney = '5';
       }
     } else {
-      if (res.info.bankName === '浦发银行') {
+      if (outsourceMonthSalaryForm.value.bankName === '浦发银行') {
         outsourceMonthSalaryForm.value.shouxuMoney = '0';
       } else {
         outsourceMonthSalaryForm.value.shouxuMoney = '5';
@@ -445,7 +445,7 @@ const monthGeshui = computed(() => {
     taxAmount = 36000 * 0.03 + (144000 - 36000) * 0.1 + (300000 - 144000) * 0.2 + (adjustedTaxableIncome - 300000) * 0.2;
   }
   // 返回计算结果，保留两位小数
-  return (taxAmount - parseFloat(yearGeshuiPre.value || '0') < 0 ? '0' : (taxAmount - parseFloat(yearGeshuiPre.value || '0')+ parseFloat(outsourceMonthSalaryForm.value?.geshuiCha || '0')).toFixed(2).toString());
+  return (taxAmount - parseFloat(yearGeshuiPre.value || '0') < 0 ? parseFloat(outsourceMonthSalaryForm.value?.geshuiCha || '0').toFixed(2) : (taxAmount - parseFloat(yearGeshuiPre.value || '0')+ parseFloat(outsourceMonthSalaryForm.value?.geshuiCha || '0')).toFixed(2).toString());
   }
   if (parseFloat(outsourceMonthSalaryForm.value.monthTax || '0') - 4000 <= 0) {
     const tax = ((parseFloat(outsourceMonthSalaryForm.value.monthTax || '0') -800)* 0.2) + parseFloat(outsourceMonthSalaryForm.value?.geshuiCha || '0');

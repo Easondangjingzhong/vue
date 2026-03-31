@@ -26,7 +26,6 @@ import {
   ComprehensiveCostItem,
   OutsourcePersonMoneyColumnsItem,
   OutsourcePersonSalaryCommitItem, //外包人员工资发薪详情
-  OutsourcePersonSalaryCommitDetailItem, //外包人员工资发薪详情
 } from '/@/api/outsourceDetail/model';
 const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: '' } = JSON.parse(
   localStorage.getItem('loginVueUser') || '{}',
@@ -174,6 +173,13 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     outsourcePersonSalaryCommitDetailsFlag: false, //工资发薪状态详情控制
     outsourcePersonSalaryCommit: [] as OutsourcePersonSalaryCommitItem[], //工资发薪
     outsourcePersonSalaryCommitDetail: [] as any[], //工资发薪
+    outsourcePersonSalaryCommitCollectSheBao: [] as any[], //工资社保
+    outsourceSalaryPurchaseList: [] as any[], //工资社保
+    pageOutsourceSalaryPurchaseList: {
+      pageNumber: 1,
+      pageSize: 13,
+      total: 0,
+    } as PageItem,
   }),
   getters: {
     getOutsourcePersonList: (state) =>
@@ -365,7 +371,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           Number(item.serviceMoney || 0)
         ).toFixed(2),
         totalChargeAfter: item.totalCharge
-          ? (parseFloat(item.totalCharge) * 1.0672).toFixed(2)
+          ? (parseFloat(item.totalCharge) / 1.0672).toFixed(2)
           : '',
       })),
     getOutsourcePersonByPhoneList: (state) =>
@@ -608,11 +614,11 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           }
         }
         const sheBaoMoneyValue = Number(item.monthShebao || 0) + Number(item.yijin || 0);
-        const canBaoMoneyValue = Number(item.monthTax || 0) * 0.015;
+        const canBaoMoneyValue = Number(item.canBaoKe || 0);
         const personCostValue = Number(item.monthTax || 0) + sheBaoMoneyValue + canBaoMoneyValue;
         const rateValue = 0.22;
         const serviceFeeValue = personCostValue * rateValue;
-        const shangbaoValue = 0;
+        const shangbaoValue = Number(item.shangBao || 0);
         const salaryTaxValue = personCostValue + serviceFeeValue + shangbaoValue;
         const salaryRateValue = 0.0672;
         const salaryRateMoneyValue = salaryTaxValue * salaryRateValue;
@@ -793,7 +799,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         serviceMoney: '-',
         costTotal: costTotal?.toFixed(2).toString(),
         manageGongShi: costMap.manageGongShi,
-        manageChargeTax: costMap.manageChargeTax,
+        manageChargeAfter: costMap.manageChargeAfter,
         manageChargeRate: costMap.manageChargeRate,
         manageChargeTaxMoney: costMap.manageChargeTaxMoney,
         moneyCahrgeTax: costMap.moneyCahrgeTax,
@@ -802,7 +808,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         zhuanChargeTaxMoney: costMap.zhuanChargeTaxMoney,
         zhuanChargeAfter: costMap.zhuanChargeAfter,
         totalCharge: costMap.totalCharge,
-        manageChargeAllocationTax: costMap.manageChargeAllocationTax,
+        manageChargeAllocationAfter: costMap.manageChargeAllocationAfter,
       });
       costArr.push({
         costType: '公司账单',
@@ -830,7 +836,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           .toFixed(2)
           .toString(),
         manageGongShi: '-',
-        manageChargeTax: '-',
+        manageChargeAfter: '-',
         manageChargeRate: '-',
         manageChargeTaxMoney: '-',
         moneyCahrgeTax: '-',
@@ -839,7 +845,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         zhuanChargeTaxMoney: '-',
         zhuanChargeAfter: '-',
         totalCharge: '-',
-        manageChargeAllocationTax: '-',
+        manageChargeAllocationAfter: '-',
       });
       return costArr;
     },
@@ -851,16 +857,12 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         ...item,
         index: index + 1,
         serviceMoney: Number(item?.serviceMoney || '0').toFixed(2),
-        totalMoney: (
-          Number(item?.salaryAfterTax || '0') + Number(item?.serviceMoney || '0')
-        ).toFixed(2),
+        totalMoney: Number(item?.totalMoney || '0').toFixed(2),
         detailList:
           item.detailList?.map((detailItem) => ({
             ...detailItem,
             serviceMoney: Number(detailItem?.serviceMoney || '0').toFixed(2),
-            totalMoney: (
-              Number(detailItem?.salaryAfterTax || '0') + Number(detailItem?.serviceMoney || '0')
-            ).toFixed(2),
+            totalMoney: Number(detailItem?.totalMoney || '0').toFixed(2),
           })) || [],
       })),
     getOutsourcePersonSalaryCommitDetail: (state) =>
@@ -869,11 +871,38 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         index: index + 1,
         userName: `${item?.userNameCn || ''}${item?.userNameEn || ''}`,
         serviceMoney: Number(item?.serviceMoney || '0').toFixed(2),
-        totalMoney: (
-          Number(item?.salaryAfterTax || '0') + Number(item?.serviceMoney || '0')
+        totalMoney: Number(item?.totalMoney || '0').toFixed(2),
+      })) || [],
+    getOutsourcePersonSalaryCommitCollectSheBao: (state) =>
+      state.outsourcePersonSalaryCommitCollectSheBao.map((item, index) => ({
+        ...item,
+        index: index + 1,
+        userName: `${item?.userNameCn || ''}${item?.userNameEn ? '/' + item?.userNameEn : ''}`,
+        companyTotal: parseFloat((item?.companyTotal || 0).toFixed(2)),
+        personTotal: parseFloat((item?.personTotal || 0).toFixed(2)),
+        shebaoTotal: parseFloat(
+          (
+            parseFloat((item?.companyTotal || 0).toFixed(2)) +
+            parseFloat((item?.personTotal || 0).toFixed(2))
+          ).toString(),
+        ).toFixed(2),
+        shangbaoTotal: parseFloat(
+          (
+            parseFloat((item?.companyTotal || 0).toFixed(2)) +
+            parseFloat((item?.personTotal || 0).toFixed(2)) +
+            parseFloat(item.serviceMoney != '公式' ? item.serviceMoney?.toString() || '0' : '0')
+          ).toString(),
         ).toFixed(2),
       })) || [],
-  },
+    getOutsourceSalaryPurchaseList: (state) => state.outsourceSalaryPurchaseList.map((item, index) => ({
+        ...item,
+        index: state.pageOutsourceSalaryPurchaseList.pageSize *
+            (state.pageOutsourceSalaryPurchaseList.pageNumber - 1) +
+          (index + 1),
+        applyTime: item.applyTime ? formatToDate(item.applyTime) : "",
+        ticketReturnTime: item.ticketReturnTime ? formatToDate(item.ticketReturnTime) : "",
+      })),
+    },
   actions: {
     /**
      * 查外包人员
@@ -2119,13 +2148,13 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
               temp.zhuanChargeAfter =
                 (parseFloat(record.zhuanChargeTax) * 0.25 * 1.0672).toFixed(2) || '0';
             } else {
-              const manageChargeTax =
+              const manageChargeAllocationTax =
                 resTeamMsg?.info[0]?.outFlag === '1'
-                  ? (parseFloat(record.manageChargeTax) * 0.49).toFixed(2)
-                  : (parseFloat(record.manageChargeTax) * 0.46).toFixed(2);
-              temp.manageChargeTax = (parseFloat(manageChargeTax) * 1.0672).toFixed(2);
+                  ? (parseFloat(record.manageChargeAllocationTax) * 0.49).toFixed(2)
+                  : (parseFloat(record.manageChargeAllocationTax) * 0.46).toFixed(2);
+              temp.manageChargeTax = manageChargeAllocationTax;
               temp.manageChargeRate = resTeamMsg?.info[0]?.outFlag === '1' ? '49%' : '46%';
-              temp.manageChargeAfter = (parseFloat(manageChargeTax) / 1.0672).toFixed(2);
+              temp.manageChargeAfter = (parseFloat(manageChargeAllocationTax) / 1.0672).toFixed(2);
               temp.zhuanChargeTax = (parseFloat(record.zhuanChargeTax) * 0.25).toFixed(2);
               temp.zhuanChargeRate = '25%';
               temp.zhuanChargeAfter =
@@ -2160,22 +2189,24 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
               (item) => item.orderType === 2,
             )[0];
             if (this.haveZhaoFlag == '有招') {
-              const manageChargeTax = (parseFloat(record.manageChargeTax) * 0.3).toFixed(2);
-              temp.manageChargeTax = manageChargeTax;
+              const manageChargeAllocationTax = (
+                parseFloat(record.manageChargeAllocationTax) * 0.3
+              ).toFixed(2);
+              temp.manageChargeTax = manageChargeAllocationTax;
               temp.manageChargeRate = '30%';
-              temp.manageChargeAfter = (parseFloat(manageChargeTax) / 1.0672).toFixed(2);
+              temp.manageChargeAfter = (parseFloat(manageChargeAllocationTax) / 1.0672).toFixed(2);
               temp.zhuanChargeTax = (parseFloat(record.zhuanChargeTax) * 0.25).toFixed(2);
               temp.zhuanChargeRate = '25%';
               temp.zhuanChargeAfter =
                 ((parseFloat(record.zhuanChargeTax) * 0.25) / 1.0672).toFixed(2) || '0';
             } else {
-              const manageChargeTax =
+              const manageChargeAllocationTax =
                 resTeamMsg?.info[0]?.outFlag === '1'
-                  ? (parseFloat(record.manageChargeTax) * 0.17).toFixed(2)
-                  : (parseFloat(record.manageChargeTax) * 0.18).toFixed(2);
-              temp.manageChargeTax = manageChargeTax;
+                  ? (parseFloat(record.manageChargeAllocationTax) * 0.17).toFixed(2)
+                  : (parseFloat(record.manageChargeAllocationTax) * 0.18).toFixed(2);
+              temp.manageChargeTax = manageChargeAllocationTax;
               temp.manageChargeRate = resTeamMsg?.info[0]?.outFlag === '1' ? '17%' : '18%';
-              temp.manageChargeAfter = (parseFloat(manageChargeTax) / 1.0672).toFixed(2);
+              temp.manageChargeAfter = (parseFloat(manageChargeAllocationTax) / 1.0672).toFixed(2);
               temp.zhuanChargeTax = (parseFloat(record.zhuanChargeTax) * 0.25).toFixed(2);
               temp.zhuanChargeRate = '25%';
               temp.zhuanChargeAfter =
@@ -2210,22 +2241,24 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
               (item) => item.orderType === 3,
             )[0];
             if (this.haveZhaoFlag == '有招') {
-              const manageChargeTax = (parseFloat(record.manageChargeTax) * 0.4).toFixed(2);
-              temp.manageChargeTax = manageChargeTax;
+              const manageChargeAllocationTax = (
+                parseFloat(record.manageChargeAllocationTax) * 0.4
+              ).toFixed(2);
+              temp.manageChargeTax = manageChargeAllocationTax;
               temp.manageChargeRate = '40%';
-              temp.manageChargeAfter = (parseFloat(manageChargeTax) / 1.0672).toFixed(2);
+              temp.manageChargeAfter = (parseFloat(manageChargeAllocationTax) / 1.0672).toFixed(2);
               temp.zhuanChargeTax = (parseFloat(record.zhuanChargeTax) * 0.25).toFixed(2);
               temp.zhuanChargeRate = '25%';
               temp.zhuanChargeAfter =
                 ((parseFloat(record.zhuanChargeTax) * 0.25) / 1.0672).toFixed(2) || '0';
             } else {
-              const manageChargeTax =
+              const manageChargeAllocationTax =
                 resTeamMsg?.info[0]?.outFlag === '1'
-                  ? (parseFloat(record.manageChargeTax) * 0.17).toFixed(2)
-                  : (parseFloat(record.manageChargeTax) * 0.18).toFixed(2);
-              temp.manageChargeTax = manageChargeTax;
+                  ? (parseFloat(record.manageChargeAllocationTax) * 0.17).toFixed(2)
+                  : (parseFloat(record.manageChargeAllocationTax) * 0.18).toFixed(2);
+              temp.manageChargeTax = manageChargeAllocationTax;
               temp.manageChargeRate = resTeamMsg?.info[0]?.outFlag === '1' ? '17%' : '18%';
-              temp.manageChargeAfter = (parseFloat(manageChargeTax) / 1.0672).toFixed(2);
+              temp.manageChargeAfter = (parseFloat(manageChargeAllocationTax) / 1.0672).toFixed(2);
               temp.zhuanChargeTax = (parseFloat(record.zhuanChargeTax) * 0.25).toFixed(2);
               temp.zhuanChargeRate = '25%';
               temp.zhuanChargeAfter =
@@ -2262,22 +2295,28 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
                 (item) => item.orderType === 4,
               )[0];
               if (this.haveZhaoFlag == '有招') {
-                const manageChargeTax = (parseFloat(record.manageChargeTax) * 0.15).toFixed(2);
-                temp.manageChargeTax = manageChargeTax;
+                const manageChargeAllocationTax = (
+                  parseFloat(record.manageChargeAllocationTax) * 0.15
+                ).toFixed(2);
+                temp.manageChargeTax = manageChargeAllocationTax;
                 temp.manageChargeRate = '15%';
-                temp.manageChargeAfter = (parseFloat(manageChargeTax) / 1.0672).toFixed(2);
+                temp.manageChargeAfter = (parseFloat(manageChargeAllocationTax) / 1.0672).toFixed(
+                  2,
+                );
                 temp.zhuanChargeTax = (parseFloat(record.zhuanChargeTax) * 0.125).toFixed(2);
                 temp.zhuanChargeRate = '12.5%';
                 temp.zhuanChargeAfter =
                   ((parseFloat(record.zhuanChargeTax) * 0.125) / 1.0672).toFixed(2) || '0';
               } else {
-                const manageChargeTax =
+                const manageChargeAllocationTax =
                   resTeamMsg?.info[0]?.outFlag === '1'
-                    ? (parseFloat(record.manageChargeTax) * 0.085).toFixed(2)
-                    : (parseFloat(record.manageChargeTax) * 0.09).toFixed(2);
-                temp.manageChargeTax = manageChargeTax;
+                    ? (parseFloat(record.manageChargeAllocationTax) * 0.085).toFixed(2)
+                    : (parseFloat(record.manageChargeAllocationTax) * 0.09).toFixed(2);
+                temp.manageChargeTax = manageChargeAllocationTax;
                 temp.manageChargeRate = resTeamMsg?.info[0]?.outFlag === '1' ? '8.5%' : '9%';
-                temp.manageChargeAfter = (parseFloat(manageChargeTax) / 1.0672).toFixed(2);
+                temp.manageChargeAfter = (parseFloat(manageChargeAllocationTax) / 1.0672).toFixed(
+                  2,
+                );
                 temp.zhuanChargeTax = (parseFloat(record.zhuanChargeTax) * 0.125).toFixed(2);
                 temp.zhuanChargeRate = '12.5%';
                 temp.zhuanChargeAfter =
@@ -2312,22 +2351,28 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
                 (item) => item.orderType === 4 && item.isMain === '3',
               )[0];
               if (this.haveZhaoFlag == '有招') {
-                const manageChargeTax = (parseFloat(record.manageChargeTax) * 0.15).toFixed(2);
-                temp.manageChargeTax = manageChargeTax;
+                const manageChargeAllocationTax = (
+                  parseFloat(record.manageChargeAllocationTax) * 0.15
+                ).toFixed(2);
+                temp.manageChargeTax = manageChargeAllocationTax;
                 temp.manageChargeRate = '15%';
-                temp.manageChargeAfter = (parseFloat(manageChargeTax) / 1.0672).toFixed(2);
+                temp.manageChargeAfter = (parseFloat(manageChargeAllocationTax) / 1.0672).toFixed(
+                  2,
+                );
                 temp.zhuanChargeTax = (parseFloat(record.zhuanChargeTax) * 0.125).toFixed(2);
                 temp.zhuanChargeRate = '12.5%';
                 temp.zhuanChargeAfter =
                   ((parseFloat(record.zhuanChargeTax) * 0.125) / 1.0672).toFixed(2) || '0';
               } else {
-                const manageChargeTax =
+                const manageChargeAllocationTax =
                   resTeamMsg?.info[0]?.outFlag === '1'
-                    ? (parseFloat(record.manageChargeTax) * 0.085).toFixed(2)
-                    : (parseFloat(record.manageChargeTax) * 0.09).toFixed(2);
-                temp.manageChargeTax = manageChargeTax;
+                    ? (parseFloat(record.manageChargeAllocationTax) * 0.085).toFixed(2)
+                    : (parseFloat(record.manageChargeAllocationTax) * 0.09).toFixed(2);
+                temp.manageChargeTax = manageChargeAllocationTax;
                 temp.manageChargeRate = resTeamMsg?.info[0]?.outFlag === '1' ? '8.5%' : '9%';
-                temp.manageChargeAfter = (parseFloat(manageChargeTax) / 1.0672).toFixed(2);
+                temp.manageChargeAfter = (parseFloat(manageChargeAllocationTax) / 1.0672).toFixed(
+                  2,
+                );
                 temp.zhuanChargeTax = (parseFloat(record.zhuanChargeTax) * 0.125).toFixed(2);
                 temp.zhuanChargeRate = '12.5%';
                 temp.zhuanChargeAfter =
@@ -2363,22 +2408,28 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
                 (item) => item.orderType === 4,
               )[0];
               if (this.haveZhaoFlag == '有招') {
-                const manageChargeTax = (parseFloat(record.manageChargeTax) * 0.3).toFixed(2);
-                temp.manageChargeTax = manageChargeTax;
+                const manageChargeAllocationTax = (
+                  parseFloat(record.manageChargeAllocationTax) * 0.3
+                ).toFixed(2);
+                temp.manageChargeTax = manageChargeAllocationTax;
                 temp.manageChargeRate = '30%';
-                temp.manageChargeAfter = (parseFloat(manageChargeTax) / 1.0672).toFixed(2);
+                temp.manageChargeAfter = (parseFloat(manageChargeAllocationTax) / 1.0672).toFixed(
+                  2,
+                );
                 temp.zhuanChargeTax = (parseFloat(record.zhuanChargeTax) * 0.25).toFixed(2);
                 temp.zhuanChargeRate = '25%';
                 temp.zhuanChargeAfter =
                   ((parseFloat(record.zhuanChargeTax) * 0.25) / 1.0672).toFixed(2) || '0';
               } else {
-                const manageChargeTax =
+                const manageChargeAllocationTax =
                   resTeamMsg?.info[0]?.outFlag === '1'
-                    ? (parseFloat(record.manageChargeTax) * 0.17).toFixed(2)
-                    : (parseFloat(record.manageChargeTax) * 0.18).toFixed(2);
-                temp.manageChargeTax = manageChargeTax;
+                    ? (parseFloat(record.manageChargeAllocationTax) * 0.17).toFixed(2)
+                    : (parseFloat(record.manageChargeAllocationTax) * 0.18).toFixed(2);
+                temp.manageChargeTax = manageChargeAllocationTax;
                 temp.manageChargeRate = resTeamMsg?.info[0]?.outFlag === '1' ? '17%' : '18%';
-                temp.manageChargeAfter = (parseFloat(manageChargeTax) / 1.0672).toFixed(2);
+                temp.manageChargeAfter = (parseFloat(manageChargeAllocationTax) / 1.0672).toFixed(
+                  2,
+                );
                 temp.zhuanChargeTax = (parseFloat(record.zhuanChargeTax) * 0.25).toFixed(2);
                 temp.zhuanChargeRate = '25%';
                 temp.zhuanChargeAfter =
@@ -2611,8 +2662,6 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
      * 工资发薪详情查询
      * @param jinXinMonth
      * @param companyName
-     * @param faxinCompany
-     * @param bankGroup
      * @returns
      */
     async queryOutsourceSalaryCommitCollectDetail(jinXinMonth: string, companyName: string) {
@@ -2624,6 +2673,26 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         if (res.code === 1) {
           this.outsourcePersonSalaryCommitDetailsFlag = true;
           this.outsourcePersonSalaryCommitDetail = res.info || [];
+        }
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+    /**
+     * 工资社保账单查询
+     * @param jinXinMonth
+     * @param companyName
+     * @returns
+     */
+    async queryOutsourceSalaryCommitCollectSheBao(jinXinMonth: string, companyName?: string) {
+      try {
+        const formdata = new FormData();
+        formdata.append('jinXinMonth', jinXinMonth || '');
+        formdata.append('companyName', companyName || '');
+        const res = await fetchApi.queryOutsourceSalaryCommitCollectSheBao(formdata);
+        if (res.code === 1) {
+          this.outsourcePersonSalaryCommitCollectSheBao = res.info || [];
         }
         return res;
       } catch (error) {
@@ -2643,9 +2712,68 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           .map((item) => ({
             ...item,
             applyRecruitId: loginVueUser.loginId || '',
-            applyRealNameEn: loginVueUser.loginName || '',
+            applyRealNameEn: (loginVueUser.loginName || '').replace(/\+|%2B/g, ' '),
           }));
         const res = await fetchApi.addOutsourceSalaryPurchase(payload);
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+     /**
+ * 采购记录查询
+ * @param pageNumber
+ * @param pageSize
+ * @returns
+ */
+    async queryOutsourceSalaryPurchase() {
+      try {
+        const params = new FormData();
+        params.append('pageNumber', this.pageOutsourceSalaryPurchaseList.pageNumber.toString());
+        params.append('pageSize', this.pageOutsourceSalaryPurchaseList.pageSize.toString());
+        const res = await fetchApi.queryOutsourceSalaryPurchase(params);
+        if (res.code === 1) {
+          this.outsourceSalaryPurchaseList = res.info.list || [];
+          this.pageOutsourceSalaryPurchaseList = {
+            pageNumber: res.info.pageNumber,
+            pageSize: res.info.pageSize,
+            total: res.info.totalCount,
+          } as PageItem;
+        }
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+     /**
+ * 采购记录删除
+ * @param ids
+ * @returns
+ */
+    async deleteOutsourceSalaryPurchase(ids) {
+      try {
+        const params = new FormData();
+        params.append('ids', ids);
+        const res = await fetchApi.deleteOutsourceSalaryPurchase(params);
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+     /**
+ * 51上传采购文件excel
+ * @param id
+ * @param purchaseId
+ * @param file
+ * @returns
+ */
+    async addOutsourceSalaryPurchaseExcel(id:string,purchaseId:string,file:any) {
+      try {
+        const params = new FormData();
+        params.append('id', id);
+        params.append('purchaseId', purchaseId);
+        params.append('file', file);
+        const res = await fetchApi.addOutsourceSalaryPurchaseExcel(params);
         return res;
       } catch (error) {
         return null;

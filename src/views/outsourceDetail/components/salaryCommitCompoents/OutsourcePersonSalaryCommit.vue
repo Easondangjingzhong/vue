@@ -16,18 +16,17 @@
   <div class="resume_container">
     <a-layout>
         <a-layout-content class="resume_content">
-           <a-tabs v-model:activeKey="outsourceDetailMoneySider" type="card">
-              <a-tab-pane key="1" tab="考勤">
-                 
-              </a-tab-pane>
-              <a-tab-pane key="2" tab="账单">
-                
-              </a-tab-pane>
+           <a-tabs v-model:activeKey="outsourceDetailMoneySider" type="card" @change="handleChange">
+              <a-tab-pane key="1" tab="考勤"></a-tab-pane>
+              <a-tab-pane key="2" tab="账单"></a-tab-pane>
               <a-tab-pane key="3" tab="社保">
                 <OutsourcePersonSalarySheBao />
               </a-tab-pane>
               <a-tab-pane key="4" tab="发薪">
                  <OutsourcePersonSalaryCollect />
+              </a-tab-pane>
+              <a-tab-pane key="5" tab="采购" style="margin-left: auto">
+                 <OutsourcePersonSalaryCaiGou />
               </a-tab-pane>
           </a-tabs>
         </a-layout-content>
@@ -46,17 +45,31 @@ import FileYuLanInfo from '/@/views/outsourceDetail/components/personComponents/
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 import OutsourcePersonSalaryCollect from './OutsourcePersonSalaryCollect.vue';
 import OutsourcePersonSalarySheBao from './OutsourcePersonSalarySheBao.vue';
+import OutsourcePersonSalaryCaiGou from './OutsourcePersonSalaryCaiGou.vue';
 import OutsourcePersonSalaryCollectDetails from './OutsourcePersonSalaryCollectDetails.vue';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
 const { outsourcePersonSalaryCommitFlag, formStateMonthSalary} = storeToRefs(outsourceDetailStore);
 const drawerWidth = ref(Math.max(600, window.innerWidth * 0.9));
 const outsourceDetailMoneySider = ref('4');
+const handleChange = (key) => {
+  if (key == '3') {
+    outsourceDetailStore.queryOutsourceSalaryCommitCollectSheBao(formStateMonthSalary.value.yearAndMonth);
+  }
+  if (key == '4') {
+    outsourceDetailStore.queryOutsourceSalaryCommit(formStateMonthSalary.value.yearAndMonth);
+  }
+  if (key == '5') {
+    outsourceDetailStore.queryOutsourceSalaryPurchase();
+  }
+}
 const handleClose = () => {
   outsourcePersonSalaryCommitFlag.value = false;
 };
 watch(outsourcePersonSalaryCommitFlag, () => {
   if (outsourcePersonSalaryCommitFlag.value) {
+    outsourceDetailStore.queryOutsourceSalaryPurchase();
     outsourceDetailStore.queryOutsourceSalaryCommit(formStateMonthSalary.value.yearAndMonth);
+    outsourceDetailStore.queryOutsourceSalaryCommitCollectSheBao(formStateMonthSalary.value.yearAndMonth);
   }
 });
 </script>
@@ -95,5 +108,16 @@ watch(outsourcePersonSalaryCommitFlag, () => {
   }
   .resume-content-search .ant-form .ant-form-item {
     margin-bottom: 10px !important;
+  }
+  :deep(.right-tabs) {
+    .ant-tabs-nav {
+      margin: 0 !important;
+      &::before {
+        display: none;
+      }
+      .ant-tabs-nav-operations {
+        display: none !important;
+      }
+    }
   }
 </style>

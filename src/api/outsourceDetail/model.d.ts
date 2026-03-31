@@ -1,4 +1,4 @@
-import { S } from "mockjs";
+import { S } from 'mockjs';
 
 /**
  * 外包个人信息
@@ -105,6 +105,7 @@ export interface OutsourcePersonItem {
   allowance: string;
   haveZhao: string;
 }
+
 //业绩分配详情
 export interface OfferDetailsItem {
   collectId: string;
@@ -471,32 +472,32 @@ export interface OutsourceMonthSalaryItem {
   // 状态
   currentStatus: string;
   //业绩分配
-  companyShebao?: string;//公司社保金额
-  companyYijin?: string;//公司一金金额
-  moneyCahrgeTax?: string;//总营收费含税
-  moneyCahrgeTaxMoney?: string;//总营收费税金
-  moneyCahrgeRate?: string;//总营收费税率
-  moneyChargeAfter?: string;//总营收费税后金额
-  manageChargeTax?: string;//管理费金额
-  manageChargeTaxMoney?: string;//管理费税金
-  manageChargeRate?: string;//管理费税率
-  manageChargeAfter?: string;//管理费税后金额
-  manageChargeAllocationTax?: string;//可分管理费金额
-  manageChargeAllocationAfter?: string;//可分管理费税后金额
-  zhuanChargeTax?: string;//转换金额
-  zhuanChargeTaxMoney?: string;//转换税金
-  zhuanChargeRate?: string;//转换税率
-  zhuanChargeAfter?: string;//转换税后金额
-  totalCharge?: string;//总收费金额
-  welfare?: string;//福利金额
-  otherPay?: string;//其他支付金额
-  companyShebaoKe?: string;//公司社保金额(客户)
-  companyYijinKe?: string;//公司一金金额(客户)
-  keShangbao?: string;//商业保险(客户)
-  shiShangbao?: string;//实际商业保险
-  welfareKe?: string;//福利金额(客户)
-  otherPayKe?: string;//其他支付金额(客户)
-  manageGongShi?: string;//管理公式
+  companyShebao?: string; //公司社保金额
+  companyYijin?: string; //公司一金金额
+  moneyCahrgeTax?: string; //总营收费含税
+  moneyCahrgeTaxMoney?: string; //总营收费税金
+  moneyCahrgeRate?: string; //总营收费税率
+  moneyChargeAfter?: string; //总营收费税后金额
+  manageChargeTax?: string; //管理费金额
+  manageChargeTaxMoney?: string; //管理费税金
+  manageChargeRate?: string; //管理费税率
+  manageChargeAfter?: string; //管理费税后金额
+  manageChargeAllocationTax?: string; //可分管理费金额
+  manageChargeAllocationAfter?: string; //可分管理费税后金额
+  zhuanChargeTax?: string; //转换金额
+  zhuanChargeTaxMoney?: string; //转换税金
+  zhuanChargeRate?: string; //转换税率
+  zhuanChargeAfter?: string; //转换税后金额
+  totalCharge?: string; //总收费金额
+  welfare?: string; //福利金额
+  otherPay?: string; //其他支付金额
+  companyShebaoKe?: string; //公司社保金额(客户)
+  companyYijinKe?: string; //公司一金金额(客户)
+  keShangbao?: string; //商业保险(客户)
+  shiShangbao?: string; //实际商业保险
+  welfareKe?: string; //福利金额(客户)
+  otherPayKe?: string; //其他支付金额(客户)
+  manageGongShi?: string; //管理公式
   rMoney?: string;
   rRatio?: string;
   cMoney?: string;
@@ -525,25 +526,27 @@ export interface OutsourceMonthSalaryItem {
   otherPayKeStr?: string;
   otherPayStr?: string;
   welfareList?: Array<WelfareItem>;
-  serviceMoney?: string;//三方服务金额
-  chenbenTiaocha?: string;//调差调整金额
-  chenbenTiaochaKe?: string;//调差调整金额
-  chenbenTiaochaStr?: string;//调差调整金额
-  chenbenTiaochaKeStr?: string;//调差调整金额
-  otherCha?: string;//其他差额
+  serviceMoney?: string; //三方服务金额
+  chenbenTiaocha?: string; //调差调整金额
+  chenbenTiaochaKe?: string; //调差调整金额
+  chenbenTiaochaStr?: string; //调差调整金额
+  chenbenTiaochaKeStr?: string; //调差调整金额
+  otherCha?: string; //其他差额
   offerOutSourceDetails?: OfferDetailsItem[];
-  yearShebaoPre?: string;//年社保
-  yearGeshuiPre?: string;//年个税
-  yearMianzhengPre?: string;//年免征
-  yearTaxPre?: string;//年个税
-  yearZhuankouPre?: string;//年专扣
-  gongziCha?: string;//工资差额
-  canBaoKe?: string;//企业残保(客户)
-  canBao?: string;//企业残保(公司)
-  totalChargeCha?: string;//收费调差
-  chenbenTiaochaKeFlag?: string;//调差调整 是否计算管理费
-  signSalary?: string;//月度薪资标识 null 未核 1 已核
-  oldCollectId?: string;//老的外包业绩统计id
+  yearShebaoPre?: string; //年社保
+  yearGeshuiPre?: string; //年个税
+  yearMianzhengPre?: string; //年免征
+  yearTaxPre?: string; //年个税
+  yearZhuankouPre?: string; //年专扣
+  gongziCha?: string; //工资差额
+  canBaoKe?: string; //企业残保(客户)
+  canBao?: string; //企业残保(公司)
+  totalChargeCha?: string; //收费调差
+  chenbenTiaochaKeFlag?: string; //调差调整 是否计算管理费
+  signSalary?: string; //月度薪资标识 null 未核 1 已核
+  oldCollectId?: string; //老的外包业绩统计id
+  bankName: string;
+  shebaoCompany: string;
 }
 //用工成本
 export interface CostItem {
@@ -559,7 +562,7 @@ export interface CostItem {
   serviceMoney?: string;
   costTotal?: string;
   manageGongShi?: string;
-  manageChargeTax?: string;
+  manageChargeAfter?: string;
   manageChargeRate?: string;
   manageChargeTaxMoney?: string;
   moneyCahrgeTax?: string;
@@ -567,8 +570,8 @@ export interface CostItem {
   zhuanChargeRate?: string;
   zhuanChargeTaxMoney?: string;
   zhuanChargeAfter?: string;
-  totalCharge?: string;     
-  manageChargeAllocationTax?: string;     
+  totalCharge?: string;
+  manageChargeAllocationAfter?: string;
 }
 //外包用工成本详情
 export interface ComprehensiveCostItem {
@@ -581,36 +584,36 @@ export interface ComprehensiveCostItem {
   personId: string;
   monthTax: string;
   jinxinMonth: string;
-  canBao?: string;//企业残保
-  costTotal?: string;//成本总计
-  costTotalke?: string;//成本总计
+  canBao?: string; //企业残保
+  costTotal?: string; //成本总计
+  costTotalke?: string; //成本总计
   //业绩分配
-  companyShebao?: string;//公司社保金额
-  companyYijin?: string;//公司一金金额
-  moneyCahrgeTax?: string;//总营收费含税
-  moneyCahrgeTaxMoney?: string;//总营收费税金
-  moneyCahrgeRate?: string;//总营收费税率
-  moneyChargeAfter?: string;//总营收费税后金额
-  manageChargeTax?: string;//管理费金额
-  manageChargeTaxMoney?: string;//管理费税金
-  manageChargeRate?: string;//管理费税率
-  manageChargeAfter?: string;//管理费税后金额
-  manageChargeAllocationTax?: string;//可分管理费金额
-  manageChargeAllocationAfter?: string;//可分管理费税后金额
-  zhuanChargeTax?: string;//转换金额
-  zhuanChargeTaxMoney?: string;//转换税金
-  zhuanChargeRate?: string;//转换税率
-  zhuanChargeAfter?: string;//转换税后金额
-  totalCharge?: string;//总收费金额
-  welfare?: string;//福利金额
-  otherPay?: string;//其他支付金额
-  companyShebaoKe?: string;//公司社保金额(客户)
-  companyYijinKe?: string;//公司一金金额(客户)
-  keShangbao?: string;//商业保险(客户)
-  shiShangbao?: string;//实际商业保险
-  welfareKe?: string;//福利金额(客户)
-  otherPayKe?: string;//其他支付金额(客户)
-  manageGongShi?: string;//管理公式
+  companyShebao?: string; //公司社保金额
+  companyYijin?: string; //公司一金金额
+  moneyCahrgeTax?: string; //总营收费含税
+  moneyCahrgeTaxMoney?: string; //总营收费税金
+  moneyCahrgeRate?: string; //总营收费税率
+  moneyChargeAfter?: string; //总营收费税后金额
+  manageChargeTax?: string; //管理费金额
+  manageChargeTaxMoney?: string; //管理费税金
+  manageChargeRate?: string; //管理费税率
+  manageChargeAfter?: string; //管理费税后金额
+  manageChargeAllocationTax?: string; //可分管理费金额
+  manageChargeAllocationAfter?: string; //可分管理费税后金额
+  zhuanChargeTax?: string; //转换金额
+  zhuanChargeTaxMoney?: string; //转换税金
+  zhuanChargeRate?: string; //转换税率
+  zhuanChargeAfter?: string; //转换税后金额
+  totalCharge?: string; //总收费金额
+  welfare?: string; //福利金额
+  otherPay?: string; //其他支付金额
+  companyShebaoKe?: string; //公司社保金额(客户)
+  companyYijinKe?: string; //公司一金金额(客户)
+  keShangbao?: string; //商业保险(客户)
+  shiShangbao?: string; //实际商业保险
+  welfareKe?: string; //福利金额(客户)
+  otherPayKe?: string; //其他支付金额(客户)
+  manageGongShi?: string; //管理公式
   rMoney?: string;
   rRatio?: string;
   cMoney?: string;
@@ -639,17 +642,17 @@ export interface ComprehensiveCostItem {
   otherPayKeStr?: string;
   otherPayStr?: string;
   welfareList?: Array<WelfareItem>;
-  serviceMoney?: string;//三方服务金额
-  chenbenTiaocha?: string;//调差调整金额
-  chenbenTiaochaKe?: string;//调差调整金额
-  chenbenTiaochaStr?: string;//调差调整金额
-  chenbenTiaochaKeStr?: string;//调差调整金额  
-  canBaoKe?: string;//企业残保(客户)
-  canBao?: string;//企业残保(公司)
-  totalChargeCha?: string;//收费调差
-  chenbenTiaochaKeFlag?: string;//调差调整 是否计算管理费
-  signSalary?: string;//月度薪资标识 null 未核 1 已核
-  oldCollectId?: string;//老的外包业绩统计id
+  serviceMoney?: string; //三方服务金额
+  chenbenTiaocha?: string; //调差调整金额
+  chenbenTiaochaKe?: string; //调差调整金额
+  chenbenTiaochaStr?: string; //调差调整金额
+  chenbenTiaochaKeStr?: string; //调差调整金额
+  canBaoKe?: string; //企业残保(客户)
+  canBao?: string; //企业残保(公司)
+  totalChargeCha?: string; //收费调差
+  chenbenTiaochaKeFlag?: string; //调差调整 是否计算管理费
+  signSalary?: string; //月度薪资标识 null 未核 1 已核
+  oldCollectId?: string; //老的外包业绩统计id
 }
 /**
  * 外包福利
@@ -945,7 +948,7 @@ export interface NewJoinerPersonalInfoItem {
 
   offerOutsourceFamilies: OfferOutsourceFamilyItem[];
   offerOutsourceWorks: OfferOutsourceWorkItem[];
-  
+
   signOfferType: string;
   shixiStartTime: string;
   shixiEndTime: string;
@@ -1025,18 +1028,34 @@ export interface OutsourcePersonSalaryCommitDetailItem {
 }
 
 export interface OutsourcePersonSalaryCommitItem {
-  caiGouStatus?: string; 
-  bankPurchaseStatus?: string; 
-  checkStatus?: string; 
-  companyName: string; 
-  jinXinMonth?: string; 
-  monthGeshui?: string; 
-  monthShebao?: string; 
-  monthTax?: string; 
-  pepoleNum?: string; 
-  salaryAfterTax?: string; 
-  serviceMoney?: string; 
-  shouxuMoney?: string; 
+  caiGouStatus?: string;
+  bankPurchaseStatus?: string;
+  checkStatus?: string;
+  companyName: string;
+  jinXinMonth?: string;
+  monthGeshui?: string;
+  monthShebao?: string;
+  monthTax?: string;
+  pepoleNum?: string;
+  salaryAfterTax?: string;
+  serviceMoney?: string;
+  shouxuMoney?: string;
   totalMoney?: string;
-  detailList?: OutsourcePersonSalaryCommitDetailItem[]; 
+  detailList?: OutsourcePersonSalaryCommitDetailItem[];
+}
+
+/**
+ * 外包工资银行采购表
+ */
+export interface BankPurchaseOutsourceSalaryItem {
+  id: number;
+  purchaseId: string;
+  purchaseName: string;
+  purchaseDetail: string;
+  companyName: string;
+  money: string;
+  applyUser: string;
+  applyTime: string;
+  applyPath: string;
+  creatTime: string;
 }
