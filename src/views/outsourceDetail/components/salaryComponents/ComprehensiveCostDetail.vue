@@ -500,7 +500,7 @@ watch(costDetailFlag,() => {
   costDetailFormPerformanceDetail();
 })
 const costTotalke = computed(() => {
-  return (Number(costDetailForm.value.monthTax || 0) + Number(costDetailForm.value.canBaoKe || 0) + Number(costDetailForm.value.companyShebaoKe || 0) + Number(costDetailForm.value.companyYijinKe || 0) - Number(costDetailForm.value.welfareKe || 0) + Number(costDetailForm.value.keShangbao || 0) + Number(costDetailForm.value.chenbenTiaochaKe || 0) + Number(costDetailForm.value.otherPay || 0)).toFixed(2);
+  return (Number(costDetailForm.value.monthTax || 0) + Number(costDetailForm.value.canBaoKe || 0) + Number(costDetailForm.value.companyShebaoKe || 0) + Number(costDetailForm.value.companyYijinKe || 0) - Number(costDetailForm.value.welfareKe || 0) + Number(costDetailForm.value.keShangbao || 0) + Number(costDetailForm.value.chenbenTiaochaKe || 0) + Number(costDetailForm.value.otherPayKe || 0)).toFixed(2);
 })
 const costTotal = computed(() => {
   return (Number(costDetailForm.value.monthTax || 0) + Number(costDetailForm.value.canBao || 0) + Number(costDetailForm.value.companyShebao || 0) + Number(costDetailForm.value.companyYijin || 0) + Number(costDetailForm.value.welfare || 0) + Number(costDetailForm.value.otherPay || 0) + Number(costDetailForm.value.shiShangbao || 0) + Number(costDetailForm.value.chenbenTiaocha || 0) + Number(costDetailForm.value.serviceMoney || 0)).toFixed(2);

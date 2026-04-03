@@ -33,6 +33,21 @@
     <a-tag v-if="column.key === 'checkStatus' && record.checkStatus === '未核'" color="red">未核</a-tag>
     <a-tag v-if="column.key === 'checkStatus' && record.checkStatus === '已核'" color="green">已核</a-tag>
     </template>
+    <template #summary>
+      <a-table-summary fixed>
+        <a-table-summary-row>
+          <a-table-summary-cell :index="0" :colSpan="7" style="text-align: right;">合计</a-table-summary-cell>
+          <a-table-summary-cell :index="1" style="text-align: right;">{{ summaryData.monthTax }}</a-table-summary-cell>
+          <a-table-summary-cell :index="2" style="text-align: right;">{{ summaryData.monthShebao }}</a-table-summary-cell>
+          <a-table-summary-cell :index="3" style="text-align: right;">{{ summaryData.monthGeshui }}</a-table-summary-cell>
+          <a-table-summary-cell :index="4" style="text-align: right;">{{ summaryData.shouxuMoney }}</a-table-summary-cell>
+          <a-table-summary-cell :index="5" style="text-align: right;">{{ summaryData.salaryAfterTax }}</a-table-summary-cell>
+          <a-table-summary-cell :index="6" style="text-align: right;">{{ summaryData.serviceMoney }}</a-table-summary-cell>
+          <a-table-summary-cell :index="7" style="text-align: right;">{{ summaryData.totalMoney }}</a-table-summary-cell>
+          <a-table-summary-cell :index="8"></a-table-summary-cell>
+        </a-table-summary-row>
+      </a-table-summary>
+    </template>
   </a-table>
   </div>
    </a-drawer>
@@ -50,6 +65,47 @@ const drawerWidth = ref(Math.max(600, window.innerWidth * 0.8));
 const handleClose = () => {
   outsourcePersonSalaryCommitDetailsFlag.value = false;
 };
+const summaryData = computed(() => {
+  const data = getOutsourcePersonSalaryCommitDetail.value;
+  if (!data || data.length === 0) {
+    return {
+      monthTax: '0.00',
+      monthShebao: '0.00',
+      monthGeshui: '0.00',
+      shouxuMoney: '0.00',
+      salaryAfterTax: '0.00',
+      serviceMoney: '0.00',
+      totalMoney: '0.00',
+    };
+  }
+  const sums = {
+    monthTax: 0,
+    monthShebao: 0,
+    monthGeshui: 0,
+    shouxuMoney: 0,
+    salaryAfterTax: 0,
+    serviceMoney: 0,
+    totalMoney: 0,
+  };
+  data.forEach((item) => {
+    sums.monthTax += Number(item.monthTax || 0);
+    sums.monthShebao += Number(item.monthShebao || 0);
+    sums.monthGeshui += Number(item.monthGeshui || 0);
+    sums.shouxuMoney += Number(item.shouxuMoney || 0);
+    sums.salaryAfterTax += Number(item.salaryAfterTax || 0);
+    sums.serviceMoney += Number(item.serviceMoney || 0);
+    sums.totalMoney += Number(item.totalMoney || 0);
+  });
+  return {
+    monthTax: sums.monthTax.toFixed(2),
+    monthShebao: sums.monthShebao.toFixed(2),
+    monthGeshui: sums.monthGeshui.toFixed(2),
+    shouxuMoney: sums.shouxuMoney.toFixed(2),
+    salaryAfterTax: sums.salaryAfterTax.toFixed(2),
+    serviceMoney: sums.serviceMoney.toFixed(2),
+    totalMoney: sums.totalMoney.toFixed(2),
+  };
+});
 const columns: TableColumnsType = [
   {
     title: '编号',

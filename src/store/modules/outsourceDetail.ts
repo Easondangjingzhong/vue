@@ -98,6 +98,8 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     outsourceSocialSecurityDetailList: [] as OutsourceSheBaoItem[], //外包社保详情 社保信息
     outsourceSocialSecurityContractRatesList: [] as OutsourceSheBaoContractRatesItem[], //外包社保合同费率列表
     newJoinerPersonalInformationFlag: false, //新员工个人信息登记表
+    outsourceSocialSecurityJiaoFlag: false, //外包社保补缴预收弹窗
+    outsourceSocialSecurityJiaoForm: {} as OutsourceSheBaoItem, //外包社保补缴预收表单
     newJoinerPersonalInformationFormTemp: {} as OutsourcePersonItem, //新员工个人信息登记表
     outsourceShebaoCollect: [] as OutsourceSheBaoCollectItem[], //外包社保月度总计
     outsourceSocialSecurityCollectFlag: false, //外包社保月度总计详情控制
@@ -894,15 +896,17 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           ).toString(),
         ).toFixed(2),
       })) || [],
-    getOutsourceSalaryPurchaseList: (state) => state.outsourceSalaryPurchaseList.map((item, index) => ({
+    getOutsourceSalaryPurchaseList: (state) =>
+      state.outsourceSalaryPurchaseList.map((item, index) => ({
         ...item,
-        index: state.pageOutsourceSalaryPurchaseList.pageSize *
+        index:
+          state.pageOutsourceSalaryPurchaseList.pageSize *
             (state.pageOutsourceSalaryPurchaseList.pageNumber - 1) +
           (index + 1),
-        applyTime: item.applyTime ? formatToDate(item.applyTime) : "",
-        ticketReturnTime: item.ticketReturnTime ? formatToDate(item.ticketReturnTime) : "",
+        applyTime: item.applyTime ? formatToDate(item.applyTime) : '',
+        ticketReturnTime: item.ticketReturnTime ? formatToDate(item.ticketReturnTime) : '',
       })),
-    },
+  },
   actions: {
     /**
      * 查外包人员
@@ -2720,12 +2724,12 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         return null;
       }
     },
-     /**
- * 采购记录查询
- * @param pageNumber
- * @param pageSize
- * @returns
- */
+    /**
+     * 采购记录查询
+     * @param pageNumber
+     * @param pageSize
+     * @returns
+     */
     async queryOutsourceSalaryPurchase() {
       try {
         const params = new FormData();
@@ -2745,11 +2749,11 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         return null;
       }
     },
-     /**
- * 采购记录删除
- * @param ids
- * @returns
- */
+    /**
+     * 采购记录删除
+     * @param ids
+     * @returns
+     */
     async deleteOutsourceSalaryPurchase(ids) {
       try {
         const params = new FormData();
@@ -2760,20 +2764,33 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         return null;
       }
     },
-     /**
- * 51上传采购文件excel
- * @param id
- * @param purchaseId
- * @param file
- * @returns
- */
-    async addOutsourceSalaryPurchaseExcel(id:string,purchaseId:string,file:any) {
+    /**
+     * 51上传采购文件excel
+     * @param id
+     * @param purchaseId
+     * @param file
+     * @returns
+     */
+    async addOutsourceSalaryPurchaseExcel(id: string, purchaseId: string, file: any) {
       try {
         const params = new FormData();
         params.append('id', id);
         params.append('purchaseId', purchaseId);
         params.append('file', file);
         const res = await fetchApi.addOutsourceSalaryPurchaseExcel(params);
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+    /**
+     * 补缴预缴月度社保
+     * @param OfferOutsourceSheBaoMonth
+     * @returns
+     */
+    async addOutsourceUpdateSheBaoMonthBySign(outOutsourceSheBao: OutsourceSheBaoItem) {
+      try {
+        const res = await fetchApi.addOutsourceUpdateSheBaoMonthBySign(outOutsourceSheBao);
         return res;
       } catch (error) {
         return null;

@@ -317,6 +317,9 @@ export interface OutsourceSheBaoItem {
   checkFlag?: string;
   checkTime?: string;
   checkUser?: string;
+  jiaoSign?: string;
+  jiaoType?: string;
+  yearAndMonthJiao?: string;
 }
 /**
  * 外包社保汇总详情项
@@ -545,8 +548,10 @@ export interface OutsourceMonthSalaryItem {
   chenbenTiaochaKeFlag?: string; //调差调整 是否计算管理费
   signSalary?: string; //月度薪资标识 null 未核 1 已核
   oldCollectId?: string; //老的外包业绩统计id
-  bankName: string;
-  shebaoCompany: string;
+  bankName: string; //银行名称
+  shebaoCompany: string; //社保公司
+  faxinDate?: string; //发薪月
+  offerDetailMonth?: string; //业绩月
 }
 //用工成本
 export interface CostItem {
@@ -993,6 +998,9 @@ export interface OutsourceFormulaItem {
   gongZhaoGongShi: string; // private String wuzhaoRate;
   keZhaoGongShiStudent: string; // private String wuzhaoRate;
   gongZhaoGongShiStudent: string; // private String wuzhaoRate;
+  offerDetailMonth: string; // private String offerDetailMonth;
+  kaoQinBiaoCurrent: string; // private String kaoQinBiaoCurrent;
+  zhanDanRiCurrent: string; // private String zhanDanRiCurrent;
 }
 
 export interface OutsourcePersonMoneyItem {

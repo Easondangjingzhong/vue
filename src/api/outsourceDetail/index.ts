@@ -79,7 +79,15 @@ enum URL {
   delete_outsource_salary_purchase = '/finance/resume-vue-delete-bank-purchase.action',
   query_outsource_salary_commit_collect_shebao = '/candidateRecommend/resume-vue-select-out-TiCaiGou-Collect-shebao.action',
   add_outsource_salary_purchase_excel = '/finance/add-purchase-Excel.action',
+  add_outsource_update_shebao_month_by_sign = '/employee-group/resume-vue-add-update-SheBaoMonth-bySign.action',
 }
+/**
+ * 补缴预缴月度社保
+ * @param OfferOutsourceSheBaoMonth
+ * @returns
+ */
+const addOutsourceUpdateSheBaoMonthBySign = async (data: any) =>
+  post<any>({ url: URL.add_outsource_update_shebao_month_by_sign, data});
 /**
  * 51上传采购文件excel
  * @param id
@@ -648,6 +656,7 @@ const queryOutsourceMonthSalary = async (data: any) =>
   post<any>({ url: URL.query_outsource_month_salary, data });
 
 export default {
+  addOutsourceUpdateSheBaoMonthBySign,
   addOutsourceSalaryPurchaseExcel,
   deleteOutsourceSalaryPurchase,
   queryOutsourceSalaryPurchase,

@@ -84,7 +84,7 @@ const summaryData = computed(() => {
     zhuanZero: zhuanTaxSum === 0 && zhuanAfterSum === 0,
     taxIncluded: sum('taxIncluded').toFixed(2),
     money: sum('money').toFixed(2),
-    offerNum: sumInt('offerNum').toString(),
+    offerNum: sum('offerNum').toFixed(2),
   };
 });
 

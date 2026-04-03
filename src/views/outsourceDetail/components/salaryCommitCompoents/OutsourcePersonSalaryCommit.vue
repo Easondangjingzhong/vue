@@ -28,7 +28,16 @@
               <a-tab-pane key="5" tab="采购" style="margin-left: auto">
                  <OutsourcePersonSalaryCaiGou />
               </a-tab-pane>
+              <template #rightExtra>
+                 <a-date-picker
+                  v-model:value="yearAndMonth"
+                  value-format="YYYY-MM"
+                  @change="handleCommit"
+                  picker="month"
+                />
+              </template>
           </a-tabs>
+         
         </a-layout-content>
       </a-layout>
   </div>
@@ -50,13 +59,14 @@ import OutsourcePersonSalaryCollectDetails from './OutsourcePersonSalaryCollectD
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
 const { outsourcePersonSalaryCommitFlag, formStateMonthSalary} = storeToRefs(outsourceDetailStore);
 const drawerWidth = ref(Math.max(600, window.innerWidth * 0.9));
+const yearAndMonth = ref('');
 const outsourceDetailMoneySider = ref('4');
 const handleChange = (key) => {
   if (key == '3') {
-    outsourceDetailStore.queryOutsourceSalaryCommitCollectSheBao(formStateMonthSalary.value.yearAndMonth);
+    outsourceDetailStore.queryOutsourceSalaryCommitCollectSheBao(yearAndMonth.value);
   }
   if (key == '4') {
-    outsourceDetailStore.queryOutsourceSalaryCommit(formStateMonthSalary.value.yearAndMonth);
+    outsourceDetailStore.queryOutsourceSalaryCommit(yearAndMonth.value);
   }
   if (key == '5') {
     outsourceDetailStore.queryOutsourceSalaryPurchase();
@@ -67,11 +77,17 @@ const handleClose = () => {
 };
 watch(outsourcePersonSalaryCommitFlag, () => {
   if (outsourcePersonSalaryCommitFlag.value) {
-    outsourceDetailStore.queryOutsourceSalaryPurchase();
-    outsourceDetailStore.queryOutsourceSalaryCommit(formStateMonthSalary.value.yearAndMonth);
-    outsourceDetailStore.queryOutsourceSalaryCommitCollectSheBao(formStateMonthSalary.value.yearAndMonth);
+    if (!yearAndMonth.value) {
+      yearAndMonth.value = formStateMonthSalary.value.yearAndMonth;
+    }
+    handleCommit();
   }
 });
+const handleCommit = () => {
+  outsourceDetailStore.queryOutsourceSalaryPurchase();
+  outsourceDetailStore.queryOutsourceSalaryCommit(yearAndMonth.value);
+  outsourceDetailStore.queryOutsourceSalaryCommitCollectSheBao(yearAndMonth.value);
+}
 </script>
 
 <style lang="less" scoped>

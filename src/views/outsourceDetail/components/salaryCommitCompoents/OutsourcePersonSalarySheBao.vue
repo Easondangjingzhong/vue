@@ -8,8 +8,15 @@
       :scroll="{ y: 500 }"
       :dataSource="getOutsourcePersonSalaryCommitCollectSheBao"
     >
-   <!-- <template #bodyCell="{ column, record }">
-    </template> -->
+   <template #bodyCell="{ column, record }">
+      <a-tag v-if="column.key === 'jiaoType' && record.jiaoType === '正常'" color="green">正常</a-tag>
+      <a-tag v-if="column.key === 'jiaoType' && record.jiaoType === '补缴'" color="orange">补缴</a-tag>
+      <a-tag v-if="column.key === 'jiaoType' && record.jiaoType === '补差'" color="orange">补差</a-tag>
+      <a-tag v-if="column.key === 'jiaoType' && record.jiaoType === '退费'" color="red">退费</a-tag>
+
+      <a-tag v-if="column.key === 'jiaoSign' && record.jiaoSign === '缴费'" color="green">缴费</a-tag>
+      <a-tag v-if="column.key === 'jiaoSign' && record.jiaoSign === '退费'" color="red">退费</a-tag>
+    </template>
   </a-table>
 </template>
 
@@ -25,6 +32,12 @@ const columns:TableColumnsType = [
     title: '编号',
     dataIndex: 'index',
     key: 'index',
+    width: 20,
+  },
+  {
+    title: '类别',
+    dataIndex: 'jiaoType',
+    key: 'jiaoType',
     width: 20,
   },
   {
@@ -108,14 +121,14 @@ const columns:TableColumnsType = [
   },
   {
     title: '标识',
-    dataIndex: 'checkFlag',
-    key: 'checkFlag',
+    dataIndex: 'jiaoSign',
+    key: 'jiaoSign',
     width: 30,
   },
   {
     title: '账单月',
-    dataIndex: 'yearAndMonth',
-    key: 'yearAndMonth',
+    dataIndex: 'yearAndMonthJiao',
+    key: 'yearAndMonthJiao',
     width: 30,
   },
 ];

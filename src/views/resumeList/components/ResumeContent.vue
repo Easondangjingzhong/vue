@@ -228,7 +228,7 @@
             color="red"
             >{{ record.projectFlag }}</a-tag
           >
-          <a-tag class="tagspan" v-if="showResumeRightOutFlag && !record.recruitId" color="orange">公共</a-tag>
+          <!-- <a-tag class="tagspan" v-if="showResumeRightOutFlag && !record.recruitId" color="orange">公共</a-tag> -->
           <a-tag
             class="tagspan"
             v-if="showResumeRightOutFlag && !record.recruitId && record.twoYearFlag == '两年'"
@@ -274,7 +274,7 @@
             color="orange"
             >{{ record.checkFlag }}</a-tag
           >
-          <a-tag
+          <!-- <a-tag
             class="tagspan tagspanWhite"
             :title="record.repeatTime"
             v-if="showResumeRightOutFlag && record.recruitId && record.checkFlag == '待核' && record.fristFlag"
@@ -290,17 +290,17 @@
           >
           <a-tag class="tagspan" v-if="showResumeRightOutFlag && record.recruitId && record.onlyFlag" color="green">{{
             record.onlyFlag
-          }}</a-tag>
-          <a-tag
+          }}</a-tag> -->
+          <!-- <a-tag
             class="tagspan tagspanGreen"
             :title="record.commonFlagTime"
             v-if="showResumeRightOutFlag && record.recruitId && record.commonFlag"
             color="green"
             >{{ record.commonFlag }}</a-tag
-          >
-          <a-tag class="tagspan" v-if="showResumeRightOutFlag && record.recruitId && record.gognGongFlag" color="orange">{{
+          > -->
+          <!-- <a-tag class="tagspan" v-if="showResumeRightOutFlag && record.recruitId && record.gognGongFlag" color="orange">{{
             record.gognGongFlag
-          }}</a-tag>
+          }}</a-tag> -->
 
           <!-- <a-tag class="tagspan" v-if="record.recruitId && record.limitFlag == '保护'" color="green">{{ record.limitFlag }}</a-tag> -->
          

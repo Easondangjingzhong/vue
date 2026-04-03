@@ -120,7 +120,7 @@
       :dataSource="getOutsourceSheBaoList"
       :loading="sheBaoIsLoading"
       :columns="columnsOutsourceDetail"
-      :scroll="{ x: 2200 }"
+      :scroll="{ x: 2500 }"
     >
     <template #bodyCell="{ column, record }">
     <a-tag v-if="column.key === 'currentStatus' && record.currentStatus === '1'" color="orange">待入</a-tag>
@@ -147,6 +147,15 @@
       <a-tag v-if="column.key === 'yijinStandard' && record.yijinStandard === '1'" color="green">最低基数</a-tag>
       <a-tag v-if="column.key === 'yijinStandard' && record.yijinStandard === '2'" color="orange">基本工资</a-tag>
       <a-tag v-if="column.key === 'yijinStandard' && record.yijinStandard === '3'" color="red">特殊基数</a-tag>
+
+      <a-tag v-if="column.key === 'jiaoSign' && record.jiaoSign === '正常'" color="green">正常</a-tag>
+      <a-tag v-if="column.key === 'jiaoSign' && record.jiaoSign === '预收'" color="green">预收</a-tag>
+      <a-tag v-if="column.key === 'jiaoSign' && record.jiaoSign === '补缴'" color="orange">补缴</a-tag>
+      <a-tag v-if="column.key === 'jiaoSign' && record.jiaoSign === '补差'" color="orange">补差</a-tag>
+      <a-tag v-if="column.key === 'jiaoSign' && record.jiaoSign === '退费'" color="red">退费</a-tag>
+
+      <a-tag v-if="column.key === 'jiaoType' && record.jiaoType === '缴费'" color="green">缴费</a-tag>
+      <a-tag v-if="column.key === 'jiaoType' && record.jiaoType === '退费'" color="red">退费</a-tag>
       <!-- 添加类型断言和存在性检查以修复TypeScript索引类型错误 -->
       <span v-if="(typeof column.dataIndex === 'string' && (record[column.dataIndex] === null || record[column.dataIndex] === ''))">-</span>
      <template v-if="column.key === 'operation'">
@@ -158,6 +167,9 @@
               <a-menu>
                  <a-menu-item>
                   <a href="javascript:;" @click="handleUpdateOutsourceSheBaoMonth(record)">社保同步</a>
+                </a-menu-item>
+                 <a-menu-item>
+                  <a href="javascript:;" @click="handleUpdateOutsourceSheBaoJiao(record)">社保操作</a>
                 </a-menu-item>
               </a-menu>
             </template>
@@ -189,6 +201,7 @@
   </div>
   <OutsourceSocialSecurityCollect/>
   <OutsourceSocialSecurityInfo/>
+  <OutsourceSocialSecurityJiao/>
 </template>
 
 <script setup lang="ts">
@@ -196,14 +209,16 @@ import { storeToRefs } from 'pinia';
 import type { TableColumnsType } from 'ant-design-vue';
 import { MenuUnfoldOutlined } from '@ant-design/icons-vue';
 import { currentDate } from '/@/utils/dateUtil';
+import { formatToDate } from '/@/utils/dateUtil';
 import { message } from 'ant-design-vue';
 import OutsourceSocialSecurityCollect from '/@/views/outsourceDetail/components/personComponents/OutsourceSocialSecurityCollect.vue';
 import OutsourceSocialSecurityInfo from '/@/views/outsourceDetail/components/personComponents/OutsourceSocialSecurityInfo.vue';
+import OutsourceSocialSecurityJiao from '/@/views/outsourceDetail/components/personComponents/OutsourceSocialSecurityJiao.vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
-import { SearchSheBaoItem } from '/@/api/outsourceDetail/model';
+import { SearchSheBaoItem, OutsourceSheBaoItem } from '/@/api/outsourceDetail/model';
 import { shebaoCompanyOption } from '/@/api/outsourceDetail/constants';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { outsourceSocialSecuritInfoFlag, outsourceSocialSecurityCollectFlag,sheBaoIsLoading,pageOutsourceSheBaoList,formStateSheBao,getOutsourceSheBaoList, getProvince, getOutsourceBrand, getOutsourceCompanyAll, getOutsourcePosition, } = storeToRefs(outsourceDetailStore);
+const { outsourceSocialSecuritInfoFlag, outsourceSocialSecurityCollectFlag,sheBaoIsLoading,pageOutsourceSheBaoList,formStateSheBao,getOutsourceSheBaoList, getProvince, getOutsourceBrand, getOutsourceCompanyAll, getOutsourcePosition, outsourceSocialSecurityJiaoFlag, outsourceSocialSecurityJiaoForm } = storeToRefs(outsourceDetailStore);
 const columnsOutsourceDetail:TableColumnsType = [
   { title: '编号', dataIndex: 'index', key: 'index', fixed: 'left', width: 30, ellipsis: true },
   { title: '周期', dataIndex: 'yearAndMonth', key: 'yearAndMonth', fixed: 'left', width: 40, ellipsis: true },
@@ -212,6 +227,7 @@ const columnsOutsourceDetail:TableColumnsType = [
   { title: '公司', dataIndex: 'companyName', key: 'companyName', fixed: 'left', width: 50, ellipsis: true },
   { title: '城市', dataIndex: 'city', key: 'city', fixed: 'left', width: 30, ellipsis: true },
   { title: '性质', dataIndex: 'jobType', key: 'jobType', fixed: 'left', width: 30,},
+  { title: '类型', dataIndex: 'jiaoSign', key: 'jiaoSign', fixed: 'left', width: 30,},
   { title: '状态', dataIndex: 'currentStatus', key: 'currentStatus', fixed: 'left', width: 30, },
   { title: '缴纳单位', dataIndex: 'shebaoCompany', key: 'shebaoCompany', fixed: 'left', width: 43, ellipsis: true },
   { title: '单位合计', dataIndex: 'companyTotal', key: 'companyTotal', width: 40, ellipsis: true },
@@ -245,6 +261,8 @@ const columnsOutsourceDetail:TableColumnsType = [
   { title: '比例', dataIndex: 'yijinRate', key: 'yijinRate', width: 30, ellipsis: true },
   { title: '单位', dataIndex: 'yijinCompany', key: 'yijinCompany', width: 40, ellipsis: true },
   { title: '个人', dataIndex: 'yijinPerson', key: 'yijinPerson', width: 40, ellipsis: true },
+  { title: '标识', dataIndex: 'jiaoType', key: 'jiaoType', fixed: 'right', width: 30, ellipsis: true },
+  { title: '账单月', dataIndex: 'yearAndMonthJiao', key: 'yearAndMonthJiao', fixed: 'right', width: 40, ellipsis: true },
   { title: '操作', dataIndex: 'operation', key: 'operation', fixed: 'right', width: 25, ellipsis: true },
 ]
 const clearFromState = () => {
@@ -287,6 +305,30 @@ const handleUpdateOutsourceSheBaoMonth = async (record) => {
       message.error("操作失败");
     }
   });
+}
+const handleUpdateOutsourceSheBaoJiao = (record) => {
+  outsourceSocialSecurityJiaoForm.value = JSON.parse(JSON.stringify(record)) as OutsourceSheBaoItem;
+  //@ts-ignore
+  outsourceSocialSecurityJiaoForm.value.id = "";
+  outsourceSocialSecurityJiaoForm.value.jiaoSign = '补缴';
+  outsourceSocialSecurityJiaoForm.value.jiaoType = '缴费';
+  outsourceSocialSecurityJiaoForm.value.yearAndMonth = '';
+  outsourceSocialSecurityJiaoForm.value.yearAndMonthJiao = record.yearAndMonth;
+  outsourceSocialSecurityJiaoForm.value.shebaoShijiaoTime = formatToDate(record.shebaoShijiaoTime);
+  // // 格式化日期字段为 yyyy-MM-dd
+  // const dateFields = [
+  //   'shangbaoShijiaoTime', 'shangbaoShitingTime', 'shangbaoYujiaoTime', 'shangbaoYutingTime',
+  //   'shebaoYujiaoTime', 'shebaoYutingTime', 'yijinShijiaoTime', 'yijinShitingTime',
+  //   'yijinYujiaoTime', 'yijinYutingTime'
+  // ];
+  // dateFields.forEach(field => {
+  //   if (field=='shebaoShijiaoTime' && outsourceSocialSecurityJiaoForm.value[field]) {
+  //     outsourceSocialSecurityJiaoForm.value[field] = `${formatToDate(outsourceSocialSecurityJiaoForm.value[field])}-01`;
+  //   } else if (outsourceSocialSecurityJiaoForm.value[field]) {
+  //     outsourceSocialSecurityJiaoForm.value[field] = formatToDate(outsourceSocialSecurityJiaoForm.value[field]);
+  //   }
+  // });
+  outsourceSocialSecurityJiaoFlag.value = true;
 }
 </script>
 

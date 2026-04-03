@@ -17,7 +17,7 @@
       <a-tag v-if="column.key === 'currentStatus' && record.currentStatus === '1'" color="orange">等待审批</a-tag>
       <a-tag v-if="column.key === 'currentStatus' && record.currentStatus === '2'" color="green">通过审批</a-tag>
       <a-tag v-if="column.key === 'currentStatus' && record.currentStatus === '3'" color="red">拒绝审批</a-tag>
-      <a-tag v-if="column.key === 'currentStatus' && record.currentStatus === '4'" color="red">发票待回</a-tag>
+      <a-tag v-if="column.key === 'currentStatus' && record.currentStatus === '4'" color="orange">发票待回</a-tag>
       <a-tag v-if="column.key === 'currentStatus' && record.currentStatus === '5'" color="green">等待入账</a-tag>
       <a-tag v-if="column.key === 'currentStatus' && record.currentStatus === '6'" color="green">已经入账</a-tag>
       <a-tag v-if="column.key === 'currentStatus' && !record.currentStatus" color="red">已经撤回</a-tag>

@@ -48,15 +48,15 @@ export const cycleFormulaOption = [
     value: '1',
   },
   {
-    label: '15-14',
+    label: '上月15日-当月14日',
     value: '2',
   },
    {
-    label: '21-20',
+    label: '上月21日-当月20日',
     value: '3',
   },
    {
-    label: '16-15',
+    label: '上月16日-当月15日',
     value: '4',
   },
 ]

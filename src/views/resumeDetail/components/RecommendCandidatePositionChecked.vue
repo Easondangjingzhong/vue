@@ -96,7 +96,7 @@
                 <span style="padding-left: 5px; display: block"> {{ description }} </span>
               </a-col>
             </a-row>
-            <a-row :gutter="24" class="resume_row" style="margin-top: 10px" v-if="loginVueUser.loginId == 444 || loginVueUser.loginId == 448">
+            <a-row :gutter="24" class="resume_row" style="margin-top: 10px" v-if="loginVueUser.loginId == '444' || loginVueUser.loginId == '448'">
               <a-col :span="24" class="resume_col">
                 <h4 class="resume_h4"> 推荐顾问: </h4>
                 <a-radio-group

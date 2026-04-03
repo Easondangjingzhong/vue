@@ -360,7 +360,7 @@ const { outsourceAttendFlag, outsourceAttendForm, outsourceMonthSalaryForm, getO
 const salaryDetail = ref<OutsourceSalaryItem[]>([]);
 const leijiChae = ref<number>(0);
 // 将年月字符串往前提前一个月的函数
-function getPreviousMonth(yearMonth) {
+const getPreviousMonth = (yearMonth) => {
   // 分割年月字符串
   const [yearStr, monthStr] = yearMonth.split('-');
   let year = parseInt(yearStr);
@@ -377,6 +377,24 @@ function getPreviousMonth(yearMonth) {
   const formattedMonth = month.toString().padStart(2, '0');
   return `${year}-${formattedMonth}`;
 }
+// 将年月字符串推后一个月的函数
+const getNextMonth = (yearMonth) => {
+  // 分割年月字符串
+  const [yearStr, monthStr] = yearMonth.split('-');
+  let year = parseInt(yearStr);
+  let month = parseInt(monthStr);
+  
+  // 月份加1，如果是1月则变为12月，年份减1
+  month++;
+  if (month === 13) {
+    month = 1;
+    year++;
+  }
+  
+  // 格式化为'YYYY-MM'格式，确保月份是两位数
+  const formattedMonth = month.toString().padStart(2, '0');
+  return `${year}-${formattedMonth}`;
+}
 // 监听 getOutsourceFormulaList 变化，自动设置 quanqinHours
 watch(() => getOutsourceFormulaList.value, (newVal) => {
   if (newVal && newVal.length > 0 && newVal[0].totalWorkHours) {
@@ -386,10 +404,24 @@ watch(() => getOutsourceFormulaList.value, (newVal) => {
       outsourceAttendForm.value.lastMonthYuHours = outsourceAttendForm.value.lastMonthYuHours || newVal[0].totalWorkHours;
       outsourceAttendForm.value.currentMonthYuHours = newVal[0].totalWorkHours;
     }
+    //根据公司公式设置账单月 业绩月 发薪月
     if (newVal[0].zhanDanMonth == '当月') {
       outsourceMonthSalaryForm.value.zhanDanMonth = outsourceAttendForm.value.yearAndMonth;
-    } else {
+    } 
+    if (newVal[0].zhanDanMonth == '上月') {
       outsourceMonthSalaryForm.value.zhanDanMonth = getPreviousMonth(outsourceAttendForm.value.yearAndMonth);
+    }
+    if (newVal[0].offerDetailMonth == '当月') {
+      outsourceMonthSalaryForm.value.offerDetailMonth = outsourceAttendForm.value.yearAndMonth;
+    } 
+    if (newVal[0].offerDetailMonth == '下月') {
+      outsourceMonthSalaryForm.value.offerDetailMonth = getNextMonth(outsourceAttendForm.value.yearAndMonth);
+    }
+    if (newVal[0].xinZiRi && newVal[0].xinZiRi.startsWith('当月')) {
+      outsourceMonthSalaryForm.value.faxinDate = outsourceAttendForm.value.yearAndMonth + newVal[0].xinZiRi.replace('当月', '').replace('日', '');
+    } 
+    if (newVal[0].xinZiRi && newVal[0].xinZiRi.startsWith('下月')) {
+      outsourceMonthSalaryForm.value.faxinDate = getNextMonth(outsourceAttendForm.value.yearAndMonth) + newVal[0].xinZiRi.replace('下月', '').replace('日', '');
     }
     outsourceDetailStore.queryOutsourceSalaryByPersonId(outsourceAttendForm.value.personId?.toString(), outsourceAttendForm.value.yearAndMonth + '-01').then(res => {
       if (res.code == 1) {

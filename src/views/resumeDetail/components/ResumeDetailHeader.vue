@@ -9,7 +9,7 @@
         <a-tag class="resume_tag_checked tagspanGreen" :title="limitRemarkDetail" v-if="props.showResumeRightOutFlag && !resumeData.recruitId && resumeData.projectFlag == '在保'" color="green">{{ resumeData.projectFlag }}</a-tag>
         <a-tag class="resume_tag_checked" v-if="props.showResumeRightOutFlag && !resumeData.recruitId && resumeData.projectFlag == '不保'" color="red">过保</a-tag>
         <a-tag class="resume_tag_checked" v-if="props.showResumeRightOutFlag && !resumeData.recruitId && resumeData.projectFlag == '过保'" color="red">{{ resumeData.projectFlag }}</a-tag>
-        <a-tag class="resume_tag_checked_top" v-if="props.showResumeRightOutFlag && !resumeData.recruitId" color="orange">公共</a-tag>
+        <!-- <a-tag class="resume_tag_checked_top" v-if="props.showResumeRightOutFlag && !resumeData.recruitId" color="orange">公共</a-tag> -->
         <a-tag class="resume_tag_checked_top" v-if="props.showResumeRightOutFlag && !resumeData.recruitId && resumeData.twoYearFlag == '两年'" color="green">两年</a-tag>
         <a-tag :title="checkedTime" style="cursor: pointer;" color="#d8d8d8" class="resume_tag_checked tagspanWhite" v-if="showResumeAdd && resumeData.recruitId && (resumeData.checkFlag == '待核' || resumeData.checkFlag == '过期')"
         >待核</a-tag>
@@ -46,9 +46,9 @@
           :title="repeatTime"
           v-if="props.showResumeRightOutFlag && resumeData.recruitId && resumeData.checkFlag != '待核' && resumeData.fristFlag"
           >首增</a-tag>
-        <a-tag class="resume_tag_checked_top" v-if="props.showResumeRightOutFlag && resumeData.recruitId && resumeData.onlyFlag" color="green">{{ resumeData.onlyFlag }}</a-tag>
+        <!-- <a-tag class="resume_tag_checked_top" v-if="props.showResumeRightOutFlag && resumeData.recruitId && resumeData.onlyFlag" color="green">{{ resumeData.onlyFlag }}</a-tag>
         <a-tag :title="commonFlagTime" class="resume_tag_checked_top tagspanGreen" v-if="props.showResumeRightOutFlag && resumeData.recruitId && resumeData.commonFlag" color="green">{{ resumeData.commonFlag }}</a-tag>
-        <a-tag class="resume_tag_checked_top" v-if="props.showResumeRightOutFlag && resumeData.recruitId && resumeData.gognGongFlag" color="orange">{{ resumeData.gognGongFlag }}</a-tag>
+        <a-tag class="resume_tag_checked_top" v-if="props.showResumeRightOutFlag && resumeData.recruitId && resumeData.gognGongFlag" color="orange">{{ resumeData.gognGongFlag }}</a-tag> -->
         <!-- <a-tag
           color="#4bb632"
           class="resume_tag_checked_top"
@@ -200,7 +200,7 @@
           @click="handleAddCheckedTwoYear"
           >激活</a-button>
        <a-button
-          v-if="showResumeCopy && copyed != '1'"
+          v-if="showResumeCopy && copyed != '1' && resumeData.phoneNum != '***********'"
           style="margin-left: 4px;"
            size="middle"
           @click="handleOpenResumeCopy"

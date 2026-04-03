@@ -263,7 +263,10 @@ const columns: TableColumnsType = [
     align: 'right',
   },
   {
-   title: h('a-tooltip', { title: h('div', [h('div', '51社保:实发工资+服务费+个税'), h('div', '非51社保:实发工资+服务费')]) }, h('span', {'style': 'background: linear-gradient(45deg, transparent 90%, #f90202 0);padding-right: 5px;'}, '总计')),
+    title: h('a-tooltip', { 
+      title: '51社保:实发工资+服务费+个税\n非51社保:实发工资+服务费',
+      overlayStyle: { whiteSpace: 'pre-line' }
+    }, h('span', {'style': 'background: linear-gradient(45deg, transparent 90%, #f90202 0);padding-right: 5px;'}, '总计')),
     dataIndex: 'totalMoney',
     key: 'totalMoney',
     width: 40,
