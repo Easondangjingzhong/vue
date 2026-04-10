@@ -191,11 +191,23 @@
           </a-col>
           <a-col :span="6"></a-col>
           <a-col :span="6">
+            <a-form-item label="经济补偿" class="buchang-form-item">
+              <div style="display: flex; align-items: center;">
+                <a-input v-model:value="costDetailForm.buchangMonth" placeholder="请输入" style="flex: 1;"/>
+                <a-checkbox 
+                  style="margin-left: 4px; white-space: nowrap;" 
+                  :checked="costDetailForm.buchangHebing === '1'" 
+                  @change="e => costDetailForm.buchangHebing = e.target.checked ? '1' : '2'"
+                >合并</a-checkbox>
+              </div>
+            </a-form-item>
+          </a-col>
+          <a-col :span="6">
             <a-form-item name="costTotal" label="成本总计">
               <a-input v-model:value="costTotal" disabled/>
             </a-form-item>
           </a-col>
-          <a-col :span="6"></a-col>
+          
         </a-row>
         <a-row :gutter="24" style="border-bottom: 1px solid #ccc;margin-bottom: 15px;">
           <a-col :span="24">
@@ -437,8 +449,24 @@ const costDetailFormPerformanceDetail = () => {
     costDetailForm.value.otherPayKe = temp?.otherPayKe || "0";
     costDetailForm.value.shiShangbao = (temp?.shiShangbao || temp.shiShangbao == "0") ? temp?.shiShangbao : sheBao?.shiShangbao?.toString();
     costDetailForm.value.otherPay = temp?.otherPay || "0";
+
     costDetailForm.value.canBaoKe = (temp?.canBaoKe || temp.canBaoKe == "0") ? temp?.canBaoKe : ((temp?.monthTax && temp?.jobType == '全职') ? (Number(temp.monthTax || 0) * 0.015).toFixed(2) : "0");
-    costDetailForm.value.canBao = (temp?.canBao || temp.canBao == "0")? temp?.canBao : ((temp?.monthTax && temp?.jobType == '全职') ? (Number(temp.monthTax || 0) * 0.015).toFixed(2) : "0");
+    /**
+     * 公司账单-企业残保：
+      上海：上海最低基数7460*1.35%；
+      深圳：固定收费：25.04元；
+      广州、杭州：应发工资*1.35%；
+      其他城市（北京博瑞和北京我推发薪）：实发薪资*1.5%
+     */
+    if (temp?.canBao || temp.canBao == "0") {
+      costDetailForm.value.canBao = temp?.canBao || "0";
+    } else if(temp?.city == '上海' || temp?.city == '深圳') {
+      costDetailForm.value.canBao = Number(sheBao?.canbaoMoney || "0").toFixed(2) || "0";
+    } else if(temp?.city == '广州' || temp?.city == '杭州') {
+      costDetailForm.value.canBao = (Number(temp.monthTax || 0) * 0.0135).toFixed(2) || "0";
+    } else {
+      costDetailForm.value.canBao = (Number(temp.salaryAfterTax || 0) * 0.015).toFixed(2) || "0";
+    }
     costDetailForm.value.chenbenTiaochaKe = temp?.chenbenTiaochaKe || "0";
     costDetailForm.value.chenbenTiaocha = temp?.chenbenTiaocha || "0";
     costDetailForm.value.manageChargeTax = temp?.manageChargeTax || "0";
@@ -452,6 +480,8 @@ const costDetailFormPerformanceDetail = () => {
     costDetailForm.value.zhuanChargeAfter = temp?.zhuanChargeAfter || "0";
     costDetailForm.value.totalChargeCha = temp?.totalChargeCha || "0";
     costDetailForm.value.totalCharge = temp?.totalCharge || "0";
+    costDetailForm.value.buchangMonth = temp?.buchangMonth || "0";
+    costDetailForm.value.buchangHebing = temp?.buchangHebing || "0";
     costDetailForm.value.chenbenTiaochaKeFlag = temp?.chenbenTiaochaKeFlag || "1";
     costDetailForm.value.manageChargeRate = temp?.manageChargeRate?.toString() || "0.0672";
     costDetailForm.value.zhuanChargeRate = temp?.zhuanChargeRate?.toString() || "0.0672";
@@ -477,6 +507,8 @@ const costDetailFormPerformanceDetail = () => {
     })) : [] as LabelAndValueItem[];  
     welfareKeArr.value = temp?.welfareList || [] as WelfareKeItem[];
     costDetailForm.value.serviceMoney = temp?.serviceMoney;
+    costDetailForm.value.buchangMonth = temp?.buchangMonth;
+    costDetailForm.value.buchangHebing = temp?.buchangHebing;
     if (!costDetailForm.value.serviceMoney && costDetailForm.value.serviceMoney != "0") {
       if (sheBao.shebaoCompany == "51社保") {
         //员工薪水=员工实发+个税 发薪服务费计算规则是：（员工实发+个税）*6.77%；
@@ -503,7 +535,7 @@ const costTotalke = computed(() => {
   return (Number(costDetailForm.value.monthTax || 0) + Number(costDetailForm.value.canBaoKe || 0) + Number(costDetailForm.value.companyShebaoKe || 0) + Number(costDetailForm.value.companyYijinKe || 0) - Number(costDetailForm.value.welfareKe || 0) + Number(costDetailForm.value.keShangbao || 0) + Number(costDetailForm.value.chenbenTiaochaKe || 0) + Number(costDetailForm.value.otherPayKe || 0)).toFixed(2);
 })
 const costTotal = computed(() => {
-  return (Number(costDetailForm.value.monthTax || 0) + Number(costDetailForm.value.canBao || 0) + Number(costDetailForm.value.companyShebao || 0) + Number(costDetailForm.value.companyYijin || 0) + Number(costDetailForm.value.welfare || 0) + Number(costDetailForm.value.otherPay || 0) + Number(costDetailForm.value.shiShangbao || 0) + Number(costDetailForm.value.chenbenTiaocha || 0) + Number(costDetailForm.value.serviceMoney || 0)).toFixed(2);
+  return (Number(costDetailForm.value.monthTax || 0) + Number(costDetailForm.value.canBao || 0) + Number(costDetailForm.value.companyShebao || 0) + Number(costDetailForm.value.companyYijin || 0) + Number(costDetailForm.value.welfare || 0) + Number(costDetailForm.value.otherPay || 0) + Number(costDetailForm.value.shiShangbao || 0) + Number(costDetailForm.value.chenbenTiaocha || 0) + Number(costDetailForm.value.serviceMoney || 0) + Number(costDetailForm.value.buchangMonth || 0)).toFixed(2);
 })
 const handleManageGongShiChange = (val: string) => {
   costDetailForm.value.manageGongShi = val;
@@ -635,6 +667,8 @@ const costDetailFormPerformanceDetailResult = () => {
   outsourcePersonPerformanceDetail.value.moneyCahrgeTax = costDetailForm.value.moneyCahrgeTax || "";
   outsourcePersonPerformanceDetail.value.zhuanChargeAfter = costDetailForm.value.zhuanChargeAfter || "";
   outsourcePersonPerformanceDetail.value.totalCharge = costDetailForm.value.totalCharge || "";
+  outsourcePersonPerformanceDetail.value.buchangMonth = costDetailForm.value.buchangMonth || "";
+  outsourcePersonPerformanceDetail.value.buchangHebing = costDetailForm.value.buchangHebing || "";
   outsourcePersonPerformanceDetail.value.manageChargeRate = costDetailForm.value.manageChargeRate || "";
   outsourcePersonPerformanceDetail.value.zhuanChargeRate = costDetailForm.value.zhuanChargeRate || "";
   outsourcePersonPerformanceDetail.value.manageGongShi = costDetailForm.value.manageGongShi || "";
@@ -647,6 +681,8 @@ const costDetailFormPerformanceDetailResult = () => {
   outsourcePersonPerformanceDetail.value.canBao = costDetailForm.value.canBao || "";
   outsourcePersonPerformanceDetail.value.totalChargeCha = costDetailForm.value.totalChargeCha || "";
   outsourcePersonPerformanceDetail.value.serviceMoney = costDetailForm.value.serviceMoney || "";
+  outsourcePersonPerformanceDetail.value.buchangMonth = costDetailForm.value.buchangMonth || "";
+  outsourcePersonPerformanceDetail.value.buchangHebing = costDetailForm.value.buchangHebing || "";
   outsourcePersonPerformanceDetail.value.chenbenTiaochaKeFlag = costDetailForm.value.chenbenTiaochaKeFlag || "";
   outsourcePersonPerformanceDetail.value.welfareList = welfareKeArr.value || [];
 }
@@ -655,7 +691,7 @@ const calcCost = () => {
   const totalFeeOneTax = Number(costDetailForm.value.manageChargeAllocationTax || 0);
   const totalFeeTwoTax = Number(costDetailForm.value.zhuanChargeTax || 0);
   const odsTotalMoney = totalFeeOneTax + totalFeeTwoTax;
-  const rate = 1.0672;
+  const rate = Number(costDetailForm.value.manageChargeRate || 0) + 1;
   //console.log(costOfferDetailsForm.value);
   const calculateDetails = (configList) => {
       const newDetails: OfferDetailsItem[] = [];
@@ -678,12 +714,12 @@ const calcCost = () => {
         const manageChargeAfter = (parseFloat(totalFeeOneTax.toString() || "0") * currentRate1).toFixed(2);
         detail.manageChargeTax = manageChargeAfter;
         detail.manageChargeRate = (currentRate1 * 100) + '%';
-        detail.manageChargeAfter = (parseFloat(manageChargeAfter) / 1.0672).toFixed(2);
+        detail.manageChargeAfter = (parseFloat(manageChargeAfter) / rate).toFixed(2);
         
         // 计算管理费2
         detail.zhuanChargeTax = (parseFloat(totalFeeTwoTax.toString() || "0") * config.rate2).toFixed(2);
         detail.zhuanChargeRate = (config.rate2 * 100) + '%';
-        detail.zhuanChargeAfter = (parseFloat(totalFeeTwoTax.toString() || "0") * config.rate2 / 1.0672).toFixed(2) || '0';
+        detail.zhuanChargeAfter = (parseFloat(totalFeeTwoTax.toString() || "0") * config.rate2 / rate).toFixed(2) || '0';
         
         newDetails.push(detail);
       }

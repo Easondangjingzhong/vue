@@ -42,9 +42,10 @@
           <a-table-summary-cell :index="3" style="text-align: right;">{{ summaryData.monthGeshui }}</a-table-summary-cell>
           <a-table-summary-cell :index="4" style="text-align: right;">{{ summaryData.shouxuMoney }}</a-table-summary-cell>
           <a-table-summary-cell :index="5" style="text-align: right;">{{ summaryData.salaryAfterTax }}</a-table-summary-cell>
-          <a-table-summary-cell :index="6" style="text-align: right;">{{ summaryData.serviceMoney }}</a-table-summary-cell>
-          <a-table-summary-cell :index="7" style="text-align: right;">{{ summaryData.totalMoney }}</a-table-summary-cell>
-          <a-table-summary-cell :index="8"></a-table-summary-cell>
+          <a-table-summary-cell :index="6" style="text-align: right;">{{ summaryData.buchangMonth }}</a-table-summary-cell>
+          <a-table-summary-cell :index="7" style="text-align: right;">{{ summaryData.serviceMoney }}</a-table-summary-cell>
+          <a-table-summary-cell :index="8" style="text-align: right;">{{ summaryData.totalMoney }}</a-table-summary-cell>
+          <a-table-summary-cell :index="9"></a-table-summary-cell>
         </a-table-summary-row>
       </a-table-summary>
     </template>
@@ -75,6 +76,7 @@ const summaryData = computed(() => {
       shouxuMoney: '0.00',
       salaryAfterTax: '0.00',
       serviceMoney: '0.00',
+      buchangMonth: '0.00',
       totalMoney: '0.00',
     };
   }
@@ -85,6 +87,7 @@ const summaryData = computed(() => {
     shouxuMoney: 0,
     salaryAfterTax: 0,
     serviceMoney: 0,
+    buchangMonth: 0,
     totalMoney: 0,
   };
   data.forEach((item) => {
@@ -94,6 +97,7 @@ const summaryData = computed(() => {
     sums.shouxuMoney += Number(item.shouxuMoney || 0);
     sums.salaryAfterTax += Number(item.salaryAfterTax || 0);
     sums.serviceMoney += Number(item.serviceMoney || 0);
+    sums.buchangMonth += Number(item.buchangMonth || 0);
     sums.totalMoney += Number(item.totalMoney || 0);
   });
   return {
@@ -103,6 +107,7 @@ const summaryData = computed(() => {
     shouxuMoney: sums.shouxuMoney.toFixed(2),
     salaryAfterTax: sums.salaryAfterTax.toFixed(2),
     serviceMoney: sums.serviceMoney.toFixed(2),
+    buchangMonth: sums.buchangMonth.toFixed(2),
     totalMoney: sums.totalMoney.toFixed(2),
   };
 });
@@ -124,6 +129,7 @@ const columns: TableColumnsType = [
     title: '城市',
     dataIndex: 'city',
     key: 'city',
+    width: 40,
   },
    {
     title: '职位',
@@ -150,6 +156,7 @@ const columns: TableColumnsType = [
     title: h('a-tooltip', { title: '人才工资卡账号' }, h('span', {'style': 'background: linear-gradient(45deg, transparent 90%, #f90202 0);padding-right: 5px;'}, '账户')),
     dataIndex: 'bankCard',
     key: 'bankCard',
+    width: 40,
   },
     {
     title: '应发工资',
@@ -162,12 +169,14 @@ const columns: TableColumnsType = [
     title: '社保',
     dataIndex: 'monthShebao',
     key: 'monthShebao',
+    width: 55,
     align: 'right',
   },
     {
     title: '个税',
     dataIndex: 'monthGeshui',
     key: 'monthGeshui',
+    width: 55,
     align: 'right',
   },
     {
@@ -184,23 +193,32 @@ const columns: TableColumnsType = [
     width: 70,
     align: 'right',
   },
+   {
+    title: '经济补偿金',
+    dataIndex: 'buchangMonth',
+    key: 'buchangMonth',
+    width: 70,
+    align: 'right',
+  },
   {
     title: '服务费',
     dataIndex: 'serviceMoney',
     key: 'serviceMoney',
-    width: 70,
+    width: 50,
     align: 'right',
   },
   {
     title: '总计',
     dataIndex: 'totalMoney',
     key: 'totalMoney',
+    width: 70,
     align: 'right',
   },
   {
     title: '状态',
     dataIndex: 'checkStatus',
     key: 'checkStatus',
+    width: 40,
   },
 ];
 </script>

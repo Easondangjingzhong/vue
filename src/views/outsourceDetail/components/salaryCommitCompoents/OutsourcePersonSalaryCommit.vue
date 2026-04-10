@@ -16,7 +16,7 @@
   <div class="resume_container">
     <a-layout>
         <a-layout-content class="resume_content">
-           <a-tabs v-model:activeKey="outsourceDetailMoneySider" type="card" @change="handleChange">
+           <a-tabs v-model:activeKey="outsourceDetailMoneySider" type="card" @change="handleChange" class="custom-tabs">
               <a-tab-pane key="1" tab="考勤"></a-tab-pane>
               <a-tab-pane key="2" tab="账单"></a-tab-pane>
               <a-tab-pane key="3" tab="社保">
@@ -25,15 +25,17 @@
               <a-tab-pane key="4" tab="发薪">
                  <OutsourcePersonSalaryCollect />
               </a-tab-pane>
-              <a-tab-pane key="5" tab="采购" style="margin-left: auto">
+              <a-tab-pane key="5" tab="采购">
                  <OutsourcePersonSalaryCaiGou />
               </a-tab-pane>
               <template #rightExtra>
+                <span style="margin-right: 8px;margin-left: 8px;">发薪月:</span>
                  <a-date-picker
-                  v-model:value="yearAndMonth"
+                  v-model:value="outsourcePersonSalaryCommitYearAndMonth"
                   value-format="YYYY-MM"
                   @change="handleCommit"
                   picker="month"
+                  style="width: 80px;"
                 />
               </template>
           </a-tabs>
@@ -57,16 +59,15 @@ import OutsourcePersonSalarySheBao from './OutsourcePersonSalarySheBao.vue';
 import OutsourcePersonSalaryCaiGou from './OutsourcePersonSalaryCaiGou.vue';
 import OutsourcePersonSalaryCollectDetails from './OutsourcePersonSalaryCollectDetails.vue';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { outsourcePersonSalaryCommitFlag, formStateMonthSalary} = storeToRefs(outsourceDetailStore);
+const { outsourcePersonSalaryCommitFlag, formStateMonthSalary, outsourcePersonSalaryCommitYearAndMonth} = storeToRefs(outsourceDetailStore);
 const drawerWidth = ref(Math.max(600, window.innerWidth * 0.9));
-const yearAndMonth = ref('');
 const outsourceDetailMoneySider = ref('4');
 const handleChange = (key) => {
   if (key == '3') {
-    outsourceDetailStore.queryOutsourceSalaryCommitCollectSheBao(yearAndMonth.value);
+    outsourceDetailStore.queryOutsourceSalaryCommitCollectSheBao(outsourcePersonSalaryCommitYearAndMonth.value);
   }
   if (key == '4') {
-    outsourceDetailStore.queryOutsourceSalaryCommit(yearAndMonth.value);
+    outsourceDetailStore.queryOutsourceSalaryCommit(outsourcePersonSalaryCommitYearAndMonth.value);
   }
   if (key == '5') {
     outsourceDetailStore.queryOutsourceSalaryPurchase();
@@ -77,16 +78,16 @@ const handleClose = () => {
 };
 watch(outsourcePersonSalaryCommitFlag, () => {
   if (outsourcePersonSalaryCommitFlag.value) {
-    if (!yearAndMonth.value) {
-      yearAndMonth.value = formStateMonthSalary.value.yearAndMonth;
+    if (!outsourcePersonSalaryCommitYearAndMonth.value) {
+      outsourcePersonSalaryCommitYearAndMonth.value = formStateMonthSalary.value.yearAndMonth;
     }
     handleCommit();
   }
 });
 const handleCommit = () => {
   outsourceDetailStore.queryOutsourceSalaryPurchase();
-  outsourceDetailStore.queryOutsourceSalaryCommit(yearAndMonth.value);
-  outsourceDetailStore.queryOutsourceSalaryCommitCollectSheBao(yearAndMonth.value);
+  outsourceDetailStore.queryOutsourceSalaryCommit(outsourcePersonSalaryCommitYearAndMonth.value);
+  outsourceDetailStore.queryOutsourceSalaryCommitCollectSheBao(outsourcePersonSalaryCommitYearAndMonth.value);
 }
 </script>
 
@@ -135,5 +136,21 @@ const handleCommit = () => {
         display: none !important;
       }
     }
+  }
+  :deep(.custom-tabs) {
+    .ant-tabs-nav-list {
+      display: flex !important;
+      flex-direction: row !important;
+      width: 1350px !important;
+      .ant-tabs-tab {
+        float: none !important;
+      }
+      .ant-tabs-tab:nth-child(5) {
+        margin-left: auto !important;
+      }
+    }
+  }
+  :deep(.ant-tabs-nav-operations) {
+    display: none !important;
   }
 </style>

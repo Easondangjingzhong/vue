@@ -8,25 +8,87 @@
       :scroll="{ y: 500 }"
       :dataSource="getOutsourcePersonSalaryCommitCollectSheBao"
     >
+    <template #summary>
+      <a-table-summary fixed>
+        <a-table-summary-row>
+          <a-table-summary-cell :index="0" :colSpan="7">总计</a-table-summary-cell>
+          <a-table-summary-cell :index="7" align="right">
+            <span style="font-weight: bold;">{{ totals.companyTotal }}</span>
+          </a-table-summary-cell>
+          <a-table-summary-cell :index="8" align="right">
+            <span style="font-weight: bold;">{{ totals.personTotal }}</span>
+          </a-table-summary-cell>
+          <a-table-summary-cell :index="9" align="right">
+            <span style="font-weight: bold;">{{ totals.buchaMoney }}</span>
+          </a-table-summary-cell>
+          <a-table-summary-cell :index="10" align="right">
+            <span style="font-weight: bold;">{{ totals.shebaoTotal }}</span>
+          </a-table-summary-cell>
+          <a-table-summary-cell :index="11" align="right">
+            <span style="font-weight: bold;">{{ totals.canbaoMoney }}</span>
+          </a-table-summary-cell>
+          <a-table-summary-cell :index="12" align="right">
+            <span style="font-weight: bold;">{{ totals.serviceMoney }}</span>
+          </a-table-summary-cell>
+          <a-table-summary-cell :index="13" align="right">
+            <span style="font-weight: bold;">{{ totals.shangbaoTotal }}</span>
+          </a-table-summary-cell>
+          <a-table-summary-cell :index="14" :colSpan="2"></a-table-summary-cell>
+        </a-table-summary-row>
+      </a-table-summary>
+    </template>
    <template #bodyCell="{ column, record }">
-      <a-tag v-if="column.key === 'jiaoType' && record.jiaoType === '正常'" color="green">正常</a-tag>
-      <a-tag v-if="column.key === 'jiaoType' && record.jiaoType === '补缴'" color="orange">补缴</a-tag>
-      <a-tag v-if="column.key === 'jiaoType' && record.jiaoType === '补差'" color="orange">补差</a-tag>
-      <a-tag v-if="column.key === 'jiaoType' && record.jiaoType === '退费'" color="red">退费</a-tag>
-
-      <a-tag v-if="column.key === 'jiaoSign' && record.jiaoSign === '缴费'" color="green">缴费</a-tag>
+      <a-tag v-if="column.key === 'jiaoSign' && record.jiaoSign === '正常'" color="green">正常</a-tag>
+      <a-tag v-if="column.key === 'jiaoSign' && record.jiaoSign === '补缴'" color="orange">补缴</a-tag>
+      <a-tag v-if="column.key === 'jiaoSign' && record.jiaoSign === '补差'" color="orange">补差</a-tag>
       <a-tag v-if="column.key === 'jiaoSign' && record.jiaoSign === '退费'" color="red">退费</a-tag>
+
+      <a-tag v-if="column.key === 'jiaoType' && record.jiaoType === '缴费'" color="green">缴费</a-tag>
+      <a-tag v-if="column.key === 'jiaoType' && record.jiaoType === '退费'" color="red">退费</a-tag>
     </template>
   </a-table>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import _ from 'lodash';
 import { storeToRefs } from 'pinia';
 import type { TableColumnsType } from 'ant-design-vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
 const { getOutsourcePersonSalaryCommitCollectSheBao, } = storeToRefs(outsourceDetailStore);
+
+const totals = computed(() => {
+  let companyTotal = 0;
+  let personTotal = 0;
+  let buchaMoney = 0;
+  let shebaoTotal = 0;
+  let canbaoMoney = 0;
+  let serviceMoney = 0;
+  let shangbaoTotal = 0;
+
+  getOutsourcePersonSalaryCommitCollectSheBao.value.forEach((record) => {
+    const factor = record.jiaoType === '退费' ? -1 : 1;
+    companyTotal += Number(record.companyTotal || 0) * factor;
+    personTotal += Number(record.personTotal || 0) * factor;
+    buchaMoney += Number(record.buchaMoney || 0) * factor;
+    shebaoTotal += Number(record.shebaoTotal || 0) * factor;
+    canbaoMoney += Number(record.canbaoMoney || 0) * factor;
+    serviceMoney += Number(record.serviceMoney || 0) * factor;
+    shangbaoTotal += Number(record.shangbaoTotal || 0) * factor;
+  });
+
+  return {
+    companyTotal: companyTotal.toFixed(2),
+    personTotal: personTotal.toFixed(2),
+    buchaMoney: buchaMoney.toFixed(2),
+    shebaoTotal: shebaoTotal.toFixed(2),
+    canbaoMoney: canbaoMoney.toFixed(2),
+    serviceMoney: serviceMoney.toFixed(2),
+    shangbaoTotal: shangbaoTotal.toFixed(2),
+  };
+});
+
 const columns:TableColumnsType = [
   {
     title: '编号',
@@ -36,8 +98,8 @@ const columns:TableColumnsType = [
   },
   {
     title: '类别',
-    dataIndex: 'jiaoType',
-    key: 'jiaoType',
+    dataIndex: 'jiaoSign',
+    key: 'jiaoSign',
     width: 20,
   },
   {
@@ -100,8 +162,8 @@ const columns:TableColumnsType = [
   },
     {
     title: '残保金',
-    dataIndex: 'canbao',
-    key: 'canbao',
+    dataIndex: 'canbaoMoney',
+    key: 'canbaoMoney',
     width: 30,
     align: 'right',
   },
@@ -121,8 +183,8 @@ const columns:TableColumnsType = [
   },
   {
     title: '标识',
-    dataIndex: 'jiaoSign',
-    key: 'jiaoSign',
+    dataIndex: 'jiaoType',
+    key: 'jiaoType',
     width: 30,
   },
   {

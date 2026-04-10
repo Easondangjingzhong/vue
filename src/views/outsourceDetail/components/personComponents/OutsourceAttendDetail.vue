@@ -418,10 +418,24 @@ watch(() => getOutsourceFormulaList.value, (newVal) => {
       outsourceMonthSalaryForm.value.offerDetailMonth = getNextMonth(outsourceAttendForm.value.yearAndMonth);
     }
     if (newVal[0].xinZiRi && newVal[0].xinZiRi.startsWith('当月')) {
-      outsourceMonthSalaryForm.value.faxinDate = outsourceAttendForm.value.yearAndMonth + newVal[0].xinZiRi.replace('当月', '').replace('日', '');
+      let dayPart = newVal[0].xinZiRi.replace('当月', '').replace('日', '');
+      if (dayPart.startsWith('-')) {
+        const day = dayPart.substring(1);
+        if (!isNaN(Number(day))) {
+          dayPart = '-' + day.padStart(2, '0');
+        }
+      }
+      outsourceMonthSalaryForm.value.faxinDate = outsourceAttendForm.value.yearAndMonth + dayPart;
     } 
     if (newVal[0].xinZiRi && newVal[0].xinZiRi.startsWith('下月')) {
-      outsourceMonthSalaryForm.value.faxinDate = getNextMonth(outsourceAttendForm.value.yearAndMonth) + newVal[0].xinZiRi.replace('下月', '').replace('日', '');
+      let dayPart = newVal[0].xinZiRi.replace('下月', '').replace('日', '');
+      if (dayPart.startsWith('-')) {
+        const day = dayPart.substring(1);
+        if (!isNaN(Number(day))) {
+          dayPart = '-' + day.padStart(2, '0');
+        }
+      }
+      outsourceMonthSalaryForm.value.faxinDate = getNextMonth(outsourceAttendForm.value.yearAndMonth) + dayPart;
     }
     outsourceDetailStore.queryOutsourceSalaryByPersonId(outsourceAttendForm.value.personId?.toString(), outsourceAttendForm.value.yearAndMonth + '-01').then(res => {
       if (res.code == 1) {

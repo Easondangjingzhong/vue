@@ -106,6 +106,12 @@ const columns:TableColumnsType = [
     key: 'serviceMoney',
     width: 40,
   },
+  {
+    title: '经济补偿金',
+    dataIndex: 'buchangMonth',
+    key: 'buchangMonth',
+    width: 45,
+  },
     {
     title: '成本总计',
     dataIndex: 'costTotal',
@@ -134,7 +140,7 @@ const columns:TableColumnsType = [
     title: '税金',
     dataIndex: 'manageChargeTaxMoney',
     key: 'manageChargeTaxMoney',
-    width: 30,
+    width: 35,
   },
     {
     title: '总营收费',

@@ -70,7 +70,7 @@
           </a-form-item>
         </a-col>
         <a-col :span="3">
-          <a-form-item name="yearAndMonth" label="计薪">
+          <a-form-item name="yearAndMonth" label="发薪">
             <a-date-picker
                   v-model:value="formStateMonthSalary.yearAndMonth"
                   value-format="YYYY-MM"
@@ -107,7 +107,7 @@
       :loading="monthSalaryIsLoading"
       :columns="columnsOutsourceMonthSalary"
       :dataSource="getOutsourceMonthSalaryList"
-      :scroll="{ x: 4200 }"
+      :scroll="{ x: 4600 }"
     >
     <template #bodyCell="{ column, record }">
       <a-tag v-if="column.key === 'signSalary' && record.signSalary !== '1' && record.signSalary !== '2'" color="orange">待核</a-tag>
@@ -202,6 +202,7 @@ const { outsourcePersonSalaryCommitFlag, monthSalaryIsLoading,pageOutsourceMonth
 const columnsOutsourceMonthSalary:TableColumnsType = [
   { title: '编号', dataIndex: 'index', key: 'index', fixed: 'left', width: 30, },
   { title: '计薪月', dataIndex: 'jinxinMonth', key: 'jinxinMonth', fixed: 'left', width: 40, },
+  { title: '发薪日', dataIndex: 'faxinDate', key: 'faxinDate', fixed: 'left', width: 55, },
   { title: '标识', dataIndex: 'signSalary', key: 'signSalary', fixed: 'left', width: 30, },
   { title: '姓名', dataIndex: 'userNameCn', key: 'userNameCn', fixed: 'left', width: 55, ellipsis: true, },
   { title: '公司', dataIndex: 'companyName', key: 'companyName', fixed: 'left', width: 45, ellipsis: true, },

@@ -320,6 +320,7 @@ export interface OutsourceSheBaoItem {
   jiaoSign?: string;
   jiaoType?: string;
   yearAndMonthJiao?: string;
+  canbaoMoney?: string;
 }
 /**
  * 外包社保汇总详情项
@@ -336,6 +337,7 @@ export interface OutsourceSheBaoDetailItem {
   shebaoCompany?: string;
   yijinPerson: number;
   checkFlag: string;
+  canbaoMoney: number;
 }
 
 /**
@@ -353,6 +355,7 @@ export interface OutsourceSheBaoCollectItem {
   yijinCompany: number;
   yijinPerson: number;
   checkFlag: string;
+  canbaoMoney: number;
 }
 /**
  * 外包外包月度薪资
@@ -552,6 +555,8 @@ export interface OutsourceMonthSalaryItem {
   shebaoCompany: string; //社保公司
   faxinDate?: string; //发薪月
   offerDetailMonth?: string; //业绩月
+  buchangMonth?: string; //经济补偿金
+  buchangHebing?: string; //经济补偿合并付款
 }
 //用工成本
 export interface CostItem {
@@ -577,6 +582,7 @@ export interface CostItem {
   zhuanChargeAfter?: string;
   totalCharge?: string;
   manageChargeAllocationAfter?: string;
+  buchangMonth?: string; //经济补偿金
 }
 //外包用工成本详情
 export interface ComprehensiveCostItem {
@@ -658,6 +664,8 @@ export interface ComprehensiveCostItem {
   chenbenTiaochaKeFlag?: string; //调差调整 是否计算管理费
   signSalary?: string; //月度薪资标识 null 未核 1 已核
   oldCollectId?: string; //老的外包业绩统计id
+  buchangMonth?: string; //经济补偿金
+  buchangHebing?: string; //经济补偿合并付款
 }
 /**
  * 外包福利
@@ -1033,6 +1041,7 @@ export interface OutsourcePersonSalaryCommitDetailItem {
   shouxuMoney?: string;
   totalMoney?: string;
   excelPath?: string;
+  buchangMonth?: string;
 }
 
 export interface OutsourcePersonSalaryCommitItem {
@@ -1049,6 +1058,7 @@ export interface OutsourcePersonSalaryCommitItem {
   serviceMoney?: string;
   shouxuMoney?: string;
   totalMoney?: string;
+  buchangMonth?: string;
   detailList?: OutsourcePersonSalaryCommitDetailItem[];
 }
 

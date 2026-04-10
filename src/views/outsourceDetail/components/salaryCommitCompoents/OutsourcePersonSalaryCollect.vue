@@ -99,7 +99,7 @@ import type { TableColumnsType } from 'ant-design-vue';
 import { OutsourcePersonSalaryCommitItem, OutsourcePersonSalaryCommitDetailItem } from '/@/api/outsourceDetail/model';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { getOutsourcePersonSalaryCommit, formStateMonthSalary, orginalPathBlobPath,orginalPathBlobType,orginalPathBlobPathFlag} = storeToRefs(outsourceDetailStore);
+const { getOutsourcePersonSalaryCommit, formStateMonthSalary, orginalPathBlobPath,orginalPathBlobType,orginalPathBlobPathFlag, outsourcePersonSalaryCommitYearAndMonth} = storeToRefs(outsourceDetailStore);
 const loading = ref(false);
 const handleExcelPreview = (excelPath: string) => {
   if (!excelPath) {
@@ -255,6 +255,13 @@ const columns: TableColumnsType = [
     width: 40,
     align: 'right',
   },
+   {
+    title: '经济补偿金',
+    dataIndex: 'buchangMonth',
+    key: 'buchangMonth',
+    width: 45,
+    align: 'right',
+  },
   {
     title: h('a-tooltip', { title: '金元：60元/月/人；51社保：' }, h('span', {'style': 'background: linear-gradient(45deg, transparent 91%, #f90202 0);padding-right: 5px;'}, '服务费')),
     dataIndex: 'serviceMoney',
@@ -379,6 +386,13 @@ const innerColumns: TableColumnsType = [
     align: 'right',
   },
   {
+    title: '经济补偿金',
+    dataIndex: 'buchangMonth',
+    key: 'buchangMonth',
+    width: 30,
+    align: 'right',
+  },
+  {
     title: '服务费',
     dataIndex: 'serviceMoney',
     key: 'serviceMoney',
@@ -445,10 +459,10 @@ const onExpand = (expanded: boolean, record: OutsourcePersonSalaryCommitItem) =>
   }
 }
 const handlePersonSalaryDetail = (record) => {
-  outsourceDetailStore.queryOutsourceSalaryCommitDetail(record?.jinXinMonth || "", record?.companyName || "", record?.faxinCompany || "", record?.bankGroup || "");
+  outsourceDetailStore.queryOutsourceSalaryCommitDetail(record?.faxinDate || "", record?.companyName || "", record?.faxinCompany || "", record?.bankGroup || "");
 }
 const handlePersonSalaryCollectDetail = (record) => {
-  outsourceDetailStore.queryOutsourceSalaryCommitCollectDetail(record?.jinXinMonth || "", record?.companyName || "");
+  outsourceDetailStore.queryOutsourceSalaryCommitCollectDetail(record?.faxinDate || "", record?.companyName || "");
 }
 const handleAddOutsourceSalaryPurchaseCollect = (record) => {
   Modal.confirm({
@@ -458,7 +472,7 @@ const handleAddOutsourceSalaryPurchaseCollect = (record) => {
       loading.value = true;
      outsourceDetailStore.addOutsourceSalaryPurchase(record.detailList).then((res) => {
       if (res.code === 1) {
-        outsourceDetailStore.queryOutsourceSalaryCommit(formStateMonthSalary.value.yearAndMonth);
+        outsourceDetailStore.queryOutsourceSalaryCommit(outsourcePersonSalaryCommitYearAndMonth.value);
         selectedInnerDetailKeys.value = [];
         expandedRowKeys.value = [];
         message.success('操作成功');
@@ -478,7 +492,7 @@ const handleAddOutsourceSalaryPurchase = (record) => {
       loading.value = true;
      outsourceDetailStore.addOutsourceSalaryPurchase([record]).then((res) => {
       if (res.code === 1) {
-        outsourceDetailStore.queryOutsourceSalaryCommit(formStateMonthSalary.value.yearAndMonth);
+        outsourceDetailStore.queryOutsourceSalaryCommit(outsourcePersonSalaryCommitYearAndMonth.value);
         selectedInnerDetailKeys.value = [];
         expandedRowKeys.value = [];
         message.success('操作成功');
@@ -505,7 +519,7 @@ const handleAddOutsourceSalaryPurchaseCollectZuhe = () => {
           }));
      outsourceDetailStore.addOutsourceSalaryPurchase(payload).then((res) => {
       if (res.code === 1) {
-        outsourceDetailStore.queryOutsourceSalaryCommit(formStateMonthSalary.value.yearAndMonth);
+        outsourceDetailStore.queryOutsourceSalaryCommit(outsourcePersonSalaryCommitYearAndMonth.value);
         selectedInnerDetailKeys.value = [];
         expandedRowKeys.value = [];
         message.success('操作成功');

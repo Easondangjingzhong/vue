@@ -70,7 +70,7 @@
           </a-form-item>
         </a-col>
         <a-col :span="3">
-          <a-form-item name="yearAndMonth" label="计薪">
+          <a-form-item name="yearAndMonth" label="业绩">
             <a-date-picker
                   v-model:value="formStateMonthSalaryOffer.yearAndMonth"
                   value-format="YYYY-MM"
@@ -161,8 +161,9 @@ const columnsOutsourceMonthSalary:TableColumnsType = [
     title: '客户信息',
     className: 'customer-info-header',
     children: [
-      { title: '编号', dataIndex: 'index', key: 'index', fixed: 'left', width: 30, },
+      { title: '编号', dataIndex: 'index', key: 'index', fixed: 'left', width: 25, },
       { title: '计薪月', dataIndex: 'jinxinMonth', key: 'jinxinMonth', fixed: 'left', width: 40, },
+      { title: '业绩月', dataIndex: 'offerDetailMonth', key: 'offerDetailMonth', fixed: 'left', width: 40, },
       { title: '标识', dataIndex: 'sign', key: 'sign', fixed: 'left', width: 30, },
       { title: '姓名', dataIndex: 'userNameCn', key: 'userNameCn', fixed: 'left', width: 55, ellipsis: true, },
       { title: '职位', dataIndex: 'positions', key: 'positions', fixed: 'left', width: 50, ellipsis: true,},

@@ -232,6 +232,7 @@ const columnsOutsourceDetail:TableColumnsType = [
   { title: '缴纳单位', dataIndex: 'shebaoCompany', key: 'shebaoCompany', fixed: 'left', width: 43, ellipsis: true },
   { title: '单位合计', dataIndex: 'companyTotal', key: 'companyTotal', width: 40, ellipsis: true },
   { title: '个人合计', dataIndex: 'personTotal', key: 'personTotal', width: 40, ellipsis: true },
+  { title: '残保金', dataIndex: 'canbaoMoney', key: 'canbaoMoney', width: 40, ellipsis: true },
   { title: '补差', dataIndex: 'buchaMoney', key: 'buchaMoney', width: 30, ellipsis: true },
   { title: '手续', dataIndex: 'serviceMoney', key: 'serviceMoney', width: 30, ellipsis: true },
   { title: '社金总计', dataIndex: 'shangbaoTotal', key: 'shangbaoTotal', width: 40, ellipsis: true },

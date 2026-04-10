@@ -95,6 +95,11 @@ const columns = [
     dataIndex: 'personTotal',
     key: 'personTotal',
   },
+  {
+    title: '残保金',
+    dataIndex: 'canbaoMoney',
+    key: 'canbaoMoney',
+  },
     {
     title: '手续费',
     dataIndex: 'serviceMoney',
@@ -156,6 +161,11 @@ const innerColumns = [
     title: '个人总计',
     dataIndex: 'personTotal',
     key: 'personTotal',
+  },
+   {
+    title: '残保金',
+    dataIndex: 'canbaoMoney',
+    key: 'canbaoMoney',
   },
     {
     title: '手续费',

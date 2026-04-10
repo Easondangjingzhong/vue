@@ -358,7 +358,7 @@ watch(outsourceMonthSalaryFlag, () => {
       }))
     }
     if (!outsourceMonthSalaryForm.value.oldCollectId) {
-      outsourceDetailStore.queryOutsourceOldCollectIdByPersonId(outsourceMonthSalaryForm.value.personId?.toString() || '', outsourceMonthSalaryForm.value.jinxinMonth || '').then(res => {
+      outsourceDetailStore.queryOutsourceOldCollectIdByPersonId(outsourceMonthSalaryForm.value.personId?.toString() || '', outsourceMonthSalaryForm.value.offerDetailMonth || '').then(res => {
         if (res.code === 1) {
           outsourceMonthSalaryForm.value.oldCollectId = res.info || '';
         }
@@ -420,7 +420,7 @@ const monthGeshui = computed(() => {
     const yearIncomeTotal = parseFloat(yearTaxPre.value || '0') + parseFloat(outsourceMonthSalaryForm.value.monthTax || '0');
     const yearSocialSecurityTotal = parseFloat(outsourceMonthSalaryForm.value.yearShebao || '0');
     const exemptAmount = parseFloat(outsourceMonthSalaryForm.value.yearMianzheng || '0');
-    const currentMonthDeductionTotal = parseFloat(outsourceMonthSalaryForm.value.monthZhuankou || '0');
+    const currentMonthDeductionTotal = parseFloat(outsourceMonthSalaryForm.value.yearZhuankou || '0');
   
     // 计算应纳税所得额
     const taxableIncome = yearIncomeTotal - yearSocialSecurityTotal - exemptAmount - currentMonthDeductionTotal;

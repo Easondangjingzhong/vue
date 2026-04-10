@@ -169,7 +169,7 @@ const columnsOutsourceDetail:TableColumnsType = [
   { title: '达成奖金', dataIndex: 'dacheng', key: 'dacheng', width: 50, ellipsis: true },
   { title: '十三薪', dataIndex: 'thirteenthSalary', key: 'thirteenthSalary', width: 50, ellipsis: true },
   { title: '年终奖金', dataIndex: 'yearEndBouns', key: 'yearEndBouns', width: 50, ellipsis: true },
-  { title: '商保', dataIndex: 'shangbao', key: 'shangbao', width: 30, ellipsis: true },
+  { title: '商保', dataIndex: 'shiShangbao', key: 'shiShangbao', width: 30, ellipsis: true },
   { title: '单位合计', dataIndex: 'companyTotal', key: 'companyTotal', width: 50, ellipsis: true },
   { title: '个人合计', dataIndex: 'personTotal', key: 'personTotal', width: 50, ellipsis: true },
   { title: '社保标准', dataIndex: 'shebaoStandard', key: 'shebaoStandard', width: 50, },

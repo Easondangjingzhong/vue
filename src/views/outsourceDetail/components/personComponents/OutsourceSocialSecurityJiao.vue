@@ -10,15 +10,15 @@
       <a-form-item label="姓名">
         <a-input v-model:value="outsourceSocialSecurityJiaoForm.userNameCn" disabled />
       </a-form-item>
-      <a-form-item label="标识" name="jiaoSign" :rules="[{ required: true, message: '请选择标识' }]">
-        <a-select v-model:value="outsourceSocialSecurityJiaoForm.jiaoSign" placeholder="请选择标识">
+      <a-form-item label="类型" name="jiaoSign" :rules="[{ required: true, message: '请选择类型' }]">
+        <a-select v-model:value="outsourceSocialSecurityJiaoForm.jiaoSign" placeholder="请选择类型">
           <a-select-option value="补缴">补缴</a-select-option>
           <a-select-option value="预收">预收</a-select-option>
           <a-select-option value="退费">退费</a-select-option>
         </a-select>
       </a-form-item>
-      <a-form-item label="类型" name="jiaoType" :rules="[{ required: true, message: '请选择类型' }]">
-        <a-select v-model:value="outsourceSocialSecurityJiaoForm.jiaoType" placeholder="请选择类型">
+      <a-form-item label="标识" name="jiaoType" :rules="[{ required: true, message: '请选择标识' }]">
+        <a-select v-model:value="outsourceSocialSecurityJiaoForm.jiaoType" placeholder="请选择标识">
           <a-select-option value="缴费">缴费</a-select-option>
           <a-select-option value="退费">退费</a-select-option>
         </a-select>
