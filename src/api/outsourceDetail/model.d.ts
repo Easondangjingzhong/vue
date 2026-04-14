@@ -557,6 +557,16 @@ export interface OutsourceMonthSalaryItem {
   offerDetailMonth?: string; //业绩月
   buchangMonth?: string; //经济补偿金
   buchangHebing?: string; //经济补偿合并付款
+
+  jobNumber?: string; //工号
+  shijiaHours?: string; //事假工时
+  nianjianHours?: string; //年假工时
+  hunjiaHours?: string; //婚假工时
+  sanjiaHours?: string; //丧假工时
+  daixinBingjiaHours?: string; //病假工时
+  holidayOverHours?: string; //法定节假日加班工时
+  overHours?: string; //工作日加班工时
+  restOverHours?: string; //周末加班工时
 }
 //用工成本
 export interface CostItem {
