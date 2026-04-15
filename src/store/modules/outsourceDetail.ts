@@ -625,9 +625,22 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         const serviceFeeValue = personCostValue * rateValue;
         const shangbaoValue = Number(item.shangBao || 0);
         const salaryTaxValue = personCostValue + serviceFeeValue + shangbaoValue;
-        const salaryRateValue = 0.0672;
-        const salaryRateMoneyValue = salaryTaxValue * salaryRateValue;
-        const salaryTotalValue = salaryTaxValue + salaryRateMoneyValue;
+        let salaryRateValue = 0;
+        let salaryRateMoneyValue = 0;
+        let salaryRateFuJiaValue = 0;
+        let salaryRateFuJiaMoney = 0;
+        if (Number(item.manageChargeRate) == 0.0672) {
+          salaryRateValue = 0.06;
+          salaryRateMoneyValue = Number(item.manageChargeTaxMoney) / Number(item.manageChargeRate) * salaryRateValue;
+          salaryRateFuJiaValue = 0.0072;
+          salaryRateFuJiaMoney = Number(item.manageChargeTaxMoney) / Number(item.manageChargeRate) * salaryRateFuJiaValue;
+        } else {
+          salaryRateValue = Number(item.manageChargeRate);
+          salaryRateMoneyValue = Number(item.manageChargeTaxMoney);
+          salaryRateFuJiaValue = 0;
+          salaryRateFuJiaMoney = 0;
+        }
+        const salaryTotalValue = salaryTaxValue + Number(item.manageChargeTaxMoney);
         const lastMonthLeiJiValue = Number(item.yearGeshui || 0) + Number(item.monthGeshui || 0);
         return {
           ...item,
@@ -640,13 +653,15 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           jinxinMonthDetail: item.jinxinMonth,
           sheBaoMoney: parseFloat(sheBaoMoneyValue.toString()).toFixed(2),
           canBaoMoney: parseFloat(canBaoMoneyValue.toString()).toFixed(2),
-          economicCompensation: 0,
           personCost: parseFloat(personCostValue.toString()).toFixed(2),
           rate: rateValue * 100 + '%',
           serviceFee: parseFloat(serviceFeeValue.toString()).toFixed(2),
           salaryTax: parseFloat(salaryTaxValue.toString()).toFixed(2),
+          manageChargeRate: item.manageChargeRate ? `${Number(item.manageChargeRate) * 100}%` : '',
           salaryRate: salaryRateValue * 100 + '%',
           salaryRateMoney: parseFloat(salaryRateMoneyValue.toString()).toFixed(2),
+          salaryRateFuJia: salaryRateFuJiaValue * 100 + '%',
+          salaryRateFuJiaMoney: parseFloat(salaryRateFuJiaMoney.toString()).toFixed(2),
           salaryTotal: parseFloat(salaryTotalValue.toString()).toFixed(2),
           realEntryTime: item.realEntryTime
             ? dayjs(item.realEntryTime).format('YYYY年MM月DD日')
@@ -1195,7 +1210,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       params.append('yearAndMonth', this.formStateMonthSalaryOffer.yearAndMonth || '');
       this.monthSalaryIsLoading = true;
       try {
-        const res = await fetchApi.queryOutsourceMonthSalary(params);
+        const res = await fetchApi.queryOutsourceMonthSalaryOffer(params);
         if (res.code == 1) {
           this.monthSalaryIsLoading = false;
           const totalNum = res.info.totalNum;
@@ -2819,6 +2834,66 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     async addOutsourceUpdateSheBaoMonthBySign(outOutsourceSheBao: OutsourceSheBaoItem) {
       try {
         const res = await fetchApi.addOutsourceUpdateSheBaoMonthBySign(outOutsourceSheBao);
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+    /**
+     * 社保搜索条件公司品牌
+      * @param yearAndMonth
+     * @returns
+     */
+    async queryOutsourceSheBaoMonthCompanyBrand(yearAndMonth: string) {
+      try {
+        const params = new FormData();
+        params.append('yearAndMonth', yearAndMonth || '');
+        const res = await fetchApi.queryOutsourceSheBaoMonthCompanyBrand(params);
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+    /**
+     * 出勤搜索条件公司品牌
+     * @param yearAndMonth
+     * @returns
+     */
+    async queryOutsourceAttendMonthCompanyBrand(yearAndMonth: string) {
+      try {
+        const params = new FormData();
+        params.append('yearAndMonth', yearAndMonth || '');
+        const res = await fetchApi.queryOutsourceAttendMonthCompanyBrand(params);
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+    /**
+     * 月度薪资搜索条件公司品牌
+     * @param yearAndMonth
+     * @returns
+     */
+    async queryOutsourceSalaryMonthCompanyBrand(yearAndMonth: string) {
+      try {
+        const params = new FormData();
+        params.append('yearAndMonth', yearAndMonth || '');
+        const res = await fetchApi.queryOutsourceSalaryMonthCompanyBrand(params);
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+    /**
+     * 月度业绩搜索条件公司品牌
+     * @param yearAndMonth
+     * @returns
+     */
+    async queryOutsourceSalaryOfferMonthCompanyBrand(yearAndMonth: string) {
+      try {
+        const params = new FormData();
+        params.append('yearAndMonth', yearAndMonth || '');
+        const res = await fetchApi.queryOutsourceSalaryOfferMonthCompanyBrand(params);
         return res;
       } catch (error) {
         return null;

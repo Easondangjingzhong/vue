@@ -676,6 +676,7 @@ export interface ComprehensiveCostItem {
   oldCollectId?: string; //老的外包业绩统计id
   buchangMonth?: string; //经济补偿金
   buchangHebing?: string; //经济补偿合并付款
+  sign?: string; //业绩核对标识 null 未核 1 已核
 }
 /**
  * 外包福利

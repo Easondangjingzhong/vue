@@ -5,6 +5,7 @@ enum URL {
   query_outsource_shebao = '/candidateRecommend/resume-vue-select-out-SheBao-Month.action',
   query_outsource_attend = '/candidateRecommend/resume-vue-select-out-attend-Month.action',
   query_outsource_month_salary = '/candidateRecommend/resume-vue-select-out-MonthSalary.action',
+  query_outsource_month_salary_offer = '/candidateRecommend/resume-vue-select-out-MonthSalary-Offer.action',
   update_out_person_idcard = '/candidateRecommend/resume-vue-update-out-person-idcard.action',
   query_outsource_person_byPhone = '/candidateRecommend/resume-vue-select-out-person-byPhone.action',
   query_outsource_person_contract = '/candidateRecommend/resume-vue-select-out-personContract.action',
@@ -80,7 +81,39 @@ enum URL {
   query_outsource_salary_commit_collect_shebao = '/candidateRecommend/resume-vue-select-out-TiCaiGou-Collect-shebao.action',
   add_outsource_salary_purchase_excel = '/finance/add-purchase-Excel.action',
   add_outsource_update_shebao_month_by_sign = '/employee-group/resume-vue-add-update-SheBaoMonth-bySign.action',
+  query_outsource_shebao_month_company_brand = '/candidateRecommend/resume-vue-select-out-SheBao-Month-CompanyAndBrand.action',
+  query_outsource_attend_month_company_brand = '/candidateRecommend/resume-vue-select-out-attend-Month-CompanyAndBrand.action',
+  query_outsource_salary_month_company_brand = '/candidateRecommend/resume-vue-select-out-MonthSalary-CompanyAndBrand.action',
+  query_outsource_salary_offer_month_company_brand = '/candidateRecommend/resume-vue-select-out-MonthSalary-Offer-CompanyAndBrand.action',
 }
+/**
+ * 月度业绩搜索条件公司品牌
+ * @param yearAndMonth
+ * @returns
+ */
+const queryOutsourceSalaryOfferMonthCompanyBrand = async (data: any) =>
+  post<any>({ url: URL.query_outsource_salary_offer_month_company_brand, data});
+/**
+ * 月度薪资搜索条件公司品牌
+ * @param yearAndMonth
+ * @returns
+ */
+const queryOutsourceSalaryMonthCompanyBrand = async (data: any) =>
+  post<any>({ url: URL.query_outsource_salary_month_company_brand, data});
+/**
+ * 出勤搜索条件公司品牌
+ * @param yearAndMonth
+ * @returns
+ */
+const queryOutsourceAttendMonthCompanyBrand = async (data: any) =>
+  post<any>({ url: URL.query_outsource_attend_month_company_brand, data});
+/**
+ * 社保搜索条件公司品牌
+ * @param yearAndMonth
+ * @returns
+ */
+const queryOutsourceSheBaoMonthCompanyBrand = async (data: any) =>
+  post<any>({ url: URL.query_outsource_shebao_month_company_brand, data});
 /**
  * 补缴预缴月度社保
  * @param OfferOutsourceSheBaoMonth
@@ -654,8 +687,19 @@ const queryOutsourceAttend = async (data: any) =>
  */
 const queryOutsourceMonthSalary = async (data: any) =>
   post<any>({ url: URL.query_outsource_month_salary, data });
+/**
+ * 查外包月度薪资
+ * @param data cId jobType companyName hrId
+ * @returns
+ */
+const queryOutsourceMonthSalaryOffer = async (data: any) =>
+  post<any>({ url: URL.query_outsource_month_salary_offer, data });
 
 export default {
+  queryOutsourceSalaryOfferMonthCompanyBrand,
+  queryOutsourceSalaryMonthCompanyBrand,
+  queryOutsourceAttendMonthCompanyBrand,
+  queryOutsourceSheBaoMonthCompanyBrand,
   addOutsourceUpdateSheBaoMonthBySign,
   addOutsourceSalaryPurchaseExcel,
   deleteOutsourceSalaryPurchase,
@@ -736,4 +780,5 @@ export default {
   queryOutsourceSalary,
   queryOutsourceSheBao,
   queryOutsourceMonthSalary,
+  queryOutsourceMonthSalaryOffer,
 };

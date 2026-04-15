@@ -144,10 +144,10 @@
                 <a-menu-item>
                  <a href="javascript:;" @click="handleEditClick(record)">实发工资</a>
                 </a-menu-item>
-                <a-menu-item>
+                <a-menu-item v-if="record.signSalary !== '1'">
                  <a href="javascript:;" @click="handleEditYearClick(record)">年度累计</a>
                 </a-menu-item>
-                <a-menu-item>
+                <a-menu-item v-if="record.signSalary !== '1'">
                   <a href="javascript:;" @click="handleOutsourceSalarySign(record.id)">薪资核对</a>
                 </a-menu-item>
               </a-menu>
@@ -198,7 +198,7 @@ import OutsourceMonthSalaryShiJiUpdate from '/@/views/outsourceDetail/components
 import OutsourcePersonSalaryCommit from '/@/views/outsourceDetail/components/salaryCommitCompoents/OutsourcePersonSalaryCommit.vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { outsourcePersonSalaryCommitFlag, monthSalaryIsLoading,pageOutsourceMonthSalaryList,getOutsourceMonthSalaryList,formStateMonthSalary, getProvince, getOutsourceBrand, getOutsourceCompanyAll, getOutsourcePosition, outsourceFormulaFlag, outsourceMonthSalaryForm, outsourceMonthSalaryFlag,outsourceMonthSalaryShiJiFlag} = storeToRefs(outsourceDetailStore);
+const { outsourcePersonSalaryCommitFlag, monthSalaryIsLoading,pageOutsourceMonthSalaryList,getOutsourceMonthSalaryList,formStateMonthSalary, getProvince, getOutsourcePosition, outsourceFormulaFlag, outsourceMonthSalaryForm, outsourceMonthSalaryFlag,outsourceMonthSalaryShiJiFlag} = storeToRefs(outsourceDetailStore);
 const columnsOutsourceMonthSalary:TableColumnsType = [
   { title: '编号', dataIndex: 'index', key: 'index', fixed: 'left', width: 30, },
   { title: '计薪月', dataIndex: 'jinxinMonth', key: 'jinxinMonth', fixed: 'left', width: 40, },
@@ -279,6 +279,12 @@ const clearFromState = () => {
     }
     onSearch();
   }
+const getOutsourceBrand = ref([
+  {value: '', label: ''}
+]);
+const getOutsourceCompanyAll = ref([
+  {value: '', label: ''}
+]);
 const onSearch = () => {
   console.log(formStateMonthSalary.value);
   pageOutsourceMonthSalaryList.value = {
@@ -286,6 +292,12 @@ const onSearch = () => {
       pageNumber: 1,
     }
   outsourceDetailStore.queryOutsourceMonthSalary();
+  outsourceDetailStore.queryOutsourceSalaryMonthCompanyBrand(formStateMonthSalary.value.yearAndMonth).then(res => {
+    if (res.code == 1) {
+      getOutsourceBrand.value = res.info.branfList.map(item => ({value: item.bId, label: item.brandName}));
+      getOutsourceCompanyAll.value = res.info.companyList.map(item => ({value: item.companyName, label: item.companyName}));
+    }
+  });
 }
 onSearch();
 const handleOutsourceMonthSalaryListData = () => {

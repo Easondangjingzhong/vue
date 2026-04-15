@@ -235,7 +235,7 @@
           </div>
           <div>&nbsp;</div>
           <div>&nbsp;</div>
-          <div style="text-align: right;">
+          <div style="text-align: right;" v-if="outsourceMonthSalaryForm.signSalary !== '1'">
              <a-button type="primary" :loading="iconLoading" html-type="submit">
               保存
             </a-button>
@@ -243,6 +243,7 @@
               取消
             </a-button>
           </div>
+          <div v-if="outsourceMonthSalaryForm.signSalary === '1'">&nbsp;</div>
         </div>
       </a-form>
     </div>

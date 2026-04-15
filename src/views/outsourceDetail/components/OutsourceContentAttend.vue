@@ -109,7 +109,7 @@
     <template #bodyCell="{ column, record }">
       <a-tag v-if="column.key === 'flag' && record.flag === '1'" color="orange">待录</a-tag>
       <a-tag v-if="column.key === 'flag' && record.flag === '2'" color="green">已录</a-tag>
-      <span v-if="column.key == 'operation'">
+      <span v-if="column.key == 'operation' && record.flag === '1'">
         <FormOutlined @click="handleEditClick(record)"/>
       </span>
     <!-- 添加类型断言和存在性检查以修复TypeScript索引类型错误 -->
@@ -148,7 +148,7 @@ import OutsourceAttendDetail from '/@/views/outsourceDetail/components/personCom
 import { SearchAttendItem } from '/@/api/outsourceDetail/model';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { attendIsLoading,pageOutsourceAttendList,formStateAttend,getOutsourceAttendList, getProvince, getOutsourceBrand, getOutsourceCompanyAll, getOutsourcePosition, outsourceAttendForm, outsourceAttendFlag } = storeToRefs(outsourceDetailStore);
+const { attendIsLoading,pageOutsourceAttendList,formStateAttend,getOutsourceAttendList, getProvince, getOutsourcePosition, outsourceAttendForm, outsourceAttendFlag } = storeToRefs(outsourceDetailStore);
 const columnsOutsourceDetail = [
   { title: '编号', dataIndex: 'index', key: 'index', fixed: 'left' as const, width: 20, },
   { title: '计薪月', dataIndex: 'yearAndMonth', key: 'yearAndMonth', fixed: 'left' as const, width: 30, },
@@ -195,12 +195,24 @@ const handleSearchOutsourcePersonFlag = (status) => {
    formStateAttend.value.flag = status;
    onSearch();
 }
+const getOutsourceBrand = ref([
+  {value: '', label: ''}
+]);
+const getOutsourceCompanyAll = ref([
+  {value: '', label: ''}
+]);
 const onSearch = () => {
   pageOutsourceAttendList.value = {
       ...pageOutsourceAttendList.value,
       pageNumber: 1,
     }
   outsourceDetailStore.queryOutsourceAttend();
+  outsourceDetailStore.queryOutsourceAttendMonthCompanyBrand(formStateAttend.value.yearAndMonth).then(res => {
+    if (res.code == 1) {
+      getOutsourceBrand.value = res.info.branfList.map(item => ({value: item.bId, label: item.brandName}));
+      getOutsourceCompanyAll.value = res.info.companyList.map(item => ({value: item.companyName, label: item.companyName}));
+    }
+  });
 }
 onSearch();
 const handleOutsourceAttendListData = () => {

@@ -196,6 +196,7 @@ const columns:TableColumnsType = [
     key: 'market',
     fixed: 'left',
     width: 30,
+    ellipsis: true,
   },
    {
     title: '性质',

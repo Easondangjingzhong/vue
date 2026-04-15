@@ -70,7 +70,7 @@
           </a-form-item>
         </a-col>
         <a-col :span="3">
-          <a-form-item name="yearAndMonth" label="业绩">
+          <a-form-item name="yearAndMonth" label="账单">
             <a-date-picker
                   v-model:value="formStateMonthSalaryOffer.yearAndMonth"
                   value-format="YYYY-MM"
@@ -112,7 +112,7 @@
                  <a-menu-item>
                   <a href="javascript:;" @click="handleOutsourceMonthSalaryOfferAllocation(record)">业绩分配</a>
                 </a-menu-item>
-                 <a-menu-item>
+                <a-menu-item v-if="record.sign !== '2'">
                   <a href="javascript:;" @click="handleOutsourceSalarySign(record.id)">业绩核对</a>
                 </a-menu-item>
               </a-menu>
@@ -155,14 +155,14 @@ import { SearchMonthSalaryItem } from '/@/api/outsourceDetail/model';
 import OutsourceContentMonthSalaryOfferDetail from './OutsourceContentMonthSalaryOfferDetail.vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { monthSalaryIsLoading,pageOutsourceMonthSalaryOfferList,getOutsourceMonthSalaryOfferList,formStateMonthSalaryOffer, getProvince, getOutsourceBrand, getOutsourceCompanyAll, getOutsourcePosition } = storeToRefs(outsourceDetailStore);
+const { monthSalaryIsLoading,pageOutsourceMonthSalaryOfferList,getOutsourceMonthSalaryOfferList,formStateMonthSalaryOffer, getProvince, getOutsourcePosition } = storeToRefs(outsourceDetailStore);
 const columnsOutsourceMonthSalary:TableColumnsType = [
   {
     title: '客户信息',
     className: 'customer-info-header',
     children: [
       { title: '编号', dataIndex: 'index', key: 'index', fixed: 'left', width: 25, },
-      { title: '计薪月', dataIndex: 'jinxinMonth', key: 'jinxinMonth', fixed: 'left', width: 40, },
+      { title: '账单月', dataIndex: 'jinxinMonth', key: 'jinxinMonth', fixed: 'left', width: 40, },
       { title: '业绩月', dataIndex: 'offerDetailMonth', key: 'offerDetailMonth', fixed: 'left', width: 40, },
       { title: '标识', dataIndex: 'sign', key: 'sign', fixed: 'left', width: 30, },
       { title: '姓名', dataIndex: 'userNameCn', key: 'userNameCn', fixed: 'left', width: 55, ellipsis: true, },
@@ -239,12 +239,24 @@ const columnsOutsourceMonthSalary:TableColumnsType = [
 const clearFromState = () => {
   formStateMonthSalaryOffer.value = {} as SearchMonthSalaryItem;
 }
+const getOutsourceBrand = ref([
+  {value: '', label: ''}
+ ]);
+const getOutsourceCompanyAll = ref([
+  {value: '', label: ''}
+ ]);
 const onSearch = () => {
   pageOutsourceMonthSalaryOfferList.value = {
       ...pageOutsourceMonthSalaryOfferList.value,
       pageNumber: 1,
     }
   outsourceDetailStore.queryOutsourceMonthSalaryOffer();
+  outsourceDetailStore.queryOutsourceSalaryOfferMonthCompanyBrand(formStateMonthSalaryOffer.value.yearAndMonth).then(res => {
+    if (res.code == 1) {
+      getOutsourceBrand.value = res.info.branfList.map(item => ({value: item.bId, label: item.brandName}));
+      getOutsourceCompanyAll.value = res.info.companyList.map(item => ({value: item.companyName, label: item.companyName}));
+    }
+  });
 }
 onSearch();
 const handleOutsourceMonthSalaryOfferListData = () => {

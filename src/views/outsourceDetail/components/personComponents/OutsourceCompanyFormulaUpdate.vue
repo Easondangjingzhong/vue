@@ -124,7 +124,7 @@
           <a-col :span="4">   
             <a-form-item label="考勤日" name="kaoQinBiao" :rules="[{ required: true, message: '请选择考勤日' }]">
               <div style="display: flex; width: 100%;">
-                <a-select v-model:value="outsourceFormulaForm.kaoQinBiaoCurrent" style="width: 45%;" class="select-left">
+                <a-select v-model:value="outsourceFormulaForm.kaoQinBiaoCurrent" style="width: 50%;" class="select-left">
                   <a-select-option value="当月">当月</a-select-option>
                   <a-select-option value="下月">下月</a-select-option>
                 </a-select>
@@ -135,7 +135,7 @@
           <a-col :span="4">         
             <a-form-item label="账单日" name="zhanDanRi" :rules="[{ required: true, message: '请选择账单日' }]">
               <div style="display: flex; width: 100%;">
-                <a-select v-model:value="outsourceFormulaForm.zhanDanRiCurrent" style="width: 45%;" class="select-left">
+                <a-select v-model:value="outsourceFormulaForm.zhanDanRiCurrent" style="width: 50%;" class="select-left">
                   <a-select-option value="当月">当月</a-select-option>
                   <a-select-option value="下月">下月</a-select-option>
                 </a-select>

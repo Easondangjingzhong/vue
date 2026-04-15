@@ -422,14 +422,14 @@ const columns:TableColumnsType =[
     },
     {
       title: '附加税率',
-      dataIndex: 'serviceType',
-      key: 'serviceType',
+      dataIndex: 'salaryRateFuJia',
+      key: 'salaryRateFuJia',
       width: 70,
     },
     {
       title: '附加税金',
-      dataIndex: 'serviceType',
-      key: 'serviceType',
+      dataIndex: 'salaryRateFuJiaMoney',
+      key: 'salaryRateFuJiaMoney',
       width: 70,
     },
     {

@@ -287,7 +287,7 @@
             </a-form-item>
           </a-col>
         </a-row>
-        <a-row :gutter="24">
+        <a-row :gutter="24" v-if="costDetailForm.sign !== '2'">
           <a-col :span="24" style="text-align: right;">
             <a-button type="primary" :loading="iconLoading" html-type="submit">
               保存
@@ -434,6 +434,7 @@ const costDetailFormPerformanceDetail = () => {
   if(getOutsourcePersonPerformanceDetail.value.length > 0) {
     const temp = getOutsourcePersonPerformanceDetail.value[0];
     const sheBao = getOutsourcePersonPerformanceDetailSheBaoInfo.value.length > 0 ? getOutsourcePersonPerformanceDetailSheBaoInfo.value[0] : {} as OutsourceSheBaoItem;
+    costDetailForm.value.sign = temp?.sign?.toString() || "";
     costDetailForm.value.jinxinMonth = temp?.jinxinMonth?.toString() || "";
     costDetailForm.value.personId = temp?.personId?.toString() || "";
     costDetailForm.value.monthTax = temp?.monthTax || "0";

@@ -165,7 +165,7 @@
             </span>
             <template #overlay>
               <a-menu>
-                 <a-menu-item>
+                 <a-menu-item v-if="record.checkFlag !== '1'">
                   <a href="javascript:;" @click="handleUpdateOutsourceSheBaoMonth(record)">社保同步</a>
                 </a-menu-item>
                  <a-menu-item>
@@ -218,7 +218,7 @@ import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail
 import { SearchSheBaoItem, OutsourceSheBaoItem } from '/@/api/outsourceDetail/model';
 import { shebaoCompanyOption } from '/@/api/outsourceDetail/constants';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { outsourceSocialSecuritInfoFlag, outsourceSocialSecurityCollectFlag,sheBaoIsLoading,pageOutsourceSheBaoList,formStateSheBao,getOutsourceSheBaoList, getProvince, getOutsourceBrand, getOutsourceCompanyAll, getOutsourcePosition, outsourceSocialSecurityJiaoFlag, outsourceSocialSecurityJiaoForm } = storeToRefs(outsourceDetailStore);
+const { outsourceSocialSecuritInfoFlag, outsourceSocialSecurityCollectFlag,sheBaoIsLoading,pageOutsourceSheBaoList,formStateSheBao,getOutsourceSheBaoList, getProvince, getOutsourcePosition, outsourceSocialSecurityJiaoFlag, outsourceSocialSecurityJiaoForm } = storeToRefs(outsourceDetailStore);
 const columnsOutsourceDetail:TableColumnsType = [
   { title: '编号', dataIndex: 'index', key: 'index', fixed: 'left', width: 30, ellipsis: true },
   { title: '周期', dataIndex: 'yearAndMonth', key: 'yearAndMonth', fixed: 'left', width: 40, ellipsis: true },
@@ -269,7 +269,12 @@ const columnsOutsourceDetail:TableColumnsType = [
 const clearFromState = () => {
   formStateSheBao.value = {currentStatus: '',yearAndMonth: currentDate('YYYY-MM')} as SearchSheBaoItem;
 }
-
+const getOutsourceBrand = ref([
+  {value: '', label: ''}
+]);
+const getOutsourceCompanyAll = ref([
+  {value: '', label: ''}
+]);
  const handleSearchOutsourcePerson = (status) => {
     if (status != '4') {
       formStateSheBao.value.currentStatus = status;
@@ -284,6 +289,12 @@ const onSearch = () => {
       pageNumber: 1,
     }
   outsourceDetailStore.queryOutsourceSheBao();
+  outsourceDetailStore.queryOutsourceSheBaoMonthCompanyBrand(formStateSheBao.value.yearAndMonth).then(res => {
+    if (res.code == 1) {
+      getOutsourceBrand.value = res.info.branfList.map(item => ({value: item.bId, label: item.brandName}));
+      getOutsourceCompanyAll.value = res.info.companyList.map(item => ({value: item.companyName, label: item.companyName}));
+    }
+  });
 }
 onSearch();
 const handleOutsourceSheBaoListData = () => {
