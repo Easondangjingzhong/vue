@@ -1029,6 +1029,7 @@ export const useResumeListStore = defineStore('app-Resume-List',{
       formData.append('totalCount', param.totalCount || '');
       formData.append('isBlack', param.isBlack || '');
       formData.append('jobStatus', param.jobStatus || '');
+      formData.append('isRepeat', param.isRepeat || '');
       return formData;
     },
     /**

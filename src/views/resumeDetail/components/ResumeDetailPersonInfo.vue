@@ -600,8 +600,8 @@
   const onFinish = () => {
     // console.log((formState.value.gender == 'F' && +formState.value.weight > 70))
     // console.log((+formState.value.weight > 70))
-    if ((formState.value.gender == 'M' && +formState.value.weight > 90) || (formState.value.gender == 'F' && +formState.value.weight > 80)) {
-      message.warn("体重男士不能超过90KG, 女士不能超过80KG");  
+    if ((formState.value.gender == 'M' && +formState.value.weight > 100) || (formState.value.gender == 'F' && +formState.value.weight > 80)) {
+      message.warn("体重男士不能超过100KG, 女士不能超过80KG");  
       return;
     }
     iconLoading.value = true;

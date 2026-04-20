@@ -794,6 +794,20 @@ export const useResumeDetailStore = defineStore('app-Resume',{
       const res = await fetchApi.addResumeCheckedTwoYear(formData);
       return res;
     },
+     /**
+     * 简历激活
+     * @returns
+     */
+    async addResumeCheckedTongbu(resumeProgress) {
+      const formData = new FormData();
+      const resumeId = this.resumeDetail.resumeId.toString();
+      formData.append('resumeId', resumeId);
+      formData.append('resumeProgress', resumeProgress);
+      formData.append('SystemRecruitId', loginVueUser.loginId);
+      formData.append('phoneNum', this.resumeDetail.resume.phoneNum);
+      const res = await fetchApi.addResumeCheckedTongbu(formData);
+      return res;
+    },
     /**
      * 推荐职位条件搜索
      * @returns

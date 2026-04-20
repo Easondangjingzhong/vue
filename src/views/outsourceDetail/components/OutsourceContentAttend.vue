@@ -109,7 +109,7 @@
     <template #bodyCell="{ column, record }">
       <a-tag v-if="column.key === 'flag' && record.flag === '1'" color="orange">待录</a-tag>
       <a-tag v-if="column.key === 'flag' && record.flag === '2'" color="green">已录</a-tag>
-      <span v-if="column.key == 'operation' && record.flag === '1'">
+      <span v-if="column.key == 'operation'">
         <FormOutlined @click="handleEditClick(record)"/>
       </span>
     <!-- 添加类型断言和存在性检查以修复TypeScript索引类型错误 -->

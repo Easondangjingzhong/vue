@@ -25,6 +25,8 @@
       <span v-else-if="column.key === 'zhuanChargeTax'">{{ record.zhuanChargeTax }}</span>
       <span v-else-if="column.key === 'zhuanChargeAfter'">{{ record.zhuanChargeAfter }}</span>
       <span v-else-if="column.key === 'zhuanChargeRate'">{{ record.zhuanChargeRate }}</span>
+
+      <span v-else-if="column.key === 'offerNum'">{{ record.offerNum.toFixed(4) }}</span>
     </template>
     <template #summary>
       <a-table-summary fixed>
@@ -84,7 +86,7 @@ const summaryData = computed(() => {
     zhuanZero: zhuanTaxSum === 0 && zhuanAfterSum === 0,
     taxIncluded: sum('taxIncluded').toFixed(2),
     money: sum('money').toFixed(2),
-    offerNum: sum('offerNum').toFixed(2),
+    offerNum: sum('offerNum').toFixed(4),
   };
 });
 

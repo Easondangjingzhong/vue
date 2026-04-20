@@ -45,6 +45,7 @@ specifiers:
   rimraf: ^3.0.2
   rollup-plugin-visualizer: ^5.9.2
   sanitize.css: ^13.0.0
+  sortablejs: ^1.15.7
   typescript: ^5.2.2
   unplugin-auto-import: ^0.4.20
   unplugin-vue-components: ^0.17.21
@@ -78,6 +79,7 @@ dependencies:
   pinia: 2.3.1_7et6wgumlogfwacqgibsqyqmmu
   postcss-plugin-px2rem: 0.8.1
   sanitize.css: 13.0.0
+  sortablejs: 1.15.7
   vue: 3.5.17_typescript@5.8.3
   vue-cropper: 1.1.4
   vue-demi: 0.14.10_vue@3.5.17
@@ -8583,6 +8585,10 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /sortablejs/1.15.7:
+    resolution: {integrity: sha512-Kk8wLQPlS+yi1ZEf48a4+fzHa4yxjC30M/Sr2AnQu+f/MPwvvX9XjZ6OWejiz8crBsLwSq8GHqaxaET7u6ux0A==}
+    dev: false
 
   /source-map-js/1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}

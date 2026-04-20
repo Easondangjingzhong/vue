@@ -35,26 +35,35 @@
             固定
           </a-col>
         </a-row>
-        <a-row class="row" :gutter="24" v-for="(item, index) in configColumnsQing" :key="index">
-          <a-col :span="8">
-            <a-input v-model:value="item.rowName" disabled/>
-          </a-col>
-          <a-col :span="7">
-            <a-input v-model:value="item.rowOther"/>
-          </a-col>
-          <a-col :span="3" style="display: flex;flex-direction: column;justify-content: center;">
-            <a-checkbox v-model:checked="item.show">显示</a-checkbox>
-          </a-col>
-          <a-col :span="3">
-            <a-input v-model:value="item.width" type="number"/>
-          </a-col>
-          <a-col :span="3">
-            <a-select v-model:value="item.fixed" allowClear style="width:100%;">
-              <a-select-option value="left">左</a-select-option>
-              <a-select-option value="right">右</a-select-option>
-            </a-select>
-          </a-col>
-        </a-row>
+        <div ref="qingListRef" class="qing-list">
+          <div class="qing-item" v-for="(item, index) in configColumnsQing" :key="item.key ?? index">
+            <a-row class="row qing-draggable-row" :gutter="24">
+              <a-col :span="8">
+                <div class="row-name-cell">
+                  <span class="drag-handle">
+                    <HolderOutlined />
+                  </span>
+                  <a-input v-model:value="item.rowName" disabled/>
+                </div>
+              </a-col>
+              <a-col :span="7">
+                <a-input v-model:value="item.rowOther"/>
+              </a-col>
+              <a-col :span="3" style="display: flex;flex-direction: column;justify-content: center;">
+                <a-checkbox v-model:checked="item.show">显示</a-checkbox>
+              </a-col>
+              <a-col :span="3">
+                <a-input v-model:value="item.width" type="number"/>
+              </a-col>
+              <a-col :span="3">
+                <a-select v-model:value="item.fixed" allowClear style="width:100%;">
+                  <a-select-option value="left">左</a-select-option>
+                  <a-select-option value="right">右</a-select-option>
+                </a-select>
+              </a-col>
+            </a-row>
+          </div>
+        </div>
       </div>
               </a-tab-pane>
               <a-tab-pane key="2" tab="工资单">
@@ -76,26 +85,35 @@
             固定
           </a-col>
         </a-row>
-        <a-row class="row" :gutter="24" v-for="(item, index) in configColumnsSalary" :key="index">
-          <a-col :span="8">
-            <a-input v-model:value="item.rowName" disabled/>
-          </a-col>
-          <a-col :span="7">
-            <a-input v-model:value="item.rowOther"/>
-          </a-col>
-          <a-col :span="3" style="display: flex;flex-direction: column;justify-content: center;">
-            <a-checkbox v-model:checked="item.show">显示</a-checkbox>
-          </a-col>
-          <a-col :span="3">
-            <a-input v-model:value="item.width" type="number"/>
-          </a-col>
-          <a-col :span="3">
-            <a-select v-model:value="item.fixed" allowClear style="width:100%;">
-              <a-select-option value="left">左</a-select-option>
-              <a-select-option value="right">右</a-select-option>
-            </a-select>
-          </a-col>
-        </a-row>
+        <div ref="salaryListRef" class="qing-list">
+          <div class="qing-item" v-for="(item, index) in configColumnsSalary" :key="item.key ?? index">
+            <a-row class="row qing-draggable-row" :gutter="24">
+              <a-col :span="8">
+                <div class="row-name-cell">
+                  <span class="drag-handle">
+                    <HolderOutlined />
+                  </span>
+                  <a-input v-model:value="item.rowName" disabled/>
+                </div>
+              </a-col>
+              <a-col :span="7">
+                <a-input v-model:value="item.rowOther"/>
+              </a-col>
+              <a-col :span="3" style="display: flex;flex-direction: column;justify-content: center;">
+                <a-checkbox v-model:checked="item.show">显示</a-checkbox>
+              </a-col>
+              <a-col :span="3">
+                <a-input v-model:value="item.width" type="number"/>
+              </a-col>
+              <a-col :span="3">
+                <a-select v-model:value="item.fixed" allowClear style="width:100%;">
+                  <a-select-option value="left">左</a-select-option>
+                  <a-select-option value="right">右</a-select-option>
+                </a-select>
+              </a-col>
+            </a-row>
+          </div>
+        </div>
       </div>
               </a-tab-pane>
               <a-tab-pane key="3" tab="社保">
@@ -117,26 +135,35 @@
             固定
           </a-col>
         </a-row>
-        <a-row class="row" :gutter="24" v-for="(item, index) in configColumnsSheBao" :key="index">
-          <a-col :span="8">
-            <a-input v-model:value="item.rowName" disabled/>
-          </a-col>
-          <a-col :span="7">
-            <a-input v-model:value="item.rowOther"/>
-          </a-col>
-          <a-col :span="3" style="display: flex;flex-direction: column;justify-content: center;">
-            <a-checkbox v-model:checked="item.show">显示</a-checkbox>
-          </a-col>
-          <a-col :span="3">
-            <a-input v-model:value="item.width" type="number"/>
-          </a-col>
-          <a-col :span="3">
-            <a-select v-model:value="item.fixed" allowClear style="width:100%;">
-              <a-select-option value="left">左</a-select-option>
-              <a-select-option value="right">右</a-select-option>
-            </a-select>
-          </a-col>
-        </a-row>
+        <div ref="sheBaoListRef" class="qing-list">
+          <div class="qing-item" v-for="(item, index) in configColumnsSheBao" :key="item.key ?? index">
+            <a-row class="row qing-draggable-row" :gutter="24">
+              <a-col :span="8">
+                <div class="row-name-cell">
+                  <span class="drag-handle">
+                    <HolderOutlined />
+                  </span>
+                  <a-input v-model:value="item.rowName" disabled/>
+                </div>
+              </a-col>
+              <a-col :span="7">
+                <a-input v-model:value="item.rowOther"/>
+              </a-col>
+              <a-col :span="3" style="display: flex;flex-direction: column;justify-content: center;">
+                <a-checkbox v-model:checked="item.show">显示</a-checkbox>
+              </a-col>
+              <a-col :span="3">
+                <a-input v-model:value="item.width" type="number"/>
+              </a-col>
+              <a-col :span="3">
+                <a-select v-model:value="item.fixed" allowClear style="width:100%;">
+                  <a-select-option value="left">左</a-select-option>
+                  <a-select-option value="right">右</a-select-option>
+                </a-select>
+              </a-col>
+            </a-row>
+          </div>
+        </div>
       </div>
               </a-tab-pane>
           </a-tabs>
@@ -155,7 +182,8 @@
 <script setup lang="ts">
 import _ from 'lodash';
 import { storeToRefs } from 'pinia';
-import { CloseOutlined } from '@ant-design/icons-vue';
+import { CloseOutlined, HolderOutlined } from '@ant-design/icons-vue';
+import Sortable from 'sortablejs';
 //import { OutsourcePersonMoneyColumnsItem }  from '/@/api/outsourceDetail/model';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
@@ -165,9 +193,115 @@ const moneyType  = ref('1');
 const configColumnsQing = ref<any[]>([]);
 const configColumnsSalary = ref<any[]>([]);
 const configColumnsSheBao = ref<any[]>([]);
+const qingListRef = ref<HTMLElement | null>(null);
+const salaryListRef = ref<HTMLElement | null>(null);
+const sheBaoListRef = ref<HTMLElement | null>(null);
+let qingSortable: Sortable | null = null;
+let salarySortable: Sortable | null = null;
+let sheBaoSortable: Sortable | null = null;
 const handleClose = () => {
     outsourcePersonMoneyTitleFlag.value = false;
   };
+const initQingSortable = () => {
+  if (!qingListRef.value) {
+    return;
+  }
+
+  qingSortable?.destroy();
+  qingSortable = Sortable.create(qingListRef.value, {
+    animation: 150,
+    ghostClass: 'qing-ghost',
+    chosenClass: 'qing-chosen',
+    dragClass: 'qing-drag',
+    filter:
+      'input, textarea, select, button, a, .ant-input, .ant-select, .ant-picker, .ant-checkbox-wrapper, .ant-switch',
+    preventOnFilter: false,
+    onEnd: (evt) => {
+      const oldIndex = evt.oldIndex;
+      const newIndex = evt.newIndex;
+      if (oldIndex === undefined || newIndex === undefined || oldIndex === newIndex) {
+        return;
+      }
+      const list = configColumnsQing.value;
+      const [moved] = list.splice(oldIndex, 1);
+      list.splice(newIndex, 0, moved);
+    },
+  });
+};
+const initSalarySortable = () => {
+  if (!salaryListRef.value) {
+    return;
+  }
+
+  salarySortable?.destroy();
+  salarySortable = Sortable.create(salaryListRef.value, {
+    animation: 150,
+    ghostClass: 'qing-ghost',
+    chosenClass: 'qing-chosen',
+    dragClass: 'qing-drag',
+    filter:
+      'input, textarea, select, button, a, .ant-input, .ant-select, .ant-picker, .ant-checkbox-wrapper, .ant-switch',
+    preventOnFilter: false,
+    onEnd: (evt) => {
+      const oldIndex = evt.oldIndex;
+      const newIndex = evt.newIndex;
+      if (oldIndex === undefined || newIndex === undefined || oldIndex === newIndex) {
+        return;
+      }
+      const list = configColumnsSalary.value;
+      const [moved] = list.splice(oldIndex, 1);
+      list.splice(newIndex, 0, moved);
+    },
+  });
+};
+const initSheBaoSortable = () => {
+  if (!sheBaoListRef.value) {
+    return;
+  }
+
+  sheBaoSortable?.destroy();
+  sheBaoSortable = Sortable.create(sheBaoListRef.value, {
+    animation: 150,
+    ghostClass: 'qing-ghost',
+    chosenClass: 'qing-chosen',
+    dragClass: 'qing-drag',
+    filter:
+      'input, textarea, select, button, a, .ant-input, .ant-select, .ant-picker, .ant-checkbox-wrapper, .ant-switch',
+    preventOnFilter: false,
+    onEnd: (evt) => {
+      const oldIndex = evt.oldIndex;
+      const newIndex = evt.newIndex;
+      if (oldIndex === undefined || newIndex === undefined || oldIndex === newIndex) {
+        return;
+      }
+      const list = configColumnsSheBao.value;
+      const [moved] = list.splice(oldIndex, 1);
+      list.splice(newIndex, 0, moved);
+    },
+  });
+};
+watch([outsourcePersonMoneyTitleFlag, moneyType], async ([open, tab]) => {
+  if (open && tab === '1') {
+    await nextTick();
+    initQingSortable();
+  }
+  if (open && tab === '2') {
+    await nextTick();
+    initSalarySortable();
+  }
+  if (open && tab === '3') {
+    await nextTick();
+    initSheBaoSortable();
+  }
+});
+onBeforeUnmount(() => {
+  qingSortable?.destroy();
+  qingSortable = null;
+  salarySortable?.destroy();
+  salarySortable = null;
+  sheBaoSortable?.destroy();
+  sheBaoSortable = null;
+});
 const defaultColumnsSalary = [
     {
       rowName: '序号',
@@ -1146,7 +1280,7 @@ const defaultColumnsQing = [
       rowName: '附加税率',
       rowOther: '附加税率',
       show: true,
-      key: 'serviceType',
+      key: 'salaryRateFuJia',
       fixed: '',
       width: 70,
     },
@@ -1154,7 +1288,7 @@ const defaultColumnsQing = [
       rowName: '附加税金',
       rowOther: '附加税金',
       show: true,
-      key: 'serviceType',
+      key: 'salaryRateFuJiaMoney',
       fixed: '',
       width: 70,
     },
@@ -1463,5 +1597,34 @@ const handleSave = async () => {
   }
   :deep(.ant-tabs-top >.ant-tabs-nav) {
     margin-bottom: 0;
+  }
+  .row-name-cell {
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+  .drag-handle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    margin-right: 6px;
+    color: #8c8c8c;
+  }
+  .qing-draggable-row {
+    cursor: move;
+  }
+  :deep(.qing-draggable-row input),
+  :deep(.qing-draggable-row textarea),
+  :deep(.qing-draggable-row .ant-select),
+  :deep(.qing-draggable-row .ant-picker),
+  :deep(.qing-draggable-row .ant-checkbox-wrapper) {
+    cursor: default;
+  }
+  .qing-ghost {
+    opacity: 0.4;
+  }
+  .qing-chosen {
+    background: #f5f5f5;
   }
 </style>

@@ -41,6 +41,7 @@ enum URL {
   resume_add_tag = '/resume/rusume-vue-update-personLabel.action',
   resume_add_checked = '/resume/resume-vue-update-resume-resume-issure.action',
   resume_add_checked_two_year = '/resume/resume-vue-issure-twoYear.action',
+  resume_add_checked_tongbu = '/resume/resume-vue-issure-Tongbu.action',
   resume_search_recommend = '/candidatePosition/resume-vue-query-position-guanlian-scarch.action',
   resume_file_blob = '/resume/resume-vue-filetoBlob.action',
   resume_tianyan_executeGet = '/candidateRecommend/resume-vue-tianyan-executeGet.action',
@@ -100,7 +101,8 @@ const resumeFlieToBlob = (formData: any) =>
   post<any>({ url: URL.resume_file_blob, data: formData });
 const searchFormState = (formData: any) =>
   post<any>({ url: URL.resume_search_recommend, data: formData });
-
+const addResumeCheckedTongbu = (formData: any) =>
+  post<any>({ url: URL.resume_add_checked_tongbu, data: formData });
 const addResumeCheckedTwoYear = (formData: any) =>
   post<any>({ url: URL.resume_add_checked_two_year, data: formData });
 const addResumeChecked = (formData: any) =>
@@ -208,6 +210,7 @@ export default {
   searchFormState,
   addResumeChecked,
   addResumeCheckedTwoYear,
+  addResumeCheckedTongbu,
   addTag,
   resumeCopyToSelf,
   deleteEducationExp,

@@ -451,7 +451,7 @@ const costDetailFormPerformanceDetail = () => {
     costDetailForm.value.shiShangbao = (temp?.shiShangbao || temp.shiShangbao == "0") ? temp?.shiShangbao : sheBao?.shiShangbao?.toString();
     costDetailForm.value.otherPay = temp?.otherPay || "0";
 
-    costDetailForm.value.canBaoKe = (temp?.canBaoKe || temp.canBaoKe == "0") ? temp?.canBaoKe : ((temp?.monthTax && temp?.jobType == '全职') ? (Number(temp.monthTax || 0) * 0.015).toFixed(2) : "0");
+    costDetailForm.value.canBaoKe = (temp?.canBaoKe || temp.canBaoKe == "0") && temp?.sign == '2' ? temp?.canBaoKe : ((temp?.monthTax && temp?.jobType == '全职') ? ((Number(temp.monthTax || 0) * 0.015) < 0 ? "0" : (Number(temp.monthTax || 0) * 0.015).toFixed(2)): "0");
     /**
      * 公司账单-企业残保：
       上海：上海最低基数7460*1.35%；
@@ -464,9 +464,9 @@ const costDetailFormPerformanceDetail = () => {
     } else if(temp?.city == '上海' || temp?.city == '深圳') {
       costDetailForm.value.canBao = Number(sheBao?.canbaoMoney || "0").toFixed(2) || "0";
     } else if(temp?.city == '广州' || temp?.city == '杭州') {
-      costDetailForm.value.canBao = (Number(temp.monthTax || 0) * 0.0135).toFixed(2) || "0";
+      costDetailForm.value.canBao = (Number(temp.monthTax || 0) * 0.0135) < 0 ? "0" : (Number(temp.monthTax || 0) * 0.0135).toFixed(2);
     } else {
-      costDetailForm.value.canBao = (Number(temp.salaryAfterTax || 0) * 0.015).toFixed(2) || "0";
+      costDetailForm.value.canBao = (Number(temp.salaryAfterTax || 0) * 0.015) < 0 ? "0" : (Number(temp.salaryAfterTax || 0) * 0.015).toFixed(2);
     }
     costDetailForm.value.chenbenTiaochaKe = temp?.chenbenTiaochaKe || "0";
     costDetailForm.value.chenbenTiaocha = temp?.chenbenTiaocha || "0";

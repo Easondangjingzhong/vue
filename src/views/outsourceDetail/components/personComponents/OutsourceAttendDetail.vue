@@ -656,7 +656,9 @@ const canbuTiaocha = computed(() => {
     }
     if (outsourceAttendForm.value.jobType === '全职') {
         // 全职员工: 基本工资/全勤工时*本月预估
-        return totalWorkHours > 0 ? (canbu / totalWorkHours) * yuCha : 0;
+        //300/174*实际出勤-300/174*预估出勤-300/174*（事假+带薪病假+病假）
+        //基本工资/全勤工时*当月差额 - 基本工资/全勤工时 *（事假+带薪病假+病假）
+        return totalWorkHours > 0 ? (canbu / totalWorkHours) * yuCha - (canbu / totalWorkHours) * (Number(outsourceAttendForm.value.shijiaHours || 0) + Number(outsourceAttendForm.value.daixinBingjiaHours || 0) + Number(outsourceAttendForm.value.kouxinBingjiaHours || 0)) : 0;
       }
   }
   return 0;
@@ -671,9 +673,9 @@ const jintirTiaocha = computed(() => {
       return 0;
     }
     if (outsourceAttendForm.value.jobType === '全职') {
-        // 全职员工: 基本工资/全勤工时*本月预估
-        return totalWorkHours > 0 ? (jintie / totalWorkHours) * yuCha : 0;
-      }
+       // 全职员工: 基本工资/全勤工时*本月预估
+       return totalWorkHours > 0 ? (jintie / totalWorkHours) * yuCha : 0;
+    }
   }
   return 0;
 });
@@ -686,14 +688,18 @@ const quanqinTiaocha = computed(() => {
     if (outsourceAttendForm.value.isYugu === "否") {
       return 0;
     }
+    //上月预估小于全勤工时就不需要全勤调差了
+    if (lastMonthYuHours - totalWorkHours < 0) {
+      return 0;
+    }
     if (yuCha < 0) {
         return -quanqin;
-      }
-      // 预估工时
-      if (outsourceAttendForm.value.jobType === '全职') {
-        // 全职员工: 基本工资/全勤工时*本月预估
-        return (totalWorkHours > 0 && outsourceAttendForm.value.isQuanqin == "是") ? (quanqin / totalWorkHours) * yuCha : 0;
-      }
+    }
+    // 预估工时
+    if (outsourceAttendForm.value.jobType === '全职') {
+       // 全职员工: 基本工资/全勤工时*本月预估
+       return (totalWorkHours > 0 && outsourceAttendForm.value.isQuanqin == "是") ? (quanqin / totalWorkHours) * yuCha : 0;
+    }
   }
   return 0;
 });

@@ -25,7 +25,7 @@
          </a-col>
       </a-row>
       <a-row>
-        <a-col :span="18" class="row_col_space_brand">
+        <a-col :span="12" class="row_col_space_brand_detail">
           <a-form-item :label-col="{ span: 4 }" name="brandRuleOut" label="品牌" class="row_col_space_left_brand">
             <a-select
               optionFilterProp="label"
@@ -53,6 +53,19 @@
               :options="optionsBrand"
             ></a-select>
           </a-form-item>
+        </a-col>
+        <a-col :span="6" style="padding: 0 5px;">
+          <a-form-item :label-col="{ span: 4 }" name="isRepeat" label="标签">
+          <a-select
+            v-model:value="formState.isRepeat"
+            :allowClear="true"
+            :showArrow="false"
+          >
+          <a-select-option value="1">首增</a-select-option>
+          <a-select-option value="2">激活保护中</a-select-option>
+          <a-select-option value="3">全部激活</a-select-option>
+        </a-select>
+        </a-form-item>
         </a-col>
        <a-col :span="6">
           <a-form-item :label-col="{ span: 5 }" name="jobStatus" label="职状">
@@ -274,21 +287,21 @@
             color="orange"
             >{{ record.checkFlag }}</a-tag
           >
-          <!-- <a-tag
+          <a-tag
             class="tagspan tagspanWhite"
-            :title="record.repeatTime"
-            v-if="showResumeRightOutFlag && record.recruitId && record.checkFlag == '待核' && record.fristFlag"
+            :title="record.checkedTime"
+            v-if="showResumeRightOutFlag && record.checkFlag == '待核' && record.fristFlag"
             color="#d8d8d8"
             >{{ record.fristFlag }}</a-tag
           >
           <a-tag
             class="tagspan tagspanGreen"
-            :title="record.repeatTime"
-            v-if="showResumeRightOutFlag && record.recruitId && record.checkFlag != '待核' && record.fristFlag"
+            :title="record.checkedTime"
+            v-if="showResumeRightOutFlag && record.checkFlag != '待核' && record.fristFlag"
             color="green"
             >{{ record.fristFlag }}</a-tag
           >
-          <a-tag class="tagspan" v-if="showResumeRightOutFlag && record.recruitId && record.onlyFlag" color="green">{{
+          <!-- <a-tag class="tagspan" v-if="showResumeRightOutFlag && record.recruitId && record.onlyFlag" color="green">{{
             record.onlyFlag
           }}</a-tag> -->
           <!-- <a-tag
@@ -496,6 +509,7 @@
   import type { FormInstance } from 'ant-design-vue';
   import { storeToRefs } from 'pinia';
   import dayjs, { Dayjs } from 'dayjs';
+  import { formatToDateMinute } from '/@/utils/dateUtil';
   import { message } from 'ant-design-vue';
   import { SearchResumeList } from '/@/api/resumeList/model';
   import SearchContent from './resumeContent/SearchContent.vue';
@@ -990,6 +1004,12 @@ optionsRecruitId.value = teamPersonChangeArr.value.map(item => ({value: item.tea
     background: linear-gradient(45deg, transparent 88%, #f90202 0);
     border-top-right-radius: 4px;
   }
+  :deep(.row_col_space_brand_detail) {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    padding-right: 16px;
+  }
   :deep(.row_col_space_brand) {
     display: flex;
     width: 100%;
@@ -1023,7 +1043,7 @@ optionsRecruitId.value = teamPersonChangeArr.value.map(item => ({value: item.tea
     height: auto;
   }
   :deep(.row_col_space_left_brand) {
-    width: 14%;
+    width: 20%;
     margin-inline-end: -1px;
     margin-inline-start: 19px;
   }
@@ -1036,7 +1056,7 @@ optionsRecruitId.value = teamPersonChangeArr.value.map(item => ({value: item.tea
     height: auto;
   }
   :deep(.row_col_space_centent_brand) {
-    width: 10%;
+    width: 12%;
     margin-inline-end: -1px;
   }
   :deep(.row_col_space_centent_brand .ant-select-selector) {

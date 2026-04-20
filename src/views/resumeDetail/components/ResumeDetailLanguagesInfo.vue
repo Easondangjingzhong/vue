@@ -96,8 +96,9 @@
             class="languageAbility0"
             name="languageAbility0"
             :label="themeLanguage?.English?.label"
-            :label-col="{ span: 1 }"
-            :wrapper-col="{ span: 23 }"
+            :label-col="{ span: 2 }"
+            :wrapper-col="{ span: 22 }"
+            style="line-height: 3;"
             @change="onChangeLanguageAbility"
             :rules="[{ required: false, message: '请输入语言能力' }]"
           >
@@ -134,7 +135,7 @@
               </a-checkbox>
               <a-checkbox value="3">{{ themeLanguage?.English?.language3 }}</a-checkbox>
             </a-checkbox-group>
-            <a style="font-size: 12px" @click="expand = !expand">
+             <a style="font-size: 12px;line-height: 2.5;" @click="expand = !expand">
               <template v-if="expand">
                 <UpOutlined style="vertical-align: middle" />
               </template>
@@ -144,6 +145,7 @@
               更多
             </a>
           </a-form-item>
+          
           <span style="font-size: 10px;display: inline-block;color: red;padding-left: 32px;">听说流利: 要求候选人能在对话、交流、面试等场景中，自信、清晰地表达观点，准确理解他人，展现自然流畅的语言能力，如不达标禁止选择。</span>
           <span style="font-size: 10px;display: inline-block;color: red;padding-left: 32px;">读写流利: 要求候选人能精准理解并创作各类文本，熟练运用语言进行翻译或原创写作，如不达标禁止选择。</span>
         </a-col>
@@ -153,8 +155,9 @@
           <a-form-item
             name="languageAbility1"
             :label="themeLanguage?.French?.label"
-            :label-col="{ span: 1 }"
-            :wrapper-col="{ span: 23 }"
+            :label-col="{ span: 2 }"
+            :wrapper-col="{ span: 22 }"
+            style="line-height: 3;"
             @change="onChangeLanguageAbility"
             :rules="[{ required: false, message: '请输入语言能力' }]"
           >
@@ -180,8 +183,9 @@
           <a-form-item
             name="languageAbility2"
             :label="themeLanguage?.Japanese?.label"
-            :label-col="{ span: 1 }"
-            :wrapper-col="{ span: 23 }"
+            :label-col="{ span: 2 }"
+            :wrapper-col="{ span: 22 }"
+            style="line-height: 3;"
             @change="onChangeLanguageAbility"
             :rules="[{ required: false, message: '请输入语言能力' }]"
           >
@@ -203,8 +207,9 @@
           <a-form-item
             name="languageAbility3"
             :label="themeLanguage?.German?.label"
-            :label-col="{ span: 1 }"
-            :wrapper-col="{ span: 23 }"
+            :label-col="{ span: 2 }"
+            :wrapper-col="{ span: 22 }"
+            style="line-height: 3;"
             @change="onChangeLanguageAbility"
             :rules="[{ required: false, message: '请输入语言能力' }]"
           >
@@ -227,8 +232,9 @@
           <a-form-item
             name="languageAbility6"
             :label="themeLanguage?.Korean?.label"
-            :label-col="{ span: 1 }"
-            :wrapper-col="{ span: 23 }"
+            :label-col="{ span: 2 }"
+            :wrapper-col="{ span: 22 }"
+            style="line-height: 3;"
             @change="onChangeLanguageAbility"
             :rules="[{ required: false, message: '请输入语言能力' }]"
           >
@@ -247,8 +253,9 @@
           <a-form-item
             name="languageAbility4"
             :label="themeLanguage?.Cantonese?.label"
-            :label-col="{ span: 1 }"
-            :wrapper-col="{ span: 23 }"
+            :label-col="{ span: 2 }"
+            :wrapper-col="{ span: 22 }"
+            style="line-height: 3;"
             @change="onChangeLanguageAbility"
             :rules="[{ required: false, message: '请输入语言能力' }]"
           >
@@ -265,8 +272,9 @@
           <a-form-item
             name="languageAbility5"
             :label="themeLanguage?.Chinese?.label"
-            :label-col="{ span: 1 }"
-            :wrapper-col="{ span: 23 }"
+            :label-col="{ span: 2 }"
+            :wrapper-col="{ span: 22 }"
+            style="line-height: 3;"
             @change="onChangeLanguageAbility"
             :rules="[{ required: false, message: '请输入语言能力' }]"
           >

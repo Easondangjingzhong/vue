@@ -31,10 +31,10 @@
       <a-divider :dashed="true" style="background-color: #ccc; margin-top: 0" />
     </a-row>
     <a-row :gutter="24" class="resume_row">
-      <a-col :span="10">
+      <a-col :span="9">
         {{ resumeData.schoolName }}
       </a-col>
-      <a-col :span="4">
+      <a-col :span="5">
         {{ resumeData.startYear }}.{{ formatDateToMonth(resumeData.startMonth) }} - {{ resumeData.endYear }}.{{
           formatDateToMonth(resumeData.endMonth)
         }}
@@ -57,8 +57,8 @@
       </a-col>
     </a-row>
     <a-row :gutter="24" class="resume_row">
-      <a-col :span="10" v-if="degreeFlagTemp"> {{ themeLanguage?.majorName?.label }}: <span class="resume_span">{{ resumeData.majorName }}</span> </a-col>
-      <a-col :span="4"> {{ themeLanguage?.degree?.label }}: <span class="resume_span">{{ resumeData.degree }}</span> </a-col>
+      <a-col :span="9" v-if="degreeFlagTemp"> {{ themeLanguage?.majorName?.label }}: <span class="resume_span">{{ resumeData.majorName }}</span> </a-col>
+      <a-col :span="5"> {{ themeLanguage?.degree?.label }}: <span class="resume_span">{{ resumeData.degree }}</span> </a-col>
       <a-col :span="7"> {{ themeLanguage?.isRegular?.label }}: 
         <span v-if="resumeTypeEnglish == '1'" class="resume_span">{{ resumeData.isRegular == 'Y' ? 'Yes' : 'No' }}</span>
         <span v-else class="resume_span">{{ resumeData.isRegular == 'Y' ? '是' : '否' }}</span>

@@ -11,7 +11,7 @@
         <a-tag class="resume_tag_checked" v-if="props.showResumeRightOutFlag && !resumeData.recruitId && resumeData.projectFlag == '过保'" color="red">{{ resumeData.projectFlag }}</a-tag>
         <!-- <a-tag class="resume_tag_checked_top" v-if="props.showResumeRightOutFlag && !resumeData.recruitId" color="orange">公共</a-tag> -->
         <a-tag class="resume_tag_checked_top" v-if="props.showResumeRightOutFlag && !resumeData.recruitId && resumeData.twoYearFlag == '两年'" color="green">两年</a-tag>
-        <a-tag :title="checkedTime" style="cursor: pointer;" color="#d8d8d8" class="resume_tag_checked tagspanWhite" v-if="showResumeAdd && resumeData.recruitId && (resumeData.checkFlag == '待核' || resumeData.checkFlag == '过期')"
+        <a-tag :title="checkedTime" style="cursor: pointer;" color="#d8d8d8" class="resume_tag_checked tagspanWhite" v-if="props.showResumeRightOutFlag &&(resumeData.checkFlag == '待核' || resumeData.checkFlag == '过期')"
         >待核</a-tag>
         <a-tag style="cursor: pointer;" color="#d8d8d8" class="resume_tag_checked" v-if="props.showResumeRightOutFlag && showResumeAdd && resumeData.recruitId && resumeData.checkFlag == '待激活'"
           >激活</a-tag
@@ -37,14 +37,14 @@
           color="#d8d8d8"
           class="resume_tag_checked_top tagspanWhite"
           :title="repeatTime"
-          v-if="props.showResumeRightOutFlag && resumeData.recruitId && resumeData.checkFlag == '待核' && resumeData.fristFlag"
+          v-if="props.showResumeRightOutFlag && resumeData.checkFlag == '待核' && resumeData.fristFlag"
           >首增</a-tag
         >
         <a-tag
           color="green"
           class="resume_tag_checked_top tagspanGreen"
           :title="repeatTime"
-          v-if="props.showResumeRightOutFlag && resumeData.recruitId && resumeData.checkFlag != '待核' && resumeData.fristFlag"
+          v-if="props.showResumeRightOutFlag && resumeData.checkFlag != '待核' && resumeData.fristFlag"
           >首增</a-tag>
         <!-- <a-tag class="resume_tag_checked_top" v-if="props.showResumeRightOutFlag && resumeData.recruitId && resumeData.onlyFlag" color="green">{{ resumeData.onlyFlag }}</a-tag>
         <a-tag :title="commonFlagTime" class="resume_tag_checked_top tagspanGreen" v-if="props.showResumeRightOutFlag && resumeData.recruitId && resumeData.commonFlag" color="green">{{ resumeData.commonFlag }}</a-tag>
@@ -131,6 +131,9 @@
       <p>3. 与此候选人使用公司有效电话沟通及简历核对且填写匹配的有效沟通记录；</p>
       <p>4. 如不符合以上3条，继续申请重新激活“在保”，视为恶意违反公司KPI制度规定，面临警告和罚款的处理，请务必认真对待。</p>
     </a-modal>
+     <a-modal v-model:open="openResumeCheckedTongbu" title="简历同步" @ok="handleResumeCheckedTongbu">
+      <p>新增简历已核或激活简历后，若发现之前核对简历有问题，更改简历后，则可点击"同步"按钮，将正确简历同步至公共库</p>
+    </a-modal>
       </a-col>
     </a-row>
     <a-row :gutter="24" class="resume_row_center">
@@ -181,6 +184,12 @@
       </span>
       </a-col>
       <a-col :span="8" style="text-align: right">
+         <a-button
+          v-if="showResumeAdd && resumeData.recruitId && !(resumeData.checkFlag == '待核' || resumeData.checkFlag == '过期')"
+          style="margin-left: 4px;background-color: orange;color: #fff;"
+           size="middle"
+          @click="handleAddCheckedTongbu"
+          >同步</a-button>
         <a-button
           v-if="uploadManageFlag"
           style="margin-left: 4px;background-color: orange;color: #fff;"
@@ -344,19 +353,16 @@
       default: false,
     },
   });
-  const newTime = ref(
-    props.resumeData.newtestStartTime
-      ? `${formatToDateMinute(props.resumeData.newtestStartTime)} - ${formatToDateMinute(
+  const newTime = ref(`${formatToDateMinute(props.resumeData.newtestStartTime)} - ${formatToDateMinute(
+          props.resumeData.newtestEndTime
+        )} 最新数据周期`);
+  watch(() => props.resumeData.newtestStartTime, () => {
+    newTime.value = `${formatToDateMinute(props.resumeData.newtestStartTime)} - ${formatToDateMinute(
           props.resumeData.newtestEndTime
         )} 最新数据周期`
-      : '',
-  );
+  })
   //`首增: ${formatToDateMinute(props.resumeData.shouZengStartTime)} - ${formatToDateMinute( props.resumeData.shouZengEndTime )}`
-  const repeatTime = ref(
-    props.resumeData.shouZengStartTime
-      ? `${formatToDateMinute(props.resumeData.registTime)}  首增日期`
-      : '',
-  );
+  const repeatTime = ref(`${formatToDateMinute(props.resumeData.registTime)}  首增日期`);
   const commonFlagTime = ref(
     props.resumeData.personBaohuStartTime
       ? `${formatToDateMinute(props.resumeData.personBaohuStartTime)} - ${formatToDateMinute(
@@ -654,6 +660,7 @@
     }
     openResumeCheckedTwoYear.value = true;
   }
+  
   const handleResumeCheckedTwoYear = () => {
     resumeDetailStore.addResumeCheckedTwoYear(resumeProgressDetailScore.value).then((res) => {
       openResumeCheckedTwoYear.value = false;
@@ -666,7 +673,26 @@
       }
     })
   }
-  
+  const openResumeCheckedTongbu = ref(false);
+  const handleAddCheckedTongbu = () => {
+    if (resumeProgressDetailScore.value < 90) {
+      message.error('简历完整度需要大于90');
+      return;
+    }
+    openResumeCheckedTongbu.value = true;
+  }
+  const handleResumeCheckedTongbu = () => {
+    resumeDetailStore.addResumeCheckedTongbu(resumeProgressDetailScore.value).then((res) => {
+      openResumeCheckedTongbu.value = false;
+      if (res.code === 1) {
+        resumeDetailStore.queryResumeDetail().then(() =>{
+          message.success('同步成功');
+        })
+      } else {
+        message.error(res.info);
+      }
+    })
+  }
   const handlePhoneNumToSystem = (phone) => {
    // 跳转到��号器��打电话
     window.open("http://work.wotui.com:8889/WTSM/employee-group/query-phone-resume-call.html?phoneNum=" + phone+"&userName="+props.resumeData.userName+"&workPlace="+resumeDetail.value.resume.currentCity+"&positionName="+resumeDetail.value.resume.positionName,"_blank ");
