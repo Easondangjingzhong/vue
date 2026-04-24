@@ -1482,6 +1482,11 @@
     if (!e.target.value && e.target.value != '') {
       return;
     }
+    if (typeof e.target.value === 'string' && e.target.value.trim() === '') {
+      message.error('品牌中文不能为空格');
+      brandNameCn.value = '';
+      return;
+    }
     if (e.target.value.length > 8) {
       message.error('品牌中文最多8个字');
       brandNameCn.value = '';
@@ -1499,6 +1504,11 @@
 
   const handleBrandNameEn = (e) => {
     if (!e.target.value) {
+      return;
+    }
+    if (typeof e.target.value === 'string' && e.target.value.trim() === '') {
+      message.error('品牌英文不能为空格');
+      brnadNameEn.value = '';
       return;
     }
     const reg = /^[a-zA-Z][a-zA-Z0-9]*$/;
@@ -1549,16 +1559,16 @@
         if (res.code == 1) {
           brandNameFlag = false;
           formState.brandWrite = '1';
-          formState.brandNameCn = brandNameCn.value;
-          formState.brnadNameEn = brnadNameEn.value;
+          formState.brandNameCn = brandNameCn.value?.trim();
+          formState.brnadNameEn = brnadNameEn.value?.trim();
         } else {
           message.error(res.info);
         }
       } else {
         brandNameFlag = false;
         formState.brandWrite = '1';
-        formState.brandNameCn = brandNameCn.value;
-        formState.brnadNameEn = brnadNameEn.value;
+        formState.brandNameCn = brandNameCn.value?.trim();
+        formState.brnadNameEn = brnadNameEn.value?.trim();
       }
     }
     if (brandNameFlag) {

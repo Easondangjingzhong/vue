@@ -17,6 +17,16 @@
     <a-form :model="formStatePersonMoney" @finish="onSearch">
       <a-row :gutter="24">
         <a-col :span="3">
+          <a-form-item name="yearAndMonth" label="请款月">
+            <a-date-picker
+                  v-model:value="formStatePersonMoney.yearAndMonth"
+                  @change="handleChangeCompany"
+                  value-format="YYYY-MM"
+                  picker="month"
+                />
+          </a-form-item>
+        </a-col>
+        <a-col :span="4">
           <a-form-item name="companyName" label="公司">
             <a-select
               optionFilterProp="label"
@@ -28,18 +38,11 @@
             ></a-select>
           </a-form-item>
         </a-col>
-        <a-col :span="3">
-          <a-form-item name="yearAndMonth" label="请款月">
-            <a-date-picker
-                  v-model:value="formStatePersonMoney.yearAndMonth"
-                  value-format="YYYY-MM"
-                  picker="month"
-                />
-          </a-form-item>
-        </a-col>
-         <a-col :span="8">
+         <a-col :span="13">
           <a-button style="margin: 0 0 0 8px" type="primary" html-type="submit">搜索</a-button>
           <a-button style="margin: 0 0 0 8px" @click="clearFromState">清空</a-button>
+         </a-col>
+         <a-col :span="4">
           <a-button style="margin: 0 0 0 8px" @click="exportTitle">设置标题</a-button>
           <a-button style="margin: 0 0 0 8px" @click="downLoadOutsourceCompanyExcel">导出</a-button>
          </a-col>
@@ -71,6 +74,7 @@
 import _ from 'lodash';
 import { storeToRefs } from 'pinia';
 import { CloseOutlined } from '@ant-design/icons-vue';
+import dayjs from 'dayjs';
 import OutsourcePersonMoneyQing from './OutsourcePersonMoneyQing.vue';
 import OutsourcePersonMoneySheBao from './OutsourcePersonMoneySheBao.vue';
 import OutsourcePersonMoneySalary from './OutsourcePersonMoneySalary.vue';
@@ -78,9 +82,22 @@ import OutsourcePersonMoneyTitle from './OutsourcePersonMoneyTitle.vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 import { OutsourcePersonMoneyItem } from '/@/api/outsourceDetail/model';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { outsourcePersonMoneyFlag, formStatePersonMoney, getOutsourceCompanyAll, outsourcePersonMoneyTitleFlag} = storeToRefs(outsourceDetailStore);
+const { outsourcePersonMoneyFlag, formStatePersonMoney, outsourcePersonMoneyTitleFlag} = storeToRefs(outsourceDetailStore);
 const drawerWidth = ref(Math.max(600, window.innerWidth * 0.9));
 const outsourceDetailMoneySider = ref('1');
+const getOutsourceCompanyAll = ref([
+  {value: '', label: ''}
+]);
+const handleChangeCompany = () => {
+   outsourceDetailStore.queryOutsourceSalaryMonthCompanyBrand(formStatePersonMoney.value.yearAndMonth || dayjs().format('YYYY-MM')).then(res => {
+    if (res.code == 1) {
+       getOutsourceCompanyAll.value = res.info.companyList.map(item => ({value: item.companyName, label: item.companyName}));
+    }
+  });
+}
+watch(() => outsourcePersonMoneyFlag,() =>{
+  handleChangeCompany();
+})
 const onSearch = () => {
   outsourceDetailStore.outsourcePersonMoney(formStatePersonMoney.value);
 }

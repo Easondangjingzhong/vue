@@ -4,7 +4,7 @@
         :columns="columns"
         :pagination="false"
         :dataSource="getOfferOutsourceMonthSalary"
-        :scroll="{ x: 5600 }"
+        :scroll="{ x: scrollX }"
       >
       <template #summary>
       <a-table-summary fixed>
@@ -15,10 +15,7 @@
             :index="index"
           >
             <template v-if="index === 0">合计</template>
-            <template v-else-if="col.key && ['monthTax', 'sheBaoMoney', 'canbaoMoney', 'economicCompensation', 'personCost', 'serviceFee', 'shangbao', 'salaryTax', 'salaryRateMoney', 'salaryTotal'].includes((col as any).dataIndex)">
-              {{ summaryData[(col as any).dataIndex] }}
-            </template>
-            <template v-else-if="['rate'].includes((col as any).dataIndex)">
+            <template v-else-if="col.key && ['monthTax', 'sheBaoMoney', 'canBaoMoney', 'manageChargeTaxMoney','salaryRateFuJiaMoney', 'economicCompensation', 'personCost', 'serviceFee', 'shangBao', 'salaryTax', 'salaryRateMoney', 'salaryTotal'].includes((col as any).dataIndex)">
               {{ summaryData[(col as any).dataIndex] }}
             </template>
           </a-table-summary-cell>
@@ -34,7 +31,7 @@ import type { TableColumnsType } from 'ant-design-vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
 const { getOfferOutsourceMonthSalary,getOutsourceSalaryColumnsQing } = storeToRefs(outsourceDetailStore);
-const columns:TableColumnsType =[
+const defaultColumns = computed<TableColumnsType>(() => [
     {
       title: '序号',
       dataIndex: 'index',
@@ -68,6 +65,7 @@ const columns:TableColumnsType =[
       dataIndex: 'mkName',
       key: 'mkName',
       fixed: 'left',
+      ellipsis: true,
       width: 50,
     },
     {
@@ -110,15 +108,21 @@ const columns:TableColumnsType =[
       title: '职位',
       dataIndex: 'positions',
       key: 'positions',
-      width: 120,
+      width: 140,
       ellipsis: true,
     },
     {
       title: '计薪日期',
       dataIndex: 'jinxinMonth',
       key: 'jinxinMonth',
-      width: 120,
+      width: 140,
       ellipsis: true,
+    },
+    {
+      title: '全勤工时',
+      dataIndex: 'quanqinHours',
+      key: 'quanqinHours',
+      width: 70,
     },
     {
       title: '预估出勤工时',
@@ -127,10 +131,16 @@ const columns:TableColumnsType =[
       width: 90,
     },
     {
-      title: '实际出勤工时/总工时',
+      title: '实际出勤工时',
       dataIndex: 'bebyueShiji',
       key: 'bebyueShiji',
-      width: 120,
+      width: 80,
+    },
+    {
+      title: '总工时',
+      dataIndex: 'allHours',
+      key: 'allHours',
+      width: 70,
     },
     {
       title: '上月预估',
@@ -190,7 +200,7 @@ const columns:TableColumnsType =[
       title: '法定节假日加班工时',
       dataIndex: 'holidayOverHours',
       key: 'holidayOverHours',
-      width: 100,
+      width: 120,
     },
      {
       title: '工作日加班工时',
@@ -356,8 +366,8 @@ const columns:TableColumnsType =[
     },
     {
       title: '残保金',
-      dataIndex: 'canbaoMoney',
-      key: 'canbaoMoney',
+      dataIndex: 'canBaoMoney',
+      key: 'canBaoMoney',
       width: 70,
     },
     {
@@ -386,8 +396,14 @@ const columns:TableColumnsType =[
     },
     {
       title: '商业保险',
-      dataIndex: 'shangbao',
-      key: 'shangbao',
+      dataIndex: 'shangBao',
+      key: 'shangBao',
+      width: 70,
+    },
+     {
+      title: '调差调整',
+      dataIndex: 'chenbenTiaochaKe',
+      key: 'chenbenTiaochaKe',
       width: 70,
     },
     {
@@ -406,7 +422,7 @@ const columns:TableColumnsType =[
     title: '税金',
     dataIndex: 'manageChargeTaxMoney',
     key: 'manageChargeTaxMoney',
-    width: 50,
+    width: 60,
   },
     {
       title: '增值税率',
@@ -445,31 +461,37 @@ const columns:TableColumnsType =[
       width: 50,
       ellipsis: true,
     },
-  ];
-// const columns = computed(() => {
-//     const saved = getOutsourceSalaryColumnsQing.value;
-//     if (saved && saved.length > 0) {
-//       const savedMap = new Map(saved.map((c: any) => [c.key, c]));
-//       return defaultColumns.value.map((col: any) => {
-//         const s = savedMap.get(col.key);
-//         if (s) {
-//           // If saved, use saved title and visibility
-//           if (s.show === false) return null;
-//           return { ...col,
-//              title: s.rowOther || s.rowName,
-//              width: s.width || col.width,
-//              fixed: s.fixed || col.fixed,
-//              key: s.key,
-//              dataIndex: s.key,    
-//              ellipsis: true,
-//           };
-//         }
-//         // If not in saved list, keep it default
-//         return col;
-//       }).filter((c: any) => c !== null);
-//     }
-//     return defaultColumns.value;
-//   });
+  ]);
+const columns = computed(() => {
+    const saved = getOutsourceSalaryColumnsQing.value;
+    if (saved && saved.length > 0) {
+      const savedMap = new Map(saved.map((c: any) => [c.key, c]));
+      return defaultColumns.value.map((col: any) => {
+        const s = savedMap.get(col.key);
+        if (s) {
+          // If saved, use saved title and visibility
+          if (s.show === false) return null;
+          const savedWidth = Number(s.width);
+          return { ...col,
+             title: s.rowOther || s.rowName,
+             width: Number.isFinite(savedWidth) ? savedWidth : col.width,
+             fixed: s.fixed || col.fixed,
+             key: s.key,
+             dataIndex: s.key,    
+             ellipsis: true,
+          };
+        }
+        // If not in saved list, keep it default
+        return col;
+      }).filter((c: any) => c !== null);
+    }
+    return defaultColumns.value;
+  });
+const scrollX = computed(() => {
+  const cols = (columns.value || []) as any[];
+  const total = cols.reduce((sum, col) => sum + (Number(col?.width) || 0), 0);
+  return total || 0;
+});
   watch(() => outsourceDetailStore.formStatePersonMoney.companyName, (val) => {
     if (val) {
       outsourceDetailStore.queryOutsourceCompanyExcel(val);
@@ -493,10 +515,11 @@ const summaryData = computed(() => {
     sheBaoMoney: sum('sheBaoMoney').toFixed(2),
     canBaoMoney: sum('canBaoMoney').toFixed(2),
     economicCompensation: sum('economicCompensation').toFixed(2),
+    manageChargeTaxMoney: sum('manageChargeTaxMoney').toFixed(2),
+    salaryRateFuJiaMoney: sum('salaryRateFuJiaMoney').toFixed(2),
     personCost: sum('personCost').toFixed(2),
-    rate: formatRate(sumRate('rate')),
     serviceFee: sum('serviceFee').toFixed(2),
-    shangbao: sum('shangbao').toFixed(2),
+    shangBao: sum('shangBao').toFixed(2),
     salaryTax: sum('salaryTax').toFixed(2),
     salaryRate: formatRate(sumRate('salaryRate')),
     salaryRateMoney: sum('salaryRateMoney').toFixed(2),

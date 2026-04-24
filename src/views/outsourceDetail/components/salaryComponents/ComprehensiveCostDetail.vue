@@ -225,6 +225,11 @@
               <a-select v-model:value="costDetailForm.chenbenTiaochaKeFlag" :options="chenbenTiaochaKeFlagOptions" allowClear @change="handleChenbenTiaochaKeFlag"></a-select>
             </a-form-item>
           </a-col>
+          <a-col :span="6">
+            <a-form-item name="keShangbaoFlag" label="商保管理">
+              <a-select v-model:value="costDetailForm.keShangbaoFlag" :options="chenbenTiaochaKeFlagOptions" allowClear @change="handleChenbenTiaochaKeFlag"></a-select>
+            </a-form-item>
+          </a-col>
         </a-row>
         <a-row :gutter="24">
           <a-col :span="6">
@@ -484,6 +489,7 @@ const costDetailFormPerformanceDetail = () => {
     costDetailForm.value.buchangMonth = temp?.buchangMonth || "0";
     costDetailForm.value.buchangHebing = temp?.buchangHebing || "0";
     costDetailForm.value.chenbenTiaochaKeFlag = temp?.chenbenTiaochaKeFlag || "1";
+    costDetailForm.value.keShangbaoFlag = temp?.keShangbaoFlag || "1";
     costDetailForm.value.manageChargeRate = temp?.manageChargeRate?.toString() || "0.0672";
     costDetailForm.value.zhuanChargeRate = temp?.zhuanChargeRate?.toString() || "0.0672";
     costDetailForm.value.otherPayKeStr = temp?.otherPayKeStr;
@@ -545,8 +551,12 @@ const handleManageGongShiChange = (val: string) => {
   }
   const rate = Number(val.split("*")[1]?.replace('%', '')) / 100;
   let chenbenTiaochaKeTemp = 0;
+  let keShangbaoTemp = 0;
   if (costDetailForm.value.chenbenTiaochaKeFlag == "2") {
     chenbenTiaochaKeTemp = Number(costDetailForm.value.chenbenTiaochaKe || 0);
+  }
+  if (costDetailForm.value.keShangbaoFlag == "2") {
+    keShangbaoTemp = Number(costDetailForm.value.keShangbao || 0);
   }
   if (val === '10000-客户用工成本' && costDetailForm.value.companyName == "古驰") {
   /**
@@ -598,9 +608,9 @@ const handleManageGongShiChange = (val: string) => {
       costDetailForm.value.manageChargeAfter = "500";
     } else {
       if(val.includes("员工福利")) {
-        costDetailForm.value.manageChargeAfter = ((Number(costTotalke.value || 0) - chenbenTiaochaKeTemp + Number(costDetailForm.value.welfareKe || 0)) * rate).toFixed(2);
+        costDetailForm.value.manageChargeAfter = ((Number(costTotalke.value || 0) - chenbenTiaochaKeTemp - keShangbaoTemp + Number(costDetailForm.value.welfareKe || 0)) * rate).toFixed(2);
       } else {
-        costDetailForm.value.manageChargeAfter = ((Number(costTotalke.value || 0) - chenbenTiaochaKeTemp) * rate).toFixed(2);
+        costDetailForm.value.manageChargeAfter = ((Number(costTotalke.value || 0) - chenbenTiaochaKeTemp - keShangbaoTemp) * rate).toFixed(2);
       }
     }
     handleManageChargeRate();
@@ -685,6 +695,7 @@ const costDetailFormPerformanceDetailResult = () => {
   outsourcePersonPerformanceDetail.value.buchangMonth = costDetailForm.value.buchangMonth || "";
   outsourcePersonPerformanceDetail.value.buchangHebing = costDetailForm.value.buchangHebing || "";
   outsourcePersonPerformanceDetail.value.chenbenTiaochaKeFlag = costDetailForm.value.chenbenTiaochaKeFlag || "";
+  outsourcePersonPerformanceDetail.value.keShangbaoFlag = costDetailForm.value.keShangbaoFlag || "";
   outsourcePersonPerformanceDetail.value.welfareList = welfareKeArr.value || [];
 }
 const calcCost = () => {

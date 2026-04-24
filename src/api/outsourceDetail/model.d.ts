@@ -391,6 +391,7 @@ export interface OutsourceMonthSalaryItem {
   personId?: number;
   zhanDanMonth?: string;
   mkName?: string;
+  market?: string;
   shangBao?: number;
 
   // 时间相关
@@ -549,6 +550,7 @@ export interface OutsourceMonthSalaryItem {
   canBao?: string; //企业残保(公司)
   totalChargeCha?: string; //收费调差
   chenbenTiaochaKeFlag?: string; //调差调整 是否计算管理费
+  keShangbaoFlag?: string; //商业保险 是否计算管理费
   signSalary?: string; //月度薪资标识 null 未核 1 已核
   oldCollectId?: string; //老的外包业绩统计id
   bankName: string; //银行名称
@@ -559,6 +561,7 @@ export interface OutsourceMonthSalaryItem {
   buchangHebing?: string; //经济补偿合并付款
 
   jobNumber?: string; //工号
+  quanqinHours?: string; //全勤工时
   shijiaHours?: string; //事假工时
   nianjianHours?: string; //年假工时
   hunjiaHours?: string; //婚假工时
@@ -567,6 +570,11 @@ export interface OutsourceMonthSalaryItem {
   holidayOverHours?: string; //法定节假日加班工时
   overHours?: string; //工作日加班工时
   restOverHours?: string; //周末加班工时
+  allHours?: string; //总工时
+  currentMonthShiHours?: string; //实际工时
+  kouxinBingjiaHours?: string; //扣薪病假工时
+  otherDaixinHours?: string; //其他带薪工时
+  utHours?: string; //UT工时
 }
 //用工成本
 export interface CostItem {
@@ -672,6 +680,7 @@ export interface ComprehensiveCostItem {
   canBao?: string; //企业残保(公司)
   totalChargeCha?: string; //收费调差
   chenbenTiaochaKeFlag?: string; //调差调整 是否计算管理费
+  keShangbaoFlag?: string; //商业保险 是否计算管理费
   signSalary?: string; //月度薪资标识 null 未核 1 已核
   oldCollectId?: string; //老的外包业绩统计id
   buchangMonth?: string; //经济补偿金

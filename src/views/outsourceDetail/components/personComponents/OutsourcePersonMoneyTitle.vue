@@ -866,7 +866,7 @@ const defaultColumnsQing = [
       key: 'positions',
       show: true,
       fixed: '',
-      width: 120,
+      width: 140,
     },
     {
       rowName: '计薪日期',
@@ -874,7 +874,15 @@ const defaultColumnsQing = [
       show: true,
       key: 'jinxinMonth',
       fixed: '',
-      width: 120,
+      width: 140,
+    },
+    {
+      rowName: '全勤工时',
+      rowOther: '全勤工时',
+      show: true,
+      key: 'quanqinHours',
+      fixed: '',
+      width: 70,
     },
     {
       rowName: '预估出勤工时',
@@ -885,12 +893,20 @@ const defaultColumnsQing = [
       width: 90,
     },
     {
-      rowName: '实际出勤工时/总工时',
-      rowOther: '实际出勤工时/总工时',
+      rowName: '实际出勤工时',
+      rowOther: '实际出勤工时',
       show: true,
       key: 'bebyueShiji',
       fixed: '',
-      width: 120,
+      width: 80,
+    },
+    {
+      rowName: '总工时',
+      rowOther: '总工时',
+      show: true,
+      key: 'allHours',
+      fixed: '',
+      width: 70,
     },
     {
       rowName: '上月预估',
@@ -970,7 +986,7 @@ const defaultColumnsQing = [
       show: true,
       key: 'holidayOverHours',
       fixed: '',
-      width: 100,
+      width: 120,
     },
      {
       rowName: '工作日加班工时',
@@ -1192,7 +1208,7 @@ const defaultColumnsQing = [
       rowName: '残保金',
       rowOther: '残保金',
       show: true,
-      key: 'canbaoMoney',
+      key: 'canBaoMoney',
       fixed: '',
       width: 70,
     },
@@ -1232,7 +1248,15 @@ const defaultColumnsQing = [
       rowName: '商业保险',
       rowOther: '商业保险',
       show: true,
-      key: 'shangbao',
+      key: 'shangBao',
+      fixed: '',
+      width: 70,
+    },
+     {
+      rowName: '调差调整',
+      rowOther: '调差调整',
+      show: true,
+      key: 'chenbenTiaochaKe',
       fixed: '',
       width: 70,
     },
@@ -1258,7 +1282,7 @@ const defaultColumnsQing = [
       show: true,
       key: 'manageChargeTaxMoney',
       fixed: '',
-      width: 50,
+      width: 60,
     },
     {
       rowName: '增值税率',
@@ -1419,12 +1443,12 @@ watch(outsourcePersonMoneyTitleFlag, async (val) => {
         const saved = savedMap.get(col.key);
         return {
           ...col,
-          rowName: saved ? saved.rowName : col.rowName,
+          rowName: col.rowName,
           rowOther: saved?.rowOther ? saved.rowOther : col.rowOther,
           show: saved ? saved.show : true, // Default to true if not saved
           key: col.key,
-          width: col.width,
-          fixed: col.fixed
+          width: saved?.width ? saved.width :col.width,
+          fixed: saved?.fixed ? saved.fixed : col.fixed
         };
       });
     } else {
@@ -1444,12 +1468,12 @@ watch(outsourcePersonMoneyTitleFlag, async (val) => {
         const saved = savedMapQing.get(col.key);
         return {
           ...col,
-          rowName: saved ? saved.rowName : col.rowName,
+          rowName: col.rowName,
           rowOther: saved?.rowOther ? saved.rowOther : col.rowOther,
           show: saved ? saved.show : true, // Default to true if not saved
           key: col.key,
-          width: col.width,
-          fixed: col.fixed
+          width: saved?.width ? saved.width :col.width,
+          fixed: saved?.fixed ? saved.fixed : col.fixed
         };
       });
     } else {
@@ -1469,12 +1493,12 @@ watch(outsourcePersonMoneyTitleFlag, async (val) => {
         const saved = savedMapSheBao.get(col.key);
         return {
           ...col,
-          rowName: saved ? saved.rowName : col.rowName,
+          rowName: col.rowName,
           rowOther: saved?.rowOther ? saved.rowOther : col.rowOther,
           show: saved ? saved.show : true, // Default to true if not saved
           key: col.key,
-          width: col.width,
-          fixed: col.fixed
+          width: saved?.width ? saved.width :col.width,
+          fixed: saved?.fixed ? saved.fixed : col.fixed
         };
       });
     } else {

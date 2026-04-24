@@ -326,7 +326,7 @@
           >
           <a-tag
             class="tagspan tagspanOrange"
-            :title="record.limitRemarkDetail"
+            :title="record.limitRemarkDetail ? record.limitRemarkDetail : 'OFFER推荐禁止'"
             v-if="showResumeRightOutFlag && record.limitFlag == '限制' && record.resumeStatus != '外包保护期中'"
             color="orange"
             >限制</a-tag

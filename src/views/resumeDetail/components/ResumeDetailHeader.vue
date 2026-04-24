@@ -60,7 +60,7 @@
           color="orange"
           class="resume_tag_checked_top"
           v-if="props.showResumeRightOutFlag &&resumeData.limitFlag == '限制'"
-          :title="limitRemarkDetail ? limitRemarkDetail : `${formatToDateMinute(resumeData.offerTime)}  OFFER推荐禁止 ${zaibaoPerson}`"
+          :title="resumeData.offerTime ? `${formatToDateMinute(resumeData.offerTime)}  OFFER推荐禁止 ${zaibaoPerson}` : limitRemarkDetail"
           >限制</a-tag
         >
         <a-tag
