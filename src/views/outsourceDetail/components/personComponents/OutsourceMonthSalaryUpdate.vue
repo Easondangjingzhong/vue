@@ -107,6 +107,11 @@
               <a-input v-model:value="outsourceMonthSalaryForm.yearEndBouns"/>
             </a-form-item>
           </div>
+          <div>
+           <a-form-item name="jishuiBufa" label="计税不发" :rules="[{ required: false, message: '请输入计税不发' }]">
+              <a-input v-model:value="outsourceMonthSalaryForm.jishuiBufa"/>
+            </a-form-item>
+          </div>
           <div class="outsourceAttendCol">
            <a-form-item name="otherPayKe" label="其他支出" :rules="[{ required: false, message: '请输入其他支出' }]">
             <span class="ant-input-number-other">
@@ -133,7 +138,6 @@
               <span @click="removeWelfareKe(index)" style="cursor: pointer;"><MinusOutlined/></span>
             </div>
           </div>
-          <div>&nbsp;</div>
         </div>
         <a-divider style="margin: 0  0 16px 0;" />
         <div class="salaryDiv">
@@ -235,7 +239,7 @@
           </div>
           <div>&nbsp;</div>
           <div>&nbsp;</div>
-          <div style="text-align: right;" v-if="outsourceMonthSalaryForm.signSalary !== '1'">
+          <div style="text-align: right;">
              <a-button type="primary" :loading="iconLoading" html-type="submit">
               保存
             </a-button>
@@ -422,9 +426,10 @@ const monthGeshui = computed(() => {
     const yearSocialSecurityTotal = parseFloat(outsourceMonthSalaryForm.value.yearShebao || '0');
     const exemptAmount = parseFloat(outsourceMonthSalaryForm.value.yearMianzheng || '0');
     const currentMonthDeductionTotal = parseFloat(outsourceMonthSalaryForm.value.yearZhuankou || '0');
+    const jishuiBufa = parseFloat(outsourceMonthSalaryForm.value.jishuiBufa || '0');
   
     // 计算应纳税所得额
-    const taxableIncome = yearIncomeTotal - yearSocialSecurityTotal - exemptAmount - currentMonthDeductionTotal;
+    const taxableIncome = yearIncomeTotal - yearSocialSecurityTotal - exemptAmount - currentMonthDeductionTotal + jishuiBufa;
     // 确保应纳税所得额不为负数
     const adjustedTaxableIncome = Math.max(0, taxableIncome);
   
@@ -434,9 +439,11 @@ const monthGeshui = computed(() => {
   if (adjustedTaxableIncome <= 36000) {
     // 不超过3.6万元的部分，税率3%
     taxAmount = adjustedTaxableIncome * 0.03;
+    outsourceMonthSalaryForm.value.companyGeshui = (jishuiBufa * 0.03).toFixed(2).toString();
   } else if (adjustedTaxableIncome <= 144000) {
     // 超过3.6万元至14.4万元的部分，其中3.6万元按3%，超过部分按10%
     taxAmount = 36000 * 0.03 + (adjustedTaxableIncome - 36000) * 0.1;
+    outsourceMonthSalaryForm.value.companyGeshui = (jishuiBufa * 0.1).toFixed(2).toString();
   } else if (adjustedTaxableIncome <= 300000) {
     // 超过14.4万元至30万元的部分，分段计算
     taxAmount = 36000 * 0.03 + (144000 - 36000) * 0.1 + (adjustedTaxableIncome - 144000) * 0.2;

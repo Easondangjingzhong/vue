@@ -215,6 +215,12 @@ const defaultColumns = computed<TableColumnsType>(() => [
       width: 100,
     },
     {
+      title: '加班工时',
+      dataIndex: 'overHoursTotal',
+      key: 'overHoursTotal',
+      width: 100,
+    },
+    {
       title: '法定节假日加班费',
       dataIndex: 'fadingJiaban',
       key: 'fadingJiaban',
@@ -236,6 +242,12 @@ const defaultColumns = computed<TableColumnsType>(() => [
       title: '加班工资',
       dataIndex: 'jiabanSalary',
       key: 'jiabanSalary',
+      width: 70,
+    },
+     {
+      title: '津贴',
+      dataIndex: 'jintie',
+      key: 'jintie',
       width: 70,
     },
      {
@@ -336,8 +348,8 @@ const defaultColumns = computed<TableColumnsType>(() => [
     },
      {
       title: '计税不发薪项',
-      dataIndex: 'serviceType',
-      key: 'serviceType',
+      dataIndex: 'serviceType1',
+      key: 'serviceType1',
       width: 100,
     },
      {
@@ -465,25 +477,30 @@ const defaultColumns = computed<TableColumnsType>(() => [
 const columns = computed(() => {
     const saved = getOutsourceSalaryColumnsQing.value;
     if (saved && saved.length > 0) {
-      const savedMap = new Map(saved.map((c: any) => [c.key, c]));
-      return defaultColumns.value.map((col: any) => {
-        const s = savedMap.get(col.key);
-        if (s) {
-          // If saved, use saved title and visibility
+      const defaultMap = new Map(defaultColumns.value.map((c: any) => [c.key, c]));
+      const usedKeys = new Set<string>();
+
+      const ordered = saved
+        .map((s: any) => {
+          const base = defaultMap.get(s.key);
+          if (!base) return null;
+          usedKeys.add(String(s.key));
           if (s.show === false) return null;
           const savedWidth = Number(s.width);
-          return { ...col,
-             title: s.rowOther || s.rowName,
-             width: Number.isFinite(savedWidth) ? savedWidth : col.width,
-             fixed: s.fixed || col.fixed,
-             key: s.key,
-             dataIndex: s.key,    
-             ellipsis: true,
+          return {
+            ...base,
+            title: s.rowOther || s.rowName || base.title,
+            width: Number.isFinite(savedWidth) ? savedWidth : base.width,
+            fixed: s.fixed || base.fixed,
+            key: s.key,
+            dataIndex: s.key,
+            ellipsis: true,
           };
-        }
-        // If not in saved list, keep it default
-        return col;
-      }).filter((c: any) => c !== null);
+        })
+        .filter((c: any) => c !== null);
+
+      const rest = defaultColumns.value.filter((c: any) => !usedKeys.has(String(c.key)));
+      return [...ordered, ...rest];
     }
     return defaultColumns.value;
   });

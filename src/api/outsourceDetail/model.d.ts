@@ -559,6 +559,9 @@ export interface OutsourceMonthSalaryItem {
   offerDetailMonth?: string; //业绩月
   buchangMonth?: string; //经济补偿金
   buchangHebing?: string; //经济补偿合并付款
+  
+  jishuiBufa?: string; //计税不发
+  companyGeshui?: string; //公司个税
 
   jobNumber?: string; //工号
   quanqinHours?: string; //全勤工时
@@ -686,6 +689,8 @@ export interface ComprehensiveCostItem {
   buchangMonth?: string; //经济补偿金
   buchangHebing?: string; //经济补偿合并付款
   sign?: string; //业绩核对标识 null 未核 1 已核
+  jishuiBufa?: string; //计税不发
+  companyGeshui?: string; //公司个税
 }
 /**
  * 外包福利

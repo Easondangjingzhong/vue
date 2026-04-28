@@ -396,9 +396,8 @@ const getNextMonth = (yearMonth) => {
   return `${year}-${formattedMonth}`;
 }
 // 监听 getOutsourceFormulaList 变化，自动设置 quanqinHours
-watch(() => outsourceAttendFlag, () => {
-  let newVal =  getOutsourceFormulaList.value;
-  if (newVal && newVal.length > 0 && newVal[0].totalWorkHours) {
+watch(getOutsourceFormulaList, (newVal) => {
+  if (outsourceAttendFlag.value && newVal && newVal.length > 0 && newVal[0].totalWorkHours) {
     outsourceAttendForm.value.quanqinHours = newVal[0].totalWorkHours;
     outsourceAttendForm.value.isYugu = newVal[0].hoursType === '预估工时' ? '是' : '否';
     if (outsourceAttendForm.value.isYugu == '是') {

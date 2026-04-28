@@ -709,6 +709,11 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           parseFloat(item.sanjiaHours || '0') +
           parseFloat(item.utHours || '0')
         ).toString();
+        const overHoursTotal = (
+          parseFloat(item.overHours || '0') +
+          parseFloat(item.holidayOverHours || '0') +
+          parseFloat(item.restOverHours || '0')
+        ).toString();
         let salaryRateValue = 0;
         let salaryRateMoneyValue = 0;
         let salaryRateFuJiaValue = 0;
@@ -727,7 +732,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           salaryRateFuJiaValue = 0;
           salaryRateFuJiaMoney = 0;
         }
-        const salaryTotalValue = salaryTaxValue + Number(item.manageChargeTaxMoney) + Number(item.chenbenTiaochaKe || 0);
+        const salaryTotalValue = salaryTaxValue + Number(item.manageChargeTaxMoney) + Number(item.chenbenTiaochaKe || 0) + Number(item.zhuanChargeTax || 0);
         const lastMonthLeiJiValue = Number(item.yearGeshui || 0) + Number(item.monthGeshui || 0);
         return {
           ...item,
@@ -738,6 +743,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           shangBao: Number(item.keShangbao || 0),
           jingJiBuChangJin: 0,
           allHours: allHours,
+          overHoursTotal: overHoursTotal,
           jinxinMonth,
           jinxinMonthDetail: item.jinxinMonth,
           sheBaoMoney: parseFloat(sheBaoMoneyValue.toString()).toFixed(2),
@@ -2289,7 +2295,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
               temp.zhuanChargeTax = (parseFloat(record.zhuanChargeTax) * 0.25).toFixed(2);
               temp.zhuanChargeRate = '25%';
               temp.zhuanChargeAfter =
-                (parseFloat(record.zhuanChargeTax) * 0.25 * manageChargeRate).toFixed(2) || '0';
+                (parseFloat(record.zhuanChargeTax) * 0.25 / manageChargeRate).toFixed(2) || '0';
             } else {
               const manageChargeAllocationTax =
                 resTeamMsg?.info[0]?.outFlag === '1'
@@ -2303,7 +2309,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
               temp.zhuanChargeTax = (parseFloat(record.zhuanChargeTax) * 0.25).toFixed(2);
               temp.zhuanChargeRate = '25%';
               temp.zhuanChargeAfter =
-                (parseFloat(record.zhuanChargeTax) * 0.25 * manageChargeRate).toFixed(2) || '0';
+                (parseFloat(record.zhuanChargeTax) * 0.25 / manageChargeRate).toFixed(2) || '0';
             }
             temp.money = tempDetail?.money;
             temp.taxIncluded = tempDetail?.taxIncluded;
