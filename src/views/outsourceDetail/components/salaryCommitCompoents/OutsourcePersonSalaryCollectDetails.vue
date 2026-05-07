@@ -39,8 +39,9 @@
           <a-table-summary-cell :index="0" :colSpan="7" style="text-align: right;">合计</a-table-summary-cell>
           <a-table-summary-cell :index="1" style="text-align: right;">{{ summaryData.monthTax }}</a-table-summary-cell>
           <a-table-summary-cell :index="2" style="text-align: right;">{{ summaryData.monthShebao }}</a-table-summary-cell>
-          <a-table-summary-cell :index="3" style="text-align: right;">{{ summaryData.monthGeshui }}</a-table-summary-cell>
-          <a-table-summary-cell :index="4" style="text-align: right;">{{ summaryData.shouxuMoney }}</a-table-summary-cell>
+          <a-table-summary-cell :index="4" style="text-align: right;">{{ summaryData.monthGeshui }}</a-table-summary-cell>
+          <a-table-summary-cell :index="4" style="text-align: right;">{{ summaryData.canBao }}</a-table-summary-cell>
+          <a-table-summary-cell :index="5" style="text-align: right;">{{ summaryData.shouxuMoney }}</a-table-summary-cell>
           <a-table-summary-cell :index="5" style="text-align: right;">{{ summaryData.salaryAfterTax }}</a-table-summary-cell>
           <a-table-summary-cell :index="6" style="text-align: right;">{{ summaryData.buchangMonth }}</a-table-summary-cell>
           <a-table-summary-cell :index="7" style="text-align: right;">{{ summaryData.serviceMoney }}</a-table-summary-cell>
@@ -62,7 +63,7 @@ import { CloseOutlined } from '@ant-design/icons-vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
 const { outsourcePersonSalaryCommitDetailsFlag, getOutsourcePersonSalaryCommitDetail} = storeToRefs(outsourceDetailStore);
-const drawerWidth = ref(Math.max(600, window.innerWidth * 0.8));
+const drawerWidth = ref(Math.max(600, window.innerWidth * 0.85));
 const handleClose = () => {
   outsourcePersonSalaryCommitDetailsFlag.value = false;
 };
@@ -72,6 +73,7 @@ const summaryData = computed(() => {
     return {
       monthTax: '0.00',
       monthShebao: '0.00',
+      canBao: '0.00',
       monthGeshui: '0.00',
       shouxuMoney: '0.00',
       salaryAfterTax: '0.00',
@@ -83,6 +85,7 @@ const summaryData = computed(() => {
   const sums = {
     monthTax: 0,
     monthShebao: 0,
+    canBao: 0,
     monthGeshui: 0,
     shouxuMoney: 0,
     salaryAfterTax: 0,
@@ -92,6 +95,7 @@ const summaryData = computed(() => {
   };
   data.forEach((item) => {
     sums.monthTax += Number(item.monthTax || 0);
+    sums.canBao += Number(item.canBao || 0);
     sums.monthShebao += Number(item.monthShebao || 0);
     sums.monthGeshui += Number(item.monthGeshui || 0);
     sums.shouxuMoney += Number(item.shouxuMoney || 0);
@@ -103,6 +107,7 @@ const summaryData = computed(() => {
   return {
     monthTax: sums.monthTax.toFixed(2),
     monthShebao: sums.monthShebao.toFixed(2),
+    canBao: sums.canBao.toFixed(2),
     monthGeshui: sums.monthGeshui.toFixed(2),
     shouxuMoney: sums.shouxuMoney.toFixed(2),
     salaryAfterTax: sums.salaryAfterTax.toFixed(2),
@@ -177,6 +182,13 @@ const columns: TableColumnsType = [
     dataIndex: 'monthGeshui',
     key: 'monthGeshui',
     width: 55,
+    align: 'right',
+  },
+   {
+    title: '残保金',
+    dataIndex: 'canBao',
+    key: 'canBao',
+    width: 50,
     align: 'right',
   },
     {

@@ -692,9 +692,9 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           return n > 1 ? n / 100 : n;
         };
         const rateValue = parseRateFromManageGongShi(item.manageGongShi);
-        const serviceFeeValue = personCostValue * rateValue;
+        const serviceFeeValue = Number(item.manageChargeAfter || 0);
         const shangbaoValue = Number(item.keShangbao || 0);
-        const salaryTaxValue = personCostValue + serviceFeeValue + shangbaoValue;
+        const salaryTaxValue = personCostValue + serviceFeeValue + shangbaoValue  + Number(item.chenbenTiaochaKe || 0);
         const allHours = (
           parseFloat(item.currentMonthShiHours || '0') +
           parseFloat(item.overHours || '0') +
@@ -732,7 +732,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           salaryRateFuJiaValue = 0;
           salaryRateFuJiaMoney = 0;
         }
-        const salaryTotalValue = salaryTaxValue + Number(item.manageChargeTaxMoney) + Number(item.chenbenTiaochaKe || 0) + Number(item.zhuanChargeTax || 0);
+        const salaryTotalValue = salaryTaxValue + Number(item.manageChargeTaxMoney) + Number(item.zhuanChargeTax || 0);
         const lastMonthLeiJiValue = Number(item.yearGeshui || 0) + Number(item.monthGeshui || 0);
         return {
           ...item,
@@ -2054,7 +2054,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
      * 更新外包业绩分配
      */
     async addUpdateOutsourceCostDetail(costDetailForm: ComprehensiveCostItem) {
-      const res = await fetchApi.addUpdateOutsourceSalaryMonth(costDetailForm);
+      const res = await fetchApi.addUpdateOutsourceSalaryMonthYeji(costDetailForm);
       return res;
     },
     /**

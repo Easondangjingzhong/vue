@@ -931,6 +931,13 @@ const defaultColumnsQing = [
       key: 'biaozhunSalary',
       fixed: '',
       width: 70,
+    },{
+      rowName: '标准工时',
+      rowOther: '标准工时',
+      show: true,
+      key: 'currentMonthShiHours',
+      fixed: '',
+      width: 70,
     },
      {
       rowName: '事假工时',
@@ -1184,7 +1191,7 @@ const defaultColumnsQing = [
       rowName: '计税不发薪项',
       rowOther: '计税不发薪项',
       show: true,
-      key: 'serviceType1',
+      key: 'jishuiBufa',
       fixed: '',
       width: 100,
     },
@@ -1273,6 +1280,14 @@ const defaultColumnsQing = [
       rowOther: '调差调整',
       show: true,
       key: 'chenbenTiaochaKe',
+      fixed: '',
+      width: 70,
+    },
+     {
+      rowName: '固定收费',
+      rowOther: '固定收费',
+      show: true,
+      key: 'fixedFee',
       fixed: '',
       width: 70,
     },
@@ -1454,75 +1469,132 @@ watch(outsourcePersonMoneyTitleFlag, async (val) => {
     const savedColumnsQing = getOutsourceSalaryColumnsQing.value;
     const savedColumnsSheBao = getOutsourceSalaryColumnsSheBao.value;
     if (savedColumns && savedColumns.length > 0) {
-      const savedMap = new Map(savedColumns.map(c => [c.key, c]));
-      configColumnsSalary.value = defaultColumnsSalary.map(col => {
-        const saved = savedMap.get(col.key);
-        return {
+      const defaultMap = new Map(defaultColumnsSalary.map(col => [col.key, col]));
+      const usedKeys = new Set<string>();
+      const ordered = savedColumns
+        .map(saved => {
+          const base = defaultMap.get(saved.key);
+          if (!base) return null;
+          usedKeys.add(String(saved.key));
+          return {
+            ...base,
+            rowName: base.rowName,
+            rowOther: saved?.rowOther ? saved.rowOther : base.rowOther,
+            show: saved ? saved.show : false, // Default to true if not saved
+            key: base.key,
+            width: saved?.width ? saved.width : base.width,
+            fixed: saved?.fixed ? saved.fixed : base.fixed,
+          };
+        })
+        .filter((c): c is any => c !== null);
+
+      const rest = defaultColumnsSalary
+        .filter(col => !usedKeys.has(String(col.key)))
+        .map(col => ({
           ...col,
           rowName: col.rowName,
-          rowOther: saved?.rowOther ? saved.rowOther : col.rowOther,
-          show: saved ? saved.show : true, // Default to true if not saved
+          rowOther: col.rowOther,
+          show: false,
           key: col.key,
-          width: saved?.width ? saved.width :col.width,
-          fixed: saved?.fixed ? saved.fixed : col.fixed
-        };
-      });
+          width: col.width,
+          fixed: col.fixed,
+        }));
+
+      configColumnsSalary.value = [...ordered, ...rest];
     } else {
       configColumnsSalary.value = defaultColumnsSalary.map(col => ({
         ...col,
         rowName: col.rowName,
         rowOther: col.rowOther,
-        show: true, // Default to true if not saved
+        show: false, // Default to true if not saved
         key: col.key,
         width: col.width,
         fixed: col.fixed
       }));
     }
     if (savedColumnsQing && savedColumnsQing.length > 0) {
-      const savedMapQing = new Map(savedColumnsQing.map(c => [c.key, c]));
-      configColumnsQing.value = defaultColumnsQing.map(col => {
-        const saved = savedMapQing.get(col.key);
-        return {
+      const defaultMapQing = new Map(defaultColumnsQing.map(col => [col.key, col]));
+      const usedKeysQing = new Set<string>();
+      const orderedQing = savedColumnsQing
+        .map(saved => {
+          const base = defaultMapQing.get(saved.key);
+          if (!base) return null;
+          usedKeysQing.add(String(saved.key));
+          return {
+            ...base,
+            rowName: base.rowName,
+            rowOther: saved?.rowOther ? saved.rowOther : base.rowOther,
+            show: saved ? saved.show : false, // Default to true if not saved
+            key: base.key,
+            width: saved?.width ? saved.width : base.width,
+            fixed: saved?.fixed ? saved.fixed : base.fixed,
+          };
+        })
+        .filter((c): c is any => c !== null);
+
+      const restQing = defaultColumnsQing
+        .filter(col => !usedKeysQing.has(String(col.key)))
+        .map(col => ({
           ...col,
           rowName: col.rowName,
-          rowOther: saved?.rowOther ? saved.rowOther : col.rowOther,
-          show: saved ? saved.show : true, // Default to true if not saved
+          rowOther: col.rowOther,
+          show: false,
           key: col.key,
-          width: saved?.width ? saved.width :col.width,
-          fixed: saved?.fixed ? saved.fixed : col.fixed
-        };
-      });
+          width: col.width,
+          fixed: col.fixed,
+        }));
+
+      configColumnsQing.value = [...orderedQing, ...restQing];
     } else {
       configColumnsQing.value = defaultColumnsQing.map(col => ({
         ...col,
         rowName: col.rowName,
         rowOther: col.rowOther,
-        show: true, // Default to true if not saved
+        show: false, // Default to true if not saved
         key: col.key,
         width: col.width,
         fixed: col.fixed
       }));
     }
     if (savedColumnsSheBao && savedColumnsSheBao.length > 0) {
-      const savedMapSheBao = new Map(savedColumnsSheBao.map(c => [c.key, c]));
-      configColumnsSheBao.value = defaultColumnsSheBao.map(col => {
-        const saved = savedMapSheBao.get(col.key);
-        return {
+      const defaultMapSheBao = new Map(defaultColumnsSheBao.map(col => [col.key, col]));
+      const usedKeysSheBao = new Set<string>();
+      const orderedSheBao = savedColumnsSheBao
+        .map(saved => {
+          const base = defaultMapSheBao.get(saved.key);
+          if (!base) return null;
+          usedKeysSheBao.add(String(saved.key));
+          return {
+            ...base,
+            rowName: base.rowName,
+            rowOther: saved?.rowOther ? saved.rowOther : base.rowOther,
+            show: saved ? saved.show : false, // Default to true if not saved
+            key: base.key,
+            width: saved?.width ? saved.width : base.width,
+            fixed: saved?.fixed ? saved.fixed : base.fixed,
+          };
+        })
+        .filter((c): c is any => c !== null);
+
+      const restSheBao = defaultColumnsSheBao
+        .filter(col => !usedKeysSheBao.has(String(col.key)))
+        .map(col => ({
           ...col,
           rowName: col.rowName,
-          rowOther: saved?.rowOther ? saved.rowOther : col.rowOther,
-          show: saved ? saved.show : true, // Default to true if not saved
+          rowOther: col.rowOther,
+          show: false,
           key: col.key,
-          width: saved?.width ? saved.width :col.width,
-          fixed: saved?.fixed ? saved.fixed : col.fixed
-        };
-      });
+          width: col.width,
+          fixed: col.fixed,
+        }));
+
+      configColumnsSheBao.value = [...orderedSheBao, ...restSheBao];
     } else {
       configColumnsSheBao.value = defaultColumnsSheBao.map(col => ({
         ...col,
         rowName: col.rowName,
         rowOther: col.rowOther,
-        show: true, // Default to true if not saved
+        show: false, // Default to true if not saved
         key: col.key,
         width: col.width,
         fixed: col.fixed

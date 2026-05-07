@@ -46,6 +46,7 @@ enum URL {
   delete_outsource_formula = '/candidateRecommend/resume-vue-delete-out-gongshi.action',
   add_update_outsource_formula = '/candidateRecommend/resume-vue-insert-update-out-gongshi.action',
   add_update_outsource_salary_month = '/candidateRecommend/resume-vue-insert-update-out-salary-Month.action',
+  add_update_outsource_salary_month_yeji = '/candidateRecommend/resume-vue-update-out-salary-Month-yeji.action',
   query_outsource_leiji_chae = '/candidateRecommend/resume-vue-query-out-pre-leijiChae.action',
   query_outsource_yearTotalPre = '/candidateRecommend/resume-vue-get-out-salary-yearTotalPre.action',
   update_outsource_yearTotalPre = '/candidateRecommend/resume-vue-update-out-salary-yearlPre.action',
@@ -389,6 +390,14 @@ const queryOutsourceLeijiChae = async (data: any) =>
  */
 const addUpdateOutsourceSalaryMonth = async (data: any) =>
   post<any>({ url: URL.add_update_outsource_salary_month, data });
+
+/**
+ * 添加修改月度薪资
+ * @param data OfferOutsourceMonthSalary
+ * @returns
+ */
+const addUpdateOutsourceSalaryMonthYeji = async (data: any) =>
+  post<any>({ url: URL.add_update_outsource_salary_month_yeji, data });
 /**
  * 查询外包公司公式
  * @param data companyName
@@ -736,6 +745,7 @@ export default {
   queryOutsourceYearTotalPre,
   queryOutsourceLeijiChae,
   addUpdateOutsourceSalaryMonth,
+  addUpdateOutsourceSalaryMonthYeji,
   deleteOutsourceFormula,
   queryOutsourceFormula,
   addUpdateOutsourceFormula,

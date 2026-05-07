@@ -607,6 +607,7 @@ export interface CostItem {
 }
 //外包用工成本详情
 export interface ComprehensiveCostItem {
+  id: string;
   userNameCn: string;
   companyName: string;
   brand: string;

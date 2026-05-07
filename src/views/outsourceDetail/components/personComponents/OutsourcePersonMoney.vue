@@ -17,7 +17,7 @@
     <a-form :model="formStatePersonMoney" @finish="onSearch">
       <a-row :gutter="24">
         <a-col :span="3">
-          <a-form-item name="yearAndMonth" label="请款月">
+          <a-form-item name="yearAndMonth" label="账单月">
             <a-date-picker
                   v-model:value="formStatePersonMoney.yearAndMonth"
                   @change="handleChangeCompany"

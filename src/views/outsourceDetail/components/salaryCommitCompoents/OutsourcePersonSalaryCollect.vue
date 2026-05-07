@@ -87,7 +87,8 @@
       </div>
     </template>
   </a-table>
-  <a-row v-if="selectedInnerDetailKeys.length > 0" style="margin-top: 10px;margin-bottom: 10px;justify-content: center;">
+  <a-row v-if="selectedInnerDetailKeys.length > 0" style="margin-top: 10px;margin-bottom: 10px;justify-content: center;align-items: center;">
+    <span style="margin-right: 12px;font-weight: bold;">合计金额：{{ selectedTotalMoneyText }}</span>
     <a-button type="primary" size="small" @click="handleAddOutsourceSalaryPurchaseCollectZuhe()">组合提交采购</a-button>
   </a-row>
 </template>
@@ -147,6 +148,21 @@ const withInnerKeys = (details: any[] = [], parent: any) =>
   }));
 const selectedInnerDetailKeys = ref<string[]>([]);
 const selectedInnerDetails = ref<any[]>([]);
+const toMoneyNumber = (val: any) => {
+  if (val == null) return NaN;
+  if (typeof val === 'number') return val;
+  const s = String(val).replace(/,/g, '').trim();
+  if (!s) return NaN;
+  const n = Number(s);
+  return Number.isFinite(n) ? n : NaN;
+};
+const selectedTotalMoney = computed(() =>
+  selectedInnerDetails.value.reduce((acc, cur) => {
+    const n = toMoneyNumber(cur?.totalMoney);
+    return acc + (Number.isFinite(n) ? n : 0);
+  }, 0),
+);
+const selectedTotalMoneyText = computed(() => selectedTotalMoney.value.toFixed(2));
 const isSelected = (rowKey: string) => selectedInnerDetailKeys.value.includes(rowKey);
 const isCheckboxDisabled = (record: any) => {
   if (record.bankPurchaseStatus !== '待发' || record.checkStatus !== '已核') return true;
@@ -260,6 +276,13 @@ const columns: TableColumnsType = [
     dataIndex: 'buchangMonth',
     key: 'buchangMonth',
     width: 45,
+    align: 'right',
+  },
+  {
+    title: '残保金',
+    dataIndex: 'canBao',
+    key: 'canBao',
+    width: 30,
     align: 'right',
   },
   {
@@ -389,6 +412,13 @@ const innerColumns: TableColumnsType = [
     title: '经济补偿金',
     dataIndex: 'buchangMonth',
     key: 'buchangMonth',
+    width: 30,
+    align: 'right',
+  },
+  {
+    title: '残保金',
+    dataIndex: 'canBao',
+    key: 'canBao',
     width: 30,
     align: 'right',
   },

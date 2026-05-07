@@ -439,6 +439,7 @@ const costDetailFormPerformanceDetail = () => {
   if(getOutsourcePersonPerformanceDetail.value.length > 0) {
     const temp = getOutsourcePersonPerformanceDetail.value[0];
     const sheBao = getOutsourcePersonPerformanceDetailSheBaoInfo.value.length > 0 ? getOutsourcePersonPerformanceDetailSheBaoInfo.value[0] : {} as OutsourceSheBaoItem;
+    costDetailForm.value.id = temp?.id?.toString() || "";
     costDetailForm.value.sign = temp?.sign?.toString() || "";
     costDetailForm.value.jinxinMonth = temp?.jinxinMonth?.toString() || "";
     costDetailForm.value.personId = temp?.personId?.toString() || "";

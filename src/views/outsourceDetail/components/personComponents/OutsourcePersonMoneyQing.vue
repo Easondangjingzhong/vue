@@ -15,7 +15,7 @@
             :index="index"
           >
             <template v-if="index === 0">合计</template>
-            <template v-else-if="col.key && ['monthTax', 'sheBaoMoney', 'canBaoMoney', 'manageChargeTaxMoney','salaryRateFuJiaMoney', 'economicCompensation', 'personCost', 'serviceFee', 'shangBao', 'salaryTax', 'salaryRateMoney', 'salaryTotal'].includes((col as any).dataIndex)">
+            <template v-else-if="col.key && ['monthTax', 'sheBaoMoney', 'canBaoMoney','chenbenTiaochaKe', 'manageChargeTaxMoney','salaryRateFuJiaMoney', 'economicCompensation', 'personCost', 'serviceFee', 'shangBao', 'salaryTax', 'salaryRateMoney', 'salaryTotal'].includes((col as any).dataIndex)">
               {{ summaryData[(col as any).dataIndex] }}
             </template>
           </a-table-summary-cell>
@@ -158,6 +158,12 @@ const defaultColumns = computed<TableColumnsType>(() => [
       title: '基本工资',
       dataIndex: 'biaozhunSalary',
       key: 'biaozhunSalary',
+      width: 70,
+    },
+    {
+      title: '标准工时',
+      dataIndex: 'currentMonthShiHours',
+      key: 'currentMonthShiHours',
       width: 70,
     },
      {
@@ -348,8 +354,8 @@ const defaultColumns = computed<TableColumnsType>(() => [
     },
      {
       title: '计税不发薪项',
-      dataIndex: 'serviceType1',
-      key: 'serviceType1',
+      dataIndex: 'jishuiBufa',
+      key: 'jishuiBufa',
       width: 100,
     },
      {
@@ -416,6 +422,12 @@ const defaultColumns = computed<TableColumnsType>(() => [
       title: '调差调整',
       dataIndex: 'chenbenTiaochaKe',
       key: 'chenbenTiaochaKe',
+      width: 70,
+    },
+     {
+      title: '固定收费',
+      dataIndex: 'fixedFee',
+      key: 'fixedFee',
       width: 70,
     },
     {
@@ -511,6 +523,7 @@ const scrollX = computed(() => {
 });
   watch(() => outsourceDetailStore.formStatePersonMoney.companyName, (val) => {
     if (val) {
+      console.log(getOfferOutsourceMonthSalary.value);
       outsourceDetailStore.queryOutsourceCompanyExcel(val);
     }
   }, { immediate: true });
@@ -526,11 +539,11 @@ const summaryData = computed(() => {
       return acc + (Number.isFinite(n) ? n : 0);
     }, 0);
   const formatRate = (n: number) => (n % 1 === 0 ? `${n.toFixed(0)}%` : `${n.toFixed(2)}%`);
-
   return {
     monthTax: sum('monthTax').toFixed(2),
     sheBaoMoney: sum('sheBaoMoney').toFixed(2),
     canBaoMoney: sum('canBaoMoney').toFixed(2),
+    chenbenTiaochaKe: sum('chenbenTiaochaKe').toFixed(2),
     economicCompensation: sum('economicCompensation').toFixed(2),
     manageChargeTaxMoney: sum('manageChargeTaxMoney').toFixed(2),
     salaryRateFuJiaMoney: sum('salaryRateFuJiaMoney').toFixed(2),
