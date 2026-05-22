@@ -301,6 +301,18 @@
             color="green"
             >{{ record.fristFlag }}</a-tag
           >
+          <a-tag
+            class="tagspan"
+            v-if="record.teamId == '160401' && record.checkFlag == '待核' && record.fristFlag == '首增'"
+            color="#d8d8d8"
+            >{{ record.fristFlag }}</a-tag
+          >
+          <a-tag
+            class="tagspan"
+            v-if="record.teamId == '160401' && record.checkFlag != '待核' && record.fristFlag == '首增'"
+            color="green"
+            >{{ record.fristFlag }}</a-tag
+          >
           <!-- <a-tag class="tagspan" v-if="showResumeRightOutFlag && record.recruitId && record.onlyFlag" color="green">{{
             record.onlyFlag
           }}</a-tag> -->
@@ -571,7 +583,7 @@
   const loginVueUser: { loginName: '', loginId: '', loginTocken: '', loginOutFlag: '',loginType: '' } = JSON.parse(
   localStorage.getItem('loginVueUser'),
 );
-  if(loginVueUser.loginOutFlag != '1') {
+  if((loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4') ) {
     //@ts-ignore
     resumeListStore.queryResumeList(formState.value);
     showResumeRightOutFlag.value = true;

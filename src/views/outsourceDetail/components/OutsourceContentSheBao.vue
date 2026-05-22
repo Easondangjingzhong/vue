@@ -109,7 +109,6 @@
         </span>
         <span>
           <a-button style="margin-right: 5px;" @click="handleSheBaoInfo" size="small">社保基数</a-button>
-          <a-button @click="handleSheBaoCollect" size="small">社保汇总</a-button>
         </span>
     </a-row>
     <a-row>
@@ -211,14 +210,13 @@ import { MenuUnfoldOutlined } from '@ant-design/icons-vue';
 import { currentDate } from '/@/utils/dateUtil';
 import { formatToDate } from '/@/utils/dateUtil';
 import { message } from 'ant-design-vue';
-import OutsourceSocialSecurityCollect from '/@/views/outsourceDetail/components/personComponents/OutsourceSocialSecurityCollect.vue';
 import OutsourceSocialSecurityInfo from '/@/views/outsourceDetail/components/personComponents/OutsourceSocialSecurityInfo.vue';
 import OutsourceSocialSecurityJiao from '/@/views/outsourceDetail/components/personComponents/OutsourceSocialSecurityJiao.vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 import { SearchSheBaoItem, OutsourceSheBaoItem } from '/@/api/outsourceDetail/model';
 import { shebaoCompanyOption } from '/@/api/outsourceDetail/constants';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { outsourceSocialSecuritInfoFlag, outsourceSocialSecurityCollectFlag,sheBaoIsLoading,pageOutsourceSheBaoList,formStateSheBao,getOutsourceSheBaoList, getProvince, getOutsourcePosition, outsourceSocialSecurityJiaoFlag, outsourceSocialSecurityJiaoForm } = storeToRefs(outsourceDetailStore);
+const { outsourceSocialSecuritInfoFlag,sheBaoIsLoading,pageOutsourceSheBaoList,formStateSheBao,getOutsourceSheBaoList, getProvince, getOutsourcePosition, outsourceSocialSecurityJiaoFlag, outsourceSocialSecurityJiaoForm } = storeToRefs(outsourceDetailStore);
 const columnsOutsourceDetail:TableColumnsType = [
   { title: '编号', dataIndex: 'index', key: 'index', fixed: 'left', width: 30, ellipsis: true },
   { title: '周期', dataIndex: 'yearAndMonth', key: 'yearAndMonth', fixed: 'left', width: 40, ellipsis: true },
@@ -299,10 +297,6 @@ const onSearch = () => {
 onSearch();
 const handleOutsourceSheBaoListData = () => {
   outsourceDetailStore.queryOutsourceSheBao();
-}
-const handleSheBaoCollect = () => {
-  outsourceSocialSecurityCollectFlag.value = true;
-  outsourceDetailStore.queryOutsourceShebaoCollect();
 }
 const handleSheBaoInfo = () => {
   outsourceSocialSecuritInfoFlag.value = true;

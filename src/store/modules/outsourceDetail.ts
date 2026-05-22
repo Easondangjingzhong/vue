@@ -2740,17 +2740,20 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
             ) as OutsourcePersonMoneyColumnsItem[];
           } catch (e) {
             console.error('Failed to parse columns config', e);
+            this.outsourceCompanyExcelId = '';
             this.outsourceSalaryColumnsQing = [] as OutsourcePersonMoneyColumnsItem[];
             this.outsourceSalaryColumnsSalary = [] as OutsourcePersonMoneyColumnsItem[];
             this.outsourceSalaryColumnsSheBao = [] as OutsourcePersonMoneyColumnsItem[];
           }
         } else {
+          this.outsourceCompanyExcelId = '';
           this.outsourceSalaryColumnsQing = [] as OutsourcePersonMoneyColumnsItem[];
           this.outsourceSalaryColumnsSalary = [] as OutsourcePersonMoneyColumnsItem[];
           this.outsourceSalaryColumnsSheBao = [] as OutsourcePersonMoneyColumnsItem[];
         }
         return res;
       } catch (error) {
+        this.outsourceCompanyExcelId = '';
         this.outsourceSalaryColumnsQing = [] as OutsourcePersonMoneyColumnsItem[];
         this.outsourceSalaryColumnsSalary = [] as OutsourcePersonMoneyColumnsItem[];
         this.outsourceSalaryColumnsSheBao = [] as OutsourcePersonMoneyColumnsItem[];
@@ -2919,6 +2922,30 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         const params = new FormData();
         params.append('ids', ids);
         const res = await fetchApi.deleteOutsourceSalaryPurchase(params);
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+    /**
+ * 51上传采购社保
+ * @param companyName
+ * @param totalMoney
+ * @param applyRecruitId
+ * @param applyRealNameEn
+ * @param personNum
+ * @returns
+ */
+    async addOutsourceSalaryPurchaseSheBao(yearAndMonthJiao: string, companyName: string, totalMoney: string, personNum: string) {
+      try {
+        const params = new FormData();
+        params.append('yearAndMonthJiao', yearAndMonthJiao || '');
+        params.append('companyName', companyName);
+        params.append('totalMoney', totalMoney);
+        params.append('applyRecruitId', loginVueUser.loginId || '');
+        params.append('applyRealNameEn', (loginVueUser.loginName || '').replace(/\+|%2B/g, ' '));
+        params.append('personNum', personNum);
+        const res = await fetchApi.addOutsourceSalaryPurchaseSheBao(params);
         return res;
       } catch (error) {
         return null;

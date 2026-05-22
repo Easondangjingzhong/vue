@@ -26,7 +26,7 @@
       <span v-else-if="column.key === 'zhuanChargeAfter'">{{ record.zhuanChargeAfter }}</span>
       <span v-else-if="column.key === 'zhuanChargeRate'">{{ record.zhuanChargeRate }}</span>
 
-      <span v-else-if="column.key === 'offerNum'">{{ record.offerNum.toFixed(4) }}</span>
+      <span v-else-if="column.key === 'offerNum'">{{ record?.offerNum?.toFixed(4) }}</span>
     </template>
     <template #summary>
       <a-table-summary fixed>

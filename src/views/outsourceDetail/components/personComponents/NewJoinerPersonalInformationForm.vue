@@ -1824,6 +1824,7 @@ const offerSignCompanyOptions = ref([
   {value: '北京博瑞智捷企业咨询有限公司', label: '北京博瑞'},
   {value: '北京我推天下信息技术有限公司', label: '北京我推'},
   {value: '锐特精英(苏州)企业咨询有限公司', label: '苏州锐特'},
+  {value: '天津博瑞智捷信息技术有限公司', label: '天津博瑞'},
 ])
 const faXinDayOptions = ref([
   {value: '5日', label: '5日'},

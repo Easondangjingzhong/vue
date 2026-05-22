@@ -95,7 +95,7 @@ export function validateLanguage(type,language) {
       atSchool: {label: "Fresh Graduates", message: "请选择应届毕业生"},
       degree: {label: "Degree", message: "请输入学历"},
       majorName: {label: "Major", message: "请输入专业名称"},
-      isRegular: {label: "Regular", message: "请选择统招"},
+      isRegular: {label: "Full-time", message: "请选择统招"},
     };
   }
   if (type == "educationInfo" && language != "1") {

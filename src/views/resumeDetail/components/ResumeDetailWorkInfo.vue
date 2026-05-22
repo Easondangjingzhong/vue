@@ -1022,7 +1022,7 @@
     formState.brandRetailLevel = props.resumeData?.brandRetailLevel;
     formState.brandRetail = props.resumeData?.brandRetail;
     formState.brandCategory = props.resumeData?.brandCategory;
-    formState.companyType = props.resumeData?.companyType || '';
+    formState.companyType = props.resumeData?.companyType ? props.resumeData?.companyType : (currentWorkCity.value == "香港" ? '海外' : '');
     formState.retail = props.resumeData?.retail || '';
     handleCategory(1);
     handleCityName(formState.cityName, formState.marketName.label);
@@ -1341,7 +1341,7 @@
       return;
     }
     optionsWorkFloor.value = [{ value: '', label: '' }];
-    if (loginVueUser.loginOutFlag == '1' || currentWorkCity.value == '香港' || currentWorkCity.value == 'Hong Kong' || currentWorkCity.value == 'Macao'  || currentWorkCity.value == '澳门') {
+    if ((loginVueUser.loginOutFlag == '1' || loginVueUser.loginOutFlag == '3' || loginVueUser.loginOutFlag == '4') || currentWorkCity.value == '香港' || currentWorkCity.value == 'Hong Kong' || currentWorkCity.value == 'Macao'  || currentWorkCity.value == '澳门') {
       if (resumeTypeEnglish.value == '1') {
         optionsWorkFloor.value = workFloorEnArr.map((item) => ({ value: item, label: item }));
       } else {
@@ -1492,7 +1492,7 @@
       brandNameCn.value = '';
       return;
     }
-    if (loginVueUser.loginOutFlag == '1' || currentWorkCity.value == '香港' || currentWorkCity.value == 'Hong Kong' || currentWorkCity.value == 'Macao'  || currentWorkCity.value == '澳门') {
+    if ((loginVueUser.loginOutFlag == '1' || loginVueUser.loginOutFlag == '3' || loginVueUser.loginOutFlag == '4') || currentWorkCity.value == '香港' || currentWorkCity.value == 'Hong Kong' || currentWorkCity.value == 'Macao'  || currentWorkCity.value == '澳门') {
       return;
     }
     resumeDetailStore.queryCheckBrandName(e.target.value?.trim(), '', formState.id).then((res) => {
@@ -1516,7 +1516,7 @@
       message.error('品牌英文只能填写英文');
       return;
     }
-    if (loginVueUser.loginOutFlag == '1' || currentWorkCity.value == '香港' || currentWorkCity.value == '澳门') {
+    if ((loginVueUser.loginOutFlag == '1' || loginVueUser.loginOutFlag == '3' || loginVueUser.loginOutFlag == '4') || currentWorkCity.value == '香港' || currentWorkCity.value == '澳门') {
       return;
     }
     resumeDetailStore.queryCheckBrandName('', e.target.value?.trim(), formState.id).then((res) => {
@@ -1550,7 +1550,7 @@
     let brandNameFlag = false;
     if (brandFlag.value && (brandNameCn.value || brnadNameEn.value)) {
       brandNameFlag = true;
-      if (loginVueUser.loginOutFlag != '1' && !(currentWorkCity.value == '香港' || currentWorkCity.value == 'Hong Kong' || currentWorkCity.value == 'Macao' ||currentWorkCity.value == '澳门')) {
+      if ((loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4') && !(currentWorkCity.value == '香港' || currentWorkCity.value == 'Hong Kong' || currentWorkCity.value == 'Macao' ||currentWorkCity.value == '澳门')) {
         const res = await resumeDetailStore.queryCheckBrandName(
           brandNameCn.value,
           brnadNameEn.value,
@@ -1628,6 +1628,7 @@
       });
   };
   const handleAddWorkInfo = () => {
+    //formState.companyType = (currentWorkCity.value == "香港" ? '海外' : '');
     resumeDetailStore.$patch({ workFlag: true, workWholeFlagAtShcool: false });
   };
   //删除工作经历开始

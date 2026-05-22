@@ -1,10 +1,11 @@
 <template>
     <a-table
       size="small"
-      :pagination="pageOutsourceSalaryPurchaseList"
+      :pagination="paginationConfig"
       :columns="columns"
       :loading="loading"
       :dataSource="getOutsourceSalaryPurchaseList"
+      @change="handleTableChange"
     >
     <template #bodyCell="{ column, record }">
       <a-tag v-if="column.key === 'checkStatus' && record.checkStatus === '1'" color="orange">等待审批</a-tag>
@@ -72,10 +73,33 @@ import { storeToRefs } from 'pinia';
 import { message } from 'ant-design-vue';
 import { MenuUnfoldOutlined, InboxOutlined } from '@ant-design/icons-vue';
 import type { TableColumnsType, UploadProps } from 'ant-design-vue';
+import type { TablePaginationConfig } from 'ant-design-vue/lib/table/interface';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
 const { getOutsourceSalaryPurchaseList,pageOutsourceSalaryPurchaseList} = storeToRefs(outsourceDetailStore);
 const loading = ref(false);
+
+const paginationConfig = computed<TablePaginationConfig>(() => ({
+  current: pageOutsourceSalaryPurchaseList.value.pageNumber,
+  pageSize: pageOutsourceSalaryPurchaseList.value.pageSize,
+  total: pageOutsourceSalaryPurchaseList.value.total,
+  showSizeChanger: false,
+  showQuickJumper: true,
+  hideOnSinglePage: true,
+  size: 'small' as const,
+  showTotal: (total: number) => `共 ${total} 条`,
+}));
+
+const handleTableChange = (pagination: any) => {
+  const current = Number(pagination?.current) || 1;
+  const pageSize = Number(pagination?.pageSize) || pageOutsourceSalaryPurchaseList.value.pageSize;
+  pageOutsourceSalaryPurchaseList.value = {
+    ...pageOutsourceSalaryPurchaseList.value,
+    pageNumber: current,
+    pageSize,
+  };
+  outsourceDetailStore.queryOutsourceSalaryPurchase();
+};
 
 const columns: TableColumnsType = [
   {

@@ -1,27 +1,16 @@
 <template>
- <a-drawer
-    v-model:open="outsourceSocialSecurityCollectFlag"
-    title="社保汇总"
-    :maskClosable="false"
-    :keyboard="false"
-    :closable="false"
-    :width="drawerWidth"
-    :bodyStyle="{ padding: '4px 14px' }"
-    :headerStyle="{ padding: '5px 18px 5px 12px' }"
-    placement="right"
-  >
-    <template #extra>
-      <CloseOutlined @click="outsourceSocialSecurityCollectFlag = false" />
-    </template>
-    <a-table
+ <a-table
+      class="shebao-collect-table"
       size="small"
       :pagination="false"
       :columns="columns"
+      :loading="loading"
       :dataSource="getOutsourceShebaoCollect"
       rowKey="yearAndMonth"
       :expandedRowKeys="expandedRowKeys"
        :row-expandable="(record) => record.detaillist && record.detaillist.length > 0"
        @expand="onExpand"
+       :expand-column-width="20"
        rowClassName="even-row"
     >
     <template #bodyCell="{ column, record }">
@@ -29,32 +18,100 @@
         <a-tag style="cursor: pointer;" color="red">未核</a-tag>
       </a-popconfirm>
       <a-tag v-if="column.key === 'checkFlag' && record.checkFlag === '2'" color="green">已核</a-tag>
+     <a v-if="column.key === 'personNum'" @click="handleClick(record.yearAndMonth,'')"> {{ record.personNum }} </a>
     </template>
     <template #expandedRowRender="{ record }">
-      <div style="background-color: #fafafa; padding: 8px 8px 8px 0;">
-      <a-table :columns="innerColumns" :data-source="record.detaillist" :pagination="false">
+      <div class="expanded-wrapper">
+        <a-table size="small" :columns="innerColumns" :data-source="record.detaillist" :pagination="false">
         <template #bodyCell="{ column, record }">
           <a-popconfirm v-if="column.key === 'checkFlag' && record.checkFlag === '1'" title="社保核对" :overlay-style="{ width: '130px' }" @confirm="handleChecked(2,record)">
             <a-tag style="cursor: pointer;" color="red">未核</a-tag>
           </a-popconfirm>
           <!-- <a-tag v-if="column.key === 'checkFlag' && record.checkFlag === '1'" color="red">未核</a-tag> -->
           <a-tag v-if="column.key === 'checkFlag' && record.checkFlag === '2'" color="green">已核</a-tag>
+          <a-tag v-if="column.key === 'bankPurchaseStatus' && record.bankPurchaseStatus === '1'" color="orange">采购</a-tag>
+          <a v-if="column.key === 'personNum'" @click="handleClick(record.yearAndMonth,record.companyName)"> {{ record.personNum }} </a>
+          <template v-if="column.key === 'action' && record.checkFlag === '2' && (record.companyName === '51社保' || record.companyName === '江苏今元')">
+          <a-dropdown>
+            <span class="ant-dropdown-link" style="cursor: pointer;" @click.prevent>
+              <MenuUnfoldOutlined style="font-size: 15px;"/>
+            </span>
+            <template #overlay>
+              <a-menu>
+                 <a-menu-item>
+                  <a href="javascript:;" @click="handleAddOutsourceSheBaoPurchaseCollect(record)">提交采购</a>
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+          </template>
         </template>
       </a-table>
       </div>
     </template>
   </a-table>
-  </a-drawer>
 </template>
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { CloseOutlined } from '@ant-design/icons-vue';
+import { message, Modal } from 'ant-design-vue';
+import { MenuUnfoldOutlined } from '@ant-design/icons-vue';
 import { OutsourceSheBaoCollectItem } from '/@/api/outsourceDetail/model';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { outsourceSocialSecurityCollectFlag,getOutsourceShebaoCollect } = storeToRefs(outsourceDetailStore);
-const drawerWidth = ref(Math.max(600, window.innerWidth * 0.7));
-const columns = [
+const { getOutsourceShebaoCollect,outsourceSocialSecurityCollectFlag } = storeToRefs(outsourceDetailStore);
+
+const handleClick = (yearAndMonth,companyName) => {
+  outsourceDetailStore.queryOutsourceSalaryCommitCollectSheBao(yearAndMonth,companyName);
+  outsourceSocialSecurityCollectFlag.value = true;
+}
+
+const columnWidths: Record<string, number> = {
+  index: 110,
+  companyName: 110,
+  yearAndMonth: 110,
+  shebaoCompany: 110,
+  yijinCompany: 110,
+  shebaoPerson: 110,
+  yijinPerson: 110,
+  companyTotal: 110,
+  personTotal: 110,
+  canbaoMoney: 90,
+  serviceMoney: 90,
+  shebaoTotal: 110,
+  personNum: 70,
+  checkFlag: 80,
+  bankPurchaseStatus: 80,
+  action: 80,
+};
+
+const withSameWidths = (cols: any[]) =>
+  cols.map((col) => {
+    const width = columnWidths[col.dataIndex];
+    return width ? { ...col, width } : col;
+  });
+
+const withLeftAlign = (cols: any[], leftAlignKeys: Set<string>) =>
+  cols.map((col) => (leftAlignKeys.has(col.dataIndex) ? { ...col, align: 'left' } : col));
+
+const commonLeftAlignKeys = new Set([
+  'yearAndMonth',
+  'shebaoCompany',
+  'yijinCompany',
+  'shebaoPerson',
+  'yijinPerson',
+  'companyTotal',
+  'personTotal',
+  'canbaoMoney',
+  'serviceMoney',
+  'shebaoTotal',
+  'personNum',
+  'checkFlag',
+  'bankPurchaseStatus',
+  'action',
+]);
+
+const columns = withLeftAlign(
+  withSameWidths([
   {
     title: '编号',
     dataIndex: 'index',
@@ -120,8 +177,27 @@ const columns = [
     dataIndex: 'checkFlag',
     key: 'checkFlag',
   },
-];
-const innerColumns = [
+   {
+    title: '采购',
+    dataIndex: 'bankPurchaseStatus',
+    key: 'bankPurchaseStatus',
+  },
+   {
+    title: '操作',
+    dataIndex: 'action',
+    key: 'action',
+  },
+  ]),
+  new Set(['index', ...commonLeftAlignKeys]),
+);
+
+const innerLeftAlignKeys = new Set([
+  'companyName',
+  ...commonLeftAlignKeys,
+]);
+
+const innerColumns = withLeftAlign(
+  withSameWidths([
   {
     title: '社保公司',
     dataIndex: 'companyName',
@@ -187,7 +263,38 @@ const innerColumns = [
     dataIndex: 'checkFlag',
     key: 'checkFlag',
   },
-];
+   {
+    title: '采购',
+    dataIndex: 'bankPurchaseStatus',
+    key: 'bankPurchaseStatus',
+  },
+   {
+    title: '操作',
+    dataIndex: 'action',
+    key: 'action',
+  },
+  ]),
+  innerLeftAlignKeys,
+);
+const loading = ref(false);
+const handleAddOutsourceSheBaoPurchaseCollect = async (record: any) => {
+  Modal.confirm({
+    title: '提示',
+    content: '确认提交采购吗？',
+    async onOk() {
+      loading.value = true;
+    await outsourceDetailStore.addOutsourceSalaryPurchaseSheBao(record.yearAndMonth, record.companyName, record.shebaoTotal, record.personNum).then((res) => {
+    if (res.code == 1) {
+      message.success('操作成功');
+      outsourceDetailStore.queryOutsourceShebaoCollect("",record.yearAndMonth);
+    } else {
+      message.error(res.msg || '操作失败');
+    }
+    });
+      loading.value = false;
+    }
+  });
+}
 const handleChecked = async (type: number, record: any) => {
   await outsourceDetailStore.updateOutsourceShebaoChecked(record.yearAndMonth, type == 2 ? record.companyName : '');
 }
@@ -213,4 +320,12 @@ const onExpand = (expanded: boolean, record: OutsourceSheBaoCollectItem) => {
   :deep(.even-row .ant-table-cell-row-hover) {
     background-color: #f0f8ff;
   }
+
+.shebao-collect-table :deep(.ant-table-expanded-row > td) {
+  padding: 0;
+}
+
+:deep(.expanded-wrapper .ant-spin-container .ant-table-small) {
+  margin-left: 24px !important;
+}
 </style>

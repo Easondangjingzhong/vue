@@ -427,7 +427,7 @@
                 item.degree != '初中'
               "
             >
-              <strong v-if="resumeTypeEnglish == '1'">Regular：</strong>
+              <strong v-if="resumeTypeEnglish == '1'">Full-time：</strong>
               <strong v-else>统招：</strong>
               {{ item.isRegular }}</p
             >

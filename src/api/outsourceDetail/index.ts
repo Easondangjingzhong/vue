@@ -76,6 +76,7 @@ enum URL {
   query_outsource_salary_commit = '/candidateRecommend/resume-vue-select-out-TiCaiGou-Collect.action',
   query_outsource_salary_commit_detail = '/candidateRecommend/resume-vue-select-out-TiCaiGou-Detail-peron.action',
   query_outsource_salary_commit_collect_detail = '/candidateRecommend/resume-vue-select-out-TiCaiGou-Collect-peron.action',
+  add_outsource_salary_purchase_shebao = '/finance/add-bank-purchase-byOutScoureShebao.action',
   add_outsource_salary_purchase = '/finance/add-bank-purchase-byOutScoure.action',
   query_outsource_salary_purchase = '/finance/query-bank-purchase-outsource-salary.action',
   delete_outsource_salary_purchase = '/finance/resume-vue-delete-bank-purchase.action',
@@ -122,6 +123,17 @@ const queryOutsourceSheBaoMonthCompanyBrand = async (data: any) =>
  */
 const addOutsourceUpdateSheBaoMonthBySign = async (data: any) =>
   post<any>({ url: URL.add_outsource_update_shebao_month_by_sign, data});
+/**
+ * 51上传采购社保
+ * @param companyName
+ * @param totalMoney
+ * @param applyRecruitId
+ * @param applyRealNameEn
+ * @param personNum
+ * @returns
+ */
+const addOutsourceSalaryPurchaseSheBao = async (data: any) =>
+  post<any>({ url: URL.add_outsource_salary_purchase_shebao, data});
 /**
  * 51上传采购文件excel
  * @param id
@@ -710,6 +722,7 @@ export default {
   queryOutsourceAttendMonthCompanyBrand,
   queryOutsourceSheBaoMonthCompanyBrand,
   addOutsourceUpdateSheBaoMonthBySign,
+  addOutsourceSalaryPurchaseSheBao,
   addOutsourceSalaryPurchaseExcel,
   deleteOutsourceSalaryPurchase,
   queryOutsourceSalaryPurchase,

@@ -107,7 +107,7 @@ import { usePlagiarusnStoreWithOut } from '/@/store/modules/plagiarusn';
   const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginOutFlag: '' } = JSON.parse(
   localStorage.getItem('loginVueUser'),
 );
- if (loginVueUser.loginOutFlag != '1') {
+ if (loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4') {
       showResumeRightOutFlag.value = true; 
     }
   let resultPpercentage = ref("");

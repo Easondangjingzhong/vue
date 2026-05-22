@@ -1,4 +1,18 @@
 <template>
+  <a-drawer
+    v-model:open="outsourceSocialSecurityCollectFlag"
+    title="社保缴纳明细"
+    :maskClosable="false"
+    :keyboard="false"
+    :closable="false"
+    :width="drawerWidth"
+    :bodyStyle="{ padding: '4px 14px' }"
+    :headerStyle="{ padding: '5px 18px 5px 12px' }"
+    placement="right"
+  >
+   <template #extra>
+      <CloseOutlined @click="handleClose" />
+    </template>
   <a-table
       size="small"
       :pagination="false"
@@ -47,17 +61,22 @@
       <a-tag v-if="column.key === 'jiaoType' && record.jiaoType === '退费'" color="red">退费</a-tag>
     </template>
   </a-table>
+  </a-drawer>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
 import _ from 'lodash';
+import { CloseOutlined } from '@ant-design/icons-vue';
 import { storeToRefs } from 'pinia';
 import type { TableColumnsType } from 'ant-design-vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { getOutsourcePersonSalaryCommitCollectSheBao, } = storeToRefs(outsourceDetailStore);
-
+const { getOutsourcePersonSalaryCommitCollectSheBao, outsourceSocialSecurityCollectFlag} = storeToRefs(outsourceDetailStore);
+const drawerWidth = ref(Math.max(600, window.innerWidth * 0.9));
+const handleClose = () => {
+  outsourceSocialSecurityCollectFlag.value = false;
+}
 const totals = computed(() => {
   let companyTotal = 0;
   let personTotal = 0;

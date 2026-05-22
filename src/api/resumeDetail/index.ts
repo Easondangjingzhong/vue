@@ -23,6 +23,7 @@ enum URL {
   resume_update_report = '/resume/rusume-vue-update-resume-report-message.action',
   recommend_update_candidate_position = '/candidatePosition/rusume-vue-query-candidatePosition.action',
   recommend_update_candidate_out_position = '/candidatePosition/rusume-vue-query-candidatePosition-out.action',
+  recommend_update_candidate_partTime_position = '/candidatePosition/rusume-vue-query-candidatePosition-partTime.action',
   weekNum_query_WorkDate = '/employee-group/resume-vue-get-kpi-week-by-workDate.action',
   week_query_year_month = '/employee-group/resume-vue-get-kpi-week-byym.action',
   query_enterprise_consultant = '/candidate/resume-vue-query-enterprise-consultant-all.action',
@@ -143,6 +144,8 @@ const queryRecommendCandidatePosition = (formData: any) =>
   post<any>({ url: URL.recommend_update_candidate_position, data: formData });
 const queryRecommendCandidateOutPosition = (formData: any) =>
   post<any>({ url: URL.recommend_update_candidate_out_position, data: formData });
+const queryRecommendCandidatePartTimePosition = (formData: any) =>
+  post<any>({ url: URL.recommend_update_candidate_partTime_position, data: formData });
 const updateResumeReportContent = (formData: any) =>
   post<any>({ url: URL.resume_update_report, data: formData });
 const queryResumeReport = (formData: any) => post<any>({ url: URL.resume_report, data: formData });
@@ -229,6 +232,7 @@ export default {
   queryWeekNumByWorkDate,
   queryRecommendCandidatePosition,
   queryRecommendCandidateOutPosition,
+  queryRecommendCandidatePartTimePosition,
   updateResumeReportContent,
   queryResumeReport,
   queryResumeContactContentComment,

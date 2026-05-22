@@ -46,6 +46,18 @@
           :title="repeatTime"
           v-if="props.showResumeRightOutFlag && resumeData.checkFlag != '待核' && resumeData.fristFlag"
           >首增</a-tag>
+           <a-tag
+          color="#d8d8d8"
+          class="resume_tag_checked_top"
+          :title="repeatTime"
+          v-if="props.resumeData.teamId == '160401' && resumeData.checkFlag == '待核' && resumeData.fristFlag"
+          >首增</a-tag
+        >
+        <a-tag
+          color="green"
+          class="resume_tag_checked_top"
+          v-if="props.resumeData.teamId == '160401' && resumeData.checkFlag != '待核' && resumeData.fristFlag"
+          >首增</a-tag>
         <!-- <a-tag class="resume_tag_checked_top" v-if="props.showResumeRightOutFlag && resumeData.recruitId && resumeData.onlyFlag" color="green">{{ resumeData.onlyFlag }}</a-tag>
         <a-tag :title="commonFlagTime" class="resume_tag_checked_top tagspanGreen" v-if="props.showResumeRightOutFlag && resumeData.recruitId && resumeData.commonFlag" color="green">{{ resumeData.commonFlag }}</a-tag>
         <a-tag class="resume_tag_checked_top" v-if="props.showResumeRightOutFlag && resumeData.recruitId && resumeData.gognGongFlag" color="orange">{{ resumeData.gognGongFlag }}</a-tag> -->
@@ -185,7 +197,7 @@
       </a-col>
       <a-col :span="8" style="text-align: right">
          <a-button
-          v-if="showResumeAdd && resumeData.recruitId && !(resumeData.checkFlag == '待核' || resumeData.checkFlag == '过期')"
+          v-if="props.showResumeRightOutFlag && showResumeAdd && resumeData.recruitId && !(resumeData.checkFlag == '待核' || resumeData.checkFlag == '过期')"
           style="margin-left: 4px;background-color: orange;color: #fff;"
            size="middle"
           @click="handleAddCheckedTongbu"

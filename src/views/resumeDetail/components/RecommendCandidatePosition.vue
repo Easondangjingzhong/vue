@@ -405,7 +405,7 @@
   const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginOutFlag: '' } = JSON.parse(
     localStorage.getItem('loginVueUser'),
   );
-  if (loginVueUser.loginOutFlag == '1') {
+  if ((loginVueUser.loginOutFlag == '1' || loginVueUser.loginOutFlag == '3' || loginVueUser.loginOutFlag == '4')) {
     outOpenFlag.value = false;
   }
   const handleRecommendChecked = (item) => {
@@ -792,8 +792,9 @@ resumeDetailStore.queryRecommendCandidatePosition(values).then((res) => {
         dataSource.value = [];
       }
     });
-    } else {
-        resumeDetailStore.queryRecommendCandidateOutPosition(values).then((res) => {
+   } else {
+    if (loginVueUser.loginOutFlag == '1') {
+      resumeDetailStore.queryRecommendCandidateOutPosition(values).then((res) => {
       loading.value = false;
       if (res.code == 1) {
         const candidatePosition = res.info.list;
@@ -870,7 +871,88 @@ resumeDetailStore.queryRecommendCandidatePosition(values).then((res) => {
       } else {
         dataSource.value = [];
       }
-    });
+      });
+    } else {
+      resumeDetailStore.queryRecommendCandidatePartTimePosition(values).then((res) => {
+      loading.value = false;
+      if (res.code == 1) {
+        const candidatePosition = res.info.list;
+        const positionList = res.info.positionList;
+        const apealList = res.info.apealList;
+        const positionArr = positionList?.reduce((prev, curr) => {
+          curr?.forEach((item) => {
+            prev.push(item.pId);
+          });
+          return prev;
+        }, []);
+        const appealTemp = [''];
+        const apealArr = apealList?.reduce((prev, curr) => {
+          curr?.forEach((item) => {
+            appealTemp.push(item.pId);
+            prev.push({
+              apId: item.pId,
+              checkResult: item.checkResult,
+              refuseRemark: item.refuseRemark || '',
+            });
+          });
+          return prev;
+        }, []);
+        dataSource.value = candidatePosition?.reduce((prev, curr, index) => {
+          let temp = {} as RecommendPerson;
+          temp.index = (res.info.currentPage - 1) * pageSize + (index + 1);
+          temp.city = curr.city || '-';
+          temp.brand = curr.secret == "是" ?  curr.secretBrand : curr.brand;
+          temp.jobTitle = curr.jobTitle || '-';
+          temp.workPlace = curr.workPlace || '-';
+          temp.turnoverTime = curr.turnoverTime ? formatToDateTime(curr.turnoverTime) : '-';
+          temp.counselor = curr.counselor || '-';
+          if (curr.jobStatus == '开放(急)') {
+            temp.jobStatus = '开放1级';
+          } else if (curr.jobStatus == '开放(急)') {
+            temp.jobStatus = '开放2级';
+          } else {
+            temp.jobStatus = curr.jobStatus;
+          }
+          temp.recruitingNum = curr.recruitingNum || '0';
+          temp.offerNum = (curr.recruitingNum - curr.offerNum)?.toString() || '0';
+          temp.openResumesNum = curr.openResumesNum || '0';
+          temp.surplus = curr.surplus || '0';
+          temp.isTask = curr.isTask == 1 ? '是' : '-';
+          if (positionArr.includes(curr.id)) {
+            temp.action = '1'; //已推
+          } else if (appealTemp.includes(curr.id)) {
+            temp.action = '4'; //已推
+            temp.checkResult = apealArr.filter((item) => item.apId == curr.id)[0]?.checkResult;
+            temp.refuseRemark = apealArr.filter((item) => item.apId == curr.id)[0]?.refuseRemark;
+          } else {
+            if (curr.recruitingNum - curr.offerNum <= 0) {
+              temp.action = '2'; //余职为0
+            } else {
+              temp.action = '3'; //推荐
+            }
+          }
+          temp.companyName = curr.companyName;
+          temp.bId = curr.bId;
+          temp.id = curr.id;
+          temp.mId = curr.mId;
+          temp.recruitId = curr.recruitId;
+          temp.positionsId = curr.positionsId;
+          prev.push(temp);
+          return prev;
+        }, []);
+        pagination.value = {
+          pageSize: pageSize,
+          current: res.info.currentPage,
+          total: res.info.count,
+          hideOnSinglePage: true,
+          size: 'small',
+        };
+      } else {
+        dataSource.value = [];
+      }
+      });
+    }
+        
     }
     
   };

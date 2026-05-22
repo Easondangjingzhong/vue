@@ -96,7 +96,7 @@ export const useResumeListStore = defineStore('app-Resume-List',{
       let itemsTemp = [];
       let myDataChildren = [];
       this.systemType = info.systemType;
-      if (info.allResumeName && loginVueUser.loginOutFlag != '1') {
+      if (info.allResumeName && (loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4') ) {
         let item = {} as Item;
         item.key = '1';
         item.label = `${info.allResumeNameJingShu}/${info.allResumeNameQuanShu}`;
@@ -105,7 +105,7 @@ export const useResumeListStore = defineStore('app-Resume-List',{
         //@ts-ignore
         myDataChildren.push(item);
       }
-      if (info.gongResumeName && loginVueUser.loginOutFlag != '1') {
+      if (info.gongResumeName && (loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4') ) {
         let item = {} as Item;
         item.key = '2';
         item.label = info.gongResumeShu;
@@ -114,7 +114,7 @@ export const useResumeListStore = defineStore('app-Resume-List',{
         //@ts-ignore
         myDataChildren.push(item);
       }
-      if (info.gangAoResumeName && loginVueUser.loginOutFlag != '1') {
+      if (info.gangAoResumeName && (loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4') ) {
         let item = {} as Item;
         item.key = '3';
         item.label = info.gangAoResumeShu;
@@ -138,7 +138,7 @@ export const useResumeListStore = defineStore('app-Resume-List',{
           teamDataChildren.push(teamItem);
         });
       }
-      if (info.teamList && info.teamList.length > 0) {
+      if (info.teamList && info.teamList.length > 0 && (loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4')) {
         let item = {} as Item;
         item.key = 'teamData';
         item.label = teamDataNum + '';
@@ -148,7 +148,7 @@ export const useResumeListStore = defineStore('app-Resume-List',{
         //@ts-ignore
         myDataChildren.push(item);
       }
-       if (info.blackResume && loginVueUser.loginOutFlag != '1') {
+       if (info.blackResume && (loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4') ) {
         let item = {} as Item;
         item.key = '4';
         item.label = info.blackShu || 0;
@@ -157,6 +157,7 @@ export const useResumeListStore = defineStore('app-Resume-List',{
         //@ts-ignore
         myDataChildren.push(item);
       }
+      if (info.teamList && info.teamList.length > 0 && (loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4')) {
       //@ts-ignore
       itemsTemp.push({
         type: 'divider',
@@ -166,6 +167,7 @@ export const useResumeListStore = defineStore('app-Resume-List',{
         level: 1,
         children: myDataChildren,
       });
+      }
       //@ts-ignore
       itemsTemp.push({ type: 'divider' });
       if (info.mytalentResumeName) {
@@ -179,13 +181,13 @@ export const useResumeListStore = defineStore('app-Resume-List',{
         //@ts-ignore
         itemsTemp.push({ type: 'divider' });
       }
-      if (info.sortResumeName && loginVueUser.loginOutFlag != '1') {
+      if (info.sortResumeName && (loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4') ) {
         //@ts-ignore
         itemsTemp.push({ title: '人才分类', label: '', key: '6', level: 1 });
         //@ts-ignore
         itemsTemp.push({ type: 'divider' });
       }
-      if (info.serchResumeName && loginVueUser.loginOutFlag != '1') {
+      if (info.serchResumeName && (loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4') ) {
         let serchResumeListChildren = [];
         if (info.serchResumeList && info.serchResumeList.length > 0) {
           this.serchResumeListNum = info.serchResumeList.length;
@@ -222,7 +224,7 @@ export const useResumeListStore = defineStore('app-Resume-List',{
       if (res) {
         // save token
         this.setInfo(res.info);
-        if (loginVueUser.loginOutFlag == '1') {
+        if ((loginVueUser.loginOutFlag == '1' || loginVueUser.loginOutFlag == '3' || loginVueUser.loginOutFlag == '4') ) {
           this.fetchTeamData('5');
           this.resumeMenu.forEach((item) => {
           if (item.key === '01') {
@@ -607,7 +609,7 @@ export const useResumeListStore = defineStore('app-Resume-List',{
         };
          //@ts-ignore
         this.queryResumeList(this.formState);
-        if (loginVueUser.loginOutFlag == '1' && this.resumeLoginNameChangeFlag) {
+        if ((loginVueUser.loginOutFlag == '1' || loginVueUser.loginOutFlag == '3' || loginVueUser.loginOutFlag == '4')  && this.resumeLoginNameChangeFlag) {
             let formData = new FormData();
             formData.append('recruitId', loginVueUser.loginId);
             //formData.append('viewType', this.systemType);
@@ -701,7 +703,7 @@ export const useResumeListStore = defineStore('app-Resume-List',{
           //@ts-ignore
           mytalentResumeNameChildren.push(item);
         }
-        if (info.interviewResumeName && loginVueUser.loginOutFlag != '1') {
+        if (info.interviewResumeName && (loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4') ) {
           let item = {} as Item;
           item.key = '53';
           item.label = info.interviewResumeShu;
@@ -710,7 +712,7 @@ export const useResumeListStore = defineStore('app-Resume-List',{
           //@ts-ignore
           mytalentResumeNameChildren.push(item);
         }
-        if (info.offerResumeName && loginVueUser.loginOutFlag != '1') {
+        if (info.offerResumeName && (loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4') ) {
           let item = {} as Item;
           item.key = '54';
           item.label = `${info.offerLiuchengResumeShu}/${info.offerEndResumeShu}`;
@@ -720,7 +722,7 @@ export const useResumeListStore = defineStore('app-Resume-List',{
           mytalentResumeNameChildren.push(item);
         }
         let myPersonSortResume = [];
-        if (info.sortResumeName && info.sortResumeList && info.sortResumeList.length > 0 && loginVueUser.loginOutFlag != '1') {
+        if (info.sortResumeName && info.sortResumeList && info.sortResumeList.length > 0 && (loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4') ) {
           info.sortResumeList.forEach((item) => {
             let subItem = {} as Item;
             subItem.key = `sortResume-${item.sortId}`;
@@ -739,7 +741,7 @@ export const useResumeListStore = defineStore('app-Resume-List',{
               ? this.loginNameChangeRecruitName
               : item.label;
           }
-          if (item.key == '6' && loginVueUser.loginOutFlag != '1') {
+          if (item.key == '6' && (loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4') ) {
             item.children = myPersonSortResume;
           }
         });
@@ -883,9 +885,10 @@ export const useResumeListStore = defineStore('app-Resume-List',{
           tempItem.onlyFlag = item.onlyFlag || ''; //唯一
           tempItem.gognGongFlag = item.gognGongFlag || ''; //公共
           tempItem.limitFlag = item.limitFlag || ''; //限制 保护
+          tempItem.teamId = item.teamId;
           tempItem.options = item.options;
           tempItem.recruitId = item.recruitId;
-          tempItem.leftType = param.leftType ||  (loginVueUser.loginOutFlag != '1' ? '2' : '5'); //参数
+          tempItem.leftType = param.leftType ||  ((loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4')  ? '2' : '5'); //参数
           tempItem.isBlack = item.isBlack; //黑名单 1是 其他 否
           tempItem.blackRemark = item.blackRemark; //黑名单 1是 其他 否
           tempItem.projectFlag = item.projectFlag;
@@ -1013,8 +1016,8 @@ export const useResumeListStore = defineStore('app-Resume-List',{
       formData.append('maxAge', param.maxAge || '');
       formData.append('leftTeamId', param.leftTeamId || '');
       formData.append('leftRecruitId', param.leftRecruitId || '');
-      formData.append('leftType', param.leftType || ((loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3') ? '2' : '5'));
-      formData.append('isWai', ((loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3') ? '' : '1'));
+      formData.append('leftType', param.leftType || ((loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4') ? '2' : '5'));
+      formData.append('isWai', ((loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4') ? '' : '1'));
       formData.append('isWorkExp', this.searchWorkExp);
       formData.append('sortId', param.sortId || '');
       formData.append('viewType', param.viewType || 'T');

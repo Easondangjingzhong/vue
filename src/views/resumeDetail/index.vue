@@ -215,7 +215,7 @@ const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginOutFlag:
         educationWholeFlag: wtemp,
       });
     }
-    if (loginVueUser.loginOutFlag != '1') {
+    if ((loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4') ) {
       showResumeRightOutFlag.value = true; 
     }
     //推顾是否重新推荐展示标注的PDF

@@ -84,7 +84,7 @@
     selectedKeys: ['2'],
     openKeys: ['01','51','6','7'],
   });
-  if (loginVueUser.loginOutFlag == '1') {
+  if ((loginVueUser.loginOutFlag == '1' || loginVueUser.loginOutFlag == '3' || loginVueUser.loginOutFlag == '4') ) {
     state.selectedKeys = ['5'];
     state.openKeys = ['01','51'];
   }

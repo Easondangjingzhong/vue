@@ -214,7 +214,9 @@
     <a-tag v-if="column.key === 'yijinFlag' && record.yijinFlag === '5'" color="red">
       已停
     </a-tag>
-
+    <a-tag v-if="column.key === 'shangbaoFlag' && record.shangbaoFlag === '3'" color="red">
+      已停
+    </a-tag>
     <a-tag v-if="column.key === 'shangbaoFlag' && record.shangbaoFlag === '2'" color="green">
       缴纳
     </a-tag>

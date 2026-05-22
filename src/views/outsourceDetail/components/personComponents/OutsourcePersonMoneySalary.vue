@@ -1,5 +1,6 @@
 <template>
     <a-table
+        class="salary-table"
         size="small"
         :columns="columns"
         :pagination="false"
@@ -101,6 +102,36 @@ const defaultColumns = computed<TableColumnsType>(() => [
       ellipsis: true,
     },
     {
+      title: '中文名',
+      dataIndex: 'userNameCn',
+      key: 'userNameCn',
+      width: 50,
+      fixed: 'left',
+      ellipsis: true,
+    },
+    {
+      title: '英文名',
+      dataIndex: 'userNameEn',
+      key: 'userNameEn',
+      width: 50,
+      fixed: 'left',
+      ellipsis: true,
+    },
+    {
+      title: '手机号',
+      dataIndex: 'phoneNumber',
+      key: 'phoneNumber',
+      fixed: 'left',
+      width: 50,
+    },
+    {
+      title: '城市',
+      dataIndex: 'city',
+      key: 'city',
+      fixed: 'left',
+      width: 50,
+    },
+    {
       title: '职位',
       dataIndex: 'positions',
       key: 'positions',
@@ -113,7 +144,7 @@ const defaultColumns = computed<TableColumnsType>(() => [
       dataIndex: 'idCard',
       key: 'idCard',
       fixed: 'left',
-      width: 70,
+      width: 90,
     },
     {
       title: '联系方式',
@@ -145,6 +176,11 @@ const defaultColumns = computed<TableColumnsType>(() => [
       title: '计薪日期',
       dataIndex: 'jinxinMonthDetail',
       key: 'jinxinMonthDetail',
+    },
+    {
+      title: '实际出勤工时',
+      dataIndex: 'bebyueShiji',
+      key: 'bebyueShiji',
     },
     {
       title: `${getFormStatePersonMoney.value?.currentMonth}月预估考勤情况/H`,
@@ -199,6 +235,31 @@ const defaultColumns = computed<TableColumnsType>(() => [
       width: 80,
     },
     {
+      title: '法定节假日加班工时',
+      dataIndex: 'holidayOverHours',
+      key: 'holidayOverHours',
+      width: 120,
+    },
+     {
+      title: '休息加班',
+      dataIndex: 'restOverHours',
+      key: 'restOverHours',
+      width: 70,
+    },
+         {
+          title: '工作日加班工时',
+          dataIndex: 'overHours',
+          key: 'overHours',
+          width: 100,
+        },
+        
+             {
+              title: '加班工资',
+              dataIndex: 'jiabanSalary',
+              key: 'jiabanSalary',
+              width: 70,
+            },
+    {
       title: '迟到',
       dataIndex: 'chidao',
       key: 'chidao',
@@ -210,8 +271,8 @@ const defaultColumns = computed<TableColumnsType>(() => [
     },
     {
       title: '年假',
-      dataIndex: 'qingKuanTime',
-      key: 'qingKuanTime',
+      dataIndex: 'nianjianHours',
+      key: 'nianjianHours',
     },
     {
       title: '带薪假',
@@ -223,6 +284,30 @@ const defaultColumns = computed<TableColumnsType>(() => [
       dataIndex: 'bingjia',
       key: 'bingjia',
     },
+    {
+      title: '总工时',
+      dataIndex: 'allHours',
+      key: 'allHours',
+      width: 70,
+    },
+    {
+      title: '标准工时',
+      dataIndex: 'currentMonthShiHours',
+      key: 'currentMonthShiHours',
+      width: 70,
+    },
+    {
+      title: '出勤工资',
+      dataIndex: 'chuqinSalary',
+      key: 'chuqinSalary',
+      width: 70,
+    },
+         {
+          title: '津贴',
+          dataIndex: 'jintie',
+          key: 'jintie',
+          width: 70,
+        },
     {
       title: '个人销售奖金',
       dataIndex: 'geti',
@@ -246,6 +331,37 @@ const defaultColumns = computed<TableColumnsType>(() => [
       key: 'jili',
       width: 80,
     },
+        {
+          title: '保底奖金',
+          dataIndex: 'baodiJiangjin',
+          key: 'baodiJiangjin',
+          width: 70,
+        },
+    {
+      title: '十三薪',
+      dataIndex: 'thirteenthSalary',
+      key: 'thirteenthSalary',
+      width: 70,
+    },
+     {
+      title: '年终奖金',
+      dataIndex: 'yearEndBouns',
+      key: 'yearEndBouns',
+      width: 70,
+    },
+         {
+          title: '奖金总计',
+          dataIndex: 'jiangjinTotal',
+          key: 'jiangjinTotal',
+          width: 70,
+        },
+        
+             {
+              title: '计税不发薪项',
+              dataIndex: 'jishuiBufa',
+              key: 'jishuiBufa',
+              width: 100,
+            },
     {
       title: '基础工资调差',
       dataIndex: 'salaryTiaocha',
@@ -262,6 +378,24 @@ const defaultColumns = computed<TableColumnsType>(() => [
       dataIndex: 'quanqinTiaocha',
       key: 'quanqinTiaocha',
     },
+    {
+          title: '其他费用',
+          dataIndex: 'otherPayKe',
+          key: 'otherPayKe',
+          width: 70,
+        },
+        {
+              title: '员工福利',
+              dataIndex: 'welfareKe',
+              key: 'welfareKe',
+              width: 70,
+            },
+     {
+          title: '津贴调差',
+          dataIndex: 'jintieTiaocha',
+          key: 'jintieTiaocha',
+          width: 70,
+        },
     {
       title: '差异调整合计',
       dataIndex: 'tiaochaTotal',
@@ -384,8 +518,8 @@ const defaultColumns = computed<TableColumnsType>(() => [
     },
     {
       title: '经济补偿金',
-      dataIndex: 'jingJiBuChangJin',
-      key: 'jingJiBuChangJin',
+      dataIndex: 'buchangMonth',
+      key: 'buchangMonth',
       width: 80,
     },
     {
@@ -593,4 +727,12 @@ const defaultColumns = computed<TableColumnsType>(() => [
 </script>
 
 <style lang="less" scoped>
+.salary-table :deep(.ant-table-thead > tr > th) {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  line-height: 22px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 </style>

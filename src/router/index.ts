@@ -55,7 +55,7 @@ export const routerQuery = async () => {
         return false;
       }
       localStorage.removeItem("loginVueUser");
-      localStorage.setItem("loginVueUser",JSON.stringify({"loginId": getQueryVariable("loginId"),"loginName": getQueryVariable("loginName"),"loginTocken": getQueryVariable("loginTocken"),"loginType": getQueryVariable("loginType"),"loginOutFlag": getQueryVariable("loginOutFlag")}));
+      localStorage.setItem("loginVueUser",JSON.stringify({"loginId": getQueryVariable("loginId"),"loginName": getQueryVariable("loginName")?.replace(/\+|%2B/g, ' '),"loginTocken": getQueryVariable("loginTocken"),"loginType": getQueryVariable("loginType"),"loginOutFlag": getQueryVariable("loginOutFlag")}));
       return true;
     } else {
       window.open("http://work.wotui.com:8889/WTSM/","_self");

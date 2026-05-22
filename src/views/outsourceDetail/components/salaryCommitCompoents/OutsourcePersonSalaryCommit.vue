@@ -17,25 +17,27 @@
     <a-layout>
         <a-layout-content class="resume_content">
            <a-tabs v-model:activeKey="outsourceDetailMoneySider" type="card" @change="handleChange" class="custom-tabs">
-              <a-tab-pane key="1" tab="考勤"></a-tab-pane>
-              <a-tab-pane key="2" tab="账单"></a-tab-pane>
-              <a-tab-pane key="3" tab="社保">
-                <OutsourcePersonSalarySheBao />
+               <a-tab-pane key="3" tab="社保">
+                <OutsourceSocialSecurityCollect />
               </a-tab-pane>
-              <a-tab-pane key="4" tab="发薪">
+              <a-tab-pane key="1" tab="考勤"></a-tab-pane>
+              <a-tab-pane key="4" tab="工资">
                  <OutsourcePersonSalaryCollect />
               </a-tab-pane>
+              <a-tab-pane key="6" tab="业绩"></a-tab-pane>
+              <a-tab-pane key="2" tab="账单"></a-tab-pane>
+              <a-tab-pane key="7" tab="回款"></a-tab-pane>
               <a-tab-pane key="5" tab="采购">
                  <OutsourcePersonSalaryCaiGou />
               </a-tab-pane>
-              <template #rightExtra>
-                <span style="margin-right: 8px;margin-left: 8px;">发薪月:</span>
+              <template #leftExtra>
+                <!-- <span style="margin-right: 8px;margin-left: 8px;">发薪月:</span> -->
                  <a-date-picker
                   v-model:value="outsourcePersonSalaryCommitYearAndMonth"
                   value-format="YYYY-MM"
                   @change="handleCommit"
                   picker="month"
-                  style="width: 80px;"
+                  style="width: 80px;margin: 0 8px;"
                 />
               </template>
           </a-tabs>
@@ -45,6 +47,7 @@
   </div>
    </a-drawer>
    <OutsourcePersonSalaryCollectDetails />
+   <OutsourcePersonSalarySheBao />
    <FileYuLanInfo />
 </template>
 
@@ -56,15 +59,17 @@ import FileYuLanInfo from '/@/views/outsourceDetail/components/personComponents/
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 import OutsourcePersonSalaryCollect from './OutsourcePersonSalaryCollect.vue';
 import OutsourcePersonSalarySheBao from './OutsourcePersonSalarySheBao.vue';
+import OutsourceSocialSecurityCollect from './OutsourceSocialSecurityCollect.vue';
 import OutsourcePersonSalaryCaiGou from './OutsourcePersonSalaryCaiGou.vue';
 import OutsourcePersonSalaryCollectDetails from './OutsourcePersonSalaryCollectDetails.vue';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { outsourcePersonSalaryCommitFlag, formStateMonthSalary, outsourcePersonSalaryCommitYearAndMonth} = storeToRefs(outsourceDetailStore);
+const { outsourcePersonSalaryCommitFlag, formStateMonthSalary, outsourcePersonSalaryCommitYearAndMonth } = storeToRefs(outsourceDetailStore);
 const drawerWidth = ref(Math.max(600, window.innerWidth * 0.9));
 const outsourceDetailMoneySider = ref('4');
 const handleChange = (key) => {
   if (key == '3') {
-    outsourceDetailStore.queryOutsourceSalaryCommitCollectSheBao(outsourcePersonSalaryCommitYearAndMonth.value);
+    outsourceDetailStore.queryOutsourceShebaoCollect("",outsourcePersonSalaryCommitYearAndMonth.value);
+    //outsourceDetailStore.queryOutsourceSalaryCommitCollectSheBao(outsourcePersonSalaryCommitYearAndMonth.value);
   }
   if (key == '4') {
     outsourceDetailStore.queryOutsourceSalaryCommit(outsourcePersonSalaryCommitYearAndMonth.value);
@@ -88,6 +93,7 @@ const handleCommit = () => {
   outsourceDetailStore.queryOutsourceSalaryPurchase();
   outsourceDetailStore.queryOutsourceSalaryCommit(outsourcePersonSalaryCommitYearAndMonth.value);
   outsourceDetailStore.queryOutsourceSalaryCommitCollectSheBao(outsourcePersonSalaryCommitYearAndMonth.value);
+  outsourceDetailStore.queryOutsourceShebaoCollect("",outsourcePersonSalaryCommitYearAndMonth.value);
 }
 </script>
 
@@ -145,7 +151,7 @@ const handleCommit = () => {
       .ant-tabs-tab {
         float: none !important;
       }
-      .ant-tabs-tab:nth-child(5) {
+      .ant-tabs-tab:nth-child(7) {
         margin-left: auto !important;
       }
     }

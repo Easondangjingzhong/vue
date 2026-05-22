@@ -475,6 +475,32 @@ export const useResumeDetailStore = defineStore('app-Resume',{
       return res;
     },
     /**
+     * 查询推荐职位查询兼职
+     * @returns
+     */
+    async queryRecommendCandidatePartTimePosition(data) {
+      this.recommendCandidatePositionSearch = data;
+      const formData = new FormData();
+      formData.append('page', data.page);
+      formData.append('recruitId', loginVueUser.loginId);
+      formData.append('recommendId', this.mappingId);
+      formData.append('city', data.city || '');
+      formData.append('brand', data.brand || '');
+      formData.append('positionsId', data.positionsId || '');
+      formData.append('jobTitle', data.positionsId || '');
+      formData.append('counselor', '');
+      formData.append('market', data.market || '');
+      formData.append('phone', this.resumeDetail.resume.phoneNum);
+      formData.append('companyRecruitId', data.companyRecruitId || '');
+      formData.append('isTask', data.isTask || '');
+      formData.append('year', data.year || '');
+      formData.append('month', data.month || '');
+      formData.append('weekNum', data.weekNum || '');
+      formData.append('jobType', data.jobType || '');
+      const res = await fetchApi.queryRecommendCandidatePartTimePosition(formData);
+      return res;
+    },
+    /**
      * 根据当前日期查询所属周度
      * @returns
      */

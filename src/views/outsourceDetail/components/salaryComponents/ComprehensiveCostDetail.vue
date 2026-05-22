@@ -452,9 +452,9 @@ const costDetailFormPerformanceDetail = () => {
     costDetailForm.value.manageGongShi = temp?.manageGongShi || "";
     costDetailForm.value.companyYijin = sheBao?.yijinCompany?.toString() || "0";
     costDetailForm.value.welfare = temp?.welfare || "0";
-    costDetailForm.value.keShangbao = (temp?.keShangbao || temp.keShangbao == "0") ? temp?.keShangbao : sheBao?.keShangbao?.toString();
+    costDetailForm.value.keShangbao = (temp?.keShangbao) ? temp?.keShangbao : sheBao?.keShangbao?.toString();
     costDetailForm.value.otherPayKe = temp?.otherPayKe || "0";
-    costDetailForm.value.shiShangbao = (temp?.shiShangbao || temp.shiShangbao == "0") ? temp?.shiShangbao : sheBao?.shiShangbao?.toString();
+    costDetailForm.value.shiShangbao = (temp?.shiShangbao) ? temp?.shiShangbao : sheBao?.shiShangbao?.toString();
     costDetailForm.value.otherPay = temp?.otherPay || "0";
 
     costDetailForm.value.canBaoKe = (temp?.canBaoKe || temp.canBaoKe == "0") && temp?.sign == '2' ? temp?.canBaoKe : ((temp?.monthTax && temp?.jobType == '全职') ? ((Number(temp.monthTax || 0) * 0.015) < 0 ? "0" : (Number(temp.monthTax || 0) * 0.015).toFixed(2)): "0");
@@ -465,7 +465,7 @@ const costDetailFormPerformanceDetail = () => {
       广州、杭州：应发工资*1.35%；
       其他城市（北京博瑞和北京我推发薪）：实发薪资*1.5%
      */
-    if (temp?.canBao || temp.canBao == "0") {
+    if (temp?.canBao) {
       costDetailForm.value.canBao = temp?.canBao || "0";
     } else if(temp?.city == '上海' || temp?.city == '深圳') {
       costDetailForm.value.canBao = Number(sheBao?.canbaoMoney || "0").toFixed(2) || "0";

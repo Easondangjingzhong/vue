@@ -18,6 +18,10 @@ export const companyJiaoOption = [
    {
     label: '苏州锐特',
     value: '5',
+  }, 
+   {
+    label: '天津博瑞',
+    value: '6',
   },  
 ]
 export const shebaoCompanyOption = [
@@ -40,6 +44,10 @@ export const shebaoCompanyOption = [
    {
     label: '苏州锐特',
     value: '苏州锐特',
+  },
+  {
+    label: '天津博瑞',
+    value: '天津博瑞',
   },
 ]
 export const cycleFormulaOption = [
