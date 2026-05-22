@@ -1759,7 +1759,8 @@ const newJoinerPersonalInformationForm = ref({
 const headPhotoDataUrl = ref<string>('');
 const generatedPdfFile = ref<File | null>(null);
 watch(newJoinerPersonalInformationFormTemp, (newVal) => {
-  if (newVal) {
+  outsourceDetailStore.queryOutsourceSalaryByPersonId(newVal.id?.toString()).then(() => {
+    if (newVal) {
     newJoinerPersonalInformationForm.value.id = newVal.id;
     newJoinerPersonalInformationForm.value.position = newVal.positions;
     newJoinerPersonalInformationForm.value.userNameCn = newVal.userNameCn;
@@ -1771,12 +1772,17 @@ watch(newJoinerPersonalInformationFormTemp, (newVal) => {
     newJoinerPersonalInformationForm.value.city = newVal.city;
     newJoinerPersonalInformationForm.value.jobType = newVal.jobType;
     offerInformationForm.value.startTime = newVal?.planEntryTime ? newVal?.planEntryTime : "";
+    offerInformationForm.value.signingDeadline = newVal?.planEntryTime ? newVal?.planEntryTime : "";
+    console.log(getOutsourceSalaryDetailList.value)
     if (newVal.jobType == '兼职') {
       offerInformationForm.value.offerType = '兼职合同';
       jianzhiSalary.value = Number(newVal?.salaryStructure?.split("/")[0] || 0);
       handleJianzhiSalaryChange();
     } else {
-      offerInformationForm.value.basicSalary = newVal?.salaryStructure?.split("/")[0] ? Number(newVal?.salaryStructure?.split("/")[0]).toFixed(0):  "0";
+      //offerInformationForm.value.basicSalary = newVal?.salaryStructure?.split("/")[0] ? Number(newVal?.salaryStructure?.split("/")[0]).toFixed(0):  "0";
+      offerInformationForm.value.basicSalary = getOutsourceSalaryDetailList?.value[0]?.dixin || "0";
+      offerInformationForm.value.allowance = getOutsourceSalaryDetailList?.value[0]?.jintie || "0";
+      offerInformationForm.value.basicSalaryAfterRate = Number(getOutsourceSalaryDetailList?.value[0]?.dixin || "0");
     }
     // newJoinerPersonalInformationForm.value.department = newVal.department;
     newJoinerPersonalInformationForm.value.placeOfBirth = newVal.placeOfBirth;
@@ -1819,6 +1825,7 @@ watch(newJoinerPersonalInformationFormTemp, (newVal) => {
       });
     }
   }
+  });
 })
 const offerSignCompanyOptions = ref([
   {value: '北京博瑞智捷企业咨询有限公司', label: '北京博瑞'},

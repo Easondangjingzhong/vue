@@ -1,13 +1,13 @@
 <template>
-    <a-table
-        class="salary-table"
-        size="small"
-        :columns="columns"
-        :pagination="false"
-        :dataSource="getOfferOutsourceMonthSalary"
-        :scroll="{ x: 5200 }"
-      >
-      <!-- <template #summary>
+  <a-table
+    class="salary-table"
+    size="small"
+    :columns="columns"
+    :pagination="false"
+    :dataSource="getOfferOutsourceMonthSalary"
+    :scroll="{ x: 2300 }"
+  >
+    <!-- <template #summary>
       <a-table-summary fixed>
         <a-table-summary-row>
           <a-table-summary-cell :index="0"></a-table-summary-cell>
@@ -69,16 +69,17 @@
         </a-table-summary-row>
       </a-table-summary>
       </template> -->
-    </a-table>
+  </a-table>
 </template>
 
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
-import type { TableColumnsType } from 'ant-design-vue';
-import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
-const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { getOfferOutsourceMonthSalary, getFormStatePersonMoney, getOutsourceSalaryColumnsSalary } = storeToRefs(outsourceDetailStore);
-const defaultColumns = computed<TableColumnsType>(() => [
+  import { storeToRefs } from 'pinia';
+  import type { TableColumnsType } from 'ant-design-vue';
+  import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
+  const outsourceDetailStore = useOutsourceDetailStoreWithOut();
+  const { getOfferOutsourceMonthSalary, getFormStatePersonMoney, getOutsourceSalaryColumnsSalary } =
+    storeToRefs(outsourceDetailStore);
+  const defaultColumns = computed<TableColumnsType>(() => [
     {
       title: '序号',
       dataIndex: 'index',
@@ -174,8 +175,8 @@ const defaultColumns = computed<TableColumnsType>(() => [
     },
     {
       title: '计薪日期',
-      dataIndex: 'jinxinMonthDetail',
-      key: 'jinxinMonthDetail',
+      dataIndex: 'jinxinMonth',
+      key: 'jinxinMonth',
     },
     {
       title: '实际出勤工时',
@@ -240,25 +241,25 @@ const defaultColumns = computed<TableColumnsType>(() => [
       key: 'holidayOverHours',
       width: 120,
     },
-     {
+    {
       title: '休息加班',
       dataIndex: 'restOverHours',
       key: 'restOverHours',
       width: 70,
     },
-         {
-          title: '工作日加班工时',
-          dataIndex: 'overHours',
-          key: 'overHours',
-          width: 100,
-        },
-        
-             {
-              title: '加班工资',
-              dataIndex: 'jiabanSalary',
-              key: 'jiabanSalary',
-              width: 70,
-            },
+    {
+      title: '工作日加班工时',
+      dataIndex: 'overHours',
+      key: 'overHours',
+      width: 100,
+    },
+
+    {
+      title: '加班工资',
+      dataIndex: 'jiabanSalary',
+      key: 'jiabanSalary',
+      width: 70,
+    },
     {
       title: '迟到',
       dataIndex: 'chidao',
@@ -302,12 +303,12 @@ const defaultColumns = computed<TableColumnsType>(() => [
       key: 'chuqinSalary',
       width: 70,
     },
-         {
-          title: '津贴',
-          dataIndex: 'jintie',
-          key: 'jintie',
-          width: 70,
-        },
+    {
+      title: '津贴',
+      dataIndex: 'jintie',
+      key: 'jintie',
+      width: 70,
+    },
     {
       title: '个人销售奖金',
       dataIndex: 'geti',
@@ -331,37 +332,37 @@ const defaultColumns = computed<TableColumnsType>(() => [
       key: 'jili',
       width: 80,
     },
-        {
-          title: '保底奖金',
-          dataIndex: 'baodiJiangjin',
-          key: 'baodiJiangjin',
-          width: 70,
-        },
+    {
+      title: '保底奖金',
+      dataIndex: 'baodiJiangjin',
+      key: 'baodiJiangjin',
+      width: 70,
+    },
     {
       title: '十三薪',
       dataIndex: 'thirteenthSalary',
       key: 'thirteenthSalary',
       width: 70,
     },
-     {
+    {
       title: '年终奖金',
       dataIndex: 'yearEndBouns',
       key: 'yearEndBouns',
       width: 70,
     },
-         {
-          title: '奖金总计',
-          dataIndex: 'jiangjinTotal',
-          key: 'jiangjinTotal',
-          width: 70,
-        },
-        
-             {
-              title: '计税不发薪项',
-              dataIndex: 'jishuiBufa',
-              key: 'jishuiBufa',
-              width: 100,
-            },
+    {
+      title: '奖金总计',
+      dataIndex: 'jiangjinTotal',
+      key: 'jiangjinTotal',
+      width: 70,
+    },
+
+    {
+      title: '计税不发薪项',
+      dataIndex: 'jishuiBufa',
+      key: 'jishuiBufa',
+      width: 100,
+    },
     {
       title: '基础工资调差',
       dataIndex: 'salaryTiaocha',
@@ -379,23 +380,23 @@ const defaultColumns = computed<TableColumnsType>(() => [
       key: 'quanqinTiaocha',
     },
     {
-          title: '其他费用',
-          dataIndex: 'otherPayKe',
-          key: 'otherPayKe',
-          width: 70,
-        },
-        {
-              title: '员工福利',
-              dataIndex: 'welfareKe',
-              key: 'welfareKe',
-              width: 70,
-            },
-     {
-          title: '津贴调差',
-          dataIndex: 'jintieTiaocha',
-          key: 'jintieTiaocha',
-          width: 70,
-        },
+      title: '其他费用',
+      dataIndex: 'otherPayKe',
+      key: 'otherPayKe',
+      width: 70,
+    },
+    {
+      title: '员工福利',
+      dataIndex: 'welfareKe',
+      key: 'welfareKe',
+      width: 70,
+    },
+    {
+      title: '津贴调差',
+      dataIndex: 'jintieTiaocha',
+      key: 'jintieTiaocha',
+      width: 70,
+    },
     {
       title: '差异调整合计',
       dataIndex: 'tiaochaTotal',
@@ -555,36 +556,42 @@ const defaultColumns = computed<TableColumnsType>(() => [
   const columns = computed(() => {
     const saved = getOutsourceSalaryColumnsSalary.value;
     if (saved && saved.length > 0) {
-      const savedMap = new Map(saved.map((c: any) => [c.key, c]));
-      return defaultColumns.value.map((col: any) => {
-        const s = savedMap.get(col.key);
-        if (s) {
-          // If saved, use saved title and visibility
+      const defaultMap = new Map(defaultColumns.value.map((c: any) => [c.key, c]));
+      const usedKeys = new Set<string>();
+      const ordered = saved
+        .map((s: any) => {
+          const base = defaultMap.get(s.key);
+          if (!base) return null;
+          usedKeys.add(String(s.key));
           if (s.show === false) return null;
-          return { ...col,
-             title: s.rowOther || s.rowName,
-             width: s.width || col.width,
-             fixed: s.fixed || col.fixed,
-             key: s.key,
-             dataIndex: s.key,
-             ellipsis: true,
+          const savedWidth = Number(s.width);
+          return {
+            ...base,
+            title: s.rowOther || s.rowName || base.title,
+            width: Number.isFinite(savedWidth) ? savedWidth : base.width,
+            fixed: s.fixed || base.fixed,
+            key: s.key,
+            dataIndex: s.key,
+            ellipsis: true,
           };
-        }
-        // If not in saved list, keep it default
-        return col;
-      }).filter((c: any) => c !== null);
+        })
+        .filter((c: any) => c !== null);
+
+      const rest = defaultColumns.value.filter((c: any) => !usedKeys.has(String(c.key)));
+      return [...ordered, ...rest];
     }
     return defaultColumns.value;
   });
-  watch(() => getFormStatePersonMoney.value.currentMonth, () => {
-     // Trigger re-computation if month changes
-  });
   // Watch company name to load config
-  watch(() => outsourceDetailStore.formStatePersonMoney.companyName, (val) => {
-    if (val) {
-      outsourceDetailStore.queryOutsourceCompanyExcel(val);
-    }
-  }, { immediate: true });
+  watch(
+    () => outsourceDetailStore.formStatePersonMoney.companyName,
+    (val) => {
+      if (val) {
+        outsourceDetailStore.queryOutsourceCompanyExcel(val);
+      }
+    },
+    { immediate: true },
+  );
 
   const summaryData = computed(() => {
     let yuguGongshi = 0;
@@ -727,12 +734,12 @@ const defaultColumns = computed<TableColumnsType>(() => [
 </script>
 
 <style lang="less" scoped>
-.salary-table :deep(.ant-table-thead > tr > th) {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  line-height: 22px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+  .salary-table :deep(.ant-table-thead > tr > th) {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    line-height: 22px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 </style>
