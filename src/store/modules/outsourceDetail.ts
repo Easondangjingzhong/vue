@@ -179,6 +179,9 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     outsourcePersonSalaryCommitCollectSheBao: [] as any[], //工资社保
     outsourcePersonSalaryCommitYearAndMonth: '' as string, //发薪月
     outsourceSalaryPurchaseList: [] as any[], //工资社保
+    outsourceAttendZhixingMonth: [] as any[], //执行月出勤
+    outsourceYeJiZhixingMonth: [] as any[], //执行月业绩
+    outsourceQingKuanZhixingMonth: [] as any[], //执行月请款
     pageOutsourceSalaryPurchaseList: {
       pageNumber: 1,
       pageSize: 13,
@@ -661,6 +664,8 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
             }
           }
         }
+        const sheBaoMoneyPersonValue =
+          Number(item.monthShebao || 0) + Number(item.yijin || 0);
         const sheBaoMoneyValue =
           Number(item.companyShebaoKe || 0) + Number(item.companyYijinKe || 0);
         const canBaoMoneyValue = Number(item.canBaoKe || 0);
@@ -694,7 +699,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         const rateValue = parseRateFromManageGongShi(item.manageGongShi);
         const serviceFeeValue = Number(item.manageChargeAfter || 0);
         const shangbaoValue = Number(item.keShangbao || 0);
-        const salaryTaxValue = personCostValue + serviceFeeValue + shangbaoValue  + Number(item.chenbenTiaochaKe || 0);
+        const salaryTaxValue = personCostValue + serviceFeeValue + shangbaoValue  + Number(item.chenbenTiaochaKe || 0)+ Number(item.otherPayKe || 0);
         const allHours = (
           parseFloat(item.currentMonthShiHours || '0') +
           parseFloat(item.overHours || '0') +
@@ -746,6 +751,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           overHoursTotal: overHoursTotal,
           jinxinMonth,
           jinxinMonthDetail: item.jinxinMonth,
+          monthShebao: parseFloat(sheBaoMoneyPersonValue.toString()).toFixed(2),
           sheBaoMoney: parseFloat(sheBaoMoneyValue.toString()).toFixed(2),
           canBaoMoney: parseFloat(canBaoMoneyValue.toString()).toFixed(2),
           personCost: parseFloat(personCostValue.toString()).toFixed(2),
@@ -1044,6 +1050,25 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         applyTime: item.applyTime ? formatToDate(item.applyTime) : '',
         ticketReturnTime: item.ticketReturnTime ? formatToDate(item.ticketReturnTime) : '',
       })),
+    getOutsourceAttendZhixingMonth: (state) =>
+      state.outsourceAttendZhixingMonth.map((item, index) => ({
+        ...item,
+        index: (index + 1),
+      }
+    )),
+    getOutsourceYeJiZhixingMonth: (state) =>
+      state.outsourceYeJiZhixingMonth.map((item, index) => ({
+        ...item,
+        index: (index + 1),
+      }
+    )),
+    getOutsourceQingKuanZhixingMonth: (state) =>
+      state.outsourceQingKuanZhixingMonth.map((item, index) => ({
+        ...item,
+        index: (index + 1),
+        xinZiRi: item.xinZiRi ? item.xinZiRi.split('-')[1] : '',
+      }
+    )),
   },
   actions: {
     /**
@@ -3038,6 +3063,121 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         const params = new FormData();
         params.append('yearAndMonth', yearAndMonth || '');
         const res = await fetchApi.queryOutsourceSalaryOfferMonthCompanyBrand(params);
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+    /**
+     * 执行月查询查询外包出勤
+     * @param zhixingMonth
+     * @returns
+     */
+    async queryOutsourceAttendZhixingMonth(zhixingMonth: string) {
+      try {
+        const params = new FormData();
+        params.append('zhixingMonth', zhixingMonth || '');
+        const res = await fetchApi.queryOutsourceAttendZhixingMonth(params);
+         if (res.code === 1) {
+          this.outsourceAttendZhixingMonth = res.info || [];
+        }
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+     /**
+     * 执行月查询查询外包业绩
+     * @param zhixingMonth
+     * @returns
+     */
+    async queryOutsourceYeJiZhixingMonth(zhixingMonth: string) {
+      try {
+        const params = new FormData();
+        params.append('zhixingMonth', zhixingMonth || '');
+        const res = await fetchApi.queryOutsourceYeJiZhixingMonth(params);
+         if (res.code === 1) {
+          this.outsourceYeJiZhixingMonth = res.info || [];
+        }
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+    /**
+     * 执行月查询查询外包业绩
+     * @param zhixingMonth
+     * @returns
+     */
+    async queryOutsourceQingKuanZhixingMonth(zhixingMonth: string) {
+      try {
+        const params = new FormData();
+        params.append('zhixingMonth', zhixingMonth || '');
+        const res = await fetchApi.queryOutsourceQingKuanZhixingMonth(params);
+         if (res.code === 1) {
+          this.outsourceQingKuanZhixingMonth = res.info || [];
+        }
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+     /**
+     * 执行月账单发送HR
+     * @param collectId
+     * @param sendHr
+     * @param sendTime
+     * @returns
+     */
+    async queryOutsourceQingKuanSendHR(collectId: string, sendHr: string, sendTime: string) {
+      try {
+        const params = new FormData();
+        params.append('collectId', collectId || '');
+        params.append('sendHr', sendHr || '');
+        params.append('sendTime', sendTime || '');
+        const res = await fetchApi.queryOutsourceQingKuanSendHR(params);
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+     /**
+     * 执行月账单HR确认
+     * @param collectId
+     * @param hrSure
+     * @param sureTime
+     * @returns
+     */
+    async queryOutsourceQingKuanHrConfirm(collectId: string, hrSure: string, sureTime: string) {
+      try {
+        const params = new FormData();
+        params.append('collectId', collectId || '');
+        params.append('hrSure', hrSure || '');
+        params.append('sureTime', sureTime || '');
+        const res = await fetchApi.queryOutsourceQingKuanHrConfirm(params);
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+     /**
+     * 执行月账更新账单
+     * @param companyName
+     * @param zhanDanMonth
+     * @param zhixingMonth
+     * @param xinZiRi
+     * @param jobType
+     * @returns
+     */
+    async queryOutsourceQingKuanZhandan(companyName: string, zhanDanMonth: string, zhixingMonth: string, xinZiRi: string, jobType: string) {
+      try {
+        const params = new FormData();
+        params.append('companyName', companyName || '');
+        params.append('zhanDanMonth', zhanDanMonth || '');
+        params.append('zhixingMonth', zhixingMonth || '');
+        params.append('xinZiRi', xinZiRi || '');
+        params.append('jobType', jobType || '');
+        const res = await fetchApi.queryOutsourceQingKuanZhandan(params);
         return res;
       } catch (error) {
         return null;

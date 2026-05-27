@@ -214,6 +214,10 @@ const signCompanyOption = ref([
     label: '北京我推',
     value: '北京我推',
   },
+  {
+    label: '天津博瑞',
+    value: '天津博瑞',
+  },
 ]);
 const contractCycleOption = ref([
   {

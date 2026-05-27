@@ -453,22 +453,6 @@ const defaultColumnsSalary = [
       width: 80,
     },
     {
-      rowName: '上月正常加班（小时）',
-      rowOther: '上月正常加班（小时）',
-      show: true,
-      key: 'zhengchangJiaban',
-      fixed: '',
-      width: 140,
-    },
-    {
-      rowName: '上月法定假期加班（小时）',
-      rowOther: '上月法定假期加班（小时）',
-      show: true,
-      key: 'fadingJiaban',
-      fixed: '',
-      width: 160,
-    },
-    {
       rowName: '上月预估出勤',
       rowOther: '上月预估出勤',
       show: true,
@@ -616,7 +600,7 @@ const defaultColumnsSalary = [
       rowName: '达成奖金激励',
       rowOther: '达成奖金激励',
       show: true,
-      key: 'jili',
+      key: 'dacheng',
       fixed: '',
       width: 80,
     },
@@ -848,7 +832,7 @@ const defaultColumnsSalary = [
       rowName: '免征额',
       rowOther: '免征额',
       show: true,
-      key: 'yearMianzheng',
+      key: 'monthMianzheng',
       fixed: '',
       width: 80,
     },
@@ -1536,33 +1520,9 @@ const defaultColumnsSheBao = [
       width: 50,
     },
      {
-      rowName: '项目',
-      rowOther: '项目',
-      key: 'companyName',
-      fixed: '',
-      show: true,
-      width: 50,
-    },
-     {
       rowName: '姓名',
       rowOther: '姓名',
       key: 'userNameCn',
-      fixed: '',
-      show: true,
-      width: 50,
-    },
-     {
-      rowName: '职位',
-      rowOther: '职位',
-      key: 'positions',
-      fixed: '',
-      show: true,
-      width: 50,
-    },
-     {
-      rowName: '身份证号',
-      rowOther: '身份证号',
-      key: 'idCard',
       fixed: '',
       show: true,
       width: 50,
@@ -1573,7 +1533,135 @@ const defaultColumnsSheBao = [
       key: 'yearAndMonth',
       fixed: '',
       show: true,
-      width: 50,
+      width: 80,
+    },
+    {
+      rowName: '养老基数',
+      rowOther: '养老基数',
+      key: 'yanglaoCompanyJishu',
+      fixed: '',
+      show: true,
+      width: 80,
+    },
+    {
+      rowName: '养老单位',
+      rowOther: '养老单位',
+      key: 'yanglaoCompany',
+      fixed: '',
+      show: true,
+      width: 80,
+    },
+    {
+      rowName: '养老个人',
+      rowOther: '养老个人',
+      key: 'yanglaoPerson',
+      fixed: '',
+      show: true,
+      width: 80,
+    },
+    {
+      rowName: '失业基数',
+      rowOther: '失业基数',
+      key: 'shiyeCompanyJishu',
+      fixed: '',
+      show: true,
+      width: 80,
+    },
+    {
+      rowName: '失业单位',
+      rowOther: '失业单位',
+      key: 'shiyeCompany',
+      fixed: '',
+      show: true,
+      width: 80,
+    },
+    {
+      rowName: '失业个人',
+      rowOther: '失业个人',
+      key: 'shiyePerson',
+      fixed: '',
+      show: true,
+      width: 80,
+    },
+    {
+      rowName: '医疗基数',
+      rowOther: '医疗基数',
+      key: 'yiliaoCompanyJishu',
+      fixed: '',
+      show: true,
+      width: 80,
+    },
+    {
+      rowName: '医疗单位',
+      rowOther: '医疗单位',
+      key: 'yiliaoCompany',
+      fixed: '',
+      show: true,
+      width: 80,
+    },
+    {
+      rowName: '医疗个人',
+      rowOther: '医疗个人',
+      key: 'yiliaoPerson',
+      fixed: '',
+      show: true,
+      width: 80,
+    },
+    {
+      rowName: '大病基数',
+      rowOther: '大病基数',
+      key: 'dabingCompanyJishu',
+      fixed: '',
+      show: true,
+      width: 80,
+    },
+    {
+      rowName: '大病单位',
+      rowOther: '大病单位',
+      key: 'dabingCompany',
+      fixed: '',
+      show: true,
+      width: 80,
+    },
+    {
+      rowName: '大病个人',
+      rowOther: '大病个人',
+      key: 'dabingPerson',
+      fixed: '',
+      show: true,
+      width: 80,
+    },
+    {
+      rowName: '工伤基数',
+      rowOther: '工伤基数',
+      key: 'gongshangJishu',
+      fixed: '',
+      show: true,
+      width: 80,
+    },
+    {
+      rowName: '工伤单位',
+      rowOther: '工伤单位',
+      key: 'gongshangCompany',
+      fixed: '',
+      show: true,
+      width: 80,
+    },
+    {
+      rowName: '生育基数',
+      rowOther: '生育基数',
+      key: 'shengyuJishu',
+      fixed: '',
+      show: true,
+      width: 80,
+    },
+    {
+      rowName: '生育单位',
+      rowOther: '生育单位',
+      key: 'shengyuCompany',
+      fixed: '',
+      show: true,
+      width: 80,
     },
      {
           rowName: '公积金基数',
@@ -1584,16 +1672,16 @@ const defaultColumnsSheBao = [
       width: 50,
         },
         {
-          rowName: '单位',
-          rowOther: '单位',
+          rowName: '公积金单位',
+          rowOther: '公积金单位',
           key: 'yijinCompany',
       fixed: '',
       show: true,
       width: 50,
         },
         {
-          rowName: '个人',
-          rowOther: '个人',
+          rowName: '公积金个人',
+          rowOther: '公积金个人',
           key: 'yijinPerson',
       fixed: '',
       show: true,
@@ -1605,7 +1693,7 @@ const defaultColumnsSheBao = [
       key: 'companyTotal',
       fixed: '',
       show: true,
-      width: 50,
+      width: 80,
     },
      {
       rowName: '个人合计',
@@ -1613,7 +1701,7 @@ const defaultColumnsSheBao = [
       key: 'personTotal',
       fixed: '',
       show: true,
-      width: 50,
+      width: 80,
     },
   ];
 const defaultColumnsSalaryCompanyJian = [
@@ -1938,7 +2026,7 @@ const defaultColumnsSalaryCompanyJian = [
       rowName: '达成奖金激励',
       rowOther: '达成奖金激励',
       show: false,
-      key: 'jili',
+      key: 'dacheng',
       fixed: '',
       width: 80,
     },
@@ -2162,7 +2250,7 @@ const defaultColumnsSalaryCompanyJian = [
       rowName: '免征额',
       rowOther: '免征额',
       show: true,
-      key: 'yearMianzheng',
+      key: 'monthMianzheng',
       fixed: '',
       width: 80,
     },
@@ -2570,7 +2658,7 @@ const defaultColumnsSalaryCompanyJian = [
       rowName: '达成奖金激励',
       rowOther: '达成奖金激励',
       show: false,
-      key: 'jili',
+      key: 'dacheng',
       fixed: '',
       width: 80,
     },
@@ -2794,7 +2882,7 @@ const defaultColumnsSalaryCompanyJian = [
       rowName: '免征额',
       rowOther: '免征额',
       show: false,
-      key: 'yearMianzheng',
+      key: 'monthMianzheng',
       fixed: '',
       width: 80,
     },
@@ -2887,7 +2975,7 @@ watch(outsourcePersonMoneyTitleFlag, async (val) => {
     const savedColumns = getOutsourceSalaryColumnsSalary.value;
     const savedColumnsQing = getOutsourceSalaryColumnsQing.value;
     const savedColumnsSheBao = getOutsourceSalaryColumnsSheBao.value;
-    if (false && savedColumns && savedColumns.length > 0) {
+    if (savedColumns && savedColumns.length > 0) {
       const defaultMap = new Map(defaultColumnsSalary.map(col => [col.key, col]));
       const usedKeys = new Set<string>();
       const ordered = savedColumns
@@ -3009,7 +3097,7 @@ watch(outsourcePersonMoneyTitleFlag, async (val) => {
             ...base,
             rowName: base.rowName,
             rowOther: saved?.rowOther ? saved.rowOther : base.rowOther,
-            show: saved ? saved.show : false, // Default to true if not saved
+            show: saved ? saved.show : true, // Default to true if not saved
             key: base.key,
             width: saved?.width ? saved.width : base.width,
             fixed: saved?.fixed ? saved.fixed : base.fixed,
@@ -3023,7 +3111,7 @@ watch(outsourcePersonMoneyTitleFlag, async (val) => {
           ...col,
           rowName: col.rowName,
           rowOther: col.rowOther,
-          show: false,
+          show: true,
           key: col.key,
           width: col.width,
           fixed: col.fixed,
@@ -3035,7 +3123,7 @@ watch(outsourcePersonMoneyTitleFlag, async (val) => {
         ...col,
         rowName: col.rowName,
         rowOther: col.rowOther,
-        show: false, // Default to true if not saved
+        show: true, // Default to true if not saved
         key: col.key,
         width: col.width,
         fixed: col.fixed
@@ -3085,8 +3173,8 @@ const handleSave = async () => {
   const res = await outsourceDetailStore.addOutsourceCompanyExcel(payload);
   if (res && res.code === 1) {
     outsourceDetailStore.outsourceSalaryColumnsQing = columnsToSaveQing;
-    outsourceDetailStore.outsourceSalaryColumnsSheBao = columnsToSave;
-    outsourceDetailStore.outsourceSalaryColumnsSalary = columnsToSaveSheBao;
+    outsourceDetailStore.outsourceSalaryColumnsSheBao = columnsToSaveSheBao;
+    outsourceDetailStore.outsourceSalaryColumnsSalary = columnsToSave;
     outsourcePersonMoneyTitleFlag.value = false;
   }
 };

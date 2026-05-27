@@ -20,13 +20,18 @@
                <a-tab-pane key="3" tab="社保">
                 <OutsourceSocialSecurityCollect />
               </a-tab-pane>
-              <a-tab-pane key="1" tab="考勤"></a-tab-pane>
+              <a-tab-pane key="1" tab="考勤">
+                <OutsourcePersonAttendZhiXing />
+              </a-tab-pane>
               <a-tab-pane key="4" tab="工资">
                  <OutsourcePersonSalaryCollect />
               </a-tab-pane>
-              <a-tab-pane key="6" tab="业绩"></a-tab-pane>
-              <a-tab-pane key="2" tab="账单"></a-tab-pane>
-              <a-tab-pane key="7" tab="回款"></a-tab-pane>
+              <a-tab-pane key="6" tab="业绩">
+                <OutsourcePersonYeJiZhiXing />
+              </a-tab-pane>
+              <a-tab-pane key="2" tab="账单">
+                 <OutsourcePersonQingKuanZhiXing />
+              </a-tab-pane>
               <a-tab-pane key="5" tab="采购">
                  <OutsourcePersonSalaryCaiGou />
               </a-tab-pane>
@@ -62,11 +67,23 @@ import OutsourcePersonSalarySheBao from './OutsourcePersonSalarySheBao.vue';
 import OutsourceSocialSecurityCollect from './OutsourceSocialSecurityCollect.vue';
 import OutsourcePersonSalaryCaiGou from './OutsourcePersonSalaryCaiGou.vue';
 import OutsourcePersonSalaryCollectDetails from './OutsourcePersonSalaryCollectDetails.vue';
+import OutsourcePersonAttendZhiXing from './OutsourcePersonAttendZhiXing.vue';
+import OutsourcePersonYeJiZhiXing from './OutsourcePersonYeJiZhiXing.vue';
+import OutsourcePersonQingKuanZhiXing from './OutsourcePersonQingKuanZhiXing.vue';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
 const { outsourcePersonSalaryCommitFlag, formStateMonthSalary, outsourcePersonSalaryCommitYearAndMonth } = storeToRefs(outsourceDetailStore);
 const drawerWidth = ref(Math.max(600, window.innerWidth * 0.9));
 const outsourceDetailMoneySider = ref('4');
 const handleChange = (key) => {
+  if (key == '1') {
+    outsourceDetailStore.queryOutsourceAttendZhixingMonth(outsourcePersonSalaryCommitYearAndMonth.value);
+  }
+  if (key == '2') {
+    outsourceDetailStore.queryOutsourceQingKuanZhixingMonth(outsourcePersonSalaryCommitYearAndMonth.value);
+  }
+  if (key == '6') {
+    outsourceDetailStore.queryOutsourceYeJiZhixingMonth(outsourcePersonSalaryCommitYearAndMonth.value);
+  }
   if (key == '3') {
     outsourceDetailStore.queryOutsourceShebaoCollect("",outsourcePersonSalaryCommitYearAndMonth.value);
     //outsourceDetailStore.queryOutsourceSalaryCommitCollectSheBao(outsourcePersonSalaryCommitYearAndMonth.value);
@@ -94,6 +111,9 @@ const handleCommit = () => {
   outsourceDetailStore.queryOutsourceSalaryCommit(outsourcePersonSalaryCommitYearAndMonth.value);
   outsourceDetailStore.queryOutsourceSalaryCommitCollectSheBao(outsourcePersonSalaryCommitYearAndMonth.value);
   outsourceDetailStore.queryOutsourceShebaoCollect("",outsourcePersonSalaryCommitYearAndMonth.value);
+  outsourceDetailStore.queryOutsourceAttendZhixingMonth(outsourcePersonSalaryCommitYearAndMonth.value);
+  outsourceDetailStore.queryOutsourceYeJiZhixingMonth(outsourcePersonSalaryCommitYearAndMonth.value);
+  outsourceDetailStore.queryOutsourceQingKuanZhixingMonth(outsourcePersonSalaryCommitYearAndMonth.value);
 }
 </script>
 
@@ -151,7 +171,7 @@ const handleCommit = () => {
       .ant-tabs-tab {
         float: none !important;
       }
-      .ant-tabs-tab:nth-child(7) {
+      .ant-tabs-tab:nth-child(6) {
         margin-left: auto !important;
       }
     }

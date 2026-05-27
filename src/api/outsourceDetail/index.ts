@@ -87,7 +87,63 @@ enum URL {
   query_outsource_attend_month_company_brand = '/candidateRecommend/resume-vue-select-out-attend-Month-CompanyAndBrand.action',
   query_outsource_salary_month_company_brand = '/candidateRecommend/resume-vue-select-out-MonthSalary-CompanyAndBrand.action',
   query_outsource_salary_offer_month_company_brand = '/candidateRecommend/resume-vue-select-out-MonthSalary-Offer-CompanyAndBrand.action',
+  query_outsource_yeji_zhixing_month = '/candidateRecommend/resume-vue-select-out-Yeji-zhixingMonth.action',
+  query_outsource_attend_zhixing_month = '/candidateRecommend/resume-vue-select-out-attend-zhixing-month.action',
+  query_outsource_qingkuan_zhixing_month = '/candidateRecommend/resume-vue-select-out-MonthQingkuan-zhixingMonth.action',
+  query_outsource_qingkuan_sendHR = '/candidateRecommend/resume-vue-update-out-MonthQingkuan-SendHR.action',
+  query_outsource_qingkuan_hr_confirm = '/candidateRecommend/resume-vue-update-out-MonthQingkuan-HrSUre.action',
+  query_outsource_qingkuan_zhandan = '/candidateRecommend/resume-vue-insert-out-MonthQingkuan-Zhandan.action',
 }
+/**
+ * 执行月账单发送HR
+ * @param collectId
+ * @param sendHr
+ * @param sendTime
+ * @returns
+ */
+const queryOutsourceQingKuanSendHR= async (data: any) =>
+  post<any>({ url: URL.query_outsource_qingkuan_sendHR, data});
+/**
+ * 执行月账单HR确认
+ * @param collectId
+ * @param hrSure
+ * @param sureTime
+ * @returns
+ */
+const queryOutsourceQingKuanHrConfirm= async (data: any) =>
+  post<any>({ url: URL.query_outsource_qingkuan_hr_confirm, data});
+/**
+ * 执行月账更新账单
+ * @param companyName
+ * @param zhanDanMonth
+ * @param zhixingMonth
+ * @param xinZiRi
+ * @param jobType
+ * @returns
+ */
+const queryOutsourceQingKuanZhandan= async (data: any) =>
+  post<any>({ url: URL.query_outsource_qingkuan_zhandan, data});
+/**
+ * 执行月查询查询外包账单
+ * @param zhixingMonth
+ * @returns
+ */
+const queryOutsourceQingKuanZhixingMonth= async (data: any) =>
+  post<any>({ url: URL.query_outsource_qingkuan_zhixing_month, data});
+/**
+ * 执行月查询查询外包出勤
+ * @param zhixingMonth
+ * @returns
+ */
+const queryOutsourceAttendZhixingMonth= async (data: any) =>
+  post<any>({ url: URL.query_outsource_attend_zhixing_month, data});
+/**
+ * 执行月查询查询外包业绩
+ * @param zhixingMonth
+ * @returns
+ */
+const queryOutsourceYeJiZhixingMonth= async (data: any) =>
+  post<any>({ url: URL.query_outsource_yeji_zhixing_month, data});
 /**
  * 月度业绩搜索条件公司品牌
  * @param yearAndMonth
@@ -717,6 +773,12 @@ const queryOutsourceMonthSalaryOffer = async (data: any) =>
   post<any>({ url: URL.query_outsource_month_salary_offer, data });
 
 export default {
+  queryOutsourceQingKuanSendHR,
+  queryOutsourceQingKuanHrConfirm,
+  queryOutsourceQingKuanZhandan,
+  queryOutsourceQingKuanZhixingMonth,
+  queryOutsourceAttendZhixingMonth,
+  queryOutsourceYeJiZhixingMonth,
   queryOutsourceSalaryOfferMonthCompanyBrand,
   queryOutsourceSalaryMonthCompanyBrand,
   queryOutsourceAttendMonthCompanyBrand,

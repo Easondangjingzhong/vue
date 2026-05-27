@@ -4,6 +4,7 @@
         :columns="columns"
         :pagination="false"
         :data-source="getOfferOutsourceSheBao"
+        :scroll="{ x: 2200 }"
       >
     </a-table>
 </template>
@@ -19,39 +20,140 @@ const defaultColumns = computed<TableColumnsType>(() => [
       title: '序号',
       dataIndex: 'index',
       key: 'index',
+      fixed: 'left',
     },
     {
       title: '城市',
       dataIndex: 'city',
       key: 'city',
-    },
-     {
-      title: '项目',
-      dataIndex: 'companyName',
-      key: 'companyName',
+      fixed: 'left',
     },
      {
       title: '姓名',
       dataIndex: 'userNameCn',
       key: 'userNameCn',
-    },
-     {
-      title: '职位',
-      dataIndex: 'positions',
-      key: 'positions',
-      ellipsis: true,
-    },
-     {
-      title: '身份证号',
-      dataIndex: 'idCard',
-      key: 'idCard',
+      fixed: 'left',
     },
      {
       title: '缴费月份',
       dataIndex: 'yearAndMonth',
       key: 'yearAndMonth',
+      fixed: 'left',
     },
      {
+      title: '养老保险',
+      children: [
+        {
+          title: '养老基数',
+          dataIndex: 'yanglaoCompanyJishu',
+          key: 'yanglaoCompanyJishu',
+        },
+        {
+          title: '单位',
+          dataIndex: 'yanglaoCompany',
+          key: 'yanglaoCompany',
+        },
+        {
+          title: '个人',
+          dataIndex: 'yanglaoPerson',
+          key: 'yanglaoPerson',
+        },
+      ],
+    },
+     {
+      title: '失业保险',
+      children: [
+        {
+          title: '失业基数',
+          dataIndex: 'shiyeCompanyJishu',
+          key: 'shiyeCompanyJishu',
+        },
+        {
+          title: '单位',
+          dataIndex: 'shiyeCompany',
+          key: 'shiyeCompany',
+        },
+        {
+          title: '个人',
+          dataIndex: 'shiyePerson',
+          key: 'shiyePerson',
+        },
+      ]
+     },
+    {
+      title: '医疗保险',
+      children: [
+        {
+          title: '医疗基数',
+          dataIndex: 'yiliaoCompanyJishu',
+          key: 'yiliaoCompanyJishu',
+        },
+        {
+          title: '单位',
+          dataIndex: 'yiliaoCompany',
+          key: 'yiliaoCompany',
+        },
+        {
+          title: '个人',
+          dataIndex: 'yiliaoPerson',
+          key: 'yiliaoPerson',
+        },
+      ]
+    },  
+      {
+      title: '大病救助保险',
+      children: [
+        {
+          title: '大病基数',
+          dataIndex: 'dabingCompanyJishu',
+          key: 'dabingCompanyJishu',
+        },
+        {
+          title: '单位',
+          dataIndex: 'dabingCompany',
+          key: 'dabingCompany',
+        },
+        {
+          title: '个人',
+          dataIndex: 'dabingPerson',
+          key: 'dabingPerson',
+        },
+      ],
+      },
+      {
+      title: '工伤保险',
+      children: [
+        {
+          title: '工伤基数',
+          dataIndex: 'gongshangJishu',
+          key: 'gongshangJishu',
+        },
+        {
+          title: '单位',
+          dataIndex: 'gongshangCompany',
+          key: 'gongshangCompany',
+        },
+      ],
+      },  
+      {
+      title: '生育保险',
+      children: [
+        {
+          title: '生育基数',
+          dataIndex: 'shengyuJishu',
+          key: 'shengyuJishu',
+        },
+        {
+          title: '单位',
+          dataIndex: 'shengyuCompany',
+          key: 'shengyuCompany',
+        },
+      ],
+      },  
+      {
+      title: '住房公积金',
+      children: [
+        {
           title: '公积金基数',
           dataIndex: 'yijinCompanyJishu',
           key: 'yijinCompanyJishu',
@@ -66,6 +168,8 @@ const defaultColumns = computed<TableColumnsType>(() => [
           dataIndex: 'yijinPerson',
           key: 'yijinPerson',
         },
+      ],
+      },    
      {
       title: '单位合计',
       dataIndex: 'companyTotal',

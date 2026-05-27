@@ -206,18 +206,6 @@
       key: 'quanqin',
     },
     {
-      title: `${getFormStatePersonMoney.value?.lastMonth}月正常加班（小时）`,
-      dataIndex: 'zhengchangJiaban',
-      key: 'zhengchangJiaban',
-      width: 140,
-    },
-    {
-      title: `${getFormStatePersonMoney.value?.lastMonth}月法定假期加班（小时）`,
-      dataIndex: 'fadingJiaban',
-      key: 'fadingJiaban',
-      width: 160,
-    },
-    {
       title: `${getFormStatePersonMoney.value?.lastMonth}月加班工资`,
       dataIndex: 'jiabanSalary',
       key: 'jiabanSalary',
@@ -328,8 +316,8 @@
     },
     {
       title: '达成奖金激励',
-      dataIndex: 'jili',
-      key: 'jili',
+      dataIndex: 'dacheng',
+      key: 'dacheng',
       width: 80,
     },
     {
@@ -490,8 +478,8 @@
     },
     {
       title: '免征额',
-      dataIndex: 'yearMianzheng',
-      key: 'yearMianzheng',
+      dataIndex: 'monthMianzheng',
+      key: 'monthMianzheng',
     },
     {
       title: '累计应缴税金',
