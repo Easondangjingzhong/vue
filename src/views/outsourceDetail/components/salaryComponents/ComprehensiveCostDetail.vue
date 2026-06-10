@@ -456,8 +456,11 @@ const costDetailFormPerformanceDetail = () => {
     costDetailForm.value.otherPayKe = temp?.otherPayKe || "0";
     costDetailForm.value.shiShangbao = (temp?.shiShangbao) ? temp?.shiShangbao : sheBao?.shiShangbao?.toString();
     costDetailForm.value.otherPay = temp?.otherPay || "0";
-
-    costDetailForm.value.canBaoKe = (temp?.canBaoKe || temp.canBaoKe == "0") && temp?.sign == '2' ? temp?.canBaoKe : ((temp?.monthTax && temp?.jobType == '全职') ? ((Number(temp.monthTax || 0) * 0.015) < 0 ? "0" : (Number(temp.monthTax || 0) * 0.015).toFixed(2)): "0");
+if(temp.jobType == '全职') {
+costDetailForm.value.canBaoKe = (temp?.canBaoKe || temp.canBaoKe == "0") && temp?.sign == '2' ? temp?.canBaoKe : ((temp?.monthTax && temp?.jobType == '全职') ? ((Number(temp.monthTax || 0) * 0.015) < 0 ? "0" : (Number(temp.monthTax || 0) * 0.015).toFixed(2)): "0");
+} else {
+  costDetailForm.value.canBaoKe = "0";
+}
     /**
      * 公司账单-企业残保：
       上海：上海最低基数7460*1.35%；
@@ -465,7 +468,9 @@ const costDetailFormPerformanceDetail = () => {
       广州、杭州：应发工资*1.35%；
       其他城市（北京博瑞和北京我推发薪）：实发薪资*1.5%
      */
-    if (temp?.canBao) {
+    if(temp.jobType == '兼职') {
+costDetailForm.value.canBao = "0";
+    } else if (temp?.canBao || temp?.canBao == "0") {
       costDetailForm.value.canBao = temp?.canBao || "0";
     } else if(temp?.city == '上海' || temp?.city == '深圳') {
       costDetailForm.value.canBao = Number(sheBao?.canbaoMoney || "0").toFixed(2) || "0";
@@ -517,15 +522,18 @@ const costDetailFormPerformanceDetail = () => {
     costDetailForm.value.serviceMoney = temp?.serviceMoney;
     costDetailForm.value.buchangMonth = temp?.buchangMonth;
     costDetailForm.value.buchangHebing = temp?.buchangHebing;
-    if (!costDetailForm.value.serviceMoney && costDetailForm.value.serviceMoney != "0") {
+    if(temp.jobType == '兼职') {
+      costDetailForm.value.serviceMoney = "0";
+    } else if (!costDetailForm.value.serviceMoney && costDetailForm.value.serviceMoney != "0") {
       if (sheBao.shebaoCompany == "51社保") {
         //员工薪水=员工实发+个税 发薪服务费计算规则是：（员工实发+个税）*6.77%；
-        //costDetailForm.value.serviceMoney = (21.25 +(Number(sheBao?.companyTotal || 0) + Number(sheBao?.personTotal || 0))* 0.0677 + (Number(temp?.salaryAfterTax || 0) + Number(temp?.monthGeshui || 0)) * 0.0677).toFixed(2);
-        costDetailForm.value.serviceMoney = (21.25 + Number(sheBao?.serviceMoney || 0) + (Number(temp?.salaryAfterTax || 0) + Number(temp?.monthGeshui || 0)) * 0.0677).toFixed(2);
+        costDetailForm.value.serviceMoney = (21.25 +(Number(sheBao?.companyTotal || 0) + Number(sheBao?.personTotal || 0) + Number(temp?.salaryAfterTax || 0) + Number(temp?.monthGeshui || 0)) * 0.0077).toFixed(2);
+        //三方服务费=21.25+（（  五险一金 + 员工实发+个税）*0.77%)
+        //costDetailForm.value.serviceMoney = (21.25 + (Number(sheBao?.serviceMoney || 0) + Number(temp?.salaryAfterTax || 0) + Number(temp?.monthGeshui || 0)) * 0.0077).toFixed(2);
       } else {
         costDetailForm.value.serviceMoney = Number(sheBao?.serviceMoney || 0).toFixed(2);
       }
-    }
+   }
   }
 }
 watch(costDetailFlag,() => {
@@ -565,6 +573,8 @@ const handleManageGongShiChange = (val: string) => {
    * 加班差额(收税) = 加班总计
    * 税金 = 加班差额*6.72%
    * 总营收费 = 10000+请假差额+加班差额+加班差额*6.72%
+   * 税后可分管理 = 总营收费-人才支出-企业支出-税金
+   * 税金=总营收费/1.0672*0.0672
    * 总管理费=总营收费(税后)-人才支出-公司支出（五险一金+手续费）
    */
     const temp = getOutsourcePersonPerformanceDetail.value[0];
@@ -572,15 +582,21 @@ const handleManageGongShiChange = (val: string) => {
     const qingJiaCha = 10000 / 174 * (Number(attend.lastMonthShiHours || 0)-Number(attend.lastMonthYuHours || 0)-Number(attend.shijiaHours || 0)) - 10000 / 174 * Number(attend.daixinBingjiaHours || 0) * 0.4;
     const jiaBanCha = Number(temp.jiabanSalary || 0);
     const rateNum = Number(costDetailForm.value.manageChargeRate || 0);
-    //税金 = 加班差额*6.72%
-    costDetailForm.value.manageChargeTaxMoney = (jiaBanCha * rateNum).toFixed(2);
+    //税金 = 加班差额*6.72%(已废弃)
+    //costDetailForm.value.manageChargeTaxMoney = (jiaBanCha * rateNum).toFixed(2);
     //总营收费 = 10000+请假差额+加班差额+加班差额*6.72%
     costDetailForm.value.moneyCahrgeTax = (10000 + qingJiaCha + jiaBanCha + (jiaBanCha * rateNum)).toFixed(2);
+    //税金=总营收费/1.0672*0.0672
+    costDetailForm.value.manageChargeTaxMoney = ((Number(costDetailForm.value.moneyCahrgeTax || 0)/(1 + rateNum) * rateNum)).toFixed(2);
     //总管理费=总营收费(税后)-人才支出-公司支出（五险一金+手续费）
-    costDetailForm.value.manageChargeAfter = (Number(costDetailForm.value.moneyCahrgeTax || 0) / (1 + rateNum) - Number(costDetailForm.value.monthTax || 0) - Number(costDetailForm.value.serviceMoney || 0) - Number(costDetailForm.value.companyShebao || 0) - Number(costDetailForm.value.companyYijinKe || 0)).toFixed(2);
+    costDetailForm.value.manageChargeAfter = (Number(costDetailForm.value.moneyCahrgeTax || 0) / (1 + rateNum) - Number(costTotalke.value || 0)).toFixed(2);
     const after = Number(costDetailForm.value.manageChargeAfter || 0) * (1 + rateNum);
     costDetailForm.value.manageChargeTax = after.toFixed(2);
-    handleZhuanChargeTax();
+    //税后可分管理 = 总营收费-人才支出-企业支出-税金
+    costDetailForm.value.manageChargeAllocationAfter = (Number(costDetailForm.value.moneyCahrgeTax || 0) / (1 + rateNum) - Number(costTotal.value || 0)).toFixed(2);
+    //可分管理税前金额=可分管理费税后金额*(1+税率)
+    costDetailForm.value.manageChargeAllocationTax = (Number(costDetailForm.value.manageChargeAllocationAfter || 0) * (1 + Number(costDetailForm.value.manageChargeRate || 0))).toFixed(2);
+    //handleZhuanChargeTax();
   } else if (val === '标准工时*12元+国定加班*12元*3' && costDetailForm.value.companyName == "艾秘") {
   /**
    * 总管理费=标准工时*12元+国定加班*12元*3
@@ -602,12 +618,40 @@ const handleManageGongShiChange = (val: string) => {
       const restOverHours = Number(attend.restOverHours || 0);
       const totalHours = currentMonthShiHours + overHours + holidayOverHours + restOverHours;
       costDetailForm.value.manageChargeAfter = (totalHours * 5).toFixed(2);
+  } else if (val === '本月实际工时*70元' && costDetailForm.value.companyName == "之禾") {
+      /**
+       * 本月实际工时 = 本月实际 currentMonthShiHours+ 正常加班 overHours + 国定加班 holidayOverHours + 休息加班 restOverHours
+       * 总管理费=本月实际工时*70元
+       */
+      const attend = getOutsourcePersonPerformanceDetailAttendInfo.value[0];
+      const currentMonthShiHours = Number(attend.currentMonthShiHours || 0);
+      const overHours = Number(attend.overHours || 0);
+      const holidayOverHours = Number(attend.holidayOverHours || 0);
+      const restOverHours = Number(attend.restOverHours || 0);
+      const totalHours = currentMonthShiHours + overHours + holidayOverHours + restOverHours;
+      costDetailForm.value.manageChargeAfter = (totalHours * 70).toFixed(2);
+  } else if (val === '标准工时*40元+国定加班*40元*3' && costDetailForm.value.companyName == "高雅德") {
+      /**
+       * 本月实际工时 = 本月实际 currentMonthShiHours+ 正常加班 overHours + 国定加班 holidayOverHours + 休息加班 restOverHours
+       * 总管理费=标准工时*40元+国定加班*40元*3
+       */
+      const attend = getOutsourcePersonPerformanceDetailAttendInfo.value[0];
+      const currentMonthShiHours = Number(attend.currentMonthShiHours || 0);//标准工时
+      //const overHours = Number(attend.overHours || 0);
+      const holidayOverHours = Number(attend.holidayOverHours || 0);
+      //const restOverHours = Number(attend.restOverHours || 0);
+      //const totalHours = currentMonthShiHours + overHours + holidayOverHours + restOverHours;
+      costDetailForm.value.manageChargeAfter = (currentMonthShiHours * 40 + holidayOverHours * 40 * 3).toFixed(2);
   } else if (costDetailForm.value.companyName == "碧朗诗") {
       /**
        * 总管理费=固定收费500
        */
       costDetailForm.value.manageChargeAfter = "500";
     } else {
+      /**
+       * 客户用工成本:1.有员工福利时加上员工福利 2调差管理 和 商保管理 根据选择进行加减
+       * 总管理费=客户用工成本*税率
+       */
       if(val.includes("员工福利")) {
         costDetailForm.value.manageChargeAfter = ((Number(costTotalke.value || 0) - chenbenTiaochaKeTemp - keShangbaoTemp + Number(costDetailForm.value.welfareKe || 0)) * rate).toFixed(2);
       } else {
@@ -639,10 +683,12 @@ const handleZhuanChargeTax = () => {
   costDetailForm.value.zhuanChargeAfter = after.toFixed(2);
   //税前转换的税金 = 税前转换 * 税率
   costDetailForm.value.zhuanChargeTaxMoney = (Number(costDetailForm.value.zhuanChargeTax || 0) * rate).toFixed(2);
+  const rateNum = Number(costDetailForm.value.manageChargeRate || 0);
   //总收费 = 总营收费 + 税前转换
   costDetailForm.value.totalCharge = (Number(costDetailForm.value.moneyCahrgeTax || 0) + Number(costDetailForm.value.zhuanChargeTax || 0) + Number(costDetailForm.value.totalChargeCha || 0)).toFixed(2);
-  //可分管理费税后金额=总营收费-公司账单里的成本总计
-  costDetailForm.value.manageChargeAllocationAfter = (Number(costDetailForm.value.moneyCahrgeTax || 0) /(1 + rate) - Number(costTotal.value || 0)).toFixed(2);
+  //可分管理费税后金额=总营收费-公司账单里的成本总计(不对已废弃)
+  //税后可分管理=客户总营收费-客户税金-公司成本总计
+  costDetailForm.value.manageChargeAllocationAfter = (Number(costDetailForm.value.moneyCahrgeTax || 0) /(1 + rateNum) - Number(costTotal.value || 0)).toFixed(2);
   //可分管理税前金额=可分管理费税后金额*(1+税率)
   costDetailForm.value.manageChargeAllocationTax = (Number(costDetailForm.value.manageChargeAllocationAfter || 0) * (1 + Number(costDetailForm.value.manageChargeRate || 0))).toFixed(2);
 }

@@ -341,6 +341,28 @@
           <input v-model="item.mobile" name="mobile" placeholder="请输入联系方式" class="no-border-input"/>
         </a-col>
       </a-row>
+      <a-row :gutter="24">
+        <a-col :span="12" class="personalInfoThreeBottomBorder personalInfoIdCardCol">
+          <div class="personalInfoIdCardTitle">身份证正面（头像面）</div>
+          <img
+            v-if="newJoinerPersonalInformationForm.idPhotoZheng"
+            :src="newJoinerPersonalInformationForm.idPhotoZheng"
+            crossorigin="anonymous"
+            class="personalInfoIdCardImg"
+          />
+          <div v-else class="personalInfoIdCardEmpty">-</div>
+        </a-col>
+        <a-col :span="12" class="personalInfoContent personalInfoTwoBorder personalInfoIdCardCol">
+          <div class="personalInfoIdCardTitle">身份证反面（国徽面）</div>
+          <img
+            v-if="newJoinerPersonalInformationForm.idPhotoFan"
+            :src="newJoinerPersonalInformationForm.idPhotoFan"
+            crossorigin="anonymous"
+            class="personalInfoIdCardImg"
+          />
+          <div v-else class="personalInfoIdCardEmpty">-</div>
+        </a-col>
+      </a-row>
        <a-row :gutter="24">
         <a-col :span="24" class="personalInfoThreeBottomBorder personalInfoCenter" style="text-align: left;">
           I hereby authorize U-Talent, ltd and its all subsidiaries or third parties to investigate the relevant information that I have provided in connection with my form for background check is true and complete. Any falsification of information (or any omission of relevant information)of any fact resulted in disqualified for the position, I am willing to assume all the related responsibility. and I waive all claims against such organizations and/or persons for legal liabilities which may occur during the disclosure.
@@ -1743,7 +1765,7 @@ const censusRegisterOptions = ref([
   // { value: '社区公共户', label: '社区公共户' },
 ]);
 const isShow = ref(true);
-type NewJoinerPersonalInformationFormWithPhoto = NewJoinerPersonalInfoItem & { headPhoto?: string,signOfferType?: string, shixiStartTime?: string, shixiEndTime?: string, signBaseMoney?: string, signEndTime?: string, shixiBaseMoney: string, faxinDay: string, allowance: string};
+type NewJoinerPersonalInformationFormWithPhoto = NewJoinerPersonalInfoItem & { headPhoto?: string,signOfferType?: string, shixiStartTime?: string, shixiEndTime?: string, signBaseMoney?: string, signEndTime?: string, shixiBaseMoney: string, faxinDay: string, allowance: string, idPhotoZheng: string, idPhotoFan: string};
 const newJoinerPersonalInformationForm = ref({
   offerOutsourceFamilies: [],
   offerOutsourceWorks: [],
@@ -1755,6 +1777,8 @@ const newJoinerPersonalInformationForm = ref({
   shixiBaseMoney: '',
   faxinDay: '',
   allowance: '',
+  idPhotoZheng: '',
+  idPhotoFan: '',
 } as NewJoinerPersonalInformationFormWithPhoto);
 const headPhotoDataUrl = ref<string>('');
 const generatedPdfFile = ref<File | null>(null);
@@ -1801,6 +1825,8 @@ watch(newJoinerPersonalInformationFormTemp, (newVal) => {
     newJoinerPersonalInformationForm.value.isDismissed = newVal.isDismissed;
     newJoinerPersonalInformationForm.value.dismissedReason = newVal.dismissedReason;
     newJoinerPersonalInformationForm.value.isNonCompete = newVal.isNonCompete;
+    newJoinerPersonalInformationForm.value.idPhotoZheng = newVal.idPhotoZheng;
+    newJoinerPersonalInformationForm.value.idPhotoFan = newVal.idPhotoFan;
     (newJoinerPersonalInformationForm.value as any).headPhoto = (newVal as any).headPhoto || '';
     newJoinerPersonalInformationForm.value.documentAddress = newVal.documentAddress;
     newJoinerPersonalInformationForm.value.livingAddress = newVal.livingAddress;
@@ -2775,6 +2801,32 @@ const generatePDF = async () => {
   position: absolute;
   width: 100%;
   top: 18%;
+}
+.personalInfoIdCardCol {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 8px 6px;
+  min-height: 170px;
+}
+.personalInfoIdCardTitle {
+  width: 100%;
+  text-align: center;
+  font-weight: bold;
+}
+.personalInfoIdCardImg {
+  width: 100%;
+  height: 140px;
+  object-fit: contain;
+  margin-top: 6px;
+}
+.personalInfoIdCardEmpty {
+  width: 100%;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
 }
 .personalInfoCenterBottom {
   line-height: 2;

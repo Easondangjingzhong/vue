@@ -375,39 +375,72 @@
               });
             }
           }
-          // if (item.functionName == 'Mapping' && roleId != 11 && roleId != 8) {
-          //   let temp = menuArrTemp.value.filter((subItem) => subItem.key === 'mapping');
-          //   if (temp.length > 0) {
-          //     menuArrTemp.value.forEach((subItem) => {
-          //       if (subItem.key === 'mapping') {
-          //         subItem.children?.push({
-          //           label: '人员信息',
-          //           title: '人员信息',
-          //           key: 'MappingList',
-          //           showFlag: false,
-          //           index: 0,
-          //         });
-          //       }
-          //     });
-          //   } else {
-          //     menuArrTemp.value.push({
-          //       key: 'mapping',
-          //       label: 'Mapping',
-          //       title: 'Mapping',
-          //       showFlag: false,
-          //       index: 5,
-          //       children: [
-          //         {
-          //           key: 'MappingList',
-          //           label: '人员信息',
-          //           title: '人员信息',
-          //           showFlag: false,
-          //           index: 0,
-          //         },
-          //       ],
-          //     });
-          //   }
-          // }
+          if (item.functionName == 'Mapping' && type == 'A') {
+            let temp = menuArrTemp.value.filter((subItem) => subItem.key === 'mapping');
+            if (temp.length > 0) {
+              menuArrTemp.value.forEach((subItem) => {
+                if (subItem.key === 'mapping') {
+                  subItem.children?.push({
+                    label: '商场信息',
+                    title: '商场信息',
+                    key: 'MarketData',
+                    showFlag: false,
+                    index: 0,
+                  });
+                }
+              });
+            } else {
+              menuArrTemp.value.push({
+                key: 'mapping',
+                label: 'Mapping',
+                title: 'Mapping',
+                showFlag: false,
+                index: 5,
+                children: [
+                  {
+                    key: 'MarketData',
+                    label: '商场信息',
+                    title: '商场信息',
+                    showFlag: false,
+                    index: 0,
+                  },
+                ],
+              });
+            }
+          }
+          if (item.functionName == 'Mapping' && roleId != 11 && roleId != 8 && type == 'A') {
+            let temp = menuArrTemp.value.filter((subItem) => subItem.key === 'mapping');
+            if (temp.length > 0) {
+              menuArrTemp.value.forEach((subItem) => {
+                if (subItem.key === 'mapping') {
+                  subItem.children?.push({
+                    label: '人员信息',
+                    title: '人员信息',
+                    key: 'MappingList',
+                    showFlag: false,
+                    index: 0,
+                  });
+                }
+              });
+            } else {
+              menuArrTemp.value.push({
+                key: 'mapping',
+                label: 'Mapping',
+                title: 'Mapping',
+                showFlag: false,
+                index: 5,
+                children: [
+                  {
+                    key: 'MappingList',
+                    label: '人员信息',
+                    title: '人员信息',
+                    showFlag: false,
+                    index: 0,
+                  },
+                ],
+              });
+            }
+          }
           if (item.id == '125' && roleId != 11 && roleId != 8) {
             let temp = menuArrTemp.value.filter((subItem) => subItem.key === 'mapping');
             if (temp.length > 0) {
@@ -1869,6 +1902,13 @@
   :deep(.ant-menu-light) {
     background: #197d6f;
     color: #ffffff;
+  }
+  :deep(.ant-menu-light >.ant-menu-submenu-selected){
+    color: #000000;
+    background-color: #ffffff;
+  }
+  :deep(.ant-menu-light .ant-menu-submenu-selected >.ant-menu-submenu-title){
+    color: #000000;
   }
   :deep(.ant-menu-light.ant-menu-horizontal >.ant-menu-item-selected, .ant-menu-light.ant-menu-horizontal >.ant-menu-submenu-selecte) {
     color: #000000;

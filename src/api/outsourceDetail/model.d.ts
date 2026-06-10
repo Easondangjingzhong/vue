@@ -331,6 +331,7 @@ export interface OutsourceSheBaoDetailItem {
   shebaoPerson: number;
   yearAndMonth: string;
   companyTotal: number;
+  buchaMoney: number;
   personNum: number;
   personTotal: number;
   serviceMoney: string | number;
@@ -338,6 +339,7 @@ export interface OutsourceSheBaoDetailItem {
   yijinPerson: number;
   checkFlag: string;
   canbaoMoney: number;
+  chaMoney: number;
 }
 
 /**
@@ -351,11 +353,13 @@ export interface OutsourceSheBaoCollectItem {
   serviceMoney: string | number;
   shebaoCompany: number;
   shebaoPerson: number;
+  buchaMoney: number;
   yearAndMonth: string;
   yijinCompany: number;
   yijinPerson: number;
   checkFlag: string;
   canbaoMoney: number;
+  chaMoney: number;
 }
 /**
  * 外包外包月度薪资

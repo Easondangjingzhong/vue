@@ -86,6 +86,11 @@
      </a-form>
   </div>
   <div class="resume-content">
+     <a-row style="justify-content: end;margin-bottom: 5px;">
+         <span>
+           <a-button @click="handleOutsourceMoney" style="background-color: #eee;margin-right: 5px;" size="small">请款单</a-button>
+          </span>
+    </a-row>
     <a-row>
     <a-table
       size="small"
@@ -142,6 +147,7 @@
       </a-pagination>
     </a-row>
   </div>
+  <OutsourcePersonMoney/>
   <OutsourceContentMonthSalaryOfferDetail/>
 </template>
 
@@ -152,10 +158,14 @@ import { message, Modal } from 'ant-design-vue';
 import { MenuUnfoldOutlined } from '@ant-design/icons-vue';
 import type { TableColumnsType } from 'ant-design-vue';
 import { SearchMonthSalaryItem } from '/@/api/outsourceDetail/model';
+import OutsourcePersonMoney from '/@/views/outsourceDetail/components/personComponents/OutsourcePersonMoney.vue';
 import OutsourceContentMonthSalaryOfferDetail from './OutsourceContentMonthSalaryOfferDetail.vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
 const { monthSalaryIsLoading,pageOutsourceMonthSalaryOfferList,getOutsourceMonthSalaryOfferList,formStateMonthSalaryOffer, getProvince, getOutsourcePosition } = storeToRefs(outsourceDetailStore);
+const handleOutsourceMoney = () => {
+  outsourceDetailStore.outsourcePersonMoneyFlag = true;
+}
 const columnsOutsourceMonthSalary:TableColumnsType = [
   {
     title: '客户信息',
@@ -175,14 +185,19 @@ const columnsOutsourceMonthSalary:TableColumnsType = [
     ]
   },
   {
-    title: '客户外包账单',
+    title: h('a-tooltip', { title: '客户总收费，即客户需支付给U-Talent的款项' }, h('span', {'style': 'background: linear-gradient(45deg, transparent 94%, #f90202 0);padding-right: 5px;'}, '客户外包账单')),
     className: 'salary-info-header',
     children: [
-      { title: '人才支出', dataIndex: 'monthTax', key: 'monthTax', width: 50, },
-      { title: '企业支出', dataIndex: 'costTotalke', key: 'costTotalke', width: 50, },
-      { title: '管理费', dataIndex: 'manageChargeAfter', key: 'manageChargeAfter', width: 50, },
-      { title: '税金', dataIndex: 'manageChargeTaxMoney', key: 'manageChargeTaxMoney', width: 50, },
-      { title: '总营收费', dataIndex: 'moneyCahrgeTax', key: 'moneyCahrgeTax', width: 50, },
+      { title: h('a-tooltip', { title: '客户账单中人才总支出成本' }, h('span', {'style': 'background: linear-gradient(45deg, transparent 92, #f90202 0);padding-right: 5px;'}, '人才支出')),
+       dataIndex: 'monthTax', key: 'monthTax', width: 50, },
+      { title: h('a-tooltip', { title: '客户账单中企业总支出成本' }, h('span', {'style': 'background: linear-gradient(45deg, transparent 92%, #f90202 0);padding-right: 5px;'}, '企业支出')),
+       dataIndex: 'costTotalke', key: 'costTotalke', width: 50, },
+      { title: h('a-tooltip', { title: '客户账单中管理费金额' }, h('span', {'style': 'background: linear-gradient(45deg, transparent 91%, #f90202 0);padding-right: 5px;'}, '管理费')),
+       dataIndex: 'manageChargeAfter', key: 'manageChargeAfter', width: 50, },
+      { title: h('a-tooltip', { title: '客户账单税金金额' }, h('span', {'style': 'background: linear-gradient(45deg, transparent 88%, #f90202 0);padding-right: 5px;'}, '税金')),
+       dataIndex: 'manageChargeTaxMoney', key: 'manageChargeTaxMoney', width: 50, },
+      { title: h('a-tooltip', { title: '客户总收费，即客户需支付给U-Talent的款项' }, h('span', {'style': 'background: linear-gradient(45deg, transparent 92%, #f90202 0);padding-right: 5px;'}, '总营收费')),
+       dataIndex: 'moneyCahrgeTax', key: 'moneyCahrgeTax', width: 50, },
     ]
   },
   {
@@ -195,24 +210,29 @@ const columnsOutsourceMonthSalary:TableColumnsType = [
     ]
   },
   {
-    title: '公司支出成本',
+    title: h('a-tooltip', { title: '公司实际支出总成本' }, h('span', {'style': 'background: linear-gradient(45deg, transparent 94%, #f90202 0);padding-right: 5px;'}, '公司支出成本')),
     className: 'salary-info-header',
     children: [
-      { title: '人才支出', dataIndex: 'monthTax', key: 'monthTax', width: 50, },
-      { title: '公司支出', dataIndex: 'costTotal', key: 'costTotal', width: 50, },
+      { title: h('a-tooltip', { title: '公司内部账单实际人才支出成本' }, h('span', {'style': 'background: linear-gradient(45deg, transparent 92%, #f90202 0);padding-right: 5px;'}, '人才支出')),
+       dataIndex: 'monthTax', key: 'monthTax', width: 50, },
+      { title: h('a-tooltip', { title: '公司内部账单实际公司支出成本' }, h('span', {'style': 'background: linear-gradient(45deg, transparent 92%, #f90202 0);padding-right: 5px;'}, '公司支出')),
+       dataIndex: 'costTotal', key: 'costTotal', width: 50, },
     ]
   },
   {
-    title: '公司管理费',
+    title: h('a-tooltip', { title: '税后公司管理费=客户总营收费-客户税金-公司总支出成本' }, h('span', {'style': 'background: linear-gradient(45deg, transparent 93%, #f90202 0);padding-right: 5px;'}, '可分管理费')),
     className: 'customer-info-header',
     children: [
-      { title: '税前管理', dataIndex: 'manageChargeTax', key: 'manageChargeTax', width: 50, },
-      { title: '税金', dataIndex: 'manageChargeTaxMoneyRate', key: 'manageChargeTaxMoneyRate', width: 50, },
-      { title: '税后管理', dataIndex: 'manageChargeAfter', key: 'manageChargeAfter', width: 50, },
+      { title: h('a-tooltip', { title: '税前管理=税后管理费+税金' }, h('span', {'style': 'background: linear-gradient(45deg, transparent 92%, #f90202 0);padding-right: 5px;'}, '税前管理')),
+       dataIndex: 'manageChargeAllocationTax', key: 'manageChargeAllocationTax', width: 50, },
+      { title: h('a-tooltip', { title: '税金=税后管理*税率' }, h('span', {'style': 'background: linear-gradient(45deg, transparent 88%, #f90202 0);padding-right: 5px;'}, '税金')),
+       dataIndex: 'manageChargeAllocationRate', key: 'manageChargeAllocationRate', width: 50, },
+      { title: h('a-tooltip', { title: '税后管理=客户总营收费-客户税金-公司总支出成本' }, h('span', {'style': 'background: linear-gradient(45deg, transparent 92%, #f90202 0);padding-right: 5px;'}, '税后管理')), 
+      dataIndex: 'manageChargeAllocationAfter', key: 'manageChargeAllocationAfter', width: 50, },
     ]
   },
   {
-    title: '公司业绩分配',
+    title: h('a-tooltip', { title: '税后管理费=公司可分配业绩' }, h('span', {'style': 'background: linear-gradient(45deg, transparent 94%, #f90202 0);padding-right: 5px;'}, '公司业绩分配')), 
     className: 'salary-info-header',
     children: [
       { title: '推顾', dataIndex: 'rMoney', key: 'rMoney', width: 50, },

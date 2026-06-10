@@ -94,8 +94,8 @@
           <a-button @click="handleSearchOutsourcePerson('4')" :class="{'active': formStateMonthSalary.companyArrange === '1'}" style="margin-right: 5px;" size="small" title="按公司排序">排序</a-button>
         </span>
          <span>
-           <a-button @click="handleOutsourceSalaryComit" style="background-color: #eee;margin-right: 5px;" size="small">工资发放</a-button>
-           <a-button @click="handleOutsourceMoney" style="background-color: #eee;margin-right: 5px;" size="small">请款单</a-button>
+           <a-button @click="handleOutsourceSalaryComit" style="background-color: #eee;margin-right: 5px;" size="small">外包流程</a-button>
+           <!-- <a-button @click="handleOutsourceMoney" style="background-color: #eee;margin-right: 5px;" size="small">请款单</a-button> -->
            <a-button @click="handleOutsourceFormula" style="background-color: #eee;" size="small">公司公式</a-button>
         </span>
     </a-row>
@@ -180,7 +180,6 @@
   <OutsourceCompanyFormula/>
   <OutsourceMonthSalaryUpdate/>
   <OutsourceMonthSalaryShiJiUpdate/>
-  <OutsourcePersonMoney/>
   <OutsourcePersonSalaryCommit/>
 </template>
 
@@ -191,14 +190,13 @@ import { message, Modal } from 'ant-design-vue';
 import { MenuUnfoldOutlined } from '@ant-design/icons-vue';
 import type { TableColumnsType } from 'ant-design-vue';
 import { SearchMonthSalaryItem } from '/@/api/outsourceDetail/model';
-import OutsourcePersonMoney from '/@/views/outsourceDetail/components/personComponents/OutsourcePersonMoney.vue';
 import OutsourceCompanyFormula from '/@/views/outsourceDetail/components/personComponents/OutsourceCompanyFormula.vue';
 import OutsourceMonthSalaryUpdate from '/@/views/outsourceDetail/components/personComponents/OutsourceMonthSalaryUpdate.vue';
 import OutsourceMonthSalaryShiJiUpdate from '/@/views/outsourceDetail/components/personComponents/OutsourceMonthSalaryShiJiUpdate.vue';
 import OutsourcePersonSalaryCommit from '/@/views/outsourceDetail/components/salaryCommitCompoents/OutsourcePersonSalaryCommit.vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { outsourcePersonSalaryCommitFlag, monthSalaryIsLoading,pageOutsourceMonthSalaryList,getOutsourceMonthSalaryList,formStateMonthSalary, getProvince, getOutsourcePosition, outsourceFormulaFlag, outsourceMonthSalaryForm, outsourceMonthSalaryFlag,outsourceMonthSalaryShiJiFlag} = storeToRefs(outsourceDetailStore);
+const { monthSalaryIsLoading,pageOutsourceMonthSalaryList,getOutsourceMonthSalaryList,formStateMonthSalary, getProvince, getOutsourcePosition, outsourceFormulaFlag, outsourceMonthSalaryForm, outsourceMonthSalaryFlag,outsourceMonthSalaryShiJiFlag} = storeToRefs(outsourceDetailStore);
 const columnsOutsourceMonthSalary:TableColumnsType = [
   { title: '编号', dataIndex: 'index', key: 'index', fixed: 'left', width: 30, },
   { title: '计薪月', dataIndex: 'jinxinMonth', key: 'jinxinMonth', fixed: 'left', width: 40, },
@@ -316,9 +314,6 @@ const handleEditClick = (record) => {
 const handleEditYearClick = (record) => {
   outsourceMonthSalaryForm.value = _.cloneDeep(record);
   outsourceMonthSalaryShiJiFlag.value = true;
-}
-const handleOutsourceMoney = () => {
-  outsourceDetailStore.outsourcePersonMoneyFlag = true;
 }
 const handleOutsourceSalarySign = (id: number) => {
   Modal.confirm({

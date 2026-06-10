@@ -867,6 +867,7 @@ export const useResumeListStore = defineStore('app-Resume-List',{
           tempItem.index = (info.pageNumber - 1) * info.pageSize + (index + 1);
           tempItem.key = item.id;
           tempItem.userName = item.userName;
+          tempItem.phoneNum = item.phoneNum;
           tempItem.resumeProgress = `${item.resumeProgress}%`;
           tempItem.addConsultantId = item.addConsultantId;
           tempItem.phone = item.phoneNum;

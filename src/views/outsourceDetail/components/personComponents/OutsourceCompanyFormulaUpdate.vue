@@ -186,103 +186,73 @@
         <a-row :gutter="24">
           <a-col :span="8" v-if="outsourceFormulaForm.jobType == '全职'">
             <a-form-item label="当月差额" name="dangmonthCha" :labelCol="{span: 4}">
-               <a-select v-model:value="outsourceFormulaForm.dangmonthCha">
-                <a-select-option value="上月实际-上月预估">上月实际-上月预估</a-select-option>
-              </a-select>
+              <a-input v-model:value="outsourceFormulaForm.dangmonthCha" placeholder="请输入当月差额" />
             </a-form-item>
           </a-col>
           <a-col :span="8">         
             <a-form-item label="出勤工资" name="chuqinSalary" :labelCol="{span: 4}">
-              <a-select v-model:value="outsourceFormulaForm.chuqinSalary">
-                <a-select-option value="基本工资/全勤工时*本月预估">基本工资/全勤工时*本月预估</a-select-option>
-                <a-select-option value="基本工资/全勤工时*本月实际">基本工资/全勤工时*本月实际</a-select-option>
-              </a-select>
+              <a-input v-model:value="outsourceFormulaForm.chuqinSalary" placeholder="请输入出勤工资" />
             </a-form-item>
           </a-col>
           <a-col :span="8" v-if="outsourceFormulaForm.jobType == '全职'">         
             <a-form-item label="餐补" name="canbu" :labelCol="{span: 4}">
-              <a-select v-model:value="outsourceFormulaForm.canbu">
-                <a-select-option value="餐补/全勤工时*本月预估">餐补/全勤工时*本月预估</a-select-option>
-                <a-select-option value="餐补/全勤工时*本月实际">餐补/全勤工时*本月实际</a-select-option>
-              </a-select>
+              <a-input v-model:value="outsourceFormulaForm.canbu" placeholder="请输入餐补" />
             </a-form-item>
           </a-col>
           <a-col :span="8" v-if="outsourceFormulaForm.jobType == '兼职'">         
             <a-form-item label="国定加班" name="fadingJiaban" :labelCol="{span: 4}">
-              <a-select v-model:value="outsourceFormulaForm.fadingJiaban">
-                <a-select-option value="基本工资/全勤工时*3*国定加班工时">基本工资/全勤工时*3*国定加班工时</a-select-option>
-              </a-select>
+               <a-input v-model:value="outsourceFormulaForm.fadingJiaban" placeholder="请输入国定加班" />
             </a-form-item>
           </a-col>
         </a-row>
         <a-row :gutter="24" v-if="outsourceFormulaForm.jobType == '全职'">
           <a-col :span="8">
             <a-form-item label="津贴" name="jintie" :labelCol="{span: 4}">
-              <a-select v-model:value="outsourceFormulaForm.jintie">
-                <a-select-option value="津贴/全勤工时*本月预估">津贴/全勤工时*本月预估</a-select-option>
-                <a-select-option value="津贴/全勤工时*本月实际">津贴/全勤工时*本月实际</a-select-option>
-              </a-select>
+               <a-input v-model:value="outsourceFormulaForm.jintie" placeholder="请输入津贴" />
             </a-form-item>
           </a-col>
           <a-col :span="8">         
             <a-form-item label="全勤" name="quanqin" :labelCol="{span: 4}">
-              <a-select v-model:value="outsourceFormulaForm.quanqin">
-                <a-select-option value="本月预估≥全勤工时，发放全勤工资">本月预估≥全勤工时，发放全勤工资</a-select-option>
-                <a-select-option value="本月实际≥全勤工时，发放全勤工资">本月实际≥全勤工时，发放全勤工资</a-select-option>
-              </a-select>
+               <a-input v-model:value="outsourceFormulaForm.quanqin" placeholder="请输入全勤" />
             </a-form-item>
           </a-col>
            <a-col :span="8">         
             <a-form-item label="正常加班" name="zhengchangJiaban" :labelCol="{span: 4}">
-              <a-select v-model:value="outsourceFormulaForm.zhengchangJiaban">
-                <a-select-option value="基本工资/全勤工时*1.5*正常加班工时">基本工资/全勤工时*1.5*正常加班工时</a-select-option>
-              </a-select>
+               <a-input v-model:value="outsourceFormulaForm.zhengchangJiaban" placeholder="请输入正常加班" />
             </a-form-item>
           </a-col>
           </a-row>
         <a-row :gutter="24" v-if="outsourceFormulaForm.jobType == '全职'">
           <a-col :span="8">
             <a-form-item label="休息加班" name="restJiaban" :labelCol="{span: 4}">
-              <a-select v-model:value="outsourceFormulaForm.restJiaban">
-                <a-select-option value="基本工资/全勤工时*2*休息加班工时">基本工资/全勤工时*2*休息加班工时</a-select-option>
-              </a-select>
+               <a-input v-model:value="outsourceFormulaForm.restJiaban" placeholder="请输入休息加班" />
             </a-form-item>
           </a-col>
           <a-col :span="8">         
             <a-form-item label="国定加班" name="fadingJiaban" :labelCol="{span: 4}">
-              <a-select v-model:value="outsourceFormulaForm.fadingJiaban">
-                <a-select-option value="基本工资/全勤工时*3*国定加班工时">基本工资/全勤工时*3*国定加班工时</a-select-option>
-              </a-select>
+               <a-input v-model:value="outsourceFormulaForm.fadingJiaban" placeholder="请输入国定加班" />
             </a-form-item>
           </a-col>
            <a-col :span="8">         
             <a-form-item label="工资调差" name="salaryTiaocha" :labelCol="{span: 4}">
-              <a-select v-model:value="outsourceFormulaForm.salaryTiaocha">
-                <a-select-option value="基本工资/全勤工时*当月差额">基本工资/全勤工时*当月差额</a-select-option>
-              </a-select>
+               <a-input v-model:value="outsourceFormulaForm.salaryTiaocha" placeholder="请输入工资调差" />
             </a-form-item>
           </a-col>
         </a-row>
         <a-row :gutter="24" v-if="outsourceFormulaForm.jobType == '全职'">
           <a-col :span="8">
             <a-form-item label="餐补调差" name="canbuTiaocha" :labelCol="{span: 4}">
-              <a-select v-model:value="outsourceFormulaForm.canbuTiaocha">
-                <a-select-option value="餐补工资/全勤工时*当月差额">餐补工资/全勤工时*当月差额</a-select-option>
-              </a-select>
+               <a-input v-model:value="outsourceFormulaForm.canbuTiaocha" placeholder="请输入餐补调差" />
             </a-form-item>
           </a-col>
           <a-col :span="8">         
             <a-form-item label="津贴调差" name="jintieTiaocha" :labelCol="{span: 4}">
-              <a-select v-model:value="outsourceFormulaForm.jintieTiaocha">
-                <a-select-option value="津贴工资/全勤工时*当月差额">津贴工资/全勤工时*当月差额</a-select-option>
-              </a-select>
+               <a-input v-model:value="outsourceFormulaForm.jintieTiaocha" placeholder="请输入津贴调差" />
             </a-form-item>
           </a-col>
           <a-col :span="8">         
             <a-form-item label="全勤调差" name="quanqinTiaocha" :labelCol="{span: 4}">
-              <a-select v-model:value="outsourceFormulaForm.quanqinTiaocha">
-                <a-select-option value="当月差额＜0；扣除全勤工资">当月差额＜0；扣除全勤工资</a-select-option>
-              </a-select>
+               <a-input v-model:value="outsourceFormulaForm.quanqinTiaocha" placeholder="请输入全勤调差" />
             </a-form-item>
           </a-col>
         </a-row>

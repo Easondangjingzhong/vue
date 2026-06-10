@@ -32,10 +32,23 @@
 
        <!-- 添加类型断言和存在性检查以修复TypeScript索引类型错误 -->
       <span v-if="(typeof column.dataIndex === 'string' && (record[column.dataIndex] === null || record[column.dataIndex] === ''))">-</span>
- 
-      <span v-if="column.key == 'operation'">
-        <FormOutlined @click="handleEditClick(record)"/>
-      </span>
+      <template v-if="column.key === 'operation'">
+          <a-dropdown>
+            <span class="ant-dropdown-link" style="cursor: pointer;" @click.prevent>
+              <MenuUnfoldOutlined style="font-size: 15px;"/>
+            </span>
+            <template #overlay>
+              <a-menu>
+                 <a-menu-item>
+                  <a href="javascript:;" @click="handleEditClick(record)">合同修改</a>
+                </a-menu-item>
+                <a-menu-item v-if="record.sign !== '2'">
+                  <a href="javascript:;" @click="handleLeaveApplyClick(record)">离职申请</a>
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+     </template>
   </template>
   </a-table>
   </a-col>
@@ -46,12 +59,12 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import _ from 'lodash';
+import { MenuUnfoldOutlined } from '@ant-design/icons-vue';
 import type { TableColumnsType } from 'ant-design-vue';
-import { FormOutlined } from '@ant-design/icons-vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
-import { PersonContractItem } from '/@/api/outsourceDetail/model';
+import { OutsourcePersonItem,PersonContractItem } from '/@/api/outsourceDetail/model';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { outsourceContractForm, outsourceContractFlag, getOutsourceContractList,outsourcePersonDetail } = storeToRefs(outsourceDetailStore);
+const { LeaveInfomatiomFlag,outsourceContractForm, outsourceContractFlag, getOutsourceContractList,outsourcePersonDetail } = storeToRefs(outsourceDetailStore);
 
 const columns:TableColumnsType = [
   {
@@ -176,6 +189,11 @@ outsourceDetailStore.queryOutsourcePersonContract();
 const handleEditClick = (record: PersonContractItem) => {
   outsourceContractForm.value = _.cloneDeep(record);
   outsourceContractFlag.value = true;
+}
+const handleLeaveApplyClick = (record) => {
+  LeaveInfomatiomFlag.value = true;
+  const recordtemp = {...record,id:record.value.personId}
+  outsourceDetailStore.handleContractInfomationForm(recordtemp as OutsourcePersonItem);
 }
 const handleFileYulanInfo = (originalPathBlobPath,type) => {
     outsourceDetailStore.handleFileYulanInfo(originalPathBlobPath,type);

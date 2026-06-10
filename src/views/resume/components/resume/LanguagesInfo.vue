@@ -512,7 +512,7 @@ import { storeToRefs } from 'pinia';
     }
     if (languageAbility55.length > 0) {
       let language = {} as Language;
-      language.languageName = '汉语';
+      language.languageName = '中文';
       // @ts-ignore
       if (languageAbility55.includes('1')) {
         language.tinshuoLiuli = '1';

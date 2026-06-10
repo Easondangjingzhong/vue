@@ -154,15 +154,18 @@
       >
       <a-tag class="resume_tag_source" v-if="resumeData.talentSource" color="#00bcd4" title="来源">{{ resumeData.talentSource }}</a-tag>
       <a-tag class="resume_tag_source" style="cursor: pointer;" v-if="resumeData.orginalPath" color="#00bcd4" title="原始简历" @click="handleResumeOrginalPath(resumeData.orginalPath)">原简</a-tag>
-      <a-tag v-if="props.showResumeRightOutFlag" color="#ccc" class="resume_tag_phone" style="cursor: pointer;" @click="handlePhoneNumToSystem(resumeData.phoneNum)"
+      <a-tag v-if="props.showResumeRightOutFlag" color="#ccc" class="resume_tag_phone"
         ><PhoneFilled :style="{ fontSize: '8px' }" :rotate="90" />
         <a-popover placement="topLeft">
           <template #content>
-            <span>{{ resumeData.phoneNum }}</span>
+            <div>{{ resumeData.phoneNum }}</div>
+            <div v-if="resumeData.phoneNumOther">{{ resumeData.phoneNumOther }}</div>
           </template>
           查看
         </a-popover>
       </a-tag>
+      <a-tag v-if="props.showResumeRightOutFlag" color="#ccc" class="resume_tag_phone" style="cursor: pointer;" @click="handlePhoneNumToSystem(resumeData.phoneNum)"
+        >呼叫</a-tag>
       <a-tag v-if="!props.showResumeRightOutFlag" color="#ccc" class="resume_tag_phone" style="cursor: pointer;"
         ><PhoneFilled :style="{ fontSize: '8px' }" :rotate="90" />
         <a-popover placement="topLeft">
@@ -197,7 +200,7 @@
       </a-col>
       <a-col :span="8" style="text-align: right">
          <a-button
-          v-if="props.showResumeRightOutFlag && showResumeAdd && resumeData.recruitId && !(resumeData.checkFlag == '待核' || resumeData.checkFlag == '过期')"
+          v-if="props.showResumeRightOutFlag && showResumeAdd && resumeData.recruitId && resumeData.limitFlag != '限制' && resumeData.limitFlag != '限制分单' && !(resumeData.checkFlag == '待核' || resumeData.checkFlag == '过期')"
           style="margin-left: 4px;background-color: orange;color: #fff;"
            size="middle"
           @click="handleAddCheckedTongbu"

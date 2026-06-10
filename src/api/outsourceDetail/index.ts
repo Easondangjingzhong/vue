@@ -93,7 +93,66 @@ enum URL {
   query_outsource_qingkuan_sendHR = '/candidateRecommend/resume-vue-update-out-MonthQingkuan-SendHR.action',
   query_outsource_qingkuan_hr_confirm = '/candidateRecommend/resume-vue-update-out-MonthQingkuan-HrSUre.action',
   query_outsource_qingkuan_zhandan = '/candidateRecommend/resume-vue-insert-out-MonthQingkuan-Zhandan.action',
+  query_outsource_qingkuan_invoice = '/candidateRecommend/resume-vue-update-out-MonthQingkuan-Invoice.action',
+  query_outsource_qingkuan_invoice_fen = '/candidateRecommend/resume-vue-update-out-MonthQingkuan-Invoice-Fen.action',
+  query_outsource_qingkuan_company_tax = '/candidateRecommend/resume-vue-querry-company-tax.action',
+  add_outsource_qingkuan_shebao_weicha = '/candidateRecommend/resume-vue-insert-offerOutsourcepWuyiCha.action',
 }
+/**
+ * 新增51社保尾差
+ * @param yearAndMonth
+ * @param companyName
+ * @param chaMoney 
+ * @returns 
+ */
+const addOutsourceQingKuanShebaoaoWeiCha = async (data: any) =>
+  post<any>({ url: URL.add_outsource_qingkuan_shebao_weicha, data});
+/**
+ * @param companyBankId
+ * @param invoiceTime
+ * @param data 
+ * @returns 
+ */
+const queryOutsourceQingKuanCompanyTax= async (data: any) =>
+  post<any>({ url: URL.query_outsource_qingkuan_company_tax, data});
+/**
+ * 执行月账单开票分函
+ * @param oldCollectId
+ * @param invoiceFlag
+ * @param invoiceTime
+ * @param  invoiceNumber
+ * @param  invoiceCompany
+ * @param  invoiceMoney
+ * @param  invoiceMoneyAfter
+ * @param  taxMoney
+ * @param  taxRate
+ * @param  invoiceType
+ * @param  kehuName
+ * @param  SystemRecruitId
+ * @param  file
+ * @returns
+ */
+const queryOutsourceQingKuanInvoiceFen= async (data: any) =>
+  post<any>({ url: URL.query_outsource_qingkuan_invoice_fen, data});
+/**
+ * 执行月账单开票
+ * @param collectId
+ * @param invoiceFlag
+ * @param invoiceTime
+ * @param  invoiceNumber
+ * @param  invoiceCompany
+ * @param  invoiceMoney
+ * @param  invoiceMoneyAfter
+ * @param  taxMoney
+ * @param  taxRate
+ * @param  invoiceType
+ * @param  kehuName
+ * @param  SystemRecruitId
+ * @param  file
+ * @returns
+ */
+const queryOutsourceQingKuanInvoice= async (data: any) =>
+  post<any>({ url: URL.query_outsource_qingkuan_invoice, data});
 /**
  * 执行月账单发送HR
  * @param collectId
@@ -114,6 +173,7 @@ const queryOutsourceQingKuanHrConfirm= async (data: any) =>
   post<any>({ url: URL.query_outsource_qingkuan_hr_confirm, data});
 /**
  * 执行月账更新账单
+ * @param collectId
  * @param companyName
  * @param zhanDanMonth
  * @param zhixingMonth
@@ -773,6 +833,10 @@ const queryOutsourceMonthSalaryOffer = async (data: any) =>
   post<any>({ url: URL.query_outsource_month_salary_offer, data });
 
 export default {
+  queryOutsourceQingKuanInvoiceFen,
+  addOutsourceQingKuanShebaoaoWeiCha,
+  queryOutsourceQingKuanCompanyTax,
+  queryOutsourceQingKuanInvoice,
   queryOutsourceQingKuanSendHR,
   queryOutsourceQingKuanHrConfirm,
   queryOutsourceQingKuanZhandan,

@@ -7,6 +7,7 @@ import MappingList from '/@/views/mappingList/index.vue';
 import Administrative from '/@/views/administrative/index.vue';
 import CustomerTracking from '/@/views/customerTracking/index.vue';
 import OutsourceDetail from '/@/views/outsourceDetail/index.vue';
+import MarketData from '/@/views/marketData/index.vue';
 import type { RouteRecordRaw } from 'vue-router';
 
 export const accessRoutes: RouteRecordRaw[] = [];
@@ -58,6 +59,12 @@ const constantRoutes: RouteRecordRaw[] = [
     name: 'OutsourceDetail',
     component: OutsourceDetail,
     meta: { title: '外包详情' },
+  },
+  {
+    path: '/marketData',
+    name: 'MarketData',
+    component: MarketData,
+    meta: { title: '商场信息' },
   },
   // ...accessRoutes,
 ];

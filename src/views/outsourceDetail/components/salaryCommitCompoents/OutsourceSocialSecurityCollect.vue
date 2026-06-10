@@ -41,6 +41,9 @@
                  <a-menu-item>
                   <a href="javascript:;" @click="handleAddOutsourceSheBaoPurchaseCollect(record)">提交采购</a>
                 </a-menu-item>
+                <a-menu-item>
+                  <a href="javascript:;" @click="handleAddOutsourceSheBaoShebaoaoWeiCha(record)">社保尾差</a>
+                </a-menu-item>
               </a-menu>
             </template>
           </a-dropdown>
@@ -50,6 +53,26 @@
       </div>
     </template>
   </a-table>
+
+  <a-modal
+    v-model:open="shebaoWeiChaModalOpen"
+    title="社保尾差"
+    :confirm-loading="shebaoWeiChaSubmitting"
+    @ok="handleSubmitShebaoWeiCha"
+    @cancel="handleCloseShebaoWeiCha"
+  >
+    <a-form layout="vertical">
+      <a-form-item label="年月">
+        <a-input v-model:value="shebaoWeiChaForm.yearAndMonth" disabled />
+      </a-form-item>
+      <a-form-item label="公司">
+        <a-input v-model:value="shebaoWeiChaForm.companyName" disabled />
+      </a-form-item>
+      <a-form-item label="尾差">
+        <a-input v-model:value="shebaoWeiChaForm.chaMoney" placeholder="请输入尾差金额" />
+      </a-form-item>
+    </a-form>
+  </a-modal>
 </template>
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
@@ -79,6 +102,7 @@ const columnWidths: Record<string, number> = {
   serviceMoney: 90,
   shebaoTotal: 110,
   personNum: 70,
+  chaMoney: 60,
   checkFlag: 80,
   bankPurchaseStatus: 80,
   action: 80,
@@ -161,6 +185,11 @@ const columns = withLeftAlign(
     title: '手续费',
     dataIndex: 'serviceMoney',
     key: 'serviceMoney',
+  },
+  {
+    title: '尾差',
+    dataIndex: 'chaMoney',
+    key: 'chaMoney',
   },
     {
     title: '社保总计',
@@ -248,6 +277,11 @@ const innerColumns = withLeftAlign(
     dataIndex: 'serviceMoney',
     key: 'serviceMoney',
   },
+   {
+    title: '尾差',
+    dataIndex: 'chaMoney',
+    key: 'chaMoney',
+  },
     {
     title: '社保总计',
     dataIndex: 'shebaoTotal',
@@ -277,6 +311,14 @@ const innerColumns = withLeftAlign(
   innerLeftAlignKeys,
 );
 const loading = ref(false);
+const shebaoWeiChaModalOpen = ref(false);
+const shebaoWeiChaSubmitting = ref(false);
+const shebaoWeiChaForm = ref<{ yearAndMonth: string; companyName: string; chaMoney: string }>({
+  yearAndMonth: '',
+  companyName: '',
+  chaMoney: '',
+});
+
 const handleAddOutsourceSheBaoPurchaseCollect = async (record: any) => {
   Modal.confirm({
     title: '提示',
@@ -295,6 +337,51 @@ const handleAddOutsourceSheBaoPurchaseCollect = async (record: any) => {
     }
   });
 }
+
+const handleAddOutsourceSheBaoShebaoaoWeiCha = (record: any) => {
+  shebaoWeiChaForm.value = {
+    yearAndMonth: record?.yearAndMonth || '',
+    companyName: record?.companyName || '',
+    chaMoney: '',
+  };
+  shebaoWeiChaModalOpen.value = true;
+};
+
+const handleCloseShebaoWeiCha = () => {
+  shebaoWeiChaModalOpen.value = false;
+  shebaoWeiChaSubmitting.value = false;
+  shebaoWeiChaForm.value = { yearAndMonth: '', companyName: '', chaMoney: '' };
+};
+
+const handleSubmitShebaoWeiCha = async () => {
+  if (!shebaoWeiChaForm.value.yearAndMonth) {
+    message.error('缺少yearAndMonth');
+    return;
+  }
+  if (!shebaoWeiChaForm.value.companyName) {
+    message.error('缺少companyName');
+    return;
+  }
+  if (!shebaoWeiChaForm.value.chaMoney) {
+    message.error('请输入chaMoney');
+    return;
+  }
+  shebaoWeiChaSubmitting.value = true;
+  const res = await outsourceDetailStore.addOutsourceQingKuanShebaoaoWeiCha(
+    shebaoWeiChaForm.value.yearAndMonth,
+    shebaoWeiChaForm.value.companyName,
+    shebaoWeiChaForm.value.chaMoney,
+  );
+  shebaoWeiChaSubmitting.value = false;
+  if (res && res.code === 1) {
+    message.success('操作成功');
+    outsourceDetailStore.queryOutsourceShebaoCollect('', shebaoWeiChaForm.value.yearAndMonth);
+    handleCloseShebaoWeiCha();
+  } else {
+    message.error(res?.msg || '操作失败');
+  }
+};
+
 const handleChecked = async (type: number, record: any) => {
   await outsourceDetailStore.updateOutsourceShebaoChecked(record.yearAndMonth, type == 2 ? record.companyName : '');
 }

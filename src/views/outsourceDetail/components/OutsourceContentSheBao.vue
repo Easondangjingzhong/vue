@@ -164,7 +164,7 @@
             </span>
             <template #overlay>
               <a-menu>
-                 <a-menu-item v-if="record.checkFlag !== '1'">
+                 <a-menu-item v-if="record.checkFlag == '1'">
                   <a href="javascript:;" @click="handleUpdateOutsourceSheBaoMonth(record)">社保同步</a>
                 </a-menu-item>
                  <a-menu-item>
@@ -198,7 +198,6 @@
       </a-pagination>
     </a-row>
   </div>
-  <OutsourceSocialSecurityCollect/>
   <OutsourceSocialSecurityInfo/>
   <OutsourceSocialSecurityJiao/>
 </template>

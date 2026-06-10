@@ -218,7 +218,7 @@
             </a-form-item>
           </a-col>
           <a-col :span="12">
-             <a-form-item label="缴纳月" name="companyJiao">
+             <a-form-item label="缴纳月" name="companyJiao" :rules="[{ required: true, message: '请选择缴纳月' }]">
               <a-select v-model:value="outsourceSocialSecurityInfoForm.jiaoMonth">
                 <a-select-option value="当月缴纳">当月缴纳</a-select-option>
                 <a-select-option value="次月缴纳">次月缴纳</a-select-option>

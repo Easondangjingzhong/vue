@@ -356,6 +356,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         jinxinMonth: item.jinxinMonth ? formatToMonth(item.jinxinMonth) : '',
         realEntryTime: item.realEntryTime ? formatToDate(item.realEntryTime) : '',
         realLeaveTime: item.realLeaveTime ? formatToDate(item.realLeaveTime) : '',
+        manageChargeAllocationRate: (Number(item.manageChargeAllocationTax || 0)-Number(item.manageChargeAllocationAfter || 0)).toFixed(2),
         userNameCn: item.userNameCn
           ? `${item.userNameCn}${item.userNameEn ? '/' + item.userNameEn : ''}`
           : '',
@@ -365,7 +366,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           Number(item.welfareKe || 0) +
           Number(item.keShangbao || 0) +
           Number(item.otherPayKe || 0) +
-          (item.monthTax && item.jobType == '全职' ? Number(item.monthTax || 0) * 0.015 : 0) +
+          Number(item.canBaoKe || 0) +
           Number(item.otherPay || 0)
         ).toFixed(2),
         costTotal: (
@@ -374,7 +375,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           Number(item.welfare || 0) +
           Number(item.otherPay || 0) +
           Number(item.shiShangbao || 0) +
-          (item.monthTax && item.jobType == '全职' ? Number(item.monthTax || 0) * 0.015 : 0) +
+          Number(item.canBao || 0) +
           Number(item.serviceMoney || 0)
         ).toFixed(2),
         totalChargeAfter: item.totalCharge
@@ -522,9 +523,11 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         serviceMoney: parseFloat(item.serviceMoney?.toString() || '0').toFixed(2),
         shebaoTotal: parseFloat(
           (
+            (item.buchaMoney || 0) +
             (item.companyTotal || 0) +
             (item.personTotal || 0) +
             (item.canbaoMoney || 0) +
+            (item.chaMoney || 0) +
             parseFloat(item.serviceMoney?.toString() || '0')
           ).toString(),
         ).toFixed(2),
@@ -533,9 +536,11 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           serviceMoney: parseFloat(detailItem.serviceMoney?.toString() || '0').toFixed(2),
           shebaoTotal: parseFloat(
             (
+              (detailItem.buchaMoney || 0) +
               (detailItem.companyTotal || 0) +
               (detailItem.personTotal || 0) +
               (detailItem.canbaoMoney || 0) +
+            (detailItem.chaMoney || 0) +
               parseFloat(
                 detailItem.serviceMoney?.toString() == '公式'
                   ? '0'
@@ -737,7 +742,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           salaryRateFuJiaValue = 0;
           salaryRateFuJiaMoney = 0;
         }
-        const salaryTotalValue = salaryTaxValue + Number(item.manageChargeTaxMoney) + Number(item.zhuanChargeTax || 0);
+        const salaryTotalValue = Number(item.moneyCahrgeTax) + Number(item.zhuanChargeTax || 0);
         const lastMonthLeiJiValue = Number(item.yearGeshui || 0) + Number(item.monthGeshui || 0);
         return {
           ...item,
@@ -1033,6 +1038,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         ).toFixed(2),
         shangbaoTotal: parseFloat(
           (
+            parseFloat((item?.buchaMoney || 0).toFixed(2)) +
             parseFloat((item?.companyTotal || 0).toFixed(2)) +
             parseFloat((item?.personTotal || 0).toFixed(2)) +
             parseFloat((item?.canbaoMoney || 0).toFixed(2)) +
@@ -1066,7 +1072,11 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       state.outsourceQingKuanZhixingMonth.map((item, index) => ({
         ...item,
         index: (index + 1),
-        xinZiRi: item.xinZiRi ? item.xinZiRi.split('-')[1] : '',
+        xinZiRiShow: item.xinZiRi ? item.xinZiRi.split('-')[1] : '',
+        sendTime: item.sendTime ? formatToDate(item.sendTime) : '',
+        sureTime: item.sureTime ? formatToDate(item.sureTime) : '',
+        invoiceTime: item.invoiceTime ? formatToDate(item.invoiceTime) : '',
+        collectionTime: item.collectionTime ? formatToDate(item.collectionTime) : '',
       }
     )),
   },
@@ -1685,6 +1695,9 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
      */
     async addOutsourceSocialSecurityByPerson() {
       try {
+        if (this.outsourceSocialSecurityForm.shebaoStatus == '1') {
+          this.outsourceSocialSecurityForm.yijinStatus = '1';
+        }
         const res = await fetchApi.addOutsourceShebaoByPerson(this.outsourceSocialSecurityForm);
         if (res.code == 1) {
           this.queryOutsourceSheBaoByPersonId();
@@ -3162,6 +3175,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     },
      /**
      * 执行月账更新账单
+     * @param collectId
      * @param companyName
      * @param zhanDanMonth
      * @param zhixingMonth
@@ -3169,15 +3183,130 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
      * @param jobType
      * @returns
      */
-    async queryOutsourceQingKuanZhandan(companyName: string, zhanDanMonth: string, zhixingMonth: string, xinZiRi: string, jobType: string) {
+    async queryOutsourceQingKuanZhandan(collectId?: string,companyName?: string, zhanDanMonth?: string, zhixingMonth?: string, xinZiRi?: string, jobType?: string) {
       try {
         const params = new FormData();
+        params.append('collectId', collectId || '');
         params.append('companyName', companyName || '');
         params.append('zhanDanMonth', zhanDanMonth || '');
         params.append('zhixingMonth', zhixingMonth || '');
         params.append('xinZiRi', xinZiRi || '');
         params.append('jobType', jobType || '');
         const res = await fetchApi.queryOutsourceQingKuanZhandan(params);
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+    /**
+ * 执行月账单开票
+ * @param collectId
+ * @param invoiceFlag
+ * @param invoiceTime
+ * @param  invoiceNumber
+ * @param  invoiceCompany
+ * @param  invoiceMoney
+ * @param  invoiceMoneyAfter
+ * @param  taxMoney
+ * @param  taxRate
+ * @param  invoiceType
+ * @param  kehuName
+ * @param  SystemRecruitId
+ * @param  file
+ * @returns
+ */
+    async queryOutsourceQingKuanInvoice(collectId: string, invoiceFlag: string, invoiceTime: string, invoiceNumber: string, invoiceCompany: string,invoiceMoney: string, taxMoney: string, invoiceMoneyAfter: string, taxRate: string, invoiceType: string, kehuName: string, file: any) {
+      try {
+        const params = new FormData();
+        params.append('collectId', collectId || '');
+        params.append('invoiceFlag', invoiceFlag || '');
+        params.append('invoiceTime', invoiceTime || '');
+        params.append('invoiceNumber', invoiceNumber || '');
+        params.append('invoiceCompany', invoiceCompany || '');
+        params.append('invoiceMoney', invoiceMoney || '');
+        params.append('taxMoney', taxMoney || '');
+        params.append('invoiceMoneyAfter', invoiceMoneyAfter || '');
+        params.append('taxRate', taxRate || '');
+        params.append('invoiceType', invoiceType || '');
+        params.append('kehuName', kehuName || '');
+        params.append('SystemRecruitId',  loginVueUser?.loginId || '');
+        params.append('file', file);
+        const res = await fetchApi.queryOutsourceQingKuanInvoice(params);
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+     /**
+ * 执行月账单开票
+ * @param oldCollectId
+ * @param invoiceFlag
+ * @param invoiceTime
+ * @param  invoiceNumber
+ * @param  invoiceCompany
+ * @param  invoiceMoney
+ * @param  invoiceMoneyAfter
+ * @param  taxMoney
+ * @param  taxRate
+ * @param  invoiceType
+ * @param  kehuName
+ * @param  SystemRecruitId
+ * @param  file
+ * @returns
+ */
+    async queryOutsourceQingKuanInvoiceFen(oldCollectId: string, invoiceFlag: string, invoiceTime: string, invoiceNumber: string, invoiceCompany: string,invoiceMoney: string, taxMoney: string, invoiceMoneyAfter: string, taxRate: string, invoiceType: string, kehuName: string, file: any) {
+      try {
+        const params = new FormData();
+        params.append('oldCollectId', oldCollectId || '');
+        params.append('invoiceFlag', invoiceFlag || '');
+        params.append('invoiceTime', invoiceTime || '');
+        params.append('invoiceNumber', invoiceNumber || '');
+        params.append('invoiceCompany', invoiceCompany || '');
+        params.append('invoiceMoney', invoiceMoney || '');
+        params.append('taxMoney', taxMoney || '');
+        params.append('invoiceMoneyAfter', invoiceMoneyAfter || '');
+        params.append('taxRate', taxRate || '');
+        params.append('invoiceType', invoiceType || '');
+        params.append('kehuName', kehuName || '');
+        params.append('SystemRecruitId',  loginVueUser?.loginId || '');
+        params.append('file', file);
+        const res = await fetchApi.queryOutsourceQingKuanInvoiceFen(params);
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+    /**
+     * 执行月账单HR确认
+     * @param companyBankId
+     * @param invoiceTime
+     * @returns
+     */
+    async queryOutsourceQingKuanCompanyTax(companyBankId: string, invoiceTime: string) {
+      try {
+        const params = new FormData();
+        params.append('companyBankId', companyBankId || '');
+        params.append('invoiceTime', invoiceTime || '');
+        const res = await fetchApi.queryOutsourceQingKuanCompanyTax(params);
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+    /**
+ * 新增51社保尾差
+ * @param yearAndMonth
+ * @param companyName
+ * @param chaMoney 
+ * @returns 
+ */
+    async addOutsourceQingKuanShebaoaoWeiCha(yearAndMonth: string, companyName: string, chaMoney: string) {
+      try {
+        const res = await fetchApi.addOutsourceQingKuanShebaoaoWeiCha({
+          yearAndMonth: yearAndMonth || '',
+          companyName: companyName || '',
+          chaMoney: chaMoney || '',
+        });
         return res;
       } catch (error) {
         return null;
