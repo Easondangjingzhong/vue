@@ -446,14 +446,18 @@
     !props.resumeData.positionName ||
     !props.resumeData.marriageStatus
   ) {
-    resumeDetailStore.$patch({
-      personWholeFlag: true,
-    });
+    if (!resumeDetailStore.resumeSnapshotPreviewMode) {
+      resumeDetailStore.$patch({
+        personWholeFlag: true,
+      });
+    }
     personWholeFlagTemp.value = true;
   } else {
-    resumeDetailStore.$patch({
-      personWholeFlag: false,
-    });
+    if (!resumeDetailStore.resumeSnapshotPreviewMode) {
+      resumeDetailStore.$patch({
+        personWholeFlag: false,
+      });
+    }
     personWholeFlagTemp.value = false;
   }
   watch(
@@ -476,14 +480,18 @@
         !newProps.positionName ||
         !newProps.marriageStatus
       ) {
-        resumeDetailStore.$patch({
-          personWholeFlag: true,
-        });
+        if (!resumeDetailStore.resumeSnapshotPreviewMode) {
+          resumeDetailStore.$patch({
+            personWholeFlag: true,
+          });
+        }
         personWholeFlagTemp.value = true;
       } else {
-        resumeDetailStore.$patch({
-          personWholeFlag: false,
-        });
+        if (!resumeDetailStore.resumeSnapshotPreviewMode) {
+          resumeDetailStore.$patch({
+            personWholeFlag: false,
+          });
+        }
         personWholeFlagTemp.value = false;
       }
     },

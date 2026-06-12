@@ -59,10 +59,32 @@
     <a-row>
     <a-table size="small" :pagination="false" rowKey="key" :columns="columnsMappingRseult" :dataSource="getMarketDataList">
       <template #bodyCell="{ column, record }">
-        <template v-if="column.key === 'jubStatus'">
-          <a-tag v-if="record.jubStatus == '1'" color="green">在职</a-tag>
-          <a-tag v-if="record.jubStatus == '2'" color="red">离职</a-tag>
+        <template v-if="column.key === 'checkStatus'">
+          <a-tag v-if="!record.checkStatus" color="orange">待核</a-tag>
         </template>
+        <template v-if="column.key === 'assignStatus'">
+          <a-tag v-if="record.assignStatus == '待分配'" color="orange">待分配</a-tag>
+        </template>
+         <template v-if="column.key === 'tellFlag'">
+          <a-tag v-if="record.tellFlag == '未联络'" color="orange">未联络</a-tag>
+        </template>
+         <template v-if="column.key === 'currentFlag'">
+          <a-tag v-if="record.currentFlag == '待分配'" color="orange">待分配</a-tag>
+        </template>
+       <template v-if="column.key === 'action'">
+          <a-dropdown>
+            <span class="ant-dropdown-link" style="cursor: pointer;" @click.prevent>
+              <MenuUnfoldOutlined style="font-size: 15px;"/>
+            </span>
+            <template #overlay>
+              <a-menu>
+                 <a-menu-item>
+                  <a href="javascript:;" @click="handleAllocation(record)">分配</a>
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+     </template>
       </template>
     </a-table>
     </a-row>
@@ -87,13 +109,15 @@
     </a-row>
   </div>
   <AddMappingTempModal v-model:open="addModalOpen" @success="onSearch" />
+  <AssignMappingTempModal v-model:open="assignModalOpen" :record="currentAssignRecord" @success="onSearch" />
 </template>
 <script setup lang="ts">
   import { storeToRefs } from 'pinia';
   import { MenuUnfoldOutlined } from '@ant-design/icons-vue';
-import { MarketDataListSearchItem } from '/@/api/marketData/model';
+  import { MarketDataListSearchItem, MappingTempItem } from '/@/api/marketData/model';
   import { useMarketDataStoreWithOut } from '/@/store/modules/marketData';
   import AddMappingTempModal from './AddMappingTempModal.vue';
+  import AssignMappingTempModal from './AssignMappingTempModal.vue';
   const marketDataStore = useMarketDataStoreWithOut();
   const { formStateMarketData, getMarketDataList, pageMarketDataList, getProvince, getBrandList, getMarkList } = storeToRefs(marketDataStore);
   const onSearch = () => {
@@ -117,6 +141,12 @@ import { MarketDataListSearchItem } from '/@/api/marketData/model';
   const handleAddClick = () => {
     addModalOpen.value = true;
   }
+  const assignModalOpen = ref(false);
+  const currentAssignRecord = ref<MappingTempItem | null>(null);
+  const handleAllocation = (record: MappingTempItem) => {
+    currentAssignRecord.value = record;
+    assignModalOpen.value = true;
+  }
   const columnsMappingRseult = [
     {
       title: '编号',
@@ -127,128 +157,128 @@ import { MarketDataListSearchItem } from '/@/api/marketData/model';
     },
     {
       title: '类型',
-      dataIndex: 'userName',
-      key: 'userName',
+      dataIndex: 'type',
+      key: 'type',
       width: 20,
       ellipsis: true,
     },
     {
       title: '城市',
-      dataIndex: 'userName',
-      key: 'userName',
+      dataIndex: 'city',
+      key: 'city',
       width: 30,
       ellipsis: true,
     },
     {
       title: '商场',
-      dataIndex: 'userName',
-      key: 'userName',
+      dataIndex: 'marketName',
+      key: 'marketName',
       width: 30,
       ellipsis: true,
     },
     {
       title: '品牌',
-      dataIndex: 'sex',
-      key: 'sex',
+      dataIndex: 'brandName',
+      key: 'brandName',
       width: 30,
       ellipsis: true,
     },
     {
       title: '姓名',
-      dataIndex: 'age',
-      key: 'age',
+      dataIndex: 'userName',
+      key: 'userName',
       width: 40,
       ellipsis: true,
     },
     {
       title: '电话',
-      dataIndex: 'place',
-      key: 'place',
-      width: 30,
+      dataIndex: 'phoneNum',
+      key: 'phoneNum',
+      width: 40,
       ellipsis: true,
     },
     {
       title: '当前职位',
-      dataIndex: 'market',
-      key: 'market',
+      dataIndex: 'positionName',
+      key: 'positionName',
       width: 60,
       ellipsis: true,
     },
     {
       title: '职状',
-      dataIndex: 'allBrand',
-      key: 'allBrand',
+      dataIndex: 'jobStatus',
+      key: 'jobStatus',
       width: 20,
       ellipsis: true,
     },
     {
       title: '性别',
-      dataIndex: 'position',
-      key: 'position',
+      dataIndex: 'sex',
+      key: 'sex',
       width: 20,
       ellipsis: true,
     },
     {
       title: '年龄',
-      dataIndex: 'jubStatus',
-      key: 'jubStatus',
+      dataIndex: 'age',
+      key: 'age',
       width: 20,
       ellipsis: true,
     },
     {
       title: '录入顾问',
-      dataIndex: 'counselor',
-      key: 'counselor',
+      dataIndex: 'entryRealNameEn',
+      key: 'entryRealNameEn',
       width: 40,
       ellipsis: true,
     },
     {
       title: '录入日期',
-      dataIndex: 'yearMouthDays',
-      key: 'yearMouthDays',
+      dataIndex: 'createTime',
+      key: 'createTime',
       width: 40,
       ellipsis: true,
     },
     {
       title: '分配',
-      dataIndex: 'communicate',
-      key: 'communicate',
+      dataIndex: 'assignStatus',
+      key: 'assignStatus',
       width: 30,
       ellipsis: true,
     },
     {
       title: '分配顾问',
-      dataIndex: 'recommendNum',
-      key: 'recommendNum',
+      dataIndex: 'assignRealNameEn',
+      key: 'assignRealNameEn',
       width: 40,
       ellipsis: true,
     },
     {
       title: '分配日期',
-      dataIndex: 'sign',
-      key: 'sign',
+      dataIndex: 'assignTime',
+      key: 'assignTime',
       width: 40,
       ellipsis: true,
     },
     {
       title: '联络',
-      dataIndex: 'sign',
-      key: 'sign',
+      dataIndex: 'tellFlag',
+      key: 'tellFlag',
       width: 30,
       ellipsis: true,
     },
     {
       title: '核对',
-      dataIndex: 'sign',
-      key: 'sign',
+      dataIndex: 'checkStatus',
+      key: 'checkStatus',
       width: 20,
       ellipsis: true,
     },
     {
       title: '当前状态',
-      dataIndex: 'sign',
-      key: 'sign',
-      width: 40,
+      dataIndex: 'currentFlag',
+      key: 'currentFlag',
+      width: 30,
       ellipsis: true,
     },
     {

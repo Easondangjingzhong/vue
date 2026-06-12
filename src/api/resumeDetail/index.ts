@@ -63,7 +63,10 @@ enum URL {
   add_resume_recommend_pdf = '/city/resume-vue-create-Pdf-resumeId.action',
   add_resume_recommend_pdf_repeat = '/city/resume-vue-create-Pdf-resumeId-chongTui.action',
   delete_brand_daiShen = '/city/resume-vue-delete-brand-Daishen.action',
+  query_resume_snapshot_text = '/resume/resume-vue-query-resume-SnapshotText.action',
 }
+const queryResumeSnapshotText = (formData: any) =>
+  post<any>({ url: URL.query_resume_snapshot_text, data: formData });
 const handleResumeJobtitleFlag = (formData: any) =>
   post<any>({ url: URL.update_resume_report_borth, data: formData });
 const addCandidateRecommendRepeat = (formData: any) =>
@@ -190,6 +193,7 @@ const queryMarkList = async (data: any) => post<any>({ url: URL.resume_markList,
 const resumeMappingJiagou = async (data: any) => post<any>({ url: URL.resume_mapping_jiagou, data });
 const deleteBrandDaiShen = async (data: any) => post<any>({ url: URL.delete_brand_daiShen, data });
 export default {
+  queryResumeSnapshotText,
   deleteBrandDaiShen,
   handleResumeJobtitleFlag,
   addCandidateRecommendRepeat,

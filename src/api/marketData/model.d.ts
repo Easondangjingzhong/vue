@@ -39,5 +39,7 @@ export interface MappingTempItem {
   cid?: string | number;
   checkRemark?: string;
   falseReason?: string;
+  currentFlag?: string;
+  tellFlag?: string;
   systemRecruitId?: string | number;
 }

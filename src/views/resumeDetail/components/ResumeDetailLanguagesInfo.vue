@@ -436,16 +436,20 @@ import { storeToRefs } from 'pinia';
   if (lang && lang.length > 0) {
     if (!languageWholeFlagTemp.value) {
         languageWholeFlagTemp.value = true;
-        resumeDetailStore.$patch({
-          languageWholeFlag: true
-        })
+        if (!resumeDetailStore.resumeSnapshotPreviewMode) {
+          resumeDetailStore.$patch({
+            languageWholeFlag: true
+          })
+        }
       }
     lang.forEach((element) => {
       if (element.languageName == '英语') {
         languageWholeFlagTemp.value = false;
-        resumeDetailStore.$patch({
-          languageWholeFlag: false
-        })
+        if (!resumeDetailStore.resumeSnapshotPreviewMode) {
+          resumeDetailStore.$patch({
+            languageWholeFlag: false
+          })
+        }
         if (element.languageLevel) {
           langArr = element.languageLevel.split(',').reduce((prev, curr) => {
             if (curr.includes('IELTS')) {
@@ -565,9 +569,11 @@ import { storeToRefs } from 'pinia';
     });
   } else {
     languageWholeFlagTemp.value = true;
-        resumeDetailStore.$patch({
-          languageWholeFlag: true
-        })
+        if (!resumeDetailStore.resumeSnapshotPreviewMode) {
+          resumeDetailStore.$patch({
+            languageWholeFlag: true
+          })
+        }
   }
   }
   handleLanguages();

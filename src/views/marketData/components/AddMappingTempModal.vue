@@ -100,10 +100,8 @@ const formRef = ref<FormInstance>();
 const submitting = ref(false);
 
 const typeOptions = [
-  { label: '店铺', value: '店铺' },
-  { label: 'OFFICE', value: 'OFFICE' },
-  { label: '非零售', value: '非零售' },
-  { label: '酒店', value: '酒店' },
+  { label: '简', value: '简' },
+  { label: 'M', value: 'M' },
 ];
 
 const jobStatusOptions = [
@@ -209,7 +207,7 @@ const handleSubmit = async () => {
       ...form,
       userName: finalUserName,
       marketName: getMarkList.value.find((item) => item.value === form.marketId)?.label || '',
-      brandName: form.brandName || String(form.brandId || ''),
+      brandName: getBrandList.value.find((item) => item.value === form.brandId)?.label || '',
     };
     const res = await marketDataStore.addMappingTemp(payload);
     if (res && (res.code === 1 || res.code === 2)) {

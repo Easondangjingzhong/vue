@@ -89,7 +89,7 @@ const getOutsourceCompanyAll = ref([
   {value: '', label: ''}
 ]);
 const handleChangeCompany = () => {
-   outsourceDetailStore.queryOutsourceSalaryMonthCompanyBrand(formStatePersonMoney.value.yearAndMonth || dayjs().format('YYYY-MM')).then(res => {
+   outsourceDetailStore.queryOutsourceSalaryOfferMonthCompanyBrand(formStatePersonMoney.value.yearAndMonth || dayjs().format('YYYY-MM')).then(res => {
     if (res.code == 1) {
        getOutsourceCompanyAll.value = res.info.companyList.map(item => ({value: item.companyName, label: item.companyName}));
     }

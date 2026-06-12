@@ -71,26 +71,34 @@
   })
   const selfWholeFlagTemp = ref(false);
   if (!props.resumeData.selfEvaluation) {
-    resumeDetailStore.$patch({
-      selfWholeFlag: true
-    })
+    if (!resumeDetailStore.resumeSnapshotPreviewMode) {
+      resumeDetailStore.$patch({
+        selfWholeFlag: true
+      })
+    }
     selfWholeFlagTemp.value = true;
   } else {
-    resumeDetailStore.$patch({
-      selfWholeFlag: false
-    })
+    if (!resumeDetailStore.resumeSnapshotPreviewMode) {
+      resumeDetailStore.$patch({
+        selfWholeFlag: false
+      })
+    }
     selfWholeFlagTemp.value = false;
   }
   watch(() => props.resumeData,(newProps) => {
     if (!newProps.selfEvaluation) {
-    resumeDetailStore.$patch({
-      selfWholeFlag: true
-    })
+    if (!resumeDetailStore.resumeSnapshotPreviewMode) {
+      resumeDetailStore.$patch({
+        selfWholeFlag: true
+      })
+    }
     selfWholeFlagTemp.value = true;
   } else {
-    resumeDetailStore.$patch({
-      selfWholeFlag: false
-    })
+    if (!resumeDetailStore.resumeSnapshotPreviewMode) {
+      resumeDetailStore.$patch({
+        selfWholeFlag: false
+      })
+    }
     selfWholeFlagTemp.value = false;
   }
   })

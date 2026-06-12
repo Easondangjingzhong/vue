@@ -630,10 +630,10 @@ const handleManageGongShiChange = (val: string) => {
       const restOverHours = Number(attend.restOverHours || 0);
       const totalHours = currentMonthShiHours + overHours + holidayOverHours + restOverHours;
       costDetailForm.value.manageChargeAfter = (totalHours * 70).toFixed(2);
-  } else if (val === '标准工时*40元+国定加班*40元*3' && costDetailForm.value.companyName == "高雅德") {
+  } else if (val === '标准工时*10元+国定加班*10元*3' && costDetailForm.value.companyName == "高雅德") {
       /**
        * 本月实际工时 = 本月实际 currentMonthShiHours+ 正常加班 overHours + 国定加班 holidayOverHours + 休息加班 restOverHours
-       * 总管理费=标准工时*40元+国定加班*40元*3
+       * 总管理费=标准工时*10元+国定加班*10元*3
        */
       const attend = getOutsourcePersonPerformanceDetailAttendInfo.value[0];
       const currentMonthShiHours = Number(attend.currentMonthShiHours || 0);//标准工时
@@ -641,7 +641,7 @@ const handleManageGongShiChange = (val: string) => {
       const holidayOverHours = Number(attend.holidayOverHours || 0);
       //const restOverHours = Number(attend.restOverHours || 0);
       //const totalHours = currentMonthShiHours + overHours + holidayOverHours + restOverHours;
-      costDetailForm.value.manageChargeAfter = (currentMonthShiHours * 40 + holidayOverHours * 40 * 3).toFixed(2);
+      costDetailForm.value.manageChargeAfter = (currentMonthShiHours * 10 + holidayOverHours * 10 * 3).toFixed(2);
   } else if (costDetailForm.value.companyName == "碧朗诗") {
       /**
        * 总管理费=固定收费500

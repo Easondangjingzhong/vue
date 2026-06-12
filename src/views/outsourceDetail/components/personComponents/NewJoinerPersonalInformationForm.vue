@@ -323,6 +323,7 @@
             <a-select-option value="Mother 母亲">Mother 母亲</a-select-option>
             <a-select-option value="Spouse 配偶">Spouse 配偶</a-select-option>
             <a-select-option value="Sister 姐姐">Sister 姐姐</a-select-option>
+            <a-select-option value="Brother 哥哥">Brother 哥哥</a-select-option>
           </a-select>
         </a-col>
         <a-col :span="3" class="personalInfoContent personalInfoTwoBorder personalInfoCenter">

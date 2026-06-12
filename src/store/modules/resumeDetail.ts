@@ -4,31 +4,95 @@ import { currentDate } from '/@/utils/dateUtil';
 import { ResumeDetail } from '/@/api/resumeDetail/modal';
 import fetchApi from '/@/api/resumeDetail';
 interface RecommendPerson {
-      index: string;
-      city: string;
-      brand: string;
-      jobTitle: string;
-      workPlace: string;
-      turnoverTime: string;
-      counselor: string;
-      jobStatus: string;
-      recruitingNum: string;
-      offerNum: string;
-      openResumesNum: string;
-      surplus: string;
-      isTask: string;
-      action: string;
-      companyName: string;
-      bId: string;
-      id: string;
-      mId: string;
-      recruitId: string;
-      positionsId: string;
-      checkResult: string;
-      refuseRemark: string;
-      rid: string;
-      cId: string;
-    }
+  index: string;
+  city: string;
+  brand: string;
+  jobTitle: string;
+  workPlace: string;
+  turnoverTime: string;
+  counselor: string;
+  jobStatus: string;
+  recruitingNum: string;
+  offerNum: string;
+  openResumesNum: string;
+  surplus: string;
+  isTask: string;
+  action: string;
+  companyName: string;
+  bId: string;
+  id: string;
+  mId: string;
+  recruitId: string;
+  positionsId: string;
+  checkResult: string;
+  refuseRemark: string;
+  rid: string;
+  cId: string;
+}
+interface ResumeSnapshotItem {
+  id: string | number;
+  snapshotType: string;
+  resumeId: string | number;
+  phoneNum: string;
+  snapshotText: string;
+  recruitId: string | number;
+  realNameEn: string;
+  createTime: string;
+}
+const parseResumeSnapshotText = (snapshotText: string) => {
+  const rawText = String(snapshotText || '').trim();
+  if (!rawText) {
+    return {};
+  }
+  try {
+    return JSON.parse(rawText);
+  } catch (error) {
+    // 后端历史数据是单引号对象字面量，兼容解析这类快照串。
+    return Function(`"use strict"; return (${rawText});`)();
+  }
+};
+
+const isNullLikeValue = (value: any) => {
+  if (value === null || value === undefined) {
+    return true;
+  }
+  if (typeof value === 'string') {
+    const normalizedValue = value.trim().replace(/`/g, '').toLowerCase();
+    return normalizedValue === '' || normalizedValue === 'null' || normalizedValue === 'undefined';
+  }
+  return false;
+};
+
+const calculateAgeByBirthday = (birthYear: any, bornMonth: any, bornDay: any) => {
+  if (isNullLikeValue(birthYear) || isNullLikeValue(bornMonth) || isNullLikeValue(bornDay)) {
+    return '';
+  }
+  const year = Number(birthYear);
+  const month = Number(bornMonth);
+  const day = Number(bornDay);
+  if (!year || !month || !day) {
+    return '';
+  }
+  const [currentYear, currentMonth, currentDay] = currentDate().split('-').map(Number);
+  let age = currentYear - year;
+  if (currentMonth < month || (currentMonth === month && currentDay < day)) {
+    age -= 1;
+  }
+  return age > 0 ? String(age) : '';
+};
+
+const sanitizeResumeSnapshot = (resume: any) => {
+  if (!resume || typeof resume !== 'object') {
+    return resume;
+  }
+  if (resume.photoPath) {
+    resume.photoPath = String(resume.photoPath).trim().replace(/`/g, '');
+  }
+  if (isNullLikeValue(resume.age)) {
+    resume.age = calculateAgeByBirthday(resume.birthYear, resume.bornMonth, resume.bornDay);
+  }
+  return resume;
+};
 interface ResumeDetailState {
   resumeDetail: ResumeDetail; // 简历数据
   eduFlag: boolean; // 添加教育经历是否 true是 false 否
@@ -63,22 +127,29 @@ interface ResumeDetailState {
   languageWholeFlag: boolean; //简历语言信息完整 false true 10
   selfWholeFlag: boolean; //简历自我评价信息完整 true false 10
   workWholeFlagAtShcool: boolean; //是否应届毕业生 true 是 false
-  resumeRecommendUploadData: {};//推荐时简历详情
-  recommendPerson: {};//推荐时对象
-  resumeRecommendUploadFlag: boolean;//推荐时简历详情展开
-  resumeRecommendShowFlag: boolean;//推荐时简历信息展示
-  repeatRecommendFlag: boolean;//重新推荐时简历信息展示
+  resumeRecommendUploadData: {}; //推荐时简历详情
+  recommendPerson: {}; //推荐时对象
+  resumeRecommendUploadFlag: boolean; //推荐时简历详情展开
+  resumeRecommendShowFlag: boolean; //推荐时简历信息展示
+  repeatRecommendFlag: boolean; //重新推荐时简历信息展示
   handleResumePid: string; //推荐职位id
   handleResumebId: string; //推荐品牌id
   handleResumePdfPath: string; //推荐顾问重新推荐的PDF文件路径
   orginalPathShow: boolean; //简历层级设置
   resumeContainerIndexFlag: boolean; //简历层级设置
   resumeContainerIndexBtnFlag: boolean; //简历层级设置
+  resumeSnapshotFlag: boolean;
+  resumeSnapshotLoading: boolean;
+  resumeSnapshotList: ResumeSnapshotItem[];
+  resumeSnapshotSelectedId: string | number | '';
+  resumeSnapshotSelectedResume: any;
+  resumeSnapshotParseError: string;
+  resumeSnapshotPreviewMode: boolean;
 }
 const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: '' } = JSON.parse(
   localStorage.getItem('loginVueUser') || '{}',
 );
-export const useResumeDetailStore = defineStore('app-Resume',{
+export const useResumeDetailStore = defineStore('app-Resume', {
   state: (): ResumeDetailState => ({
     // info
     resumeDetail: {} as ResumeDetail,
@@ -125,6 +196,13 @@ export const useResumeDetailStore = defineStore('app-Resume',{
     handleResumebId: '',
     handleResumePdfPath: '',
     recommendPerson: {} as RecommendPerson,
+    resumeSnapshotFlag: false,
+    resumeSnapshotLoading: false,
+    resumeSnapshotList: [],
+    resumeSnapshotSelectedId: '',
+    resumeSnapshotSelectedResume: null,
+    resumeSnapshotParseError: '',
+    resumeSnapshotPreviewMode: false,
   }),
   actions: {
     /**
@@ -512,7 +590,7 @@ export const useResumeDetailStore = defineStore('app-Resume',{
         this.currentYear = res.info[0]?.year;
         this.currentMonth = res.info[0]?.month;
         this.currentWeekNum = res.info[0]?.weekNum;
-        this.queryWeekByYearAndMonth(res.info[0]?.year,res.info[0]?.month);
+        this.queryWeekByYearAndMonth(res.info[0]?.year, res.info[0]?.month);
       }
       return res;
     },
@@ -587,8 +665,8 @@ export const useResumeDetailStore = defineStore('app-Resume',{
     async addCandidateRecommendAppeal(data) {
       const formData = new FormData();
       formData.append('id', data.id);
-      formData.append('supportRecruitId', data.supportRecruitId || "");
-      formData.append('supportRealNameEn', data.supportRealNameEn || "");
+      formData.append('supportRecruitId', data.supportRecruitId || '');
+      formData.append('supportRealNameEn', data.supportRealNameEn || '');
       formData.append('brand', data.brand);
       formData.append('bId', data.bId);
       formData.append('mId', data.mId);
@@ -623,8 +701,8 @@ export const useResumeDetailStore = defineStore('app-Resume',{
      */
     async addCandidateRecommend(data) {
       const formData = new FormData();
-      formData.append('supportRecruitId', data.supportRecruitId || "");
-      formData.append('supportRealNameEn', data.supportRealNameEn || "");
+      formData.append('supportRecruitId', data.supportRecruitId || '');
+      formData.append('supportRealNameEn', data.supportRealNameEn || '');
       formData.append('id', data.id);
       formData.append('brand', data.brand);
       formData.append('bId', data.bId);
@@ -820,7 +898,7 @@ export const useResumeDetailStore = defineStore('app-Resume',{
       const res = await fetchApi.addResumeCheckedTwoYear(formData);
       return res;
     },
-     /**
+    /**
      * 简历激活
      * @returns
      */
@@ -840,18 +918,18 @@ export const useResumeDetailStore = defineStore('app-Resume',{
      */
     async searchFormState(formState) {
       const formData = new FormData();
-      formData.append('city', formState.city || "");
-      formData.append('mId', formState.market?.value || "");
-      formData.append('positionId', formState.positionsId || "");
-      formData.append('bId', formState.brand || "");
-      formData.append('retail', formState.retail || "");
-      formData.append('retailLevel', formState.retailLevel || "");
-      formData.append('category', formState.category || "");
+      formData.append('city', formState.city || '');
+      formData.append('mId', formState.market?.value || '');
+      formData.append('positionId', formState.positionsId || '');
+      formData.append('bId', formState.brand || '');
+      formData.append('retail', formState.retail || '');
+      formData.append('retailLevel', formState.retailLevel || '');
+      formData.append('category', formState.category || '');
       formData.append('pinji', '');
-      formData.append('leibie', formState.leibie || "");
-      formData.append('industry', formState.retail || "");
-      formData.append('jobcategory2', formState.jobcategory2 || "");
-      formData.append('management2', formState.management2 || "");
+      formData.append('leibie', formState.leibie || '');
+      formData.append('industry', formState.retail || '');
+      formData.append('jobcategory2', formState.jobcategory2 || '');
+      formData.append('management2', formState.management2 || '');
       formData.append('SystemRecruitId', loginVueUser.loginId);
       const res = await fetchApi.searchFormState(formData);
       return res;
@@ -976,7 +1054,7 @@ export const useResumeDetailStore = defineStore('app-Resume',{
       const res = await fetchApi.queryNrPositionId(formData);
       return res;
     },
-     /**
+    /**
      * 根据手机号查询mapping最近工作
      * @returns
      */
@@ -987,11 +1065,11 @@ export const useResumeDetailStore = defineStore('app-Resume',{
       const res = await fetchApi.queryLimitFlagRecommend(formData);
       return res;
     },
-     /**
+    /**
      * 根据简历id查询简历数据
      * @returns
      */
-    async queryResumeByResumeId(templateType,screenWidth,pId,bId) {
+    async queryResumeByResumeId(templateType, screenWidth, pId, bId) {
       const formData = new FormData();
       formData.append('template', templateType);
       formData.append('resumeId', this.resumeId);
@@ -1001,17 +1079,17 @@ export const useResumeDetailStore = defineStore('app-Resume',{
       this.handleResumePid = pId;
       this.handleResumebId = bId;
       const res = await fetchApi.queryResumeByResumeId(formData);
-        if (res.code == 1) {
+      if (res.code == 1) {
         this.resumeRecommendUploadData = res.info;
         this.resumeRecommendUploadFlag = true;
-        }
-        return res;
+      }
+      return res;
     },
-     /**
+    /**
      * 修改简历展示隐藏
      * @returns
      */
-    async handleResumeReportAndBorthFlag(reportHide,ageHide) {
+    async handleResumeReportAndBorthFlag(reportHide, ageHide) {
       const formData = new FormData();
       formData.append('resumeId', this.resumeId);
       formData.append('pid', this.handleResumePid);
@@ -1020,7 +1098,7 @@ export const useResumeDetailStore = defineStore('app-Resume',{
       const res = await fetchApi.handleResumeReportAndBorthFlag(formData);
       return res;
     },
-     /**
+    /**
      * 修改简历职业概况展示隐藏
      * @returns
      */
@@ -1032,11 +1110,11 @@ export const useResumeDetailStore = defineStore('app-Resume',{
       const res = await fetchApi.handleResumeJobtitleFlag(formData);
       return res;
     },
-      /**
+    /**
      * 修改简历展示隐藏
      * @returns
      */
-    async handleResumeSalaryStructureFlag(workId,salaryHide) {
+    async handleResumeSalaryStructureFlag(workId, salaryHide) {
       const formData = new FormData();
       formData.append('resumeId', this.resumeId);
       formData.append('pid', this.handleResumePid);
@@ -1048,11 +1126,11 @@ export const useResumeDetailStore = defineStore('app-Resume',{
       const res = await fetchApi.handleResumeDetailFlag(formData);
       return res;
     },
-      /**
+    /**
      * 修改简历展示隐藏
      * @returns
      */
-    async handleResumeOfficeFlag(workId,officeHide) {
+    async handleResumeOfficeFlag(workId, officeHide) {
       const formData = new FormData();
       formData.append('resumeId', this.resumeId);
       formData.append('pid', this.handleResumePid);
@@ -1064,11 +1142,11 @@ export const useResumeDetailStore = defineStore('app-Resume',{
       const res = await fetchApi.handleResumeDetailFlag(formData);
       return res;
     },
-      /**
+    /**
      * 修改简历展示隐藏
      * @returns
      */
-    async handleResumePersonFlag(workId,personHide) {
+    async handleResumePersonFlag(workId, personHide) {
       const formData = new FormData();
       formData.append('resumeId', this.resumeId);
       formData.append('pid', this.handleResumePid);
@@ -1080,11 +1158,11 @@ export const useResumeDetailStore = defineStore('app-Resume',{
       const res = await fetchApi.handleResumeDetailFlag(formData);
       return res;
     },
-      /**
+    /**
      * 修改简历展示隐藏
      * @returns
      */
-    async handleResumeShopVolume(workId,shopVolumeHide) {
+    async handleResumeShopVolume(workId, shopVolumeHide) {
       const formData = new FormData();
       formData.append('resumeId', this.resumeId);
       formData.append('pid', this.handleResumePid);
@@ -1096,11 +1174,11 @@ export const useResumeDetailStore = defineStore('app-Resume',{
       const res = await fetchApi.handleResumeDetailFlag(formData);
       return res;
     },
-      /**
+    /**
      * 推荐简历PDF
      * @returns
      */
-    async addCandidateRecommendPdf(template,rid) {
+    async addCandidateRecommendPdf(template, rid) {
       const formData = new FormData();
       formData.append('resumeId', this.resumeId);
       formData.append('pid', this.handleResumePid);
@@ -1115,11 +1193,11 @@ export const useResumeDetailStore = defineStore('app-Resume',{
       }
       return res;
     },
-      /**
+    /**
      * 推荐简历PDF
      * @returns
      */
-    async addCandidateRecommendPdfAppeal(template,appealId) {
+    async addCandidateRecommendPdfAppeal(template, appealId) {
       const formData = new FormData();
       formData.append('resumeId', this.resumeId);
       formData.append('pid', this.handleResumePid);
@@ -1131,9 +1209,9 @@ export const useResumeDetailStore = defineStore('app-Resume',{
       const res = await fetchApi.addCandidateRecommendPdf(formData);
       return res;
     },
-       /**
+    /**
      * 推荐简历PDF
-     * @returns 
+     * @returns
      */
     async addCandidateRecommendRepeat(data) {
       const formData = new FormData();
@@ -1147,20 +1225,85 @@ export const useResumeDetailStore = defineStore('app-Resume',{
       formData.append('fileV', data.file ? data.file.originFileObj : '');
       formData.append('fileV', data.file2 ? data.file2.originFileObj : '');
       const res = await fetchApi.addCandidateRecommendRepeat(formData);
-       if (res.code == 1) {
+      if (res.code == 1) {
         this.queryResumeRecord(1);
         this.orginalPathShow = false;
       }
       return res;
     },
-       /**
+    /**
      * 推荐简历PDF
-     * @returns 
+     * @returns
      */
     async deleteBrandDaiShen(workId) {
       const formData = new FormData();
       formData.append('workId', workId);
       await fetchApi.deleteBrandDaiShen(formData);
+    },
+    /**
+     * 根据手机号查简历快照
+     * @returns
+     */
+    async queryResumeSnapshotText() {
+      const formData = new FormData();
+      const phone = this.resumeDetail.resume.phoneNum;
+      formData.append('phoneNum', phone);
+      const res = await fetchApi.queryResumeSnapshotText(formData);
+      return res;
+    },
+    async openResumeSnapshotDrawer() {
+      const snapshotTypeMap = {
+        在保快照: '核对',
+        二保快照: '激活',
+        同步快照: '同步',
+      };
+      this.resumeSnapshotPreviewMode = true;
+      this.resumeSnapshotFlag = true;
+      this.resumeSnapshotLoading = true;
+      this.resumeSnapshotParseError = '';
+      this.resumeSnapshotSelectedId = '';
+      this.resumeSnapshotSelectedResume = null;
+      const res = await this.queryResumeSnapshotText();
+      this.resumeSnapshotLoading = false;
+      if (res?.code === 1) {
+        this.resumeSnapshotList = Array.isArray(res.info)
+          ? res.info
+              .filter((item) =>
+                Object.prototype.hasOwnProperty.call(snapshotTypeMap, item.snapshotType),
+              )
+              .map((item) => ({
+                ...item,
+                snapshotType: snapshotTypeMap[item.snapshotType],
+              }))
+          : [];
+        if (this.resumeSnapshotList.length > 0) {
+          this.selectResumeSnapshot(this.resumeSnapshotList[0]);
+        }
+      } else {
+        this.resumeSnapshotList = [];
+      }
+      return res;
+    },
+    closeResumeSnapshotDrawer() {
+      this.resumeSnapshotFlag = false;
+      this.resumeSnapshotPreviewMode = false;
+      this.resumeSnapshotLoading = false;
+      this.resumeSnapshotList = [];
+      this.resumeSnapshotSelectedId = '';
+      this.resumeSnapshotSelectedResume = null;
+      this.resumeSnapshotParseError = '';
+    },
+    selectResumeSnapshot(snapshot: ResumeSnapshotItem) {
+      this.resumeSnapshotSelectedId = snapshot.id ?? '';
+      this.resumeSnapshotParseError = '';
+      try {
+        this.resumeSnapshotSelectedResume = sanitizeResumeSnapshot(
+          parseResumeSnapshotText(snapshot.snapshotText),
+        );
+      } catch (e: any) {
+        this.resumeSnapshotSelectedResume = null;
+        this.resumeSnapshotParseError = e?.message ? String(e.message) : 'parse error';
+      }
     },
   },
 });

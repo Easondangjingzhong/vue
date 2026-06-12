@@ -200,7 +200,13 @@
       </a-col>
       <a-col :span="8" style="text-align: right">
          <a-button
-          v-if="props.showResumeRightOutFlag && showResumeAdd && resumeData.recruitId && resumeData.limitFlag != '限制' && resumeData.limitFlag != '限制分单' && !(resumeData.checkFlag == '待核' || resumeData.checkFlag == '过期')"
+          v-if="uploadManageFlag && props.showResumeRightOutFlag && !resumeData.recruitId"
+          style="margin-left: 4px;background-color: orange;color: #fff;"
+           size="middle"
+           @click="handleOpenResumeSnapshot"
+          >快照</a-button>
+         <a-button
+          v-if="props.showResumeRightOutFlag && showResumeAdd && resumeData.recruitId && (resumeData.limitFlag == '激活' || (resumeData.fristFlag == '首增' && resumeData.projectFlag == '在保'))"
           style="margin-left: 4px;background-color: orange;color: #fff;"
            size="middle"
           @click="handleAddCheckedTongbu"
@@ -311,6 +317,7 @@
       </a-col>
     </a-row>
     <RecommendCandidatePosition />
+    <ResumeSnapshotDrawer />
     <a-modal :maskClosable="false" @cancel="handleCloseResumeUploadeManage" v-model:open="openResumeUploadeManage" style="width: 600px;" title="下载简历" :footer="null">
           <a-row :gutter="24" style="margin-top: 10px;">
             <a-col :span="24">
@@ -351,6 +358,7 @@
   import { formatToDateMinute } from '/@/utils/dateUtil';
   import { PlusSquareFilled, PhoneFilled, CloseOutlined } from '@ant-design/icons-vue';
   import RecommendCandidatePosition from './RecommendCandidatePosition.vue';
+  import ResumeSnapshotDrawer from './ResumeSnapshotDrawer.vue';
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   const resumeDetailStore = useResumeDetailStore();
   const { resumeDetail,resumeId,personWholeFlag,workWholeFlag,educationWholeFlag,languageWholeFlag,selfWholeFlag,copyed } =storeToRefs(resumeDetailStore);
@@ -558,6 +566,9 @@
   if (loginVueUser.loginId == '434' || loginVueUser.loginId == '444'  || loginVueUser.loginId == '142') {
     uploadManageFlag.value = true;
   }
+  const handleOpenResumeSnapshot = () => {
+    resumeDetailStore.openResumeSnapshotDrawer();
+  };
   // 如果简历的创建人不是当前登录人，则显示复制简历按钮
     // 注意：此处需要和后端协商好，获取简历创建人id的api
     // 假设resumeDetail.recruitId 就是简历创建人id
