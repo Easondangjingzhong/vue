@@ -2,6 +2,7 @@
   <a-drawer
     v-model:open="resumeSnapshotFlag"
     title="简历快照"
+    :mask="false"
     :maskClosable="false"
     :keyboard="false"
     :closable="false"
@@ -13,49 +14,52 @@
     <template #extra>
       <CloseOutlined @click="handleClose" />
     </template>
-    <a-row :gutter="12">
-      <a-col :span="8" class="snapshot-list-panel">
-        <div class="snapshot-list-header">
+    <div class="snapshot-drawer-body">
+      <div class="snapshot-resize-handle" @mousedown="handleResizeStart"></div>
+      <div class="snapshot-layout">
+      <div class="snapshot-list-panel">
+        <!-- <div class="snapshot-list-header">
           <span>快照记录</span>
           <a-tag color="blue" v-if="selectedSnapshotRecord">当前查看：{{ selectedSnapshotRecord.snapshotType }}</a-tag>
+        </div> -->
+        <div class="snapshot-list-table">
+          <a-table
+            size="small"
+            :pagination="false"
+            rowKey="id"
+            :columns="columns"
+            :dataSource="resumeSnapshotList"
+            :loading="resumeSnapshotLoading"
+            :rowClassName="rowClassName"
+          >
+            <template #bodyCell="{ column, record, index }">
+              <template v-if="column.key === 'index'">
+                <span class="snapshot-index">{{ Number(index) + 1 }}</span>
+              </template>
+              <template v-else-if="column.key === 'snapshotType'">
+                <span class="snapshot-type-cell">
+                  {{ record.snapshotType }}
+                </span>
+              </template>
+              <template v-else-if="column.key === 'createTime'">{{ formatToDateMinute(record.createTime) }}</template>
+              <template v-else-if="column.key === 'action'">
+                <a-button
+                  size="small"
+                  :type="record.id === resumeSnapshotSelectedId ? 'primary' : 'default'"
+                  @click="handleView(record)"
+                >
+                  {{ record.id === resumeSnapshotSelectedId ? '查看' : '查看' }}
+                </a-button>
+              </template>
+            </template>
+          </a-table>
         </div>
-        <a-table
-          size="small"
-          :pagination="false"
-          rowKey="id"
-          :columns="columns"
-          :dataSource="resumeSnapshotList"
-          :loading="resumeSnapshotLoading"
-          :rowClassName="rowClassName"
-        >
-          <template #bodyCell="{ column, record, index }">
-            <template v-if="column.key === 'index'">
-              <span class="snapshot-index">{{ Number(index) + 1 }}</span>
-            </template>
-            <template v-else-if="column.key === 'snapshotType'">
-              <span class="snapshot-type-cell">
-                {{ record.snapshotType }}
-                <a-tag v-if="record.id === resumeSnapshotSelectedId" color="processing">当前</a-tag>
-              </span>
-            </template>
-            <template v-else-if="column.key === 'createTime'">{{ formatToDateMinute(record.createTime) }}</template>
-            <template v-else-if="column.key === 'action'">
-              <a-button
-                size="small"
-                :type="record.id === resumeSnapshotSelectedId ? 'primary' : 'default'"
-                @click="handleView(record)"
-              >
-                {{ record.id === resumeSnapshotSelectedId ? '当前查看' : '查看' }}
-              </a-button>
-            </template>
-          </template>
-        </a-table>
-      </a-col>
-      <a-col :span="16" class="snapshot-preview">
+      </div>
+      <div class="snapshot-preview">
         <a-alert v-if="resumeSnapshotParseError" type="error" :message="resumeSnapshotParseError" />
         <a-empty v-else-if="!resumeSnapshotSelectedResume" description="请选择快照" />
         <div v-else class="snapshot-preview-card">
-          <div class="snapshot-preview-header">
+          <!-- <div class="snapshot-preview-header">
             <div class="snapshot-preview-title">
               <span>{{ resumeSnapshotSelectedResume.userName || '-' }} 的简历快照</span>
               <a-tag color="processing">{{ selectedSnapshotRecord?.snapshotType || '快照' }}</a-tag>
@@ -65,7 +69,7 @@
               <span>时间：{{ selectedSnapshotRecord ? formatToDateMinute(selectedSnapshotRecord.createTime) : '-' }}</span>
               <span>记录：第 {{ selectedSnapshotIndex + 1 }} 条</span>
             </div>
-          </div>
+          </div> -->
           <div class="snapshot-preview-body">
             <ResumeDetailPersonInfo :resumeData="resumeSnapshotSelectedResume" :showResumeAdd="false" />
             <ResumeDetailWorkInfo
@@ -91,13 +95,14 @@
             <ResumeDetaiSelfInfo :resumeData="resumeSnapshotSelectedResume" :showResumeAdd="false" />
           </div>
         </div>
-      </a-col>
-    </a-row>
+      </div>
+    </div>
+    </div>
   </a-drawer>
 </template>
 
 <script setup lang="ts">
-  import { computed } from 'vue';
+  import { computed, onBeforeUnmount, ref } from 'vue';
   import { storeToRefs } from 'pinia';
   import { CloseOutlined } from '@ant-design/icons-vue';
   import { formatToDateMinute } from '/@/utils/dateUtil';
@@ -118,14 +123,18 @@
     resumeSnapshotParseError,
   } = storeToRefs(resumeDetailStore);
 
-  const drawerWidth = computed(() => Math.min(1400, Math.max(980, Math.round(window.innerWidth * 0.9))));
+  const defaultDrawerWidth = 680;
+  const minDrawerWidth = 430;
+  const maxDrawerWidth = () => Math.min(1600, window.innerWidth - 80);
+  const drawerWidth = ref(Math.min(maxDrawerWidth(), Math.max(minDrawerWidth, defaultDrawerWidth)));
+  const isResizing = ref(false);
 
   const columns = [
     { title: '编号', key: 'index', width: 50 },
-    { title: '动作', dataIndex: 'snapshotType', key: 'snapshotType', width: 90 },
+    { title: '动作', dataIndex: 'snapshotType', key: 'snapshotType', width: 50 },
     { title: '顾问', dataIndex: 'realNameEn', key: 'realNameEn', width: 120 },
     { title: '日期', dataIndex: 'createTime', key: 'createTime', width: 160 },
-    { title: '快照', key: 'action', width: 100 },
+    { title: '快照', key: 'action', width: 60 },
   ];
 
   const selectedSnapshotIndex = computed(() =>
@@ -161,12 +170,77 @@
     resumeDetailStore.selectResumeSnapshot(record);
   };
 
+  const handleResizeMove = (event: MouseEvent) => {
+    if (!isResizing.value) {
+      return;
+    }
+    const nextWidth = window.innerWidth - event.clientX;
+    drawerWidth.value = Math.min(maxDrawerWidth(), Math.max(minDrawerWidth, nextWidth));
+  };
+
+  const handleResizeEnd = () => {
+    if (!isResizing.value) {
+      return;
+    }
+    isResizing.value = false;
+    document.body.style.userSelect = '';
+    document.body.style.cursor = '';
+    window.removeEventListener('mousemove', handleResizeMove);
+    window.removeEventListener('mouseup', handleResizeEnd);
+  };
+
+  const handleResizeStart = (event: MouseEvent) => {
+    event.preventDefault();
+    isResizing.value = true;
+    document.body.style.userSelect = 'none';
+    document.body.style.cursor = 'col-resize';
+    window.addEventListener('mousemove', handleResizeMove);
+    window.addEventListener('mouseup', handleResizeEnd);
+  };
+
   const rowClassName = (record: any) => {
     return record.id === resumeSnapshotSelectedId.value ? 'snapshot-row-active' : '';
   };
+
+  onBeforeUnmount(() => {
+    handleResizeEnd();
+  });
 </script>
 
 <style scoped lang="less">
+  .snapshot-drawer-body {
+    position: relative;
+    height: 100%;
+  }
+  .snapshot-resize-handle {
+    position: absolute;
+    left: -14px;
+    top: -14px;
+    bottom: -14px;
+    width: 12px;
+    cursor: col-resize;
+    z-index: 20;
+  }
+  .snapshot-resize-handle::after {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    border-radius: 2px;
+    background: transparent;
+    transition: background 0.2s ease;
+  }
+  .snapshot-resize-handle:hover::after {
+    background: #1677ff;
+  }
+  .snapshot-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: calc(100vh - 120px);
+  }
   .snapshot-list-panel {
     .snapshot-list-header {
       display: flex;
@@ -174,6 +248,15 @@
       justify-content: space-between;
       margin-bottom: 10px;
       font-weight: 600;
+    }
+    .snapshot-list-table {
+      max-height: 260px;
+      overflow: auto;
+      border: 1px solid #f0f0f0;
+      border-radius: 10px;
+      background: #fff;
+      box-shadow: 0 6px 16px rgb(0 0 0 / 6%);
+      padding: 8px 8px 2px;
     }
   }
   .snapshot-index {
@@ -187,7 +270,7 @@
     gap: 6px;
   }
   .snapshot-preview {
-    max-height: calc(100vh - 120px);
+    flex: 1 1 auto;
     overflow: auto;
     padding-right: 6px;
   }

@@ -17,7 +17,11 @@ import MarketDataList from './components/MarketDataList.vue';
 import { useMarketDataStoreWithOut } from '/@/store/modules/marketData';
 const marketDataStore = useMarketDataStoreWithOut();
 marketDataStore.queryProvince();
-marketDataStore.queryBranList();
+marketDataStore.queryBrandList();
+marketDataStore.queryPositionsList();
+marketDataStore.queryStructureAllByLevel();
+marketDataStore.queryConsultantByTeam({ teamId: '' });
+marketDataStore.queryMappingTempDuplicateList();
 </script>
 
 <style lang="less" scoped>

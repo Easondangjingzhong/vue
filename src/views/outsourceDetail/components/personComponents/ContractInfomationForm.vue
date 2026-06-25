@@ -176,7 +176,7 @@ const componentsShow = computed(() => {
     // 只保留第一个遇到的相同componentName的组件
     if (!uniqueComponentsMap.has(item?.componentName)) {
       if (item?.componentName == "职位名称" || item?.componentName == "岗位名称") {
-        contractInfomatiomForm.value[item?.componentProps] = (contractInfomationFormTemp.value[getControlField(item?.componentName)] || '')?.replace(/[\u4e00-\u9fff\/]+/g, '') || '';
+        contractInfomatiomForm.value[item?.componentProps] = (contractInfomationFormTemp.value[getControlField(item?.componentName)] || '')?.replace(/[\u4e00-\u9fff\/()（）]+/g, '') || '';
       } else {
         contractInfomatiomForm.value[item?.componentProps] = contractInfomationFormTemp.value[getControlField(item?.componentName)] || '';
       }

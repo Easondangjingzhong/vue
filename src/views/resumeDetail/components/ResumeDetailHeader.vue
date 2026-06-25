@@ -405,8 +405,9 @@
         : props.resumeData.resumeStatus == '保证期中'? "外包保护期中" :""),
   )
   const zaibaoPerson = ref(
-    props.resumeData.zaibaoRecruitId
-      ? `激活顾问: ${props.resumeData.zaibaoName} 激活时间${formatToDateMinute(props.resumeData.zaibaoStartTime)} - ${formatToDateMinute(props.resumeData.zaibaoEndTime)}`
+    props.resumeData.zaibaoRecruitId && props.resumeData.fristFlag == '首增'
+      ? `首增顾问: ${props.resumeData.zaibaoName} 首增时间${formatToDateMinute(props.resumeData.zaibaoStartTime)} - ${formatToDateMinute(props.resumeData.zaibaoEndTime)}`
+      : props.resumeData.zaibaoRecruitId ? `激活顾问: ${props.resumeData.zaibaoName} 激活时间${formatToDateMinute(props.resumeData.zaibaoStartTime)} - ${formatToDateMinute(props.resumeData.zaibaoEndTime)}`
         : "",
   )
   const offerTime = ref(

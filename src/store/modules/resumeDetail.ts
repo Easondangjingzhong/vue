@@ -58,7 +58,11 @@ const isNullLikeValue = (value: any) => {
   }
   if (typeof value === 'string') {
     const normalizedValue = value.trim().replace(/`/g, '').toLowerCase();
-    return normalizedValue === '' || normalizedValue === 'null' || normalizedValue === 'undefined';
+    return (
+      normalizedValue === '' ||
+      normalizedValue === 'null' ||
+      normalizedValue === 'undefined'
+    );
   }
   return false;
 };
@@ -90,6 +94,9 @@ const sanitizeResumeSnapshot = (resume: any) => {
   }
   if (isNullLikeValue(resume.age)) {
     resume.age = calculateAgeByBirthday(resume.birthYear, resume.bornMonth, resume.bornDay);
+  }
+  if (isNullLikeValue(resume.nationality)) {
+    resume.nationality = '中国';
   }
   return resume;
 };
@@ -1246,8 +1253,8 @@ export const useResumeDetailStore = defineStore('app-Resume', {
      */
     async queryResumeSnapshotText() {
       const formData = new FormData();
-      const phone = this.resumeDetail.resume.phoneNum;
-      formData.append('phoneNum', phone);
+      const resumeId = this.resumeDetail.resume.id?.toString() || '';
+      formData.append('resumeId', resumeId);
       const res = await fetchApi.queryResumeSnapshotText(formData);
       return res;
     },

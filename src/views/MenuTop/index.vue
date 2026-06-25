@@ -381,8 +381,8 @@
               menuArrTemp.value.forEach((subItem) => {
                 if (subItem.key === 'mapping') {
                   subItem.children?.push({
-                    label: '商场信息',
-                    title: '商场信息',
+                    label: '数据录入',
+                    title: '数据录入',
                     key: 'MarketData',
                     showFlag: false,
                     index: 0,
@@ -399,8 +399,8 @@
                 children: [
                   {
                     key: 'MarketData',
-                    label: '商场信息',
-                    title: '商场信息',
+                    label: '数据录入',
+                    title: '数据录入',
                     showFlag: false,
                     index: 0,
                   },

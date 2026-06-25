@@ -64,7 +64,7 @@ const constantRoutes: RouteRecordRaw[] = [
     path: '/marketData',
     name: 'MarketData',
     component: MarketData,
-    meta: { title: '商场信息' },
+    meta: { title: '数据录入' },
   },
   // ...accessRoutes,
 ];

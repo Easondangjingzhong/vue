@@ -356,7 +356,10 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         jinxinMonth: item.jinxinMonth ? formatToMonth(item.jinxinMonth) : '',
         realEntryTime: item.realEntryTime ? formatToDate(item.realEntryTime) : '',
         realLeaveTime: item.realLeaveTime ? formatToDate(item.realLeaveTime) : '',
-        manageChargeAllocationRate: (Number(item.manageChargeAllocationTax || 0)-Number(item.manageChargeAllocationAfter || 0)).toFixed(2),
+        manageChargeAllocationRate: (
+          Number(item.manageChargeAllocationTax || 0) -
+          Number(item.manageChargeAllocationAfter || 0)
+        ).toFixed(2),
         userNameCn: item.userNameCn
           ? `${item.userNameCn}${item.userNameEn ? '/' + item.userNameEn : ''}`
           : '',
@@ -467,13 +470,15 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           value: item.positionId,
         };
       }),
-    getOutsourceCompanyAll: (state) =>
-      state.outsourceCompanyAll?.map((item) => {
+    getOutsourceCompanyAll: (state) => [
+      ...(state.outsourceCompanyAll?.map((item) => {
         return {
           label: item.cn,
           value: item.cn,
         };
-      }),
+      }) || []),
+      { label: '石头岛', value: '石头岛' },
+    ],
     getOutsourceRecruitList: (state) => {
       const recruitList =
         state.counselorList?.flatMap(
@@ -540,7 +545,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
               (detailItem.companyTotal || 0) +
               (detailItem.personTotal || 0) +
               (detailItem.canbaoMoney || 0) +
-            (detailItem.chaMoney || 0) +
+              (detailItem.chaMoney || 0) +
               parseFloat(
                 detailItem.serviceMoney?.toString() == '公式'
                   ? '0'
@@ -669,8 +674,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
             }
           }
         }
-        const sheBaoMoneyPersonValue =
-          Number(item.monthShebao || 0) + Number(item.yijin || 0);
+        const sheBaoMoneyPersonValue = Number(item.monthShebao || 0) + Number(item.yijin || 0);
         const sheBaoMoneyValue =
           Number(item.companyShebaoKe || 0) + Number(item.companyYijinKe || 0);
         const canBaoMoneyValue = Number(item.canBaoKe || 0);
@@ -704,7 +708,12 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         const rateValue = parseRateFromManageGongShi(item.manageGongShi);
         const serviceFeeValue = Number(item.manageChargeAfter || 0);
         const shangbaoValue = Number(item.keShangbao || 0);
-        const salaryTaxValue = personCostValue + serviceFeeValue + shangbaoValue  + Number(item.chenbenTiaochaKe || 0)+ Number(item.otherPayKe || 0);
+        const salaryTaxValue =
+          personCostValue +
+          serviceFeeValue +
+          shangbaoValue +
+          Number(item.chenbenTiaochaKe || 0) +
+          Number(item.otherPayKe || 0);
         const allHours = (
           parseFloat(item.currentMonthShiHours || '0') +
           parseFloat(item.overHours || '0') +
@@ -730,12 +739,17 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         let salaryRateFuJiaMoney = 0;
         if (Number(item.manageChargeRate) == 0.0672) {
           salaryRateValue = 0.06;
-          salaryRateMoneyValue =
-            (Number(item.manageChargeTaxMoney) / Number(item.manageChargeRate)) * salaryRateValue;
           salaryRateFuJiaValue = 0.0072;
-          salaryRateFuJiaMoney =
-            (Number(item.manageChargeTaxMoney) / Number(item.manageChargeRate)) *
-            salaryRateFuJiaValue;
+          if (item.companyName == '盟可睐') {
+            salaryRateFuJiaMoney = (salaryTaxValue / (1 + salaryRateValue)) * salaryRateFuJiaValue;
+            salaryRateMoneyValue = (salaryTaxValue + salaryRateFuJiaMoney) * salaryRateValue;
+          } else {
+            salaryRateMoneyValue =
+              (Number(item.manageChargeTaxMoney) / Number(item.manageChargeRate)) * salaryRateValue;
+            salaryRateFuJiaMoney =
+              (Number(item.manageChargeTaxMoney) / Number(item.manageChargeRate)) *
+              salaryRateFuJiaValue;
+          }
         } else {
           salaryRateValue = Number(item.manageChargeRate);
           salaryRateMoneyValue = Number(item.manageChargeTaxMoney);
@@ -1059,26 +1073,23 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     getOutsourceAttendZhixingMonth: (state) =>
       state.outsourceAttendZhixingMonth.map((item, index) => ({
         ...item,
-        index: (index + 1),
-      }
-    )),
+        index: index + 1,
+      })),
     getOutsourceYeJiZhixingMonth: (state) =>
       state.outsourceYeJiZhixingMonth.map((item, index) => ({
         ...item,
-        index: (index + 1),
-      }
-    )),
+        index: index + 1,
+      })),
     getOutsourceQingKuanZhixingMonth: (state) =>
       state.outsourceQingKuanZhixingMonth.map((item, index) => ({
         ...item,
-        index: (index + 1),
+        index: index + 1,
         xinZiRiShow: item.xinZiRi ? item.xinZiRi.split('-')[1] : '',
         sendTime: item.sendTime ? formatToDate(item.sendTime) : '',
         sureTime: item.sureTime ? formatToDate(item.sureTime) : '',
         invoiceTime: item.invoiceTime ? formatToDate(item.invoiceTime) : '',
         collectionTime: item.collectionTime ? formatToDate(item.collectionTime) : '',
-      }
-    )),
+      })),
   },
   actions: {
     /**
@@ -2333,7 +2344,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
               temp.zhuanChargeTax = (parseFloat(record.zhuanChargeTax) * 0.25).toFixed(2);
               temp.zhuanChargeRate = '25%';
               temp.zhuanChargeAfter =
-                (parseFloat(record.zhuanChargeTax) * 0.25 / manageChargeRate).toFixed(2) || '0';
+                ((parseFloat(record.zhuanChargeTax) * 0.25) / manageChargeRate).toFixed(2) || '0';
             } else {
               const manageChargeAllocationTax =
                 resTeamMsg?.info[0]?.outFlag === '1'
@@ -2347,7 +2358,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
               temp.zhuanChargeTax = (parseFloat(record.zhuanChargeTax) * 0.25).toFixed(2);
               temp.zhuanChargeRate = '25%';
               temp.zhuanChargeAfter =
-                (parseFloat(record.zhuanChargeTax) * 0.25 / manageChargeRate).toFixed(2) || '0';
+                ((parseFloat(record.zhuanChargeTax) * 0.25) / manageChargeRate).toFixed(2) || '0';
             }
             temp.money = tempDetail?.money;
             temp.taxIncluded = tempDetail?.taxIncluded;
@@ -2966,15 +2977,20 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       }
     },
     /**
- * 51上传采购社保
- * @param companyName
- * @param totalMoney
- * @param applyRecruitId
- * @param applyRealNameEn
- * @param personNum
- * @returns
- */
-    async addOutsourceSalaryPurchaseSheBao(yearAndMonthJiao: string, companyName: string, totalMoney: string, personNum: string) {
+     * 51上传采购社保
+     * @param companyName
+     * @param totalMoney
+     * @param applyRecruitId
+     * @param applyRealNameEn
+     * @param personNum
+     * @returns
+     */
+    async addOutsourceSalaryPurchaseSheBao(
+      yearAndMonthJiao: string,
+      companyName: string,
+      totalMoney: string,
+      personNum: string,
+    ) {
       try {
         const params = new FormData();
         params.append('yearAndMonthJiao', yearAndMonthJiao || '');
@@ -3091,7 +3107,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         const params = new FormData();
         params.append('zhixingMonth', zhixingMonth || '');
         const res = await fetchApi.queryOutsourceAttendZhixingMonth(params);
-         if (res.code === 1) {
+        if (res.code === 1) {
           this.outsourceAttendZhixingMonth = res.info || [];
         }
         return res;
@@ -3099,7 +3115,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         return null;
       }
     },
-     /**
+    /**
      * 执行月查询查询外包业绩
      * @param zhixingMonth
      * @returns
@@ -3109,7 +3125,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         const params = new FormData();
         params.append('zhixingMonth', zhixingMonth || '');
         const res = await fetchApi.queryOutsourceYeJiZhixingMonth(params);
-         if (res.code === 1) {
+        if (res.code === 1) {
           this.outsourceYeJiZhixingMonth = res.info || [];
         }
         return res;
@@ -3127,7 +3143,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         const params = new FormData();
         params.append('zhixingMonth', zhixingMonth || '');
         const res = await fetchApi.queryOutsourceQingKuanZhixingMonth(params);
-         if (res.code === 1) {
+        if (res.code === 1) {
           this.outsourceQingKuanZhixingMonth = res.info || [];
         }
         return res;
@@ -3135,7 +3151,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         return null;
       }
     },
-     /**
+    /**
      * 执行月账单发送HR
      * @param collectId
      * @param sendHr
@@ -3154,7 +3170,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         return null;
       }
     },
-     /**
+    /**
      * 执行月账单HR确认
      * @param collectId
      * @param hrSure
@@ -3173,7 +3189,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         return null;
       }
     },
-     /**
+    /**
      * 执行月账更新账单
      * @param collectId
      * @param companyName
@@ -3183,7 +3199,14 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
      * @param jobType
      * @returns
      */
-    async queryOutsourceQingKuanZhandan(collectId?: string,companyName?: string, zhanDanMonth?: string, zhixingMonth?: string, xinZiRi?: string, jobType?: string) {
+    async queryOutsourceQingKuanZhandan(
+      collectId?: string,
+      companyName?: string,
+      zhanDanMonth?: string,
+      zhixingMonth?: string,
+      xinZiRi?: string,
+      jobType?: string,
+    ) {
       try {
         const params = new FormData();
         params.append('collectId', collectId || '');
@@ -3199,23 +3222,36 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       }
     },
     /**
- * 执行月账单开票
- * @param collectId
- * @param invoiceFlag
- * @param invoiceTime
- * @param  invoiceNumber
- * @param  invoiceCompany
- * @param  invoiceMoney
- * @param  invoiceMoneyAfter
- * @param  taxMoney
- * @param  taxRate
- * @param  invoiceType
- * @param  kehuName
- * @param  SystemRecruitId
- * @param  file
- * @returns
- */
-    async queryOutsourceQingKuanInvoice(collectId: string, invoiceFlag: string, invoiceTime: string, invoiceNumber: string, invoiceCompany: string,invoiceMoney: string, taxMoney: string, invoiceMoneyAfter: string, taxRate: string, invoiceType: string, kehuName: string, file: any) {
+     * 执行月账单开票
+     * @param collectId
+     * @param invoiceFlag
+     * @param invoiceTime
+     * @param  invoiceNumber
+     * @param  invoiceCompany
+     * @param  invoiceMoney
+     * @param  invoiceMoneyAfter
+     * @param  taxMoney
+     * @param  taxRate
+     * @param  invoiceType
+     * @param  kehuName
+     * @param  SystemRecruitId
+     * @param  file
+     * @returns
+     */
+    async queryOutsourceQingKuanInvoice(
+      collectId: string,
+      invoiceFlag: string,
+      invoiceTime: string,
+      invoiceNumber: string,
+      invoiceCompany: string,
+      invoiceMoney: string,
+      taxMoney: string,
+      invoiceMoneyAfter: string,
+      taxRate: string,
+      invoiceType: string,
+      kehuName: string,
+      file: any,
+    ) {
       try {
         const params = new FormData();
         params.append('collectId', collectId || '');
@@ -3229,7 +3265,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         params.append('taxRate', taxRate || '');
         params.append('invoiceType', invoiceType || '');
         params.append('kehuName', kehuName || '');
-        params.append('SystemRecruitId',  loginVueUser?.loginId || '');
+        params.append('SystemRecruitId', loginVueUser?.loginId || '');
         params.append('file', file);
         const res = await fetchApi.queryOutsourceQingKuanInvoice(params);
         return res;
@@ -3237,24 +3273,37 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         return null;
       }
     },
-     /**
- * 执行月账单开票
- * @param oldCollectId
- * @param invoiceFlag
- * @param invoiceTime
- * @param  invoiceNumber
- * @param  invoiceCompany
- * @param  invoiceMoney
- * @param  invoiceMoneyAfter
- * @param  taxMoney
- * @param  taxRate
- * @param  invoiceType
- * @param  kehuName
- * @param  SystemRecruitId
- * @param  file
- * @returns
- */
-    async queryOutsourceQingKuanInvoiceFen(oldCollectId: string, invoiceFlag: string, invoiceTime: string, invoiceNumber: string, invoiceCompany: string,invoiceMoney: string, taxMoney: string, invoiceMoneyAfter: string, taxRate: string, invoiceType: string, kehuName: string, file: any) {
+    /**
+     * 执行月账单开票
+     * @param oldCollectId
+     * @param invoiceFlag
+     * @param invoiceTime
+     * @param  invoiceNumber
+     * @param  invoiceCompany
+     * @param  invoiceMoney
+     * @param  invoiceMoneyAfter
+     * @param  taxMoney
+     * @param  taxRate
+     * @param  invoiceType
+     * @param  kehuName
+     * @param  SystemRecruitId
+     * @param  file
+     * @returns
+     */
+    async queryOutsourceQingKuanInvoiceFen(
+      oldCollectId: string,
+      invoiceFlag: string,
+      invoiceTime: string,
+      invoiceNumber: string,
+      invoiceCompany: string,
+      invoiceMoney: string,
+      taxMoney: string,
+      invoiceMoneyAfter: string,
+      taxRate: string,
+      invoiceType: string,
+      kehuName: string,
+      file: any,
+    ) {
       try {
         const params = new FormData();
         params.append('oldCollectId', oldCollectId || '');
@@ -3268,7 +3317,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         params.append('taxRate', taxRate || '');
         params.append('invoiceType', invoiceType || '');
         params.append('kehuName', kehuName || '');
-        params.append('SystemRecruitId',  loginVueUser?.loginId || '');
+        params.append('SystemRecruitId', loginVueUser?.loginId || '');
         params.append('file', file);
         const res = await fetchApi.queryOutsourceQingKuanInvoiceFen(params);
         return res;
@@ -3294,13 +3343,17 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       }
     },
     /**
- * 新增51社保尾差
- * @param yearAndMonth
- * @param companyName
- * @param chaMoney 
- * @returns 
- */
-    async addOutsourceQingKuanShebaoaoWeiCha(yearAndMonth: string, companyName: string, chaMoney: string) {
+     * 新增51社保尾差
+     * @param yearAndMonth
+     * @param companyName
+     * @param chaMoney
+     * @returns
+     */
+    async addOutsourceQingKuanShebaoaoWeiCha(
+      yearAndMonth: string,
+      companyName: string,
+      chaMoney: string,
+    ) {
       try {
         const res = await fetchApi.addOutsourceQingKuanShebaoaoWeiCha({
           yearAndMonth: yearAndMonth || '',

@@ -19,7 +19,7 @@
         <a-select
           v-model:value="form.assignRecruitId"
           placeholder="请选择要分配给谁"
-          :options="getEnterpriseConsultant"
+          :options="getPersonList"
           optionFilterProp="label"
           showSearch
           allowClear
@@ -44,7 +44,7 @@ const open = defineModel<boolean>('open', { default: false });
 const emits = defineEmits<{ (e: 'success'): void }>();
 
 const marketDataStore = useMarketDataStoreWithOut();
-const { getEnterpriseConsultant } = storeToRefs(marketDataStore);
+const { getPersonList } = storeToRefs(marketDataStore);
 
 const formRef = ref<FormInstance>();
 const submitting = ref(false);
@@ -73,8 +73,8 @@ watch(
     }
     form.userName = props.record?.userName || '';
     form.assignRecruitId = props.record?.assignRecruitId?.toString() || undefined;
-    if (!getEnterpriseConsultant.value?.length) {
-      await marketDataStore.queryEnterpriseConsultant();
+    if (!getPersonList.value?.length) {
+      await marketDataStore.queryConsultantByTeam({teamId: ''});
     }
   },
 );
@@ -85,7 +85,7 @@ const handleSubmit = async () => {
     return;
   }
   await formRef.value?.validate();
-  const assignOption = getEnterpriseConsultant.value?.find(
+  const assignOption = getPersonList.value?.find(
     (item) => item.value === form.assignRecruitId,
   );
   submitting.value = true;

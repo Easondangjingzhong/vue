@@ -1,5 +1,6 @@
 export interface MarketDataListSearchItem {
   userName: string;
+  phoneNum?: string;
   type: string;
   city: string;
   assignStatus: string;
@@ -9,14 +10,19 @@ export interface MarketDataListSearchItem {
   brandId: string;
   entryRecruitId: string;
   assignRecruitId: string;
+  teamId: string;
+  checkTime?: Date;
+  positionId?: string | number;
+  tellFlag?: string;
 }
 
 export interface MappingTempItem {
   id?: string | number;
   type?: string;
   userName?: string;
-  userNameCn?: string;
-  userNameEn?: string;
+  resumePath?: string;
+  floor?: string;
+  isRepeat?: string;
   city?: string;
   marketId?: string | number;
   marketName?: string;
@@ -42,4 +48,22 @@ export interface MappingTempItem {
   currentFlag?: string;
   tellFlag?: string;
   systemRecruitId?: string | number;
+}
+
+export interface MarketRightListSearchItem {
+  pageNumber?: number;
+  city?: string;
+  cityStr?: string;
+  market?: string;
+  marketStr?: string;
+  marketLevel?: string;
+  marketPhone?: string;
+  brandPhone?: string;
+  floor?: string;
+  brand?: string;
+  retail?: string;
+  category?: string;
+  brandStr?: string;
+  brandLevel?: string;
+  resumeHave?: string;
 }
