@@ -3,6 +3,7 @@ export interface MarketDataListSearchItem {
   phoneNum?: string;
   type: string;
   city: string;
+  isRepeat?: string;
   assignStatus: string;
   checkStatus: string;
   jobStatus: string;
@@ -10,7 +11,7 @@ export interface MarketDataListSearchItem {
   brandId: string;
   entryRecruitId: string;
   assignRecruitId: string;
-  teamId: string;
+  teamId: string | string[];
   checkTime?: Date;
   positionId?: string | number;
   tellFlag?: string;

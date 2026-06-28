@@ -13,6 +13,7 @@
       <a-tag v-if="column.key === 'hrSure' && record.sendHr" :color="record.hrSure ? 'green' : 'orange'">{{ record.hrSure ? '已确认' : '待确认' }}</a-tag>
       <a-tag v-if="column.key === 'invoiceFlag' && record.hrSure" :color="record.invoiceFlag ? 'green' : 'orange'">{{ record.invoiceFlag ? '已开' : '待开' }}</a-tag>
       <a-tag v-if="column.key === 'collectionFlag' && record.invoiceFlag" :color="record.collectionFlag ? 'green' : 'orange'">{{ record.collectionFlag ? '已回' : '待回' }}</a-tag>
+      <a-button type="primary" size="small" @click="handlePreview(record.excelPath)">查看</a-button>
       <template v-if="column.key === 'operation'">
           <a-dropdown>
             <span class="ant-dropdown-link" style="cursor: pointer;" @click.prevent>
@@ -253,17 +254,56 @@
       </a-form-item>
     </a-form>
   </a-modal>
+   <a-drawer
+    v-model:open="orginalPathBlobPathFlag"
+    title="文件预览"
+    :maskClosable="false"
+    :keyboard="false"
+    :closable="false"
+    :width="drawerWidth"
+    :bodyStyle="{ padding: '4px 14px' }"
+    :headerStyle="{ padding: '5px 18px 5px 12px' }"
+    placement="right"
+  >
+    <template #extra>
+      <CloseOutlined @click="closeDrawer" />
+    </template>
+    <div>
+      <OrginalPath :orginalPathBlobPath="orginalPathBlobPath" />
+    </div>
+  </a-drawer>
 </template>
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import type { TableColumnsType, UploadProps } from 'ant-design-vue';
-import { MenuUnfoldOutlined } from '@ant-design/icons-vue';
+import { CloseOutlined, MenuUnfoldOutlined } from '@ant-design/icons-vue';
 import { Modal, message } from 'ant-design-vue';
+import OrginalPath from '/@/components/OrginalPath/index.vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
 const { getOutsourceQingKuanZhixingMonth, outsourcePersonSalaryCommitYearAndMonth } =
   storeToRefs(outsourceDetailStore);
+const orginalPathBlobPathFlag = ref(false);
+const orginalPathBlobPath = ref('');
+const drawerWidth = ref(Math.max(600, window.innerWidth * 0.6));
+const closeDrawer = () => {
+  orginalPathBlobPathFlag.value = false;
+  orginalPathBlobPath.value = '';
+};
+const handlePreview = (excelPath?: string) => {
+  if (!excelPath) {
+    message.error('文件不存在');
+    return;
+  }
+  const src = /^https?:\/\//i.test(excelPath)
+    ? excelPath
+    : excelPath.startsWith('/')
+    ? new URL(excelPath, window.location.origin).toString()
+    : excelPath;
+  orginalPathBlobPath.value = src;
+  orginalPathBlobPathFlag.value = true;
+};
 const invoiceTypeOptions = ref([
   { value: '专票', label: '专票' },
   { value: '普票', label: '普票' },

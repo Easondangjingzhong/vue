@@ -111,13 +111,44 @@ export const useMarketDataStore = defineStore('app-MarketData', {
           value: item.id?.toString(),
         };
       }),
-    getStructureList: (state) =>
-      state.structureList?.map((item) => {
-        return {
+    getStructureList: (state) => {
+      const sourceList = state.structureList || [];
+      const nodeMap = new Map<string, any>();
+
+      sourceList.forEach((item) => {
+        nodeMap.set(item.structureId?.toString(), {
           label: item.structureName,
-          value: item.structureId,
-        };
-      }),
+          value: item.structureId?.toString(),
+          children: [],
+        });
+      });
+
+      const rootNodes: any[] = [];
+
+      sourceList.forEach((item) => {
+        const currentId = item.structureId?.toString();
+        const parentId = item.parentId?.toString();
+        const currentNode = nodeMap.get(currentId);
+
+        if (!currentNode) {
+          return;
+        }
+
+        if (item.structureLevel === 0 || !parentId || parentId === '0') {
+          rootNodes.push(currentNode);
+          return;
+        }
+
+        const parentNode = nodeMap.get(parentId);
+        if (parentNode) {
+          parentNode.children.push(currentNode);
+        } else {
+          rootNodes.push(currentNode);
+        }
+      });
+
+      return rootNodes;
+    },
     getPersonList: (state) =>
       state.personList?.map((item) => {
         return {
@@ -185,11 +216,15 @@ export const useMarketDataStore = defineStore('app-MarketData', {
      * @returns
      */
     async queryMappingTempPageAjax() {
+      const teamId = Array.isArray(this.formStateMarketData.teamId)
+        ? this.formStateMarketData.teamId.join(',')
+        : this.formStateMarketData.teamId;
       const res = await fetchApi
         .queryMappingTempPageAjax({
           pageNumber: this.pageMarketDataList.pageNum,
           endRow: this.pageMarketDataList.pageSize,
           type: this.formStateMarketData.type,
+          isRepeat: this.formStateMarketData.isRepeat,
           assignStatus: this.formStateMarketData.assignStatus,
           checkStatus: this.formStateMarketData.checkStatus,
           jobStatus: this.formStateMarketData.jobStatus,
@@ -199,7 +234,7 @@ export const useMarketDataStore = defineStore('app-MarketData', {
           brandId: this.formStateMarketData.brandId,
           entryRecruitId: this.formStateMarketData.entryRecruitId,
           assignRecruitId: this.formStateMarketData.assignRecruitId,
-          teamId: this.formStateMarketData.teamId,
+          teamId,
           positionId: this.formStateMarketData.positionId,
           tellFlag: this.formStateMarketData.tellFlag,
           userName: this.formStateMarketData.userName,
@@ -330,6 +365,54 @@ export const useMarketDataStore = defineStore('app-MarketData', {
         systemRecruitId: loginVueUser.loginId || '',
       };
       const res = await fetchApi.addMappingTemp(payload);
+      if (res.code === 1) {
+        this.queryMappingTempPageAjax();
+        this.queryMappingTempDuplicateList();
+      }
+      return res;
+    },
+    /**
+     * 修改
+     * @param id
+     * @param floor
+     * @param age
+     * @param sex
+     * @param jobStatus
+     * @param positionName
+     * @param positionId
+     * @param phoneNum
+     * @param brandName
+     * @param brandId
+     * @param marketName
+     * @param marketId
+     * @param city
+     * @param userName
+     * @param type
+     * @returns
+     */
+    async updateMappingTemp(data?: Partial<MappingTempItem>) {
+      const payload = {
+        id: data?.id || '',
+        type: data?.type || '',
+        userName: data?.userName || '',
+        city: data?.city || '',
+        marketId: data?.marketId?.toString() || '',
+        marketName: data?.marketName || '',
+        brandId: data?.brandId?.toString() || '',
+        brandName: data?.brandName || '',
+        phoneNum: data?.phoneNum || '',
+        positionId: data?.positionId?.toString() || '',
+        positionName: data?.positionName || '',
+        jobStatus: data?.jobStatus || '',
+        sex: data?.sex || '',
+        age: data?.age || '',
+        floor: data?.floor || '',
+        isRepeat: data?.isRepeat || '',
+        checkStatus: data?.checkStatus || '',
+        resumePath: data?.resumePath || '',
+        systemRecruitId: loginVueUser.loginId || '',
+      };
+      const res = await fetchApi.updateMappingTemp(payload);
       if (res.code === 1) {
         this.queryMappingTempPageAjax();
         this.queryMappingTempDuplicateList();

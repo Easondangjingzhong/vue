@@ -678,7 +678,8 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         const sheBaoMoneyValue =
           Number(item.companyShebaoKe || 0) + Number(item.companyYijinKe || 0);
         const canBaoMoneyValue = Number(item.canBaoKe || 0);
-        const personCostValue = Number(item.monthTax || 0) + sheBaoMoneyValue + canBaoMoneyValue;
+        const shangbaoValue = Number(item.keShangbao || 0);
+        const personCostValue = Number(item.monthTax || 0) + sheBaoMoneyValue + canBaoMoneyValue + shangbaoValue;
         const parseRateFromManageGongShi = (val: unknown) => {
           if (typeof val === 'number') {
             if (!Number.isFinite(val)) {
@@ -707,11 +708,9 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         };
         const rateValue = parseRateFromManageGongShi(item.manageGongShi);
         const serviceFeeValue = Number(item.manageChargeAfter || 0);
-        const shangbaoValue = Number(item.keShangbao || 0);
         const salaryTaxValue =
           personCostValue +
           serviceFeeValue +
-          shangbaoValue +
           Number(item.chenbenTiaochaKe || 0) +
           Number(item.otherPayKe || 0);
         const allHours = (
@@ -740,7 +739,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         if (Number(item.manageChargeRate) == 0.0672) {
           salaryRateValue = 0.06;
           salaryRateFuJiaValue = 0.0072;
-          if (item.companyName == '盟可睐') {
+          if (item.companyName == '盟可睐' || item.companyName == '石头岛') {
             salaryRateFuJiaMoney = (salaryTaxValue / (1 + salaryRateValue)) * salaryRateFuJiaValue;
             salaryRateMoneyValue = (salaryTaxValue + salaryRateFuJiaMoney) * salaryRateValue;
           } else {

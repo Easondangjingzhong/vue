@@ -17,14 +17,19 @@
       </a-form-item>
       <a-form-item
         v-if="form.checkStatus === '错误'"
-        label="错误原因"
-        name="falseReason"
-        :rules="[{ required: true, message: '请输入错误原因' }]"
+        label="错误项"
+        name="falseReasonList"
+        :rules="[{ required: true, type: 'array', min: 1, message: '请选择错误项' }]"
       >
-        <a-textarea v-model:value="form.falseReason" :rows="4" placeholder="请输入错误原因" />
+        <a-checkbox-group v-model:value="form.falseReasonList" class="false-reason-group">
+          <a-row :gutter="[16, 12]">
+            <a-col v-for="item in falseReasonOptions" :key="item.value" :span="12">
+              <a-checkbox :value="item.value">{{ item.label }}</a-checkbox>
+            </a-col>
+          </a-row>
+        </a-checkbox-group>
       </a-form-item>
       <a-form-item
-        v-else
         label="备注"
         name="checkRemark"
         :rules="[{ required: false, message: '请输入备注' }]"
@@ -55,12 +60,28 @@
     checkStatus: '正确',
     checkRemark: '',
     falseReason: '',
+    falseReasonList: [] as string[],
   });
+  const falseReasonOptionSource = computed(() => [
+    { key: 'city', title: '城市', content: props.record?.city || '' },
+    { key: 'brand', title: '品牌', content: props.record?.brandName || '' },
+    { key: 'market', title: '商场', content: props.record?.marketName || '' },
+    { key: 'userName', title: '姓名', content: props.record?.userName || '' },
+    { key: 'phoneNum', title: '电话', content: props.record?.phoneNum || '' },
+    { key: 'position', title: '职位', content: props.record?.positionName || '' },
+  ].filter((item) => item.content));
+  const falseReasonOptions = computed(() =>
+    falseReasonOptionSource.value.map((item) => ({
+      label: `${item.title}: ${item.content}`,
+      value: item.key,
+    })),
+  );
 
   const resetForm = () => {
     form.checkStatus = '正确';
     form.checkRemark = '';
     form.falseReason = '';
+    form.falseReasonList = [];
     formRef.value?.clearValidate();
   };
 
@@ -82,6 +103,16 @@
       }
       form.checkRemark = props.record?.checkRemark || '';
       form.falseReason = props.record?.falseReason || '';
+      const falseReasonItems = form.falseReason
+        ? form.falseReason.split('&').map((item) => item.trim()).filter(Boolean)
+        : [];
+      form.falseReasonList = falseReasonOptionSource.value
+        .filter((item) =>
+          falseReasonItems.includes(item.key) ||
+          falseReasonItems.includes(item.content) ||
+          falseReasonItems.includes(`${item.title}: ${item.content}`),
+        )
+        .map((item) => item.key);
     },
   );
 
@@ -100,11 +131,17 @@
     await formRef.value?.validate();
     submitting.value = true;
     try {
+      const falseReason = form.checkStatus === '错误'
+        ? falseReasonOptionSource.value
+            .filter((item) => form.falseReasonList.includes(item.key))
+            .map((item) => `${item.title}: ${item.content}`)
+            .join('&')
+        : '';
       const res = await marketDataStore.updateCheckMappingTemp({
         id: props.record.id?.toString(),
         checkStatus: form.checkStatus,
-        checkRemark: form.checkStatus === '错误' ? '' : form.checkRemark,
-        falseReason: form.checkStatus === '错误' ? form.falseReason : '',
+        checkRemark: form.checkRemark,
+        falseReason,
       });
       if (res?.code === 1) {
         message.success('核对成功');
@@ -119,3 +156,15 @@
   };
 </script>
 
+<style scoped lang="less">
+  .false-reason-group {
+    width: 100%;
+  }
+  .false-reason-group :deep(.ant-checkbox-wrapper) {
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+    margin-inline-start: 0;
+    text-align: left;
+  }
+</style>

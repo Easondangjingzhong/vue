@@ -1,7 +1,7 @@
 <template>
   <a-modal
     v-model:open="open"
-    title="新增人才"
+    :title="isEditMode ? '修改人才' : '新增人才'"
     :maskClosable="false"
     :confirm-loading="submitting"
     @cancel="handleClose"
@@ -84,7 +84,7 @@
           </a-form-item>
         </a-col>
          <a-col :span="12">
-            <a-form-item label="性别" name="sex">
+            <a-form-item label="性别" name="sex" :rules="[{ required: true, message: '请选择性别' }]">
             <a-radio-group v-model:value="form.sex">
               <a-radio value="男">男</a-radio>
               <a-radio value="女">女</a-radio>
@@ -103,6 +103,7 @@
               showSearch
               allowClear
               @change="handleMarketChange"
+              @search="handleCityAndMarktName"
             />
           </a-form-item>
         </a-col>
@@ -162,14 +163,14 @@
       <span class="check-result-icon">!</span>
       <span class="check-result-text">提示：{{ phoneCheckMessage }}</span>
     </div>
-    <div v-if="phoneCheckCanSubmit" class="modal-footer-actions">
+    <div v-if="isEditMode || phoneCheckCanSubmit" class="modal-footer-actions">
       <a-space>
         <a-button @click="handleClose">取消</a-button>
-        <a-button type="primary" :loading="submitting" @click="handleSubmit">提交</a-button>
+        <a-button type="primary" :loading="submitting" @click="handleSubmit">{{ isEditMode ? '保存' : '提交' }}</a-button>
       </a-space>
     </div>
     <div v-else class="modal-footer-actions">
-      <a-button type="primary" :loading="phoneChecking" @click="handlePhoneCheck">查重</a-button>
+      <a-button type="primary" :loading="phoneChecking" :disabled="!canPhoneCheck" @click="handlePhoneCheck">查重</a-button>
     </div>
     <MappingTempDuplicateList :data="duplicateRecords" />
   </a-modal>
@@ -186,6 +187,10 @@ import MappingTempDuplicateList from './MappingTempDuplicateList.vue';
 import MarketBrandLinkPanel from './MarketBrandLinkPanel.vue';
 import { nextTick } from 'vue';
 
+const props = defineProps<{
+  record?: MappingTempItem | null;
+}>();
+
 const open = defineModel<boolean>('open', { default: false });
 const emits = defineEmits<{ (e: 'success'): void }>();
 
@@ -198,6 +203,7 @@ type PhoneCheckRecord = Partial<MappingTempItem> & {
 
 const marketDataStore = useMarketDataStoreWithOut();
 const { getProvince, getCity, getMarkList, getBrandList, getPositionsList } = storeToRefs(marketDataStore);
+const isEditMode = computed(() => !!props.record?.id);
 
 const jobStatusValueMap: Record<string, string> = {
   在职: '1',
@@ -319,6 +325,20 @@ const phoneCheckPassed = ref(false);
 const phoneCheckMessage = ref('');
 const phoneCheckStatus = ref<'success' | 'error' | 'warning'>('success');
 const phoneCheckCanSubmit = computed(() => phoneCheckPassed.value);
+const canPhoneCheck = computed(() => {
+  return !!(
+    form.type &&
+    (form.userName || '').trim() &&
+    normalizePhoneNumber(form.phoneNum) &&
+    form.city &&
+    form.sex &&
+    form.marketId &&
+    form.brandId &&
+    form.jobStatus &&
+    form.floor &&
+    form.positionId
+  );
+});
 const duplicateRecords = ref<PhoneCheckRecord[]>([]);
 const syncingPhoneCheckResult = ref(false);
 const brandLinkPanelVisible = ref(false);
@@ -368,6 +388,7 @@ const jobStatusOptions = [
 ];
 
 const form = reactive<MappingTempItem>({
+  id: '',
   type: '',
   userName: '',
   resumePath: '',
@@ -411,6 +432,7 @@ const phoneRules: RuleObject[] = [
 ];
 
 const resetForm = () => {
+  form.id = '';
   form.type = '';
   form.userName = '';
   form.resumePath = '';
@@ -436,6 +458,65 @@ const resetForm = () => {
   phoneCheckPassed.value = false;
   phoneCheckMessage.value = '';
   resetBrandLinkPanel();
+};
+
+const fillFormByEditRecord = async (record: MappingTempItem) => {
+  form.id = record.id || '';
+  form.type = record.type || '';
+  form.userName = record.userName || '';
+  form.resumePath = record.resumePath || '';
+  form.city = record.city || '';
+  form.sex = record.sex || '';
+  form.age = record.age || '';
+  form.phoneNum = record.phoneNum || '';
+  form.jobStatus = record.jobStatus || '';
+  form.positionId = record.positionId || '';
+  form.positionName = record.positionName || '';
+  form.isRepeat = record.isRepeat || '';
+  form.checkStatus = record.checkStatus || '';
+  form.marketId = '';
+  form.marketName = '';
+  form.brandId = '';
+  form.brandName = '';
+  form.floor = '';
+  resetBrandLinkPanel();
+
+  if (form.city) {
+    await marketDataStore.queryMarketMapping({
+      city: form.city,
+      marketName: record.marketName || '',
+      curPage: 1,
+    });
+  }
+
+  const matchedMarket =
+    getMarkList.value.find((item) => String(item.value) === String(record.marketId)) ||
+    getMarkList.value.find((item) => item.label === record.marketName);
+  form.marketId = matchedMarket?.value || record.marketId || '';
+  form.marketName = matchedMarket?.label || record.marketName || '';
+
+  if (form.marketId) {
+    await marketDataStore.queryMarkBrandFloor(String(form.marketId), '');
+  }
+
+  const matchedBrand =
+    getBrandList.value.find((item) => String(item.value) === String(record.brandId)) ||
+    getBrandList.value.find((item) => item.label === record.brandName);
+  form.brandId = matchedBrand?.value || record.brandId || '';
+  form.brandName = matchedBrand?.label || record.brandName || '';
+
+  if (form.marketId && form.brandId) {
+    const brandRes = await marketDataStore.checkCandidateMarketBrand({
+      marketId: form.marketId,
+      brandId: form.brandId,
+    });
+    if (brandRes?.code === 1) {
+      const result = brandRes?.info?.[0];
+      form.floor = result?.floor || record.floor || '';
+      return;
+    }
+  }
+  form.floor = record.floor || '';
 };
 
 const handleSimpleFileChange = async (info: any) => {
@@ -509,9 +590,17 @@ watch(
 
 watch(
   () => open.value,
-  (value) => {
+  async (value) => {
     if (!value) {
       resumeUploadStatus.value = 'idle';
+      return;
+    }
+    await marketDataStore.queryProvince();
+    if (isEditMode.value && props.record) {
+      await withPhoneCheckSync(async () => {
+        resetForm();
+        await fillFormByEditRecord(props.record as MappingTempItem);
+      });
     }
   },
 );
@@ -549,7 +638,11 @@ const handleMarketChange = (value: string) => {
   resetBrandLinkPanel();
   marketDataStore.queryMarkBrandFloor(value || '', '');
 };
-
+const handleCityAndMarktName = (value: string) => {
+  if (value) {
+    marketDataStore.queryMarkList(form.city || '', value);
+  }
+};
 const handleBrandChange = (value: string) => {
   const selectedBrand = getBrandList.value.find((item) => String(item.value) === String(value));
   form.brandName = selectedBrand?.label || '';
@@ -581,6 +674,7 @@ const handleLinkBrand = async () => {
     bId: form.brandId,
     floor: brandLinkFloor.value,
     isChe: 0,
+    entryData: 1,
     phoneBrand: '',
   };
 
@@ -663,14 +757,16 @@ const handleSubmit = async () => {
       brandName: getBrandList.value.find((item) => item.value === form.brandId)?.label || '',
       positionName: getPositionsList.value.find((item) => item.value === form.positionId)?.label || '',
     };
-    const res = await marketDataStore.addMappingTemp(payload);
+    const res = isEditMode.value
+      ? await marketDataStore.updateMappingTemp(payload)
+      : await marketDataStore.addMappingTemp(payload);
     if (res && (res.code === 1 || res.code === 2)) {
-      message.success(res?.info || '新增成功');
+      message.success(isEditMode.value ? (res?.info || '修改成功') : (res?.info || '新增成功'));
       emits('success');
       handleClose();
       return;
     }
-    message.error(res?.info || '新增失败');
+    message.error(res?.info || (isEditMode.value ? '修改失败' : '新增失败'));
   } finally {
     submitting.value = false;
   }

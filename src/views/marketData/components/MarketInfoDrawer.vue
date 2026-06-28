@@ -151,56 +151,6 @@
       <a-form ref="addBrandNewFormRef" :model="addBrandNewForm" layout="vertical">
         <a-row :gutter="16">
           <a-col :span="12">
-            <a-form-item label="行业" name="retail" :rules="[{ required: true, message: '请选择行业' }]">
-              <a-select
-                v-model:value="addBrandNewForm.retail"
-                :options="industryOptions"
-                optionFilterProp="label"
-                showSearch
-                allowClear
-                @change="handleAddBrandNewRetailChange"
-              />
-            </a-form-item>
-          </a-col>
-          <a-col :span="12">
-            <a-form-item label="品牌级别" name="retailLevel" :rules="[{ required: true, message: '请选择品牌级别' }]">
-              <a-select
-                v-model:value="addBrandNewForm.retailLevel"
-                :options="pinjibieArr"
-                optionFilterProp="label"
-                showSearch
-                allowClear
-              />
-            </a-form-item>
-          </a-col>
-        </a-row>
-        <a-row :gutter="16">
-          <a-col :span="12">
-            <a-form-item label="品类" name="category" :rules="[{ required: true, message: '请选择品类' }]">
-              <a-select
-                v-model:value="addBrandNewForm.category"
-                :options="addBrandNewCategoryOptions"
-                optionFilterProp="label"
-                showSearch
-                allowClear
-                @change="handleAddBrandNewCategoryChange"
-              />
-            </a-form-item>
-          </a-col>
-          <a-col :span="12">
-            <a-form-item label="类别" name="leibie" :rules="[{ required: true, message: '请选择类别' }]">
-              <a-select
-                v-model:value="addBrandNewForm.leibie"
-                :options="addBrandNewLeibieOptions"
-                optionFilterProp="label"
-                showSearch
-                allowClear
-              />
-            </a-form-item>
-          </a-col>
-        </a-row>
-        <a-row :gutter="16">
-          <a-col :span="12">
             <a-form-item label="中文品牌" name="cnName" :rules="[{ required: true, message: '请输入中文品牌' }]">
               <a-input v-model:value="addBrandNewForm.cnName" allowClear />
             </a-form-item>
@@ -208,31 +158,6 @@
           <a-col :span="12">
             <a-form-item label="英文品牌" name="usName" :rules="[{ required: true, message: '请输入英文品牌' }]">
               <a-input v-model:value="addBrandNewForm.usName" allowClear />
-            </a-form-item>
-          </a-col>
-        </a-row>
-        <a-row :gutter="16">
-          <a-col :span="12">
-            <a-form-item label="标准" name="standard" :rules="[{ required: true, message: '请选择标准' }]">
-              <a-select v-model:value="addBrandNewForm.standard" :options="standardOptions" allowClear />
-            </a-form-item>
-          </a-col>
-          <a-col :span="12">
-            <a-form-item label="品牌地区" name="pinji" :rules="[{ required: true, message: '请选择品牌地区' }]">
-              <a-select
-                v-model:value="addBrandNewForm.pinji"
-                :options="pinjiArr"
-                optionFilterProp="label"
-                showSearch
-                allowClear
-              />
-            </a-form-item>
-          </a-col>
-        </a-row>
-        <a-row :gutter="16">
-          <a-col :span="12">
-            <a-form-item label="来源" name="source" :rules="[{ required: true, message: '请选择来源' }]">
-              <a-select v-model:value="addBrandNewForm.source" :options="sourceOptions" allowClear />
             </a-form-item>
           </a-col>
         </a-row>
@@ -249,7 +174,7 @@
   import { CloseOutlined } from '@ant-design/icons-vue';
   import { MarketRightListSearchItem } from '/@/api/marketData/model';
   import { useMarketDataStoreWithOut } from '/@/store/modules/marketData';
-  import { brandArrDetail, brandCategoryArr, pinjiArr, pinjibieArr } from '/@/store/data/resume';
+  import { brandArrDetail, pinjibieArr } from '/@/store/data/resume';
   const industryOptions = computed(() => brandArrDetail.map((item) => ({
     label: item.retail,
     value: item.retail,
@@ -423,61 +348,19 @@
     source: '公司',
   });
 
-  const standardOptions = [
-    { label: '是', value: '是' },
-    { label: '否', value: '否' },
-  ];
-  const sourceOptions = [
-    { label: '公司', value: '公司' },
-    { label: '人才', value: '人才' },
-  ];
-
-  const addBrandNewCategoryOptions = computed(() => {
-    return (
-      brandArrDetail
-        .find((item) => item.retail === addBrandNewForm.retail)
-        ?.categoryArr?.map((item) => ({ label: item, value: item })) || []
-    );
-  });
-
-  const addBrandNewLeibieOptions = computed(() => {
-    const category = addBrandNewForm.category;
-    if (!category) {
-      return [];
-    }
-    const retailTitle = brandArrDetail.find((item) => item.retail === addBrandNewForm.retail)?.title;
-    const leibieList = brandCategoryArr
-      .filter((item) => item.category === category)
-      .reduce((prev: string[], curr: any) => {
-        if ((curr.title && retailTitle && curr.title === retailTitle) || !curr.title) {
-          curr.leibie.forEach((v: string) => prev.push(v));
-        }
-        return prev;
-      }, []);
-    return leibieList.map((item) => ({ label: item, value: item }));
-  });
-
   const addBrandNew = async () => {
     addBrandNewForm.cnName = '';
     addBrandNewForm.usName = '';
     addBrandNewForm.shortOne = '';
-    addBrandNewForm.retail = formStateMarketRightList.value.retail || '';
-    addBrandNewForm.retailLevel = formStateMarketRightList.value.brandLevel || '';
-    addBrandNewForm.category = formStateMarketRightList.value.category || '';
-    addBrandNewForm.leibie = '';
-    addBrandNewForm.pinji = '国内';
-    addBrandNewForm.standard = '是';
-    addBrandNewForm.source = '公司';
-    addBrandNewFormRef.value?.clearValidate?.();
-    addBrandNewOpen.value = true;
-  };
-
-  const handleAddBrandNewRetailChange = () => {
+    addBrandNewForm.retail = '';
+    addBrandNewForm.retailLevel = '';
     addBrandNewForm.category = '';
     addBrandNewForm.leibie = '';
-  };
-  const handleAddBrandNewCategoryChange = () => {
-    addBrandNewForm.leibie = '';
+    addBrandNewForm.pinji = '';
+    addBrandNewForm.standard = '';
+    addBrandNewForm.source = '';
+    addBrandNewFormRef.value?.clearValidate?.();
+    addBrandNewOpen.value = true;
   };
 
   const handleAddBrandNewClose = () => {

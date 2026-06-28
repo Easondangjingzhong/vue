@@ -41,15 +41,19 @@
         </a-col>
         <a-col :span="spanSearch">
           <a-form-item name="brandId" label="团队">
-            <a-select
-              optionFilterProp="label"
+            <a-tree-select
               v-model:value="formStateMarketData.teamId"
-              :options="getStructureList"
+              tree-node-filter-prop="label"
+              :tree-data="getStructureList"
               @change="handleTeamChange"
-              :showArrow="false"
-              showSearch
-              allowClear
-            ></a-select>
+              :max-tag-text-length="3"
+              :max-tag-count="1"
+              multiple
+              tree-checkable
+              tree-default-expand-all
+              show-search
+              allow-clear
+            />
           </a-form-item>
         </a-col>
         <a-col :span="spanSearch">
@@ -173,11 +177,18 @@
             </div>
           </a-form-item>
         </a-col>
-         <a-col :span="spanSearch">
+         <a-col :span="3">
           <a-button type="primary" html-type="submit">搜索</a-button>
           <a-button style="margin: 0 8px" @click="clearFromState">清空</a-button>
         </a-col>
-        <a-col :span="spanSearch" style="text-align: right;">
+        <a-col :span="5" style="text-align: right;">
+          <a-button
+            :class="{ repeat_button_active: formStateMarketData.isRepeat === '1' }"
+            @click="handleRepeatSearch"
+            style="margin: 0 8px 0 0;"
+          >
+            重复
+          </a-button>
           <a-button @click="handleMarketInfo" style="margin: 0 8px 0 0;">商场信息</a-button>
           <a-button @click="handleAddClick">新增人才</a-button>
         </a-col>
@@ -188,10 +199,19 @@
     <a-row>
     <a-table size="small" :pagination="false" rowKey="key" :columns="columnsMappingRseult" :dataSource="getMarketDataList">
       <template #bodyCell="{ column, record }">
+        <template v-if="column.key === 'userName'">
+          <a v-if="record.userName && record.resumePath" @click="handlePreview(record.resumePath)">{{ record.userName }}</a>
+          <span v-else>{{ record.userName }}</span>
+        </template>
         <template v-if="column.key === 'checkStatus'">
           <a-tag v-if="!record.checkStatus && record.isRepeat !== '1'" color="orange">待核</a-tag>
           <a-tag v-if="record.checkStatus == '正确' && record.isRepeat !== '1'" :title="record.checkRemark" style="cursor: pointer;" color="green">正确</a-tag>
-          <a-tag v-if="record.checkStatus == '错误' && record.isRepeat !== '1'" :title="record.falseReason" style="cursor: pointer;" color="red">错误</a-tag>
+          <a-tag
+            v-if="record.checkStatus == '错误' && record.isRepeat !== '1'"
+            :title="`${(record.falseReason || '').replace(/&/g, '\r')}${record.checkRemark ? `\r${record.checkRemark}` : ''}`"
+            style="cursor: pointer;"
+            color="red"
+          >错误</a-tag>
           <a-tag v-if="record.checkStatus == '重复' || record.isRepeat == '1'" :title="record.checkRemark" style="cursor: pointer;" color="red">重复</a-tag>
           <a-tag v-if="record.checkStatus == '存疑' && record.isRepeat !== '1'" color="orange">存疑</a-tag>
         </template>
@@ -230,6 +250,9 @@
                 <a-menu-item v-if="record.assignStatus == '已分配'" >
                  <a href="javascript:;" @click="handleChecked(record)">核对</a>
                 </a-menu-item>
+                <a-menu-item v-if="(!record.checkStatus || record.checkStatus == '错误') && record.isRepeat !== '1'">
+                 <a href="javascript:;" @click="handleUpdate(record)">修改</a>
+                </a-menu-item>
               </a-menu>
             </template>
           </a-dropdown>
@@ -258,18 +281,37 @@
     </a-row>
   </div>
   <!-- <AddMarketBrandModal v-model:open="addBrandModalOpen" /> -->
-  <AddMappingTempModal v-model:open="addModalOpen" @success="onSearch" />
+  <AddMappingTempModal v-model:open="addModalOpen" :record="currentEditRecord" @success="onSearch" />
   <AssignMappingTempModal v-model:open="assignModalOpen" :record="currentAssignRecord" @success="onSearch" />
   <CheckMappingTempModal v-model:open="checkModalOpen" :record="currentCheckRecord" @success="onSearch" />
   <MarketInfoDrawer
     v-model:open="marketInfoDrawerOpen"
     :initial-filters="marketInfoInitialFilters"
   />
+   <a-drawer
+    v-model:open="orginalPathBlobPathFlag"
+    title="文件预览"
+    :maskClosable="false"
+    :keyboard="false"
+    :closable="false"
+    :width="drawerWidth"
+    :bodyStyle="{ padding: '4px 14px' }"
+    :headerStyle="{ padding: '5px 18px 5px 12px' }"
+    placement="right"
+  >
+    <template #extra>
+      <CloseOutlined @click="closeDrawer" />
+    </template>
+    <div>
+      <OrginalPath :orginalPathBlobPath="orginalPathBlobPath" />
+    </div>
+  </a-drawer>
 </template>
 <script setup lang="ts">
   import dayjs from 'dayjs';
   import { storeToRefs } from 'pinia';
-  import { MenuUnfoldOutlined } from '@ant-design/icons-vue';
+  import { message } from 'ant-design-vue';
+  import { CloseOutlined, MenuUnfoldOutlined } from '@ant-design/icons-vue';
   import { MarketDataListSearchItem, MappingTempItem, MarketRightListSearchItem } from '/@/api/marketData/model';
   import { useMarketDataStoreWithOut } from '/@/store/modules/marketData';
   //import AddMarketBrandModal from './AddMarketBrandModal.vue';
@@ -277,14 +319,40 @@
   import AssignMappingTempModal from './AssignMappingTempModal.vue';
   import CheckMappingTempModal from './CheckMappingTempModal.vue';
   import MarketInfoDrawer from './MarketInfoDrawer.vue';
+  import OrginalPath from '/@/components/OrginalPath/index.vue';
   const marketDataStore = useMarketDataStoreWithOut();
-  const { formStateMarketData, getMarketDataList, pageMarketDataList, getSearchCityList, getSearchBrandList, getSearchMarketList, getSearchPositionList, getStructureList, getSearchAssignList, getSearchEntryList } = storeToRefs(marketDataStore);
+  const { formStateMarketData, getMarketDataList, pageMarketDataList, getSearchBrandList, getSearchMarketList, getSearchPositionList, getStructureList, getSearchAssignList, getSearchEntryList } = storeToRefs(marketDataStore);
   const spanSearch = ref(4);
   const onSearch = () => {
+    formStateMarketData.value.isRepeat = '';
+    pageMarketDataList.value.pageNum = 1;
     marketDataStore.queryMappingTempPageAjax();
   }
+  const orginalPathBlobPathFlag = ref(false);
+  const orginalPathBlobPath = ref('');
+  const drawerWidth = ref(Math.max(600, window.innerWidth * 0.5));
+  const closeDrawer = () => {
+    orginalPathBlobPathFlag.value = false;
+    orginalPathBlobPath.value = '';
+  };
+  const handlePreview = (resumePath?: string) => {
+    if (!resumePath) {
+      message.error('文件不存在');
+      return;
+    }
+    const src = /^https?:\/\//i.test(resumePath)
+      ? resumePath
+      : resumePath.startsWith('/')
+      ? new URL(resumePath, window.location.origin).toString()
+      : resumePath;
+    orginalPathBlobPath.value = src;
+    orginalPathBlobPathFlag.value = true;
+  };
   const handleTeamChange = () => {
-    marketDataStore.queryConsultantByTeam({ teamId: formStateMarketData.value.teamId });
+    const teamId = Array.isArray(formStateMarketData.value.teamId)
+      ? formStateMarketData.value.teamId.join(',')
+      : formStateMarketData.value.teamId;
+    marketDataStore.queryConsultantByTeam({ teamId });
   }
   const quickDateKey = ref<
     | 'yesterday'
@@ -354,7 +422,13 @@
   };
   const clearFromState = () => {
     formStateMarketData.value = reactive<MarketDataListSearchItem>({} as MarketDataListSearchItem);
+    formStateMarketData.value.isRepeat = '';
     quickDateKey.value = undefined;
+  }
+  const handleRepeatSearch = () => {
+    formStateMarketData.value.isRepeat = '1';
+    pageMarketDataList.value.pageNum = 1;
+    marketDataStore.queryMappingTempPageAjax();
   }
   const handleMarketDataListData = (pageNum: number) => {
     pageMarketDataList.value.pageNum = pageNum;
@@ -368,7 +442,13 @@
     marketDataStore.queryMarkList(formStateMarketData.value.city || '' ,value || '');
   }
   const addModalOpen = ref(false);
+  const currentEditRecord = ref<MappingTempItem | null>(null);
   const handleAddClick = () => {
+    currentEditRecord.value = null;
+    addModalOpen.value = true;
+  }
+  const handleUpdate = (record: MappingTempItem) => {
+    currentEditRecord.value = { ...record };
     addModalOpen.value = true;
   }
   const addBrandModalOpen = ref(false);
@@ -442,6 +522,13 @@
       ellipsis: true,
     },
     {
+      title: '楼层',
+      dataIndex: 'floor',
+      key: 'floor',
+      width: 20,
+      ellipsis: true,
+    },
+    {
       title: '姓名',
       dataIndex: 'userName',
       key: 'userName',
@@ -501,28 +588,28 @@
       title: '分配',
       dataIndex: 'assignStatus',
       key: 'assignStatus',
-      width: 30,
+      width: 25,
       ellipsis: true,
     },
     {
       title: '分配顾问',
       dataIndex: 'assignRealNameEn',
       key: 'assignRealNameEn',
-      width: 40,
+      width: 35,
       ellipsis: true,
     },
     {
       title: '分配日期',
       dataIndex: 'assignTime',
       key: 'assignTime',
-      width: 40,
+      width: 35,
       ellipsis: true,
     },
     {
       title: '联络',
       dataIndex: 'tellFlag',
       key: 'tellFlag',
-      width: 30,
+      width: 25,
       ellipsis: true,
     },
     {
@@ -601,11 +688,22 @@
   }
   .resume-content-search {
     margin-bottom: 10px;
-    padding-bottom: 9px;
+    padding-bottom: 0px;
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
   }
   .resume-content-search .ant-form .ant-form-item {
     margin-bottom: 10px !important;
+  }
+  .repeat_button_active {
+    color: #d46b08;
+    background: #fff7e6;
+    border-color: #ffd591;
+  }
+  .repeat_button_active:hover,
+  .repeat_button_active:focus {
+    color: #d46b08;
+    background: #fff1db;
+    border-color: #ffbb96;
   }
 </style>

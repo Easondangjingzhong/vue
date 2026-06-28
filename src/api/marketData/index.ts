@@ -56,7 +56,8 @@ const addMarketCity = async (params: any) => post<any>({ url: URL.add_market_cit
  * @param floor 楼层
  * @param SystemRecruitId
  */
-const cancelMarketBrand = async (params: any) => post<any>({ url: URL.cancel_market_brand, params });
+const cancelMarketBrand = async (params: any) =>
+  post<any>({ url: URL.cancel_market_brand, params });
 /**
  * 查询商场信息
  * @param pageNumber
@@ -76,7 +77,8 @@ const cancelMarketBrand = async (params: any) => post<any>({ url: URL.cancel_mar
  * @param resumeHave
  * @returns
  */
-const queryMappingRightMarketPage = async (params: any) => get<any>({ url: URL.query_mapping_right_market_page, params });
+const queryMappingRightMarketPage = async (params: any) =>
+  get<any>({ url: URL.query_mapping_right_market_page, params });
 /**
  * 查询重复人才列表
  * @param params
@@ -194,11 +196,32 @@ const queryMappingTempLog = async (params: any) =>
   post<any>({ url: URL.query_mapping_temp_log, params });
 /**
  * 修改
- * @param params
+ * @param id
+ * @param floor
+ * @param age
+ * @param sex
+ * @param jobStatus
+ * @param positionName
+ * @param positionId
+ * @param phoneNum
+ * @param brandName
+ * @param brandId
+ * @param marketName
+ * @param marketId
+ * @param city
+ * @param userName
+ * @param type
  * @returns
  */
-const updateMappingTemp = async (params: any) =>
-  post<any>({ url: URL.update_mapping_temp, params });
+const updateMappingTemp = async (data: any) =>
+  post<any>(
+    { url: URL.update_mapping_temp, data },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  );
 /**
  * 分配
  * @param ids

@@ -12,6 +12,21 @@
         <a-input v-model:value="form.userName" disabled />
       </a-form-item>
       <a-form-item
+        label="团队"
+        name="teamId"
+        :rules="[{ required: true, message: '请选择团队' }]"
+      >
+        <a-select
+          v-model:value="form.teamId"
+          placeholder="请选择团队"
+          :options="teamOptions"
+          optionFilterProp="label"
+          showSearch
+          allowClear
+          @change="handleTeamChange"
+        />
+      </a-form-item>
+      <a-form-item
         label="分配给谁"
         name="assignRecruitId"
         :rules="[{ required: true, message: '请选择要分配给谁' }]"
@@ -44,17 +59,35 @@ const open = defineModel<boolean>('open', { default: false });
 const emits = defineEmits<{ (e: 'success'): void }>();
 
 const marketDataStore = useMarketDataStoreWithOut();
-const { getPersonList } = storeToRefs(marketDataStore);
+const { getPersonList, getStructureList } = storeToRefs(marketDataStore);
+const teamOptions = computed(() => {
+  const result: { label: string; value: string }[] = [];
+  const walk = (list: any[] = []) => {
+    list.forEach((item) => {
+      result.push({
+        label: item.label,
+        value: item.value,
+      });
+      if (item.children?.length) {
+        walk(item.children);
+      }
+    });
+  };
+  walk(getStructureList.value || []);
+  return result;
+});
 
 const formRef = ref<FormInstance>();
 const submitting = ref(false);
 const form = reactive({
   userName: '',
+  teamId: undefined as string | undefined,
   assignRecruitId: undefined as string | undefined,
 });
 
 const resetForm = () => {
   form.userName = '';
+  form.teamId = undefined;
   form.assignRecruitId = undefined;
   formRef.value?.clearValidate();
 };
@@ -62,6 +95,11 @@ const resetForm = () => {
 const handleClose = () => {
   open.value = false;
   resetForm();
+};
+
+const handleTeamChange = async (teamId?: string) => {
+  form.assignRecruitId = undefined;
+  await marketDataStore.queryConsultantByTeam({ teamId: teamId || '' });
 };
 
 watch(
@@ -72,7 +110,11 @@ watch(
       return;
     }
     form.userName = props.record?.userName || '';
+    form.teamId = undefined;
     form.assignRecruitId = props.record?.assignRecruitId?.toString() || undefined;
+    if (!getStructureList.value?.length) {
+      await marketDataStore.queryStructureAllByLevel();
+    }
     if (!getPersonList.value?.length) {
       await marketDataStore.queryConsultantByTeam({teamId: ''});
     }
