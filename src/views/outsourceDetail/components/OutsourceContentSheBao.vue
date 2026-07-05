@@ -139,6 +139,7 @@
      <a-tag v-if="column.key === 'shebaoCompany' && record.shebaoCompany === '51社保'" color="pink">51社保</a-tag>
      <a-tag v-if="column.key === 'shebaoCompany' && record.shebaoCompany === '北京我推'" color="cyan">北京我推</a-tag>
      <a-tag v-if="column.key === 'shebaoCompany' && record.shebaoCompany === '苏州锐特'" color="purple">苏州锐特</a-tag>
+     <a-tag v-if="column.key === 'shebaoCompany' && record.shebaoCompany === '天津博瑞'" color="green">天津博瑞</a-tag>
 
       <a-tag v-if="column.key === 'shebaoStandard' && record.shebaoStandard === '1'" color="green">最低基数</a-tag>
       <a-tag v-if="column.key === 'shebaoStandard' && record.shebaoStandard === '2'" color="orange">基本工资</a-tag>

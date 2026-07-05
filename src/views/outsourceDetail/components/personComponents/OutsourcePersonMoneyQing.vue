@@ -1,11 +1,20 @@
 <template>
     <a-table
+        ref="tableRef"
+        class="qing-money-table"
         size="small"
         :columns="columns"
         :pagination="false"
-        :dataSource="getOfferOutsourceMonthSalary"
+        :dataSource="tableData"
         :scroll="{ x: scrollX }"
+        :rowKey="getRowKey"
       >
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.key === 'index'">
+          <span class="qing-row-drag-handle">⋮⋮</span>
+          <span>{{ record.index }}</span>
+        </template>
+      </template>
       <template #summary>
       <a-table-summary fixed>
         <a-table-summary-row>
@@ -27,10 +36,110 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
+import { message } from 'ant-design-vue';
 import type { TableColumnsType } from 'ant-design-vue';
+import Sortable from 'sortablejs';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
 const { getOfferOutsourceMonthSalary,getOutsourceSalaryColumnsQing } = storeToRefs(outsourceDetailStore);
+const tableRef = ref<any>(null);
+const tableData = ref<any[]>([]);
+const orderSaving = ref(false);
+let rowSortable: Sortable | null = null;
+
+const getRowKey = (record: any) => String(record?.id ?? record?.personId ?? record?.index ?? '');
+
+const syncTableData = () => {
+  const src = getOfferOutsourceMonthSalary.value || [];
+  tableData.value = src.map((item: any) => ({ ...item }));
+};
+
+const initRowSortable = () => {
+  const tbody = tableRef.value?.$el?.querySelector?.('.ant-table-tbody') as HTMLElement | null;
+  if (!tbody) {
+    return;
+  }
+
+  rowSortable?.destroy();
+  rowSortable = Sortable.create(tbody, {
+    animation: 150,
+    handle: '.qing-row-drag-handle',
+    ghostClass: 'qing-row-ghost',
+    chosenClass: 'qing-row-chosen',
+    dragClass: 'qing-row-drag',
+    filter:
+      'input, textarea, select, button, a, .ant-input, .ant-select, .ant-picker, .ant-checkbox-wrapper, .ant-switch',
+    preventOnFilter: false,
+    onEnd: async (evt) => {
+      if (orderSaving.value) {
+        return;
+      }
+
+      const rowEls = Array.from(tbody.querySelectorAll('tr[data-row-key]')) as HTMLElement[];
+      const domKeys = rowEls
+        .map((el) => el.getAttribute('data-row-key') || '')
+        .map((k) => k.trim())
+        .filter(Boolean);
+      if (domKeys.length === 0) {
+        return;
+      }
+
+      const current = tableData.value || [];
+      const byKey = new Map<string, any>();
+      current.forEach((item) => {
+        byKey.set(getRowKey(item), item);
+      });
+      const reordered = domKeys.map((k) => byKey.get(k)).filter(Boolean);
+      if (reordered.length === 0) {
+        return;
+      }
+
+      tableData.value.splice(0, tableData.value.length, ...reordered);
+      tableData.value.forEach((item: any, idx: number) => {
+        item.index = idx + 1;
+        item.orderNum = idx + 1;
+      });
+
+      const payload = tableData.value
+        .filter((item: any) => item?.id != null && item?.id !== '')
+        .map((item: any) => ({
+          id: String(item.id),
+          orderNum: Number(item.orderNum) || 0,
+        }));
+
+      if (payload.length === 0) {
+        message.error('未获取到可保存的排序数据');
+        return;
+      }
+
+      orderSaving.value = true;
+      rowSortable?.option('disabled', true);
+      try {
+        const res = await outsourceDetailStore.updateOutsourcePersonMoneyOrderNum(payload);
+        if (res?.code === 1) {
+          message.success('排序已保存');
+          return;
+        }
+        message.error(res?.msg || '排序保存失败');
+      } catch (e) {
+        message.error('排序保存失败');
+      } finally {
+        orderSaving.value = false;
+        rowSortable?.option('disabled', false);
+      }
+    },
+  });
+};
+
+watch(
+  () => getOfferOutsourceMonthSalary.value,
+  async () => {
+    syncTableData();
+    await nextTick();
+    initRowSortable();
+  },
+  { immediate: true },
+);
 const defaultColumns = computed<TableColumnsType>(() => [
     {
       title: '序号',
@@ -528,7 +637,7 @@ const scrollX = computed(() => {
     }
   }, { immediate: true });
 const summaryData = computed(() => {
-  const list = getOfferOutsourceMonthSalary.value || [];
+  const list = tableData.value || [];
   const sum = (key: string) =>
     list.reduce((acc, cur: any) => acc + Number.parseFloat(cur?.[key] || '0'), 0);
   
@@ -556,7 +665,31 @@ const summaryData = computed(() => {
     salaryTotal: sum('salaryTotal').toFixed(2),
   } as Record<string, string>;
 });
+
+onBeforeUnmount(() => {
+  rowSortable?.destroy();
+  rowSortable = null;
+});
 </script>
 
 <style lang="less" scoped>
+  .qing-money-table :deep(.ant-table-tbody > tr) {
+    cursor: default;
+  }
+  .qing-row-drag-handle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    margin-right: 6px;
+    color: rgba(0, 0, 0, 0.45);
+    cursor: grab;
+    user-select: none;
+  }
+  .qing-row-drag-handle:active {
+    cursor: grabbing;
+  }
+  .qing-row-ghost {
+    opacity: 0.6;
+  }
 </style>

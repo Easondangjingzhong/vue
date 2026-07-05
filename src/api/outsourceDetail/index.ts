@@ -90,6 +90,7 @@ enum URL {
   query_outsource_yeji_zhixing_month = '/candidateRecommend/resume-vue-select-out-Yeji-zhixingMonth.action',
   query_outsource_attend_zhixing_month = '/candidateRecommend/resume-vue-select-out-attend-zhixing-month.action',
   query_outsource_qingkuan_zhixing_month = '/candidateRecommend/resume-vue-select-out-MonthQingkuan-zhixingMonth.action',
+  update_outsource_qingkuan_order_num = '/candidateRecommend/resume-vue-update-out-MonthQingkuan-orderNum.action',
   query_outsource_qingkuan_sendHR = '/candidateRecommend/resume-vue-update-out-MonthQingkuan-SendHR.action',
   query_outsource_qingkuan_hr_confirm = '/candidateRecommend/resume-vue-update-out-MonthQingkuan-HrSUre.action',
   query_outsource_qingkuan_zhandan = '/candidateRecommend/resume-vue-insert-out-MonthQingkuan-Zhandan.action',
@@ -471,6 +472,13 @@ const outsourcePersonMarketName = async (data: any) =>
  */
 const outsourcePersonMoney = async (data: any) =>
   post<any>({ url: URL.query_outsource_person_money, data });
+/**
+ * 请款单行排序
+ * @param data Array<{ id: string; orderNum: number }>
+ * @returns
+ */
+const updateOutsourceQingKuanOrderNum = async (data: any) =>
+  post<any>({ url: URL.update_outsource_qingkuan_order_num, data });
 /**
  * 同步姓名
  * @param data rId resumeId
@@ -877,6 +885,7 @@ export default {
   queryOutsourceShebaoByPersonId,
   outsourcePersonMarketName,
   outsourcePersonMoney,
+  updateOutsourceQingKuanOrderNum,
   updateUserName,
   uploadMessageEsignFile,
   personMessageEsign,

@@ -496,8 +496,8 @@ costDetailForm.value.canBao = "0";
     costDetailForm.value.buchangHebing = temp?.buchangHebing || "0";
     costDetailForm.value.chenbenTiaochaKeFlag = temp?.chenbenTiaochaKeFlag || "1";
     costDetailForm.value.keShangbaoFlag = temp?.keShangbaoFlag || "1";
-    costDetailForm.value.manageChargeRate = temp?.manageChargeRate?.toString() || "0.0672";
-    costDetailForm.value.zhuanChargeRate = temp?.zhuanChargeRate?.toString() || "0.0672";
+    costDetailForm.value.manageChargeRate = temp?.manageChargeRate && temp?.manageChargeRate != "0" ? temp?.manageChargeRate.toString() : "0.0672";
+    costDetailForm.value.zhuanChargeRate = temp?.zhuanChargeRate && temp?.zhuanChargeRate != "0" ? temp?.zhuanChargeRate.toString() : "0.0672";
     costDetailForm.value.otherPayKeStr = temp?.otherPayKeStr;
     otherPayKeArr.value = costDetailForm.value?.otherPayKeStr ? costDetailForm.value?.otherPayKeStr?.split(';')?.map(item => ({
       label: item.split(':')[0],
@@ -596,6 +596,7 @@ const handleManageGongShiChange = (val: string) => {
     costDetailForm.value.manageChargeAllocationAfter = (Number(costDetailForm.value.moneyCahrgeTax || 0) / (1 + rateNum) - Number(costTotal.value || 0)).toFixed(2);
     //可分管理税前金额=可分管理费税后金额*(1+税率)
     costDetailForm.value.manageChargeAllocationTax = (Number(costDetailForm.value.manageChargeAllocationAfter || 0) * (1 + Number(costDetailForm.value.manageChargeRate || 0))).toFixed(2);
+    costDetailForm.value.totalCharge = (Number(costDetailForm.value.moneyCahrgeTax || 0) + Number(costDetailForm.value.zhuanChargeTax || 0) + Number(costDetailForm.value.totalChargeCha || 0)).toFixed(2);
     //handleZhuanChargeTax();
   } else if (val === '标准工时*12元+国定加班*12元*3' && costDetailForm.value.companyName == "艾秘") {
   /**

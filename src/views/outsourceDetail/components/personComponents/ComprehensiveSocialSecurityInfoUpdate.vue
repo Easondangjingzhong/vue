@@ -554,8 +554,16 @@ const handleChangeShebaoStatus = () => {
         //缴纳标准是2基本工资
   if (outsourceSocialSecurityForm.value.shebaoStandard == '2' && (getOutsourceSalaryDetailList.value.length > 0 || outsourceSocialSecurityForm.value.shebaoShijiJishu)) {
     let jishu = getOutsourceSalaryDetailList.value[0].dixin || 0;
-    outsourceSocialSecurityForm.value.shebaoShijiJishu = Number(jishu);
-    outsourceSocialSecurityForm.value.yijinShijiJishu = Number(jishu);
+    let shebaoBase = jishu;
+    if (Number(p.shebaoBase || 0) - Number(jishu) > 0) {
+      shebaoBase = p.shebaoBase;
+    }
+    let yijinBase = jishu;
+    if (Number(p.yijinBase || 0) - Number(jishu) > 0) {
+      yijinBase = p.yijinBase;
+    }
+    outsourceSocialSecurityForm.value.shebaoShijiJishu = Number(shebaoBase);
+    outsourceSocialSecurityForm.value.yijinShijiJishu = Number(yijinBase);
     handleChangeShebaoShijiJishu();
     handleChangeYijinShijiJishu();
   } 

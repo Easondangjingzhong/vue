@@ -460,6 +460,21 @@
     }
     personWholeFlagTemp.value = false;
   }
+    let ageTimeTemp = (!props.resumeData.birthYear || !props.resumeData.bornMonth || !props.resumeData.bornDay)
+    ? ''
+    : `(${props.resumeData.birthYear}-${
+        !props.resumeData.bornMonth
+          ? '01'
+          : props.resumeData.bornMonth < 10
+          ? '0' + props.resumeData.bornMonth
+          : props.resumeData.bornMonth
+      }-${
+        !props.resumeData.bornDay
+          ? '01'
+          : props.resumeData.bornDay < 10
+          ? '0' + props.resumeData.bornDay
+          : props.resumeData.bornDay
+      })`;
   watch(
     () => props.resumeData,
     (newProps) => {
@@ -494,9 +509,7 @@
         }
         personWholeFlagTemp.value = false;
       }
-    },
-  );
-  const ageTimeTemp = (!props.resumeData.birthYear || !props.resumeData.bornMonth || !props.resumeData.bornDay)
+      ageTimeTemp = (!props.resumeData.birthYear || !props.resumeData.bornMonth || !props.resumeData.bornDay)
     ? ''
     : `(${props.resumeData.birthYear}-${
         !props.resumeData.bornMonth
@@ -511,6 +524,9 @@
           ? '0' + props.resumeData.bornDay
           : props.resumeData.bornDay
       })`;
+    },
+  );
+
   const coverOptions = {
     autoCrop: true, //是否默认生成截图框
     autoCropWidth: 140, //默认生成截图框宽度

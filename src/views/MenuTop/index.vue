@@ -1,16 +1,37 @@
 <template>
   <a-layout-header class="resume_header">
-    <a-menu
-      v-model:selectedKeys="current"
-      mode="horizontal"
-      :items="items"
-      @select="handleSelect"
-    />
+    <div style="flex: 1; min-width: 0">
+      <a-menu
+        v-model:selectedKeys="current"
+        mode="horizontal"
+        :items="items"
+        @select="handleSelect"
+      />
+    </div>
+    <div class="user-info-container">
+      <a-dropdown placement="bottomRight">
+        <div class="user-profile">
+          <img v-if="imgPath" :src="imgPath" class="avatar" alt="avatar" />
+          <div v-else class="avatar-placeholder">
+            <UserOutlined />
+          </div>
+          <span style="color: white">{{ loginVueUser?.loginName }}</span>
+        </div>
+        <template #overlay>
+          <a-menu @click="handleUserMenuClick">
+            <a-menu-item key="logout">
+              <span style="color: #ff4d4f">退出</span>
+            </a-menu-item>
+          </a-menu>
+        </template>
+      </a-dropdown>
+    </div>
   </a-layout-header>
 </template>
 <script setup lang="ts">
   import { h } from 'vue';
-  import { MenuProps } from 'ant-design-vue';
+  import { MenuProps, Modal } from 'ant-design-vue';
+  import { UserOutlined } from '@ant-design/icons-vue';
   import { useRouter, useRoute } from 'vue-router';
   import { useResumeListStoreWithOut } from '/@/store/modules/resumeList';
   const router = useRouter();
@@ -18,12 +39,14 @@
   const resumeList = useResumeListStoreWithOut();
   const current = ref<string[]>([route.name as string]);
   const items = ref<MenuProps['items']>([]);
+  const imgPath = ref<string>('');
   const loginVueUser: {
     loginName: '';
     loginId: '';
     loginTocken: '';
     loginType: '';
     loginOutFlag: '';
+    loginFullPart: '';
   } = JSON.parse(localStorage.getItem('loginVueUser'));
   interface FormMenu {
     key: string;
@@ -42,7 +65,30 @@
       const rId = res.info.rId;
       const roleId = res.info.roleId;
       const type = res.info.type;
-      if (loginVueUser.loginOutFlag == '1') {
+      const groupId = res.info.groupId;
+      imgPath.value = res.info.imgPath;
+      if (loginVueUser.loginFullPart == '2') {
+         menuArrTemp.value.push({
+                key: 'mapping',
+                label: 'Mapping',
+                title: 'Mapping',
+                showFlag: false,
+                index: 5,
+                children: [
+                  {
+                    key: 'MarketData',
+                    label: '数据录入',
+                    title: '数据录入',
+                    showFlag: false,
+                    index: 0,
+                  },
+                ],
+              });
+        menuArrTemp.value.sort((a, b) => {
+          return a.index - b.index;
+        });
+        items.value = menuArrTemp.value;
+      } else if (loginVueUser.loginOutFlag == '1') {
         list.forEach((item) => {
           if (item.functionName == '人才') {
             menuArrTemp.value.push({
@@ -375,7 +421,7 @@
               });
             }
           }
-          if (item.functionName == 'Mapping' && type == 'A') {
+          if (item.functionName == 'Mapping' && (type == 'A' || (groupId && groupId.toString().startsWith('07')) || (groupId && groupId.toString().startsWith('04')) || (groupId && groupId.toString().startsWith('17')) || (groupId && groupId.toString().startsWith('14')))) {
             let temp = menuArrTemp.value.filter((subItem) => subItem.key === 'mapping');
             if (temp.length > 0) {
               menuArrTemp.value.forEach((subItem) => {
@@ -408,39 +454,39 @@
               });
             }
           }
-          if (item.functionName == 'Mapping' && roleId != 11 && roleId != 8 && type == 'A') {
-            let temp = menuArrTemp.value.filter((subItem) => subItem.key === 'mapping');
-            if (temp.length > 0) {
-              menuArrTemp.value.forEach((subItem) => {
-                if (subItem.key === 'mapping') {
-                  subItem.children?.push({
-                    label: '人员信息',
-                    title: '人员信息',
-                    key: 'MappingList',
-                    showFlag: false,
-                    index: 0,
-                  });
-                }
-              });
-            } else {
-              menuArrTemp.value.push({
-                key: 'mapping',
-                label: 'Mapping',
-                title: 'Mapping',
-                showFlag: false,
-                index: 5,
-                children: [
-                  {
-                    key: 'MappingList',
-                    label: '人员信息',
-                    title: '人员信息',
-                    showFlag: false,
-                    index: 0,
-                  },
-                ],
-              });
-            }
-          }
+          // if (item.functionName == 'Mapping' && roleId != 11 && roleId != 8 && type == 'A') {
+          //   let temp = menuArrTemp.value.filter((subItem) => subItem.key === 'mapping');
+          //   if (temp.length > 0) {
+          //     menuArrTemp.value.forEach((subItem) => {
+          //       if (subItem.key === 'mapping') {
+          //         subItem.children?.push({
+          //           label: '人员信息',
+          //           title: '人员信息',
+          //           key: 'MappingList',
+          //           showFlag: false,
+          //           index: 0,
+          //         });
+          //       }
+          //     });
+          //   } else {
+          //     menuArrTemp.value.push({
+          //       key: 'mapping',
+          //       label: 'Mapping',
+          //       title: 'Mapping',
+          //       showFlag: false,
+          //       index: 5,
+          //       children: [
+          //         {
+          //           key: 'MappingList',
+          //           label: '人员信息',
+          //           title: '人员信息',
+          //           showFlag: false,
+          //           index: 0,
+          //         },
+          //       ],
+          //     });
+          //   }
+          // }
           if (item.id == '125' && roleId != 11 && roleId != 8) {
             let temp = menuArrTemp.value.filter((subItem) => subItem.key === 'mapping');
             if (temp.length > 0) {
@@ -1885,9 +1931,25 @@
       });
     }
   };
+
+  const handleUserMenuClick: MenuProps['onClick'] = ({ key }) => {
+    if (key === 'logout') {
+      Modal.confirm({
+        title: '提示',
+        content: '确定要退出登录吗？',
+        onOk() {
+          localStorage.removeItem('loginVueUser');
+          window.open('http://work.wotui.com:8889/WTSM/', '_self');
+        },
+      });
+    }
+  };
 </script>
 <style lang="less" scoped>
   .resume_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-left: -0.04167rem;
     margin-right: -0.04167rem;
     line-height: 2.7;
@@ -1898,6 +1960,46 @@
     font-size: 14px;
     font-weight: 600;
     z-index: 1;
+    background: #197d6f;
+  }
+
+  .user-info-container {
+    padding-right: 20px;
+  }
+
+  .user-profile {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: #40a9ff; /* 对应截图的偏蓝色名字 */
+  }
+
+  .user-profile .avatar {
+    width: 32px;
+    height: 32px;
+    margin-right: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 2px;
+    object-fit: cover;
+  }
+
+  .user-profile .avatar-placeholder {
+    width: 32px;
+    height: 32px;
+    margin-right: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-size: 18px;
+  }
+
+  .user-profile .name {
+    font-size: 14px;
+    font-weight: normal;
   }
   :deep(.ant-menu-light) {
     background: #197d6f;

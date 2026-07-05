@@ -13,7 +13,7 @@
       <a-tag v-if="column.key === 'hrSure' && record.sendHr" :color="record.hrSure ? 'green' : 'orange'">{{ record.hrSure ? '已确认' : '待确认' }}</a-tag>
       <a-tag v-if="column.key === 'invoiceFlag' && record.hrSure" :color="record.invoiceFlag ? 'green' : 'orange'">{{ record.invoiceFlag ? '已开' : '待开' }}</a-tag>
       <a-tag v-if="column.key === 'collectionFlag' && record.invoiceFlag" :color="record.collectionFlag ? 'green' : 'orange'">{{ record.collectionFlag ? '已回' : '待回' }}</a-tag>
-      <a-button type="primary" size="small" @click="handlePreview(record.excelPath)">查看</a-button>
+      <a-button v-if="column.key === 'excelPath' && record.excelPath" type="primary" size="small" @click="handlePreview(record.excelPath)">查看</a-button>
       <template v-if="column.key === 'operation'">
           <a-dropdown>
             <span class="ant-dropdown-link" style="cursor: pointer;" @click.prevent>
@@ -30,7 +30,7 @@
                 <a-menu-item v-if="record.sendHr && !record.hrSure">
                  <a href="javascript:;" @click.prevent="handleOpenHrConfirm(record)">HR确认</a>
                 </a-menu-item>
-                <a-menu-item v-if="record.invoiceFlag">
+                <a-menu-item v-if="record.hrSure && !record.invoiceFlag">
                  <a href="javascript:;" @click.prevent="handleOpenInvoiceFen(record)">分函</a>
                 </a-menu-item>
                 <a-menu-item v-if="record.hrSure && !record.invoiceFlag">

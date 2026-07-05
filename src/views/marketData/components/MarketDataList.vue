@@ -181,7 +181,23 @@
           <a-button type="primary" html-type="submit">搜索</a-button>
           <a-button style="margin: 0 8px" @click="clearFromState">清空</a-button>
         </a-col>
-        <a-col :span="5" style="text-align: right;">
+      </a-row>
+      <a-row :gutter="24" style="margin-bottom: 7px;">
+      <a-col :span="8">
+        <a-button
+            :class="{ repeat_button_active: formStateMarketData.assignStatus === '待分配' }"
+            @click="handleAssignStatusSearch('待分配')"
+            style="margin: 0 8px 0 0;"
+          >
+            公共库
+          </a-button>
+          <a-button
+            :class="{ repeat_button_active: formStateMarketData.assignStatus === '已分配' }"
+            @click="handleAssignStatusSearch('已分配')"
+            style="margin: 0 8px 0 0;"
+          >
+            已分配
+          </a-button>
           <a-button
             :class="{ repeat_button_active: formStateMarketData.isRepeat === '1' }"
             @click="handleRepeatSearch"
@@ -321,7 +337,7 @@
   import MarketInfoDrawer from './MarketInfoDrawer.vue';
   import OrginalPath from '/@/components/OrginalPath/index.vue';
   const marketDataStore = useMarketDataStoreWithOut();
-  const { formStateMarketData, getMarketDataList, pageMarketDataList, getSearchBrandList, getSearchMarketList, getSearchPositionList, getStructureList, getSearchAssignList, getSearchEntryList } = storeToRefs(marketDataStore);
+  const { formStateMarketData, getMarketDataList, pageMarketDataList, getSearchBrandList, getSearchMarketList,getSearchCityList, getSearchPositionList, getStructureList, getSearchAssignList, getSearchEntryList } = storeToRefs(marketDataStore);
   const spanSearch = ref(4);
   const onSearch = () => {
     formStateMarketData.value.isRepeat = '';
@@ -426,7 +442,18 @@
     quickDateKey.value = undefined;
   }
   const handleRepeatSearch = () => {
+    formStateMarketData.value.assignStatus = '';
     formStateMarketData.value.isRepeat = '1';
+    pageMarketDataList.value.pageNum = 1;
+    marketDataStore.queryMappingTempPageAjax();
+  }
+  const handleAssignStatusSearch = (status: string) => {
+    if (formStateMarketData.value.assignStatus === status) {
+      formStateMarketData.value.assignStatus = '';
+    } else {
+      formStateMarketData.value.assignStatus = status;
+    }
+    formStateMarketData.value.isRepeat = '';
     pageMarketDataList.value.pageNum = 1;
     marketDataStore.queryMappingTempPageAjax();
   }

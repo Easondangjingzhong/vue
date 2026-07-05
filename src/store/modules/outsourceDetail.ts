@@ -2226,6 +2226,10 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       }
       return res;
     },
+    async updateOutsourcePersonMoneyOrderNum(list: Array<{ id: string; orderNum: number }>) {
+      const res = await fetchApi.updateOutsourceQingKuanOrderNum(list);
+      return res;
+    },
     /**
      * 外包人员更新店铺简称
      */
