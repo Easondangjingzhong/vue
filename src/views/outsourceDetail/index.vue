@@ -8,7 +8,7 @@
           <OutsourceDetailSider />
         </a-layout-sider> -->
         <a-layout-content class="resume_content">
-           <a-tabs v-model:activeKey="outsourceDetailSider" type="card">
+           <a-tabs v-model:activeKey="outsourceDetailSider" type="card" @change="handleTabChange">
               <a-tab-pane key="1" tab="外包人员">
                 <OutsourceContentPerson/>
               </a-tab-pane>
@@ -26,6 +26,9 @@
               </a-tab-pane>
               <a-tab-pane key="6" tab="外包业绩">
                 <OutsourceContentMonthSalaryOffer/>
+              </a-tab-pane>
+              <a-tab-pane key="7" tab="外包流程">
+                <OutsourcePersonSalaryCommit/>
               </a-tab-pane>
           </a-tabs>
         </a-layout-content>
@@ -45,6 +48,7 @@ import OutsourceContentSheBao from './components/OutsourceContentSheBao.vue';
 import OutsourceContentMonthSalary from './components/OutsourceContentMonthSalary.vue';
 import OutsourceContentAttend from './components/OutsourceContentAttend.vue';
 import OutsourceContentMonthSalaryOffer from './components/OutsourceContentMonthSalaryOffer.vue';
+import OutsourcePersonSalaryCommit from './components/salaryCommitCompoents/OutsourcePersonSalaryCommit.vue';
 
 import AddOutsourcePerson from './components/AddOutsourcePerson.vue';
 import OutsourcePersonDetail from './components/OutsourcePersonDetail.vue';
@@ -57,6 +61,13 @@ outsourceDetailStore.queryOutsourceBrand();
 outsourceDetailStore.queryOutsourcePosition();
 outsourceDetailStore.queryCompanyAll();
 outsourceDetailStore.queryCounselorList();
+const handleTabChange = (key: string) => {
+  if (key == '7') {
+  outsourceDetailStore.outsourcePersonSalaryCommitFlag = true;
+  } else {
+    outsourceDetailStore.outsourcePersonSalaryCommitFlag = false;
+  }
+};
 </script>
 
 <style lang="less" scoped>

@@ -1078,6 +1078,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       state.outsourceYeJiZhixingMonth.map((item, index) => ({
         ...item,
         index: index + 1,
+        costTotal: Number(item?.costTotal || '0').toFixed(2),
       })),
     getOutsourceQingKuanZhixingMonth: (state) =>
       state.outsourceQingKuanZhixingMonth.map((item, index) => ({

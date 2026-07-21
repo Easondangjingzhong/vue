@@ -1200,6 +1200,18 @@ export const useResumeListStore = defineStore('app-Resume-List',{
       const res = await fetchApi.addNewBlack(formData);
       return res;
     },
+    /**
+     * 取消限制
+     * @returns
+     */
+    async canelXianzhi(data) {
+      let formData = new FormData();
+      formData.append('phoneNum', data.phone);
+      formData.append('canelRemark', data.canelRemark);
+      formData.append('SystemRecruitId', loginVueUser.loginId);
+      const res = await fetchApi.canelXianzhi(formData);
+      return res;
+    },
   },
 });
 

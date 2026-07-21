@@ -1,5 +1,5 @@
 <template>
-   <a-drawer
+   <!-- <a-drawer
     v-model:open="outsourcePersonSalaryCommitFlag"
     title="工资发放"
     :maskClosable="false"
@@ -13,7 +13,9 @@
    <template #extra>
       <CloseOutlined @click="handleClose" />
     </template>
-  <div class="resume_container">
+  
+   </a-drawer> -->
+   <div class="resume_container">
     <a-layout>
         <a-layout-content class="resume_content">
            <a-tabs v-model:activeKey="outsourceDetailMoneySider" type="card" @change="handleChange" class="custom-tabs">
@@ -42,7 +44,7 @@
                   value-format="YYYY-MM"
                   @change="handleCommit"
                   picker="month"
-                  style="width: 80px;margin: 0 8px;"
+                  style="width: 80px;margin: 0 8px;padding: 2px;"
                 />
               </template>
           </a-tabs>
@@ -50,7 +52,6 @@
         </a-layout-content>
       </a-layout>
   </div>
-   </a-drawer>
    <OutsourcePersonSalaryCollectDetails />
    <OutsourcePersonSalarySheBao />
    <FileYuLanInfo />
@@ -58,6 +59,7 @@
 
 <script setup lang="ts">
 import _ from 'lodash';
+import dayjs from 'dayjs';
 import { storeToRefs } from 'pinia';
 import { CloseOutlined } from '@ant-design/icons-vue';
 import FileYuLanInfo from '/@/views/outsourceDetail/components/personComponents/FileYuLanInfo.vue';
@@ -100,9 +102,7 @@ const handleClose = () => {
 };
 watch(outsourcePersonSalaryCommitFlag, () => {
   if (outsourcePersonSalaryCommitFlag.value) {
-    if (!outsourcePersonSalaryCommitYearAndMonth.value) {
-      outsourcePersonSalaryCommitYearAndMonth.value = formStateMonthSalary.value.yearAndMonth;
-    }
+    outsourcePersonSalaryCommitYearAndMonth.value = dayjs().format('YYYY-MM');
     handleCommit();
   }
 });
@@ -118,6 +118,9 @@ const handleCommit = () => {
 </script>
 
 <style lang="less" scoped>
+  .resume_container {
+    margin-top: 10px;
+  }
   :deep(.ant-descriptions .ant-descriptions-header) {
     margin-bottom: 10px;
   } 
@@ -167,7 +170,7 @@ const handleCommit = () => {
     .ant-tabs-nav-list {
       display: flex !important;
       flex-direction: row !important;
-      width: 1350px !important;
+      width: 1550px !important;
       .ant-tabs-tab {
         float: none !important;
       }

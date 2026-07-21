@@ -156,10 +156,14 @@
       <a-tag class="resume_tag_source" style="cursor: pointer;" v-if="resumeData.orginalPath" color="#00bcd4" title="原始简历" @click="handleResumeOrginalPath(resumeData.orginalPath)">原简</a-tag>
       <a-tag v-if="props.showResumeRightOutFlag" color="#ccc" class="resume_tag_phone"
         ><PhoneFilled :style="{ fontSize: '8px' }" :rotate="90" />
-        <a-popover placement="topLeft">
+        <a-popover placement="topLeft" trigger="click" @openChange="handlePhoneOpenChange">
           <template #content>
-            <div>{{ resumeData.phoneNum }}</div>
-            <div v-if="resumeData.phoneNumOther">{{ resumeData.phoneNumOther }}</div>
+            <div v-if="phoneVisibleStatus === 1">
+              <div>{{ resumeData.phoneNum }}</div>
+              <div v-if="resumeData.phoneNumOther">{{ resumeData.phoneNumOther }}</div>
+            </div>
+            <div v-else-if="phoneVisibleStatus === 2">查看手机上限</div>
+            <div v-else>加载中...</div>
           </template>
           查看
         </a-popover>
@@ -168,9 +172,11 @@
         >呼叫</a-tag>
       <a-tag v-if="!props.showResumeRightOutFlag" color="#ccc" class="resume_tag_phone" style="cursor: pointer;"
         ><PhoneFilled :style="{ fontSize: '8px' }" :rotate="90" />
-        <a-popover placement="topLeft">
+        <a-popover placement="topLeft" trigger="click" @openChange="handlePhoneOpenChange">
           <template #content>
-            <span>{{ resumeData.phoneNum }}</span>
+            <span v-if="phoneVisibleStatus === 1">{{ resumeData.phoneNum }}</span>
+            <span v-else-if="phoneVisibleStatus === 2">查看手机上限</span>
+            <span v-else>加载中...</span>
           </template>
           查看
         </a-popover>
@@ -727,6 +733,26 @@
   const openResumeUploadeManage = ref(false);
   const systemUsereManage = ref(false);
   const templatTypeeManage = ref('');
+
+  const phoneVisibleStatus = ref(0);
+  const handlePhoneOpenChange = async (open: boolean) => {
+    if (open) {
+      phoneVisibleStatus.value = 0;
+      try {
+        const res = await resumeDetailStore.queryResumeSeePhone();
+        if (res.code == 1) {
+          phoneVisibleStatus.value = 1;
+        } else if (res.code == 2) {
+          phoneVisibleStatus.value = 2;
+        } else {
+          phoneVisibleStatus.value = 1;
+        }
+      } catch (error) {
+        phoneVisibleStatus.value = 1;
+      }
+    }
+  };
+
   const handleOpenResumeUploadManage = () => {
     openResumeUploadeManage.value = true;
   }

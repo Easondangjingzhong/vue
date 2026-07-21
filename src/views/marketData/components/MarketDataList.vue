@@ -221,6 +221,7 @@
         </template>
         <template v-if="column.key === 'checkStatus'">
           <a-tag v-if="!record.checkStatus && record.isRepeat !== '1'" color="orange">待核</a-tag>
+          <span v-if="record.isRepeat !== '1'  && record.assignStatus == '拒绝'">-</span>
           <a-tag v-if="record.checkStatus == '正确' && record.isRepeat !== '1'" :title="record.checkRemark" style="cursor: pointer;" color="green">正确</a-tag>
           <a-tag
             v-if="record.checkStatus == '错误' && record.isRepeat !== '1'"
@@ -237,6 +238,7 @@
         </template>
         <template v-if="column.key === 'assignStatus'">
           <span v-if="record.isRepeat == '1'">-</span>
+          <a-tag :title="record.refuseRemark" v-if="record.assignStatus == '拒绝' && record.isRepeat !== '1'" color="red">拒绝</a-tag>
           <a-tag v-if="record.assignStatus == '待分配' && record.isRepeat !== '1'" color="orange">待分配</a-tag>
           <a-tag v-if="record.assignStatus == '已分配' && record.isRepeat !== '1'" color="green">已分配</a-tag>
         </template>
@@ -244,14 +246,14 @@
           <span v-if="record.isRepeat == '1'">-</span>
           </template>
          <template v-if="column.key === 'tellFlag'">
-          <span v-if="record.isRepeat == '1'">-</span>
-          <a-tag v-if="record.tellFlag == '未联络' && record.isRepeat !== '1'" color="orange">未联络</a-tag>
-          <a-tag v-if="record.tellFlag == '已联络' && record.isRepeat !== '1'" color="green">已联络</a-tag>
+          <span v-if="record.isRepeat == '1' || record.assignStatus == '拒绝'">-</span>
+          <a-tag v-if="record.tellFlag == '未联络' && record.isRepeat !== '1' && record.assignStatus !== '拒绝'" color="orange">未联络</a-tag>
+          <a-tag v-if="record.tellFlag == '已联络' && record.isRepeat !== '1' && record.assignStatus !== '拒绝'" color="green">已联络</a-tag>
         </template>
          <template v-if="column.key === 'currentFlag'">
-          <span v-if="record.isRepeat == '1'">-</span>
-          <a-tag v-if="record.currentFlag == '待分配' && record.isRepeat !== '1'" color="orange">待分配</a-tag>
-          <a-tag v-if="record.currentFlag == '未使用' && record.isRepeat !== '1'" color="orange">未使用</a-tag>
+          <span v-if="record.isRepeat == '1' || record.assignStatus == '拒绝'">-</span>
+          <a-tag v-if="record.currentFlag == '待分配' && record.isRepeat !== '1' && record.assignStatus !== '拒绝'" color="orange">待分配</a-tag>
+          <a-tag v-if="record.currentFlag == '未使用' && record.isRepeat !== '1' && record.assignStatus !== '拒绝'" color="orange">未使用</a-tag>
         </template>
        <template v-if="column.key === 'action'">
           <a-dropdown v-if="record.isRepeat !== '1'">
@@ -260,13 +262,16 @@
             </span>
             <template #overlay>
               <a-menu>
-                <a-menu-item v-if="record.assignStatus == '待分配'" >
+                <a-menu-item v-if="(record.assignStatus == '待分配' || record.assignStatus == '拒绝') && (loginVueUser.loginType == 'A' || loginVueUser.loginId == '485')" >
                  <a href="javascript:;" @click="handleAllocation(record)">分配</a>
                 </a-menu-item>
-                <a-menu-item v-if="record.assignStatus == '已分配'" >
+                 <a-menu-item v-if="record.assignStatus == '待分配' && (loginVueUser.loginType == 'A' || loginVueUser.loginId == '485')" >
+                 <a href="javascript:;" @click="handleRefuseAssign(record)">拒绝</a>
+                </a-menu-item>
+                <a-menu-item v-if="record.assignStatus == '已分配' && (loginVueUser.loginType == 'A' || loginVueUser.loginId == record.assignRecruitId)" >
                  <a href="javascript:;" @click="handleChecked(record)">核对</a>
                 </a-menu-item>
-                <a-menu-item v-if="(!record.checkStatus || record.checkStatus == '错误') && record.isRepeat !== '1'">
+                <a-menu-item v-if="(!record.checkStatus || record.checkStatus == '错误') && record.isRepeat !== '1' && (loginVueUser.loginType == 'A' || loginVueUser.loginId == record.entryRecruitId)">
                  <a href="javascript:;" @click="handleUpdate(record)">修改</a>
                 </a-menu-item>
               </a-menu>
@@ -326,7 +331,8 @@
 <script setup lang="ts">
   import dayjs from 'dayjs';
   import { storeToRefs } from 'pinia';
-  import { message } from 'ant-design-vue';
+  import { message, Modal, Input } from 'ant-design-vue';
+  import { createVNode } from 'vue';
   import { CloseOutlined, MenuUnfoldOutlined } from '@ant-design/icons-vue';
   import { MarketDataListSearchItem, MappingTempItem, MarketRightListSearchItem } from '/@/api/marketData/model';
   import { useMarketDataStoreWithOut } from '/@/store/modules/marketData';
@@ -338,6 +344,9 @@
   import OrginalPath from '/@/components/OrginalPath/index.vue';
   const marketDataStore = useMarketDataStoreWithOut();
   const { formStateMarketData, getMarketDataList, pageMarketDataList, getSearchBrandList, getSearchMarketList,getSearchCityList, getSearchPositionList, getStructureList, getSearchAssignList, getSearchEntryList } = storeToRefs(marketDataStore);
+  const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: ''; loginFullPart: '' } = JSON.parse(
+  localStorage.getItem('loginVueUser') || '{}',
+);
   const spanSearch = ref(4);
   const onSearch = () => {
     formStateMarketData.value.isRepeat = '';
@@ -488,6 +497,42 @@
     currentAssignRecord.value = record;
     assignModalOpen.value = true;
   }
+
+  const handleRefuseAssign = (record: MappingTempItem) => {
+    let remarkValue = '不在任务内';
+    Modal.confirm({
+      title: '提示',
+      content: () => createVNode('div', {}, [
+        createVNode('p', { style: 'margin-bottom: 8px;' }, `确定要拒绝分配吗？`),
+        createVNode('div', { style: 'display: flex; align-items: center;' }, [
+          createVNode('span', { style: 'white-space: nowrap; margin-right: 8px;' }, '* 拒绝原由:'),
+          createVNode(Input, {
+            placeholder: '请输入拒绝原由',
+            defaultValue: remarkValue,
+            'onUpdate:value': (val: string) => {
+              remarkValue = val;
+            },
+          }),
+        ]),
+      ]),
+      onOk() {
+        if (!remarkValue.trim()) {
+          message.warning('请输入拒绝原由');
+          return Promise.reject();
+        }
+        return marketDataStore.assignMappingTempRefuse({ id: record.id, refuseRemark: remarkValue }).then((res: any) => {
+          if (res.code == 1) {
+            message.success('拒绝成功');
+            onSearch();
+          } else {
+            message.error(res.msg || '拒绝失败');
+            return Promise.reject();
+          }
+        });
+      },
+    });
+  };
+
   const checkModalOpen = ref(false);
   const currentCheckRecord = ref<MappingTempItem | null>(null);
   const handleChecked = (record: MappingTempItem) => {

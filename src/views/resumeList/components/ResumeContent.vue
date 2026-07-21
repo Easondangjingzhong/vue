@@ -377,14 +377,17 @@
             :title="loginVueUser.loginType == 'A' ? (record.blackRemark ? record.blackRemark : '此候选人已经存在公司黑名单中，禁止推荐') : '此候选人已经存在公司黑名单中，禁止推荐'"
             >黑名单</a-tag>
         </template>
-        <template v-if="column.key === 'action' && loginVueUser.loginType == 'A'">
+        <template v-if="column.key === 'action' && (loginVueUser.loginType == 'A' || loginVueUser.loginId == '475')">
           <a-dropdown>
             <span class="ant-dropdown-link" style="cursor: pointer;" @click.prevent>
               <MenuUnfoldOutlined style="font-size: 15px;"/>
             </span>
             <template #overlay>
               <a-menu>
-                <a-menu-item>
+                <a-menu-item v-if="record.projectFlag == '在保'">
+                 <a href="javascript:;" @click="canelXianzhi(record)">取消限制</a>
+                </a-menu-item>
+                <a-menu-item v-if="loginVueUser.loginType == 'A'">
                  <a href="javascript:;" @click="addNewBlack(record)">黑名单</a>
                 </a-menu-item>
               </a-menu>
@@ -522,7 +525,8 @@
   import { storeToRefs } from 'pinia';
   import dayjs, { Dayjs } from 'dayjs';
   import { formatToDateMinute } from '/@/utils/dateUtil';
-  import { message } from 'ant-design-vue';
+  import { message, Modal, Input } from 'ant-design-vue';
+  import { createVNode } from 'vue';
   import { SearchResumeList } from '/@/api/resumeList/model';
   import SearchContent from './resumeContent/SearchContent.vue';
   import { useResumeListStoreWithOut } from '/@/store/modules/resumeList';
@@ -971,6 +975,40 @@ optionsRecruitId.value = teamPersonChangeArr.value.map(item => ({value: item.tea
       }
     });
  }
+ const canelXianzhi = (record: any) => {
+    let remarkValue = '';
+    Modal.confirm({
+      title: '提示',
+      content: () => createVNode('div', {}, [
+        createVNode('p', { style: 'margin-bottom: 8px;' }, `确定要取消【${record.userName} - ${record.phone}】的限制吗？`),
+        createVNode('div', { style: 'display: flex; align-items: center;' }, [
+          createVNode('span', { style: 'white-space: nowrap; margin-right: 8px;' }, '* 取消原由:'),
+          createVNode(Input, {
+            placeholder: '请输入取消限制的原因',
+            'onUpdate:value': (val: string) => {
+              remarkValue = val;
+            },
+          }),
+        ]),
+      ]),
+      onOk() {
+        if (!remarkValue.trim()) {
+          message.warning('请输入取消原由');
+          return Promise.reject(); // 阻止弹窗关闭
+        }
+        return resumeListStore.canelXianzhi({ ...record, canelRemark: remarkValue }).then((res: any) => {
+          if (res.code == 1) {
+            message.success('取消限制成功');
+            onFinish(2);
+          } else {
+            message.error(res.msg || '取消限制失败');
+            return Promise.reject();
+          }
+        });
+      },
+    });
+  };
+
  const calculateDateDiff = (callLastTime) => {
   if (callLastTime) {
     const diffDays = dayjs().diff(dayjs(callLastTime), 'day', true);

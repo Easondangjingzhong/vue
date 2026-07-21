@@ -37,7 +37,7 @@
       <a-col :span="spancol">
         {{ themeLanguage?.gender?.label }}:
         <span v-if="resumeTypeEnglish == '1'" class="resume_span">{{ resumeData.gender == 'M' ? 'Male' : 'Female' }}</span>
-        <span v-else class="resume_span">{{ resumeData.gender == 'M' ? '男' : '女' }}</span>
+        <span v-else class="resume_span">{{ resumeData.gender == 'F' ? '女' : '男' }}</span>
       </a-col>
       <a-col class="resume_photo_col">
         <a-image

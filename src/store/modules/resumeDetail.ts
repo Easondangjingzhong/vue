@@ -1312,6 +1312,24 @@ export const useResumeDetailStore = defineStore('app-Resume', {
         this.resumeSnapshotParseError = e?.message ? String(e.message) : 'parse error';
       }
     },
+    /**
+     * 查看顾问查询手机号次数
+     * @params resumeId 简历id
+     * @params phone phone
+     * @params SystemRecruitId 系统招聘人id
+     * @returns
+     */
+    async queryResumeSeePhone() {
+      const formData = new FormData();
+      const resumeId = this.resumeDetail.resume.id?.toString() || '';
+      formData.append('resumeId', resumeId);
+      const phone = this.resumeDetail.resume.phoneNum || '';
+      formData.append('phone', phone);
+      const SystemRecruitId = loginVueUser.loginId || '';
+      formData.append('SystemRecruitId', SystemRecruitId);
+      const res = await fetchApi.queryResumeSeePhone(formData);
+      return res;
+    },
   },
 });
 export function useResumeStoreWithOut() {

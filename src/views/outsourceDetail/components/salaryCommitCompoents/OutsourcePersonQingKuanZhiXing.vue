@@ -13,7 +13,14 @@
       <a-tag v-if="column.key === 'hrSure' && record.sendHr" :color="record.hrSure ? 'green' : 'orange'">{{ record.hrSure ? '已确认' : '待确认' }}</a-tag>
       <a-tag v-if="column.key === 'invoiceFlag' && record.hrSure" :color="record.invoiceFlag ? 'green' : 'orange'">{{ record.invoiceFlag ? '已开' : '待开' }}</a-tag>
       <a-tag v-if="column.key === 'collectionFlag' && record.invoiceFlag" :color="record.collectionFlag ? 'green' : 'orange'">{{ record.collectionFlag ? '已回' : '待回' }}</a-tag>
-      <a-button v-if="column.key === 'excelPath' && record.excelPath" type="primary" size="small" @click="handlePreview(record.excelPath)">查看</a-button>
+      <template v-if="column.key === 'excelPath' && record.excelPath">
+        <a-button type="primary" size="small" @click="handleDownload(record.excelPath)">下载</a-button>
+        <a-button type="primary" size="small" style="margin-right: 8px;" @click="handlePreview(record.excelPath)">预览</a-button>
+      </template>
+      <template v-if="column.key === 'totalCharge'">
+        <span v-if="record.invoiceMoney">{{ record.invoiceMoney }}</span>
+        <span v-else>{{ record.totalCharge }}</span>
+      </template>
       <template v-if="column.key === 'operation'">
           <a-dropdown>
             <span class="ant-dropdown-link" style="cursor: pointer;" @click.prevent>
@@ -303,6 +310,18 @@ const handlePreview = (excelPath?: string) => {
     : excelPath;
   orginalPathBlobPath.value = src;
   orginalPathBlobPathFlag.value = true;
+};
+const handleDownload = (excelPath?: string) => {
+  if (!excelPath) {
+    message.error('文件不存在');
+    return;
+  }
+  const src = /^https?:\/\//i.test(excelPath)
+    ? excelPath
+    : excelPath.startsWith('/')
+    ? new URL(excelPath, window.location.origin).toString()
+    : excelPath;
+  window.open(src, '_blank');
 };
 const invoiceTypeOptions = ref([
   { value: '专票', label: '专票' },

@@ -85,6 +85,7 @@
   import ResumeLeftPositions from './components/ResumeLeftPositions.vue';
   import ResumeLeftContactContent from './components/ResumeLeftContactContent.vue';
   import { storeToRefs } from 'pinia';
+  import { message } from 'ant-design-vue';
   import { degreeArr,degreeEnArr } from '/@/store/data/resume';
   import { ResumeDetail } from '/@/api/resumeDetail/modal';
   import { useCityStoreWithOut } from '/@/store/modules/city';
@@ -240,8 +241,13 @@ const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginOutFlag:
   }
   resumeDetailStore
     .queryResumeDetail(route.query.resumeId, route.query.addConsultantId)
-    .then(() => {
-      expendShow.value = true;
+    .then((res) => {
+      if (res.code === 1) {
+        expendShow.value = true;
+      } else {
+        message.error(res.info || '查询失败');
+        expendShow.value = false;
+      }
     });
     const handleResumeContainerIndex = () => {
       if (orginalPathShow.value) {

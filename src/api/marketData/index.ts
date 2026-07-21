@@ -23,7 +23,16 @@ enum URL {
   cancel_market_brand = '/candidate/resume-vue-canel-market-brand.action',
   add_market_city = '/city/resume-vue-city-add-market.action',
   add_brand_new = '/sales/resume-vue-resume-sales-add-brand.action',
+  assign_mapping_temp_refuse = '/candidate/resume-vue-assign-mappingTemp-refuse.action',
 }
+/**
+ * 分配人才拒绝
+ * @param id 分配id
+ * @param SystemRecruitId 系统人才id
+ * @param refuseRemark 拒绝备注
+ * @returns
+ */
+const assignMappingTempRefuse = async (params) => post<any>({ url: URL.assign_mapping_temp_refuse, params });
 /**
  * 添加商场品牌
  * @param cnName
@@ -288,6 +297,7 @@ const queryMappingTempPageAjax = async (params: any) =>
     },
   );
 export default {
+  assignMappingTempRefuse,
   addBrandNew,
   addMarketCity,
   cancelMarketBrand,

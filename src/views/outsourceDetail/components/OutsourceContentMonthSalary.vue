@@ -93,11 +93,10 @@
           <a-button @click="handleSearchOutsourcePerson('1')" :class="{'active': formStateMonthSalary.currentStatus === '' || formStateMonthSalary.currentStatus === undefined}" style="margin-right: 5px;" size="small">全部</a-button>
           <a-button @click="handleSearchOutsourcePerson('4')" :class="{'active': formStateMonthSalary.companyArrange === '1'}" style="margin-right: 5px;" size="small" title="按公司排序">排序</a-button>
         </span>
-         <span>
+         <!-- <span>
            <a-button @click="handleOutsourceSalaryComit" style="background-color: #eee;margin-right: 5px;" size="small">外包流程</a-button>
-           <!-- <a-button @click="handleOutsourceMoney" style="background-color: #eee;margin-right: 5px;" size="small">请款单</a-button> -->
-           <a-button @click="handleOutsourceFormula" style="background-color: #eee;" size="small">公司公式</a-button>
-        </span>
+           <a-button @click="handleOutsourceMoney" style="background-color: #eee;margin-right: 5px;" size="small">请款单</a-button>
+        </span> -->
     </a-row>
     <a-row>
     <a-table
@@ -177,10 +176,9 @@
       </a-pagination>
     </a-row>
   </div>
-  <OutsourceCompanyFormula/>
+  
   <OutsourceMonthSalaryUpdate/>
   <OutsourceMonthSalaryShiJiUpdate/>
-  <OutsourcePersonSalaryCommit/>
 </template>
 
 <script setup lang="ts">
@@ -190,13 +188,12 @@ import { message, Modal } from 'ant-design-vue';
 import { MenuUnfoldOutlined } from '@ant-design/icons-vue';
 import type { TableColumnsType } from 'ant-design-vue';
 import { SearchMonthSalaryItem } from '/@/api/outsourceDetail/model';
-import OutsourceCompanyFormula from '/@/views/outsourceDetail/components/personComponents/OutsourceCompanyFormula.vue';
 import OutsourceMonthSalaryUpdate from '/@/views/outsourceDetail/components/personComponents/OutsourceMonthSalaryUpdate.vue';
 import OutsourceMonthSalaryShiJiUpdate from '/@/views/outsourceDetail/components/personComponents/OutsourceMonthSalaryShiJiUpdate.vue';
-import OutsourcePersonSalaryCommit from '/@/views/outsourceDetail/components/salaryCommitCompoents/OutsourcePersonSalaryCommit.vue';
+//import OutsourcePersonSalaryCommit from '/@/views/outsourceDetail/components/salaryCommitCompoents/OutsourcePersonSalaryCommit.vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { monthSalaryIsLoading,pageOutsourceMonthSalaryList,getOutsourceMonthSalaryList,formStateMonthSalary, getProvince, getOutsourcePosition, outsourceFormulaFlag, outsourceMonthSalaryForm, outsourceMonthSalaryFlag,outsourceMonthSalaryShiJiFlag} = storeToRefs(outsourceDetailStore);
+const { monthSalaryIsLoading,pageOutsourceMonthSalaryList,getOutsourceMonthSalaryList,formStateMonthSalary, getProvince, getOutsourcePosition, outsourceMonthSalaryForm, outsourceMonthSalaryFlag,outsourceMonthSalaryShiJiFlag} = storeToRefs(outsourceDetailStore);
 const columnsOutsourceMonthSalary:TableColumnsType = [
   { title: '编号', dataIndex: 'index', key: 'index', fixed: 'left', width: 30, },
   { title: '计薪月', dataIndex: 'jinxinMonth', key: 'jinxinMonth', fixed: 'left', width: 40, },
@@ -303,10 +300,7 @@ onSearch();
 const handleOutsourceMonthSalaryListData = () => {
   outsourceDetailStore.queryOutsourceMonthSalary();
 }
-const handleOutsourceFormula = () => {
-  outsourceFormulaFlag.value = true;
-  outsourceDetailStore.queryOutsourceFormula();
-}
+
 const handleEditClick = (record) => {
   outsourceMonthSalaryForm.value = _.cloneDeep(record);
   outsourceMonthSalaryFlag.value = true;
@@ -326,9 +320,6 @@ const handleOutsourceSalarySign = (id: number) => {
       handleOutsourceMonthSalaryListData();
     }
   });
-}
-const handleOutsourceSalaryComit = () => {
-  outsourceDetailStore.outsourcePersonSalaryCommitFlag = true;
 }
 </script>
 

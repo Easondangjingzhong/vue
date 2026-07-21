@@ -171,10 +171,26 @@
     <a-tag v-if="column.key === 'infoTableFlag' && record.infoTableFlag == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(record.infoTablePath,1)">签署完成</a-tag>
     <a-tag v-if="column.key === 'offerFlag' && record.offerFlag == '等待发起'" color="red">等待发起</a-tag>
     <a-tag v-if="column.key === 'offerFlag' && record.offerFlag == '等待签署'" color="orange">等待签署</a-tag>
-    <a-tag v-if="column.key === 'offerFlag' && record.offerFlag == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(record.offerPic,1)">签署完成</a-tag>
+    <a-tag v-if="column.key === 'offerFlag' && record.offerFlag == '签署完成'" style="cursor: pointer;" color="green">
+      <a-popover placement="topLeft">
+        <template #content>
+          <a-button size="small" @click="handleFileYulanInfo(record.offerPic,1)">查看</a-button>
+          <a-button size="small" style="margin-left: 5px;" @click="handleDownload(record.offerPic)">下载</a-button>
+        </template>
+        签署完成
+        </a-popover>
+    </a-tag>
     <a-tag v-if="column.key === 'contractCompany' && record.contractCompany == '等待发起'" :color="record.planEntryTime && dayjs(record.planEntryTime).isAfter(dayjs()) ? 'orange' : 'red'">{{ record.planEntryTime && dayjs(record.planEntryTime).isAfter(dayjs()) ? "未到发起" : "等待发起"}}</a-tag>
     <a-tag v-if="column.key === 'contractCompany' && record.contractCompany == '等待签署'" color="orange">等待签署</a-tag>
-    <a-tag v-if="column.key === 'contractCompany' && record.contractCompany == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(record.contractPath,2)">签署完成</a-tag>
+    <a-tag v-if="column.key === 'contractCompany' && record.contractCompany == '签署完成'" style="cursor: pointer;" color="green">
+      <a-popover placement="topLeft">
+        <template #content>
+          <a-button size="small" @click="handleFileYulanInfo(record.contractPath,2)">查看</a-button>
+          <a-button size="small" style="margin-left: 5px;" @click="handleDownload(record.contractPath)">下载</a-button>
+        </template>
+        签署完成
+      </a-popover>
+    </a-tag>
 
     <a-tag v-if="column.key === 'proofFlag' && record.proofFlag == '等待发起'" color="red">等待发起</a-tag>
     <a-tag v-if="column.key === 'proofFlag' && record.proofFlag == '已经发起'" color="orange">已经发起</a-tag>
@@ -413,6 +429,18 @@ const columnsOutsourceDetail: TableColumnsType = [
     }
     outsourceDetailStore.handleFileYulanInfo(originalPathBlobPath,type);
   }
+  const handleDownload = (excelPath?: string) => {
+    if (!excelPath) {
+      message.error('文件不存在');
+      return;
+    }
+    const src = /^https?:\/\//i.test(excelPath)
+      ? excelPath
+      : excelPath.startsWith('/')
+      ? new URL(excelPath, window.location.origin).toString()
+      : excelPath;
+    window.open(src, '_blank');
+  };
   const handleSearchOutsourcePersonProcess = () => {
     outsourcePersonProcessFlag.value = true;
     outsourceDetailStore.handleSearchOutsourcePersonProcess();

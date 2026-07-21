@@ -10,7 +10,7 @@ import fetchApi from '/@/api/marketData';
 import fetchCityApi from '/@/api/city';
 import fetchResumeDetail from '/@/api/resumeDetail';
 import fetchResumeList from '/@/api/resumeList';
-const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: '' } = JSON.parse(
+const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: ''; loginFullPart: '' } = JSON.parse(
   localStorage.getItem('loginVueUser') || '{}',
 );
 export const useMarketDataStore = defineStore('app-MarketData', {
@@ -49,7 +49,7 @@ export const useMarketDataStore = defineStore('app-MarketData', {
         ...item,
         index:
           state.pageMarketDataList.pageNum > 1
-            ? state.pageMarketDataList.pageNum * state.pageMarketDataList.pageSize + (index + 1)
+            ? (state.pageMarketDataList.pageNum - 1) * state.pageMarketDataList.pageSize + (index + 1)
             : index + 1,
         createTime: item.createTime ? formatToDate(item.createTime) : '',
         assignTime: item.assignTime ? formatToDate(item.assignTime) : '',
@@ -268,6 +268,7 @@ export const useMarketDataStore = defineStore('app-MarketData', {
       formData.append('city', city);
       formData.append('marketName', marketName || '');
       formData.append('curPage', '1');
+      formData.append('fullPart', loginVueUser.loginFullPart || '');
       const res = await fetchResumeDetail.queryMarkList(formData);
       if (res.code === 1) {
         this.MarkList = res.info;
@@ -503,6 +504,7 @@ export const useMarketDataStore = defineStore('app-MarketData', {
      * @returns
      */
     async queryMarketMapping(payload: any) {
+      payload.fullPart = loginVueUser.loginFullPart || '';
       const res = await fetchApi.queryMarketMapping(payload);
       if (res.code === 1) {
         this.MarkList = res.info;
@@ -659,6 +661,18 @@ export const useMarketDataStore = defineStore('app-MarketData', {
     async addBrandNew(payload: any) {
       payload.SystemRecruitId = loginVueUser.loginId || '';
       const res = await fetchApi.addBrandNew(payload);
+      return res;
+    },
+    /**
+     * 分配人才拒绝
+     * @param id 分配id
+     * @param SystemRecruitId 系统人才id
+     * @param refuseRemark 拒绝备注
+     * @returns
+     */
+    async assignMappingTempRefuse(payload: any) {
+      payload.SystemRecruitId = loginVueUser.loginId || '';
+      const res = await fetchApi.assignMappingTempRefuse(payload);
       return res;
     },
   },

@@ -8,8 +8,8 @@
       :dataSource="getOutsourceYeJiZhixingMonth"
     >
    <template #bodyCell="{ column, record }">
-      <a-tag v-if="column.key === 'sign' && record.sign === '2'" color="green">锁定</a-tag>
-      <a-tag v-if="column.key === 'sign' && record.sign !== '2'" color="orange">待录</a-tag>
+      <a-tag v-if="column.key === 'sign' && record.sign === 2" color="green">锁定</a-tag>
+      <a-tag v-if="column.key === 'sign' && record.sign !== 2" color="orange">待录</a-tag>
     </template>
   </a-table>
 </template>
@@ -70,7 +70,7 @@ const columns:TableColumnsType = [
     width: 50,
   },
   {
-    title: '管理费',
+    title: '税前管理费',
     dataIndex: 'manageChargeTax',
     key: 'manageChargeTax',
     width: 50,

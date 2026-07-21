@@ -95,6 +95,9 @@
           <a-button @click="handleSearchOutsourcePersonFlag('1')" :class="{'active': formStateAttend.flag === '1'}" style="margin-right: 5px;" size="small">待录</a-button>
           <a-button @click="handleSearchOutsourcePersonFlag('2')" :class="{'active': formStateAttend.flag === '2'}" style="margin-right: 5px;" size="small">已录</a-button>
         </span>
+        <span>
+          <a-button @click="handleOutsourceFormula" style="background-color: #eee;" size="small">公司公式</a-button>
+        </span>
     </a-row>
     <a-row>
     <a-table
@@ -138,17 +141,19 @@
     </a-row>
   </div>
   <OutsourceAttendDetail />
+  <OutsourceCompanyFormula/>
 </template>
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import _ from 'lodash';
 import { FormOutlined } from '@ant-design/icons-vue';
+import OutsourceCompanyFormula from '/@/views/outsourceDetail/components/personComponents/OutsourceCompanyFormula.vue';
 import OutsourceAttendDetail from '/@/views/outsourceDetail/components/personComponents/OutsourceAttendDetail.vue';
 import { SearchAttendItem } from '/@/api/outsourceDetail/model';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 const outsourceDetailStore = useOutsourceDetailStoreWithOut();
-const { attendIsLoading,pageOutsourceAttendList,formStateAttend,getOutsourceAttendList, getProvince, getOutsourcePosition, outsourceAttendForm, outsourceAttendFlag } = storeToRefs(outsourceDetailStore);
+const { attendIsLoading, outsourceFormulaFlag, pageOutsourceAttendList,formStateAttend,getOutsourceAttendList, getProvince, getOutsourcePosition, outsourceAttendForm, outsourceAttendFlag } = storeToRefs(outsourceDetailStore);
 const columnsOutsourceDetail = [
   { title: '编号', dataIndex: 'index', key: 'index', fixed: 'left' as const, width: 20, },
   { title: '计薪月', dataIndex: 'yearAndMonth', key: 'yearAndMonth', fixed: 'left' as const, width: 30, },
@@ -180,6 +185,10 @@ const columnsOutsourceDetail = [
   { title: 'UT', dataIndex: 'utHoursTotal', key: 'utHoursTotal', width: 30, },
   { title: '操作', dataIndex: 'operation', key: 'operation', fixed: 'right' as const, width: 20, },
 ]
+const handleOutsourceFormula = () => {
+  outsourceFormulaFlag.value = true;
+  outsourceDetailStore.queryOutsourceFormula();
+}
 const clearFromState = () => {
   formStateAttend.value = {currentStatus: '2',} as SearchAttendItem;
 }

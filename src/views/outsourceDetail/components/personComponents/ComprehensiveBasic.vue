@@ -17,7 +17,7 @@
       <a-descriptions-item label="公司">{{ outsourcePersonDetail.companyName ? outsourcePersonDetail.companyName : "-" }}</a-descriptions-item>
       <a-descriptions-item label="OFFER日期">{{ outsourcePersonDetail.offerTime ? outsourcePersonDetail.offerTime : "-" }}</a-descriptions-item>
       <a-descriptions-item label="身份证">
-        <a-tag v-if="outsourcePersonDetail.idCard" style="cursor: pointer;" color="green" @click="generateIdCardPDF">{{ outsourcePersonDetail.idCard }}</a-tag>
+        <a-tag v-if="outsourcePersonDetail.idCard" style="cursor: pointer;" color="green" @dblclick="generateIdCardPDF">{{ outsourcePersonDetail.idCard }}</a-tag>
         <span v-else>-</span>
       </a-descriptions-item>
 

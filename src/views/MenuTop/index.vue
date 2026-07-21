@@ -9,7 +9,8 @@
       />
     </div>
     <div class="user-info-container">
-      <a-dropdown placement="bottomRight">
+      <PhoneOutlined class="phone-icon" @click="handlePhoneClick" />
+        <a-dropdown placement="bottomRight">
         <div class="user-profile">
           <img v-if="imgPath" :src="imgPath" class="avatar" alt="avatar" />
           <div v-else class="avatar-placeholder">
@@ -19,6 +20,9 @@
         </div>
         <template #overlay>
           <a-menu @click="handleUserMenuClick">
+            <a-menu-item key="personalInfo">
+              <span>个人信息</span>
+            </a-menu-item>
             <a-menu-item key="logout">
               <span style="color: #ff4d4f">退出</span>
             </a-menu-item>
@@ -31,7 +35,7 @@
 <script setup lang="ts">
   import { h } from 'vue';
   import { MenuProps, Modal } from 'ant-design-vue';
-  import { UserOutlined } from '@ant-design/icons-vue';
+  import { UserOutlined, PhoneOutlined } from '@ant-design/icons-vue';
   import { useRouter, useRoute } from 'vue-router';
   import { useResumeListStoreWithOut } from '/@/store/modules/resumeList';
   const router = useRouter();
@@ -68,7 +72,18 @@
       const groupId = res.info.groupId;
       imgPath.value = res.info.imgPath;
       if (loginVueUser.loginFullPart == '2') {
-         menuArrTemp.value.push({
+        list.forEach((item) => { 
+        if (item.functionName == '人才') {
+            menuArrTemp.value.push({
+              key: 'resumeList',
+              label: item.functionName,
+              title: item.functionName,
+              showFlag: false,
+              index: 2,
+            });
+          } 
+        })
+        menuArrTemp.value.push({
                 key: 'mapping',
                 label: 'Mapping',
                 title: 'Mapping',
@@ -79,6 +94,17 @@
                     key: 'MarketData',
                     label: '数据录入',
                     title: '数据录入',
+                    showFlag: false,
+                    index: 0,
+                  },
+                  {
+                    key: 'mapPositions',
+                    label: h(
+                'a',
+                { href: `http://work.wotui.com:8889/WTSM/candidatePosition/query-search-Position-list-pager.html`, target: '_blank' },
+                '职位信息',
+                ),
+                    title: '职位信息',
                     showFlag: false,
                     index: 0,
                   },
@@ -176,9 +202,56 @@
           //     index: 3,
           //   })
           // }
+          if (item.functionName == '官网' && type == 'A' && roleId != 11 && roleId != 8) {
+            let temp = menuArrTemp.value.filter((subItem) => subItem.key === 'online');
+            if (temp.length > 0) {
+              menuArrTemp.value.forEach((subItem) => {
+                if (subItem.key === 'online') {
+                  subItem.children?.push({
+                    key: 'utalent',
+                    label: h(
+                      'a',
+                      {
+                        href: `http://work.wotui.com:8889/WTSM/${item.functionUrl}`,
+                        target: '_blank',
+                      },
+                      item.functionName,
+                    ),
+                    title: item.functionName,
+                    showFlag: false,
+                    index: 7,
+                  });
+                }
+              });
+            } else {
+              menuArrTemp.value.push({
+                key: 'online',
+                label: '线上',
+                title: '线上',
+                showFlag: false,
+                index: 4,
+                children: [
+                  {
+                    key: 'signContract',
+                    label: h(
+                      'a',
+                      {
+                        href: `http://work.wotui.com:8889/WTSM/${item.functionUrl}`,
+                        target: '_blank',
+                      },
+                      item.functionName,
+                    ),
+                    title: item.functionName,
+                    showFlag: false,
+                    index: 1,
+                  },
+                ],
+              });
+            }
+          }
           if (
             item.functionName == '企业' &&
-            (type == 'A' || roleId == 9) &&
+            (type == 'A') &&
             roleId != 11 &&
             roleId != 8
           ) {
@@ -228,7 +301,7 @@
               });
             }
           }
-          if (item.functionName == '签约' && roleId != 11 && roleId != 8) {
+          if (item.functionName == '签约' && type == 'A' && roleId != 11 && roleId != 8) {
             let temp = menuArrTemp.value.filter((subItem) => subItem.key === 'online');
             if (temp.length > 0) {
               menuArrTemp.value.forEach((subItem) => {
@@ -275,7 +348,7 @@
               });
             }
           }
-          if (item.functionName == 'LOGO' && roleId != 11 && roleId != 8) {
+          if (item.functionName == 'LOGO' && type == 'A' && roleId != 11 && roleId != 8) {
             let temp = menuArrTemp.value.filter((subItem) => subItem.key === 'online');
             if (temp.length > 0) {
               menuArrTemp.value.forEach((subItem) => {
@@ -322,7 +395,7 @@
               });
             }
           }
-          if (item.functionName == 'BD' && roleId != 11 && roleId != 8) {
+          if (item.functionName == 'BD' && type == 'A' && roleId != 11 && roleId != 8) {
             let temp = menuArrTemp.value.filter((subItem) => subItem.key === 'online');
             if (temp.length > 0) {
               menuArrTemp.value.forEach((subItem) => {
@@ -1924,12 +1997,16 @@
   const handleSelect: MenuProps['onSelect'] = ({ key }) => {
     if (route.name !== key) {
       router.push({
-        name: key,
+        name: key as string,
         query: {
           ...loginVueUser,
         },
       });
     }
+  };
+
+  const handlePhoneClick = () => {
+    window.open('http://work.wotui.com:8889/WTSM/employee-group/query-phone-resume-call.html', '_blank');
   };
 
   const handleUserMenuClick: MenuProps['onClick'] = ({ key }) => {
@@ -1942,6 +2019,9 @@
           window.open('http://work.wotui.com:8889/WTSM/', '_self');
         },
       });
+    } else if (key === 'personalInfo') {
+      localStorage.setItem("resumeIdAdd","");
+      window.open('http://work.wotui.com:8889/WTSM/ranking/query-resume.html', '_blank');
     }
   };
 </script>
@@ -1965,6 +2045,15 @@
 
   .user-info-container {
     padding-right: 20px;
+    display: flex;
+    align-items: center;
+  }
+
+  .phone-icon {
+    color: white;
+    font-size: 18px;
+    margin-right: 16px;
+    cursor: pointer;
   }
 
   .user-profile {
