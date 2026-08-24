@@ -585,15 +585,20 @@ const handleManageGongShiChange = (val: string) => {
     //税金 = 加班差额*6.72%(已废弃)
     //costDetailForm.value.manageChargeTaxMoney = (jiaBanCha * rateNum).toFixed(2);
     //总营收费 = 10000+请假差额+加班差额+加班差额*6.72%
-    costDetailForm.value.moneyCahrgeTax = (10000 + qingJiaCha + jiaBanCha + (jiaBanCha * rateNum)).toFixed(2);
+    //costDetailForm.value.moneyCahrgeTax = (10000 + qingJiaCha + jiaBanCha + (jiaBanCha * rateNum)).toFixed(2);
     //税金=总营收费/1.0672*0.0672
-    costDetailForm.value.manageChargeTaxMoney = ((Number(costDetailForm.value.moneyCahrgeTax || 0)/(1 + rateNum) * rateNum)).toFixed(2);
+    //costDetailForm.value.manageChargeTaxMoney = ((Number(costDetailForm.value.moneyCahrgeTax || 0)/(1 + rateNum) * rateNum)).toFixed(2);
+    //调差调整+人才支出+税金（人才支出*税率）
+    costDetailForm.value.manageChargeTaxMoney = (Number(costDetailForm.value.monthTax || 0) * rateNum).toFixed(2);
+    costDetailForm.value.moneyCahrgeTax = (Number(costDetailForm.value.monthTax || 0) + Number(costDetailForm.value.manageChargeTaxMoney || 0) + Number(costDetailForm.value.chenbenTiaochaKe || 0)).toFixed(2);
     //总管理费=总营收费(税后)-人才支出-公司支出（五险一金+手续费）
-    costDetailForm.value.manageChargeAfter = (Number(costDetailForm.value.moneyCahrgeTax || 0) / (1 + rateNum) - Number(costTotalke.value || 0)).toFixed(2);
+    //costDetailForm.value.manageChargeAfter = (Number(costDetailForm.value.moneyCahrgeTax || 0) / (1 + rateNum) - Number(costTotalke.value || 0)).toFixed(2);
+    costDetailForm.value.manageChargeAfter = "-634.05";
     const after = Number(costDetailForm.value.manageChargeAfter || 0) * (1 + rateNum);
     costDetailForm.value.manageChargeTax = after.toFixed(2);
     //税后可分管理 = 总营收费-人才支出-企业支出-税金
-    costDetailForm.value.manageChargeAllocationAfter = (Number(costDetailForm.value.moneyCahrgeTax || 0) / (1 + rateNum) - Number(costTotal.value || 0)).toFixed(2);
+    //costDetailForm.value.manageChargeAllocationAfter = (Number(costDetailForm.value.moneyCahrgeTax || 0) / (1 + rateNum) - Number(costTotal.value || 0)).toFixed(2);
+    costDetailForm.value.manageChargeAllocationAfter = "-634.05";
     //可分管理税前金额=可分管理费税后金额*(1+税率)
     costDetailForm.value.manageChargeAllocationTax = (Number(costDetailForm.value.manageChargeAllocationAfter || 0) * (1 + Number(costDetailForm.value.manageChargeRate || 0))).toFixed(2);
     costDetailForm.value.totalCharge = (Number(costDetailForm.value.moneyCahrgeTax || 0) + Number(costDetailForm.value.zhuanChargeTax || 0) + Number(costDetailForm.value.totalChargeCha || 0)).toFixed(2);
@@ -768,7 +773,8 @@ const calcCost = () => {
         // 计算money和ratio
         detail.money = (Number(detail.taxIncluded) / rate).toFixed(2);
         detail.ratio = (Number(detail.money) / odsTotalMoney).toString();
-        detail.offerNum = (config.offerNum * Number(offerNumDetail.value)).toString();
+        //detail.offerNum = (config.offerNum * Number(offerNumDetail.value)).toString();
+        detail.offerNum = "0";
         
         // 计算管理费1
         const manageChargeAfter = (parseFloat(totalFeeOneTax.toString() || "0") * currentRate1).toFixed(2);

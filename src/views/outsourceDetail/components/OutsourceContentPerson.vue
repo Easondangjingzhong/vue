@@ -192,8 +192,9 @@
       </a-popover>
     </a-tag>
 
+    <a-tag v-if="column.key === 'proofFlag' && record.proofFlag == '无需签署'" color="purple">无需签署</a-tag>
     <a-tag v-if="column.key === 'proofFlag' && record.proofFlag == '等待发起'" color="red">等待发起</a-tag>
-    <a-tag v-if="column.key === 'proofFlag' && record.proofFlag == '已经发起'" color="orange">已经发起</a-tag>
+    <a-tag v-if="column.key === 'proofFlag' && record.proofFlag == '等待签署'" color="orange">等待签署</a-tag>
     <a-tag v-if="column.key === 'proofFlag' && record.proofFlag == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(record.leavePath,3)">签署完成</a-tag>
 
     <a-tag v-if="column.key === 'enterprise'" :title="record.enterprise">

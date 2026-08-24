@@ -1,11 +1,22 @@
 <template>
+  <div style="margin-bottom: 5px;margin-top: 5px; display: flex; justify-content: flex-end;">
+    <a-select
+      v-model:value="collectionFilter"
+      allow-clear
+      placeholder="请选择回款状态"
+      style="width: 100px;"
+    >
+      <a-select-option value="已回">已回</a-select-option>
+      <a-select-option value="待回">待回</a-select-option>
+    </a-select>
+  </div>
   <a-table
       size="small"
       :pagination="false"
       rowKey="key"
       :loading="false"
       :columns="columns"
-      :dataSource="getOutsourceQingKuanZhixingMonth"
+      :dataSource="filteredQingKuanZhixingMonth"
     >
    <template #bodyCell="{ column, record }">
       <a-tag v-if="column.key === 'zhangdanFlag'" :color="record.zhangdanFlag === '1' ? 'green' : 'orange'">{{ record.zhangdanFlag === '1' ? '已生成' : '待生成' }}</a-tag>
@@ -15,11 +26,12 @@
       <a-tag v-if="column.key === 'collectionFlag' && record.invoiceFlag" :color="record.collectionFlag ? 'green' : 'orange'">{{ record.collectionFlag ? '已回' : '待回' }}</a-tag>
       <template v-if="column.key === 'excelPath' && record.excelPath">
         <a-button type="primary" size="small" @click="handleDownload(record.excelPath)">下载</a-button>
-        <a-button type="primary" size="small" style="margin-right: 8px;" @click="handlePreview(record.excelPath)">预览</a-button>
+        <a-button type="primary" size="small" style="margin-left: 8px;" @click="handlePreview(record.excelPath)">预览</a-button>
       </template>
       <template v-if="column.key === 'totalCharge'">
-        <span v-if="record.invoiceMoney">{{ record.invoiceMoney }}</span>
-        <span v-else>{{ record.totalCharge }}</span>
+        {{ record.totalCharge }}
+        <!-- <span v-if="record.invoiceMoney">{{ record.invoiceMoney }}</span>
+        <span v-else>{{ record.totalCharge }}</span> -->
       </template>
       <template v-if="column.key === 'operation'">
           <a-dropdown>
@@ -47,6 +59,20 @@
             </template>
           </a-dropdown>
      </template>
+    </template>
+    <template #summary>
+      <a-table-summary-row>
+        <a-table-summary-cell :index="0" :colSpan="5">
+          总计
+        </a-table-summary-cell>
+        <a-table-summary-cell :index="5">
+          {{ tableSummary.peopleNum }}
+        </a-table-summary-cell>
+        <a-table-summary-cell :index="6">
+          {{ tableSummary.totalCharge.toFixed(2) }}
+        </a-table-summary-cell>
+        <a-table-summary-cell :index="7" :colSpan="7" />
+      </a-table-summary-row>
     </template>
   </a-table>
 
@@ -103,13 +129,42 @@
   <a-modal
     v-model:open="invoiceModalOpen"
     title="开票"
-    :confirm-loading="invoiceSubmitting"
-    @ok="handleSubmitInvoice"
+    :width="700"
     @cancel="handleCloseInvoice"
   >
-    <a-form layout="vertical">
-      <a-row :gutter="24">
-        <a-col :span="12">
+    <template #footer>
+      <a-button @click="handleCloseInvoice">取消</a-button>
+      <a-button v-if="currentStep === 2" @click="currentStep = 1">上一步</a-button>
+      <a-button v-if="currentStep === 1" type="primary" @click="handleNextStep">下一步</a-button>
+      <a-button v-if="currentStep === 2" type="primary" :loading="invoiceSubmitting" @click="handleSubmitInvoice">确定</a-button>
+    </template>
+
+    <div v-show="currentStep === 1">
+      <a-form layout="vertical">
+        <a-form-item label="选择人员" v-if="availablePersonList.length > 0">
+          <a-checkbox-group v-model:value="selectedSalaryIds" style="width: 100%;" @change="onPersonSelectionChange('invoice')">
+            <a-row>
+              <a-col :span="8" v-for="person in availablePersonList" :key="person.salaryId" style="margin-bottom: 8px;">
+                <a-checkbox :value="person.salaryId">
+                  {{ person.userNameCn }}{{ person.userNameEn ? '(' + person.userNameEn + ')' : '' }} - ￥{{ person.totalCharge }}
+                </a-checkbox>
+              </a-col>
+            </a-row>
+          </a-checkbox-group>
+          <div style="text-align: right; font-weight: bold; margin-top: 8px;">
+            已选金额合计: ￥{{ selectedTotalCharge }}
+          </div>
+        </a-form-item>
+        <div v-else style="text-align: center; padding: 20px; color: #999;">
+          当前没有可选择的人员，请直接点击下一步。
+        </div>
+      </a-form>
+    </div>
+
+    <div v-show="currentStep === 2">
+      <a-form layout="vertical">
+        <a-row :gutter="24">
+          <a-col :span="12">
           <a-form-item label="开票公司">
             <a-input v-model:value="invoiceForm.invoiceCompany" placeholder="请输入开票公司" style="width: 100%;" />
           </a-form-item>
@@ -179,18 +234,48 @@
         </a-upload-dragger>
       </a-form-item>
     </a-form>
+    </div>
   </a-modal>
 
   <a-modal
     v-model:open="invoiceFenModalOpen"
     title="分函"
-    :confirm-loading="invoiceFenSubmitting"
-    @ok="handleSubmitInvoiceFen"
+    :width="700"
     @cancel="handleCloseInvoiceFen"
   >
-    <a-form layout="vertical">
-       <a-row :gutter="24">
-        <a-col :span="12">
+    <template #footer>
+      <a-button @click="handleCloseInvoiceFen">取消</a-button>
+      <a-button v-if="currentStep === 2" @click="currentStep = 1">上一步</a-button>
+      <a-button v-if="currentStep === 1" type="primary" @click="handleNextStep">下一步</a-button>
+      <a-button v-if="currentStep === 2" type="primary" :loading="invoiceFenSubmitting" @click="handleSubmitInvoiceFen">确定</a-button>
+    </template>
+
+    <div v-show="currentStep === 1">
+      <a-form layout="vertical">
+        <a-form-item label="选择人员" v-if="availablePersonList.length > 0">
+          <a-checkbox-group v-model:value="selectedSalaryIds" style="width: 100%;" @change="onPersonSelectionChange('invoiceFen')">
+            <a-row>
+              <a-col :span="8" v-for="person in availablePersonList" :key="person.salaryId" style="margin-bottom: 8px;">
+                <a-checkbox :value="person.salaryId">
+                  {{ person.userNameCn }}{{ person.userNameEn ? '(' + person.userNameEn + ')' : '' }} - ￥{{ person.totalCharge }}
+                </a-checkbox>
+              </a-col>
+            </a-row>
+          </a-checkbox-group>
+          <div style="text-align: right; font-weight: bold; margin-top: 8px;">
+            已选金额合计: ￥{{ selectedTotalCharge }}
+          </div>
+        </a-form-item>
+        <div v-else style="text-align: center; padding: 20px; color: #999;">
+          当前没有可选择的人员，请直接点击下一步。
+        </div>
+      </a-form>
+    </div>
+
+    <div v-show="currentStep === 2">
+      <a-form layout="vertical">
+        <a-row :gutter="24">
+          <a-col :span="12">
       <a-form-item label="销方">
         <a-input v-model:value="invoiceFenForm.invoiceCompany" disabled placeholder="请输入销方" />
       </a-form-item>
@@ -260,6 +345,7 @@
         </a-upload-dragger>
       </a-form-item>
     </a-form>
+    </div>
   </a-modal>
    <a-drawer
     v-model:open="orginalPathBlobPathFlag"
@@ -283,6 +369,7 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
+import { computed } from 'vue';
 import type { TableColumnsType, UploadProps } from 'ant-design-vue';
 import { CloseOutlined, MenuUnfoldOutlined } from '@ant-design/icons-vue';
 import { Modal, message } from 'ant-design-vue';
@@ -294,6 +381,20 @@ const { getOutsourceQingKuanZhixingMonth, outsourcePersonSalaryCommitYearAndMont
 const orginalPathBlobPathFlag = ref(false);
 const orginalPathBlobPath = ref('');
 const drawerWidth = ref(Math.max(600, window.innerWidth * 0.6));
+const collectionFilter = ref<string>();
+const filteredQingKuanZhixingMonth = computed(() => {
+  const list = getOutsourceQingKuanZhixingMonth.value || [];
+  if (!collectionFilter.value) {
+    return list;
+  }
+  if (collectionFilter.value === '已回') {
+    return list.filter((item: any) => item?.invoiceFlag && item?.collectionFlag);
+  }
+  if (collectionFilter.value === '待回') {
+    return list.filter((item: any) => item?.invoiceFlag && !item?.collectionFlag);
+  }
+  return list;
+});
 const closeDrawer = () => {
   orginalPathBlobPathFlag.value = false;
   orginalPathBlobPath.value = '';
@@ -368,6 +469,51 @@ const invoiceFileList = ref<any[]>([]);
 
 const invoiceFenModalOpen = ref(false);
 const invoiceFenSubmitting = ref(false);
+const availablePersonList = ref<any[]>([]);
+const selectedSalaryIds = ref<number[]>([]);
+
+const currentStep = ref(1);
+
+const handleNextStep = () => {
+  if (availablePersonList.value.length > 0 && selectedSalaryIds.value.length === 0) {
+    message.warning('请至少选择一名人员');
+    return;
+  }
+  currentStep.value = 2;
+};
+
+const selectedTotalCharge = computed(() => {
+  let total = 0;
+  selectedSalaryIds.value.forEach((id) => {
+    const person = availablePersonList.value.find((p) => p.salaryId === id);
+    if (person && person.totalCharge) {
+      total += Number(person.totalCharge);
+    }
+  });
+  return total.toFixed(2);
+});
+const tableSummary = computed(() => {
+  return filteredQingKuanZhixingMonth.value.reduce(
+    (acc: { peopleNum: number; totalCharge: number }, item: any) => {
+      acc.peopleNum += Number(item?.peopleNum || 0);
+      acc.totalCharge += Number(item?.totalCharge || 0);
+      return acc;
+    },
+    { peopleNum: 0, totalCharge: 0 },
+  );
+});
+
+const onPersonSelectionChange = (type: 'invoice' | 'invoiceFen') => {
+  const total = selectedTotalCharge.value;
+  if (type === 'invoice') {
+    invoiceForm.value.invoiceMoney = total;
+    handleInvoiceMoneyChange();
+  } else {
+    invoiceFenForm.value.invoiceMoney = total;
+    handleInvoiceFenMoneyChange();
+  }
+};
+
 const invoiceFenForm = ref<{
   invoiceFlag: string;
   invoiceTime: string;
@@ -545,12 +691,21 @@ const handleInvoiceMoneyChange = () => {
 }
 const handleOpenInvoice = (record: any) => {
   currentRow.value = record;
+  currentStep.value = 1;
+
+  if (record && record.list && Array.isArray(record.list)) {
+    availablePersonList.value = record.list.filter((item: any) => !item.invoiceNumber);
+  } else {
+    availablePersonList.value = [];
+  }
+  selectedSalaryIds.value = availablePersonList.value.map(p => p.salaryId);
+
   invoiceForm.value = {
     invoiceFlag: '1',
     invoiceTime: record?.invoiceTime || '',
     invoiceNumber: record?.invoiceNumber || '',
     invoiceCompany: record?.invoiceCompany || '北京博瑞',
-    invoiceMoney: record?.invoiceMoney || record?.totalCharge || '',
+    invoiceMoney: selectedTotalCharge.value,
     invoiceType: record?.invoiceType || '',
     taxRateShow: record?.taxRateShow || '',
     taxRate: record?.taxRate || '',
@@ -560,6 +715,7 @@ const handleOpenInvoice = (record: any) => {
   };
   invoiceFileList.value = [];
   invoiceModalOpen.value = true;
+  handleInvoiceMoneyChange();
 };
 
 const handleCloseInvoice = () => {
@@ -583,6 +739,10 @@ const handleCloseInvoice = () => {
 };
 
 const handleSubmitInvoice = async () => {
+  if (availablePersonList.value.length > 0 && selectedSalaryIds.value.length === 0) {
+    message.warning('请至少选择一名人员');
+    return;
+  }
   const record = currentRow.value;
   const collectId = getCollectId(record);
   if (!collectId) {
@@ -621,6 +781,7 @@ const handleSubmitInvoice = async () => {
     invoiceForm.value.invoiceType,
     invoiceForm.value.kehuName,
     fileObj,
+    selectedSalaryIds.value.join(','),
   );
   invoiceSubmitting.value = false;
   if (res && res.code === 1) {
@@ -651,21 +812,31 @@ const handleInvoiceFenMoneyChange = () => {
 }
 const handleOpenInvoiceFen = (record: any) => {
   currentRowInvoiceFen.value = record;
+  currentStep.value = 1;
+
+  if (record && record.list && Array.isArray(record.list)) {
+    availablePersonList.value = record.list.filter((item: any) => !item.invoiceNumber);
+  } else {
+    availablePersonList.value = [];
+  }
+  selectedSalaryIds.value = availablePersonList.value.map(p => p.salaryId);
+
   invoiceFenForm.value = {
     invoiceFlag: '1',
     invoiceTime: '',
     invoiceNumber: '',
     invoiceCompany: '北京博瑞',
-    invoiceMoney: '',
+    invoiceMoney: selectedTotalCharge.value,
     kehuName: record?.companyName || '',
     invoiceType: '',
     taxRateShow: '',
     taxRate: '',
     taxMoney: '',
     invoiceMoneyAfter: '',
-    };
+  };
   invoiceFenFileList.value = [];
   invoiceFenModalOpen.value = true;
+  handleInvoiceFenMoneyChange();
 };
 
 const handleCloseInvoiceFen = () => {
@@ -689,6 +860,10 @@ const handleCloseInvoiceFen = () => {
 };
 
 const handleSubmitInvoiceFen = async () => {
+  if (availablePersonList.value.length > 0 && selectedSalaryIds.value.length === 0) {
+    message.warning('请至少选择一名人员');
+    return;
+  }
   const record = currentRowInvoiceFen.value;
   const oldCollectId = getCollectId(record);
   if (!oldCollectId) {
@@ -731,6 +906,7 @@ const handleSubmitInvoiceFen = async () => {
     invoiceFenForm.value.invoiceType,
     invoiceFenForm.value.kehuName,
     fileObj,
+    selectedSalaryIds.value.join(','),
   );
   invoiceFenSubmitting.value = false;
   if (res && res.code === 1) {
@@ -789,12 +965,13 @@ const columns:TableColumnsType = [
     dataIndex: 'companyName',
     key: 'companyName',
     width: 40,
+    ellipsis: true,
   },
   {
     title: '执行月',
     dataIndex: 'zhiXingMonth',
     key: 'zhiXingMonth',
-    width: 20,
+    width: 30,
   },
   {
     title: '账单月',
@@ -806,7 +983,7 @@ const columns:TableColumnsType = [
     title: '账单日',
     dataIndex: 'xinZiRiShow',
     key: 'xinZiRiShow',
-    width: 40,
+    width: 30,
   },
   {
     title: '人数',
@@ -842,7 +1019,7 @@ const columns:TableColumnsType = [
     title: '确认日期',
     dataIndex: 'sureTime',
     key: 'sureTime',
-    width: 50,
+    width: 45,
   },
   {
     title: '开票',
@@ -866,13 +1043,13 @@ const columns:TableColumnsType = [
     title: '回款日期',
     dataIndex: 'collectionTime',
     key: 'collectionTime',
-    width: 50,
+    width: 45,
   },
    {
     title: '下载/预览',
     dataIndex: 'excelPath',
     key: 'excelPath',
-    width: 50,
+    width: 55,
   },
   {
     title: '操作',

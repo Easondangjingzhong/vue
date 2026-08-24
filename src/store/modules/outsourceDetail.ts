@@ -154,7 +154,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     offerOutsourceMonthSalary: [] as OutsourceMonthSalaryItem[], //外包人员请款单 请款单
     offerOutsourceSheBao: [] as OutsourceSheBaoItem[], //外包人员请款单 社保信息
     outsourcePersonPerformanceDetailFlag: false, //外包人员绩效详情控制
-    offerNumDetail: 1, //外包人员业绩单数
+    offerNumDetail: 0, //外包人员业绩单数
     outsourcePersonPerformanceDetail: {} as OutsourceMonthSalaryItem, //外包人员绩效详情月度薪资
     outsourcePersonPerformanceDetailPersonInfo: [] as OutsourcePersonItem[], //外包人员绩效详情基本信息
     outsourcePersonPerformanceDetailSalaryInfo: [] as OutsourceSalaryItem[], //外包人员绩效详情薪资标准
@@ -2297,10 +2297,12 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         }
         formData.append('jinxinEnd', jinxinMonthTempEnd || '');
       }
-      const checkNum = await fetchApi.queryOutsourceCheckNum(formData);
-      if (checkNum.code == 1) {
-        this.offerNumDetail = checkNum.info;
-      }
+      //查询外包人员业绩单数
+      //const checkNum = await fetchApi.queryOutsourceCheckNum(formData);
+      // if (checkNum.code == 1) {
+      //   this.offerNumDetail = checkNum.info;
+      // }
+      this.offerNumDetail = 0;
       const resSalary = await fetchApi.queryOutsourceSalaryByPersonId(formData);
       if (resSalary.code == 1) {
         this.outsourcePersonPerformanceDetailSalaryInfo = resSalary.info as OutsourceSalaryItem[];
@@ -3255,6 +3257,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       invoiceType: string,
       kehuName: string,
       file: any,
+      salaryIds?: string,
     ) {
       try {
         const params = new FormData();
@@ -3271,6 +3274,9 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         params.append('kehuName', kehuName || '');
         params.append('SystemRecruitId', loginVueUser?.loginId || '');
         params.append('file', file);
+        if (salaryIds) {
+          params.append('salaryIds', salaryIds);
+        }
         const res = await fetchApi.queryOutsourceQingKuanInvoice(params);
         return res;
       } catch (error) {
@@ -3292,6 +3298,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
      * @param  kehuName
      * @param  SystemRecruitId
      * @param  file
+     * @param  salaryIds
      * @returns
      */
     async queryOutsourceQingKuanInvoiceFen(
@@ -3307,6 +3314,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       invoiceType: string,
       kehuName: string,
       file: any,
+      salaryIds?: string,
     ) {
       try {
         const params = new FormData();
@@ -3323,6 +3331,9 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         params.append('kehuName', kehuName || '');
         params.append('SystemRecruitId', loginVueUser?.loginId || '');
         params.append('file', file);
+        if (salaryIds) {
+          params.append('salaryIds', salaryIds);
+        }
         const res = await fetchApi.queryOutsourceQingKuanInvoiceFen(params);
         return res;
       } catch (error) {
@@ -3364,6 +3375,23 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           companyName: companyName || '',
           chaMoney: chaMoney || '',
         });
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+    /**
+     * 新增离职证明路径
+     * @param id 
+     * @param file 
+     * @returns 
+     */
+    async addResignatioPath(data: any) {
+      try {
+        const params = new FormData();
+        params.append('id', data.id || '');
+        params.append('file', data.file);
+        const res = await fetchApi.addResignatioPath(params);
         return res;
       } catch (error) {
         return null;

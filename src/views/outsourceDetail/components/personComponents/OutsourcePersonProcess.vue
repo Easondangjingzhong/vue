@@ -76,12 +76,6 @@
       <a-tag v-else color="default" style="cursor: not-allowed;">入职信息</a-tag>
     </template>
     
-    <template v-if="column.key === 'sheBao'">
-      <a-tag v-if="record.currentStatus !== '1' && record.socialFlag === null" color="orange" style="cursor: pointer;" @click="handleComprehensiveSocialSecurityUpdate(record)">社保信息</a-tag>
-      <a-tag v-else-if="record.socialFlag !== null" color="green" style="cursor: pointer;" @click="handleOutsourcePersonDetail(record)">社保信息</a-tag>
-      <a-tag v-else color="default" style="cursor: not-allowed;">社保信息</a-tag>
-    </template>
-    
     <template v-if="column.key === 'heTong'">
       <a-tag
         v-if="!record.contractPeriod && record.currentStatus !== '1' && record.socialFlag !== null && record.contractCompany === '等待发起'"
@@ -109,6 +103,12 @@
       <a-tag v-else-if="record.proofFlag === '等待签署'" color="red">离申签署</a-tag>
       <a-tag v-else-if="record.proofFlag === '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(record.leavePath,3)">离申签署</a-tag>
       <a-tag v-else color="default" style="cursor: not-allowed;">离申签署</a-tag>
+    </template>
+    
+    <template v-if="column.key === 'sheBao'">
+      <a-tag v-if="record.currentStatus !== '1' && record.socialFlag === null" color="orange" style="cursor: pointer;" @click="handleComprehensiveSocialSecurityUpdate(record)">社保信息</a-tag>
+      <a-tag v-else-if="record.socialFlag !== null" color="green" style="cursor: pointer;" @click="handleOutsourcePersonDetail(record)">社保信息</a-tag>
+      <a-tag v-else color="default" style="cursor: not-allowed;">社保信息</a-tag>
     </template>
     
     <a-tag v-if="column.key === 'xuQian' && record.isXuqian !== 1">续签信息</a-tag>
@@ -282,13 +282,7 @@ const columns: TableColumnsType<any> = [
     width: 25,
     ellipsis: true,
   },
-  {
-    title: '',
-    dataIndex: 'sheBao',
-    key: 'sheBao',
-    width: 25,
-    ellipsis: true,
-  },
+  
    {
     title: '',
     dataIndex: 'heTong',
@@ -300,6 +294,13 @@ const columns: TableColumnsType<any> = [
     title: '',
     dataIndex: 'liShen',
     key: 'liShen',
+    width: 25,
+    ellipsis: true,
+  },
+  {
+    title: '',
+    dataIndex: 'sheBao',
+    key: 'sheBao',
     width: 25,
     ellipsis: true,
   },

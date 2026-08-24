@@ -28,7 +28,7 @@
           </div>
           <div>
             <a-form-item name="marketDachengRate" label="店铺达成" :rules="[{ required: false, message: '请输入店铺达成' }]">
-              <a-input v-model:value="outsourceMonthSalaryForm.marketDachengRate" />
+              <a-input v-model:value="outsourceMonthSalaryForm.marketDachengRate"  @change="handleMarketDachengRateChange"/>
             </a-form-item>
           </div>
           <div>
@@ -55,7 +55,7 @@
           </div>
           <div>
             <a-form-item name="personDachengRate" label="个人达成" :rules="[{ required: false, message: '请输入个人达成' }]">
-              <a-input v-model:value="outsourceMonthSalaryForm.personDachengRate" />
+              <a-input v-model:value="outsourceMonthSalaryForm.personDachengRate"/>
             </a-form-item>
           </div>
           <div>
@@ -296,6 +296,72 @@ const jiangjinTotal = computed(() => {
 watch(jiangjinTotal, () => {
   outsourceMonthSalaryForm.value.jiangjinTotal = jiangjinTotal.value;
 })
+
+const handleMarketDachengRateChange = () => {
+  if (outsourceMonthSalaryForm.value.companyName === '诺悠翩雅') {
+    const rateStr = outsourceMonthSalaryForm.value.marketDachengRate;
+    if (!rateStr) {
+      outsourceMonthSalaryForm.value.geti = '0';
+      return;
+    }
+    
+    // 解析百分比，例如 '85%' 或 '85' 都会解析成 85
+    let rate = parseFloat(rateStr.replace('%', ''));
+    if (isNaN(rate)) {
+      outsourceMonthSalaryForm.value.geti = '0';
+      return;
+    }
+
+    // 计算出勤比例: bebyueShiji / biaozhunGongshi，最大为 1
+    const shiji = parseFloat(outsourceMonthSalaryForm.value.bebyueShiji || '0');
+    const biaozhun = parseFloat(outsourceMonthSalaryForm.value.biaozhunGongshi || '1'); // 防止除以0
+    let attendRate = biaozhun > 0 ? shiji / biaozhun : 0;
+    if (attendRate > 1) {
+      attendRate = 1;
+    }
+
+    let baseGeti = 0;
+
+    if (outsourceMonthSalaryForm.value.positions?.includes('销售')) {
+      if (rate < 80) {
+        baseGeti = 0;
+      } else if (rate >= 80 && rate < 90) {
+        baseGeti = 4000;
+      } else if (rate >= 90 && rate < 100) {
+        baseGeti = 6000;
+      } else if (rate >= 100 && rate < 110) {
+        baseGeti = 8000;
+      } else if (rate >= 110 && rate < 120) {
+        baseGeti = 10000;
+      } else if (rate >= 120) {
+        baseGeti = 12000;
+      } else {
+        baseGeti = 0;
+      }
+    } else if (outsourceMonthSalaryForm.value.positions?.includes('裁缝')) {
+      if (rate == 0) {
+        baseGeti = 0;
+      } else if (rate <= 80) {
+        baseGeti = 2000;
+      } else if (rate > 80 && rate <= 90) {
+        baseGeti = 3000;
+      } else if (rate > 90 && rate <= 100) {
+        baseGeti = 4000;
+      } else if (rate > 100 && rate <= 110) {
+        baseGeti = 5000;
+      } else if (rate > 110 && rate <= 120) {
+        baseGeti = 7000;
+      } else if (rate > 120) {
+        baseGeti = 9000;
+      } else {
+        baseGeti = 0;
+      }
+    }
+
+    outsourceMonthSalaryForm.value.geti = (baseGeti * attendRate).toFixed(2).toString();
+  }
+}
+
 //月度专扣总计
 const monthZhuankou = computed(() => {
   return (parseFloat(outsourceMonthSalaryForm.value.zinvJiaoyu || '0') + parseFloat(outsourceMonthSalaryForm.value.jixuJiaoyu || '0') + parseFloat(outsourceMonthSalaryForm.value.fangdaiLixi || '0') + parseFloat(outsourceMonthSalaryForm.value.fangzu || '0') + parseFloat(outsourceMonthSalaryForm.value.shangyangFumu || '0')).toFixed(2).toString();

@@ -64,9 +64,16 @@
           </a-form-item>
         </a-col>
          <a-col :span="12">
-          <a-form-item name="phoneNum" label="手机" :rules="phoneRules">
-            <a-input v-model:value="form.phoneNum" placeholder="请输入手机号码" :rules="phoneRules"/>
+           <a-form-item name="phoneNum" label="手机" :rules="phoneRules">
+            <a-input-search v-model:value="form.phoneNum" placeholder="请输入手机号码" @search="handlePhoneCheck">
+              <template #enterButton>
+                <a-button type="primary">查询</a-button>
+              </template>
+            </a-input-search>
           </a-form-item>
+          <!-- <a-form-item name="phoneNum" label="手机" :rules="phoneRules">
+            <a-input v-model:value="form.phoneNum" placeholder="请输入手机号码" :rules="phoneRules"/>
+          </a-form-item> -->
         </a-col>
       </a-row>
       <a-row :gutter="24">
@@ -636,7 +643,11 @@ const handleMarketChange = (value: string) => {
   form.brandName = '';
   form.floor = '';
   resetBrandLinkPanel();
-  marketDataStore.queryMarkBrandFloor(value || '', '');
+  if(value == '0') {
+    marketDataStore.queryBrandList()
+  } else {
+    marketDataStore.queryMarkBrandFloor(value || '', '');
+  }
 };
 const handleCityAndMarktName = (value: string) => {
   if (value) {
@@ -650,8 +661,13 @@ const handleBrandChange = (value: string) => {
   resetBrandLinkPanel();
   marketDataStore.checkCandidateMarketBrand({ marketId: form.marketId, brandId: form.brandId }).then((res) => {
     if (res.code === 1) {
-      const result = res?.info?.[0];
-      form.floor = result?.floor || '';
+      if (form.marketId == "0") {
+        form.floor = 'OFFICE';
+      } else {
+        const result = res?.info?.[0];
+        form.floor = result?.floor || '1层';
+      }
+      
     } else {
       form.floor = '';
       brandLinkPanelVisible.value = true;

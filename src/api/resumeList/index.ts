@@ -29,7 +29,26 @@ enum URL {
   resume_positionsList_details = '/candidate/rusume-vue-query-position-ChuMendian.action',
   add_new_black = '/resume/resume-vue-update-resume-isBlack-vue.action',
   canel_xianzhi = '/candidate/resume-vue-canel-xianzhi.action',
+  query_resume_recruitId_byPhone = '/candidate/resume-vue-query-resume-recruitId-byPhone.action',
+  canel_limit = '/candidate/resume-vue-canel-limit.action',
 }
+/**
+ * 取消限制指定顾问RecruitId
+ * @param phoneNum 
+ * @param notLimitRemark 
+ * @param recruitId 
+ * @param SystemRecruitId 
+ * @returns 
+ */
+const canelLimit = (formData: any) =>
+  post<any>({ url: URL.canel_limit, data: formData});
+/**
+ * 查询顾问RecruitId
+ * @param phoneNum 
+ * @returns 
+ */
+const queryResumeRecruitIdByPhone = (formData: any) =>
+  post<any>({ url: URL.query_resume_recruitId_byPhone, data: formData});
 /**
  * 取消限制
  * @param  phoneNum 
@@ -207,4 +226,4 @@ const queryResumeSerchData = async (data:any) =>
  */
 const queryPersonTalentData = async (data:any) =>
   post<any>({ url: URL.resume_personTalentData, data });
-export default { canelXianzhi,addNewBlack,queryResumeListPositions,queryQueryResumeNewDetails,querySystemFunction,queryRecommendOffer,queryRecommendInterview,queryRecommendResumeButton,queryCompanyCnList,queryEnterpriseConsultant,queryRecommendCounselor,updateResumeSort,querySortById,fetchUpdateSearchResume,queryTeamPersonChangeSystemA,queryTeamPersonChangeSystemTs,queryPersonTalentData,queryResumeSerchData,queryCompanyList,resumeMenu,queryTeamData,queryPersonData,queryBranList,queryResumeList,addSortResumeName,fetchAddSearchResume,queryPositionsList,queryMarkList };
+export default { canelLimit,queryResumeRecruitIdByPhone,canelXianzhi,addNewBlack,queryResumeListPositions,queryQueryResumeNewDetails,querySystemFunction,queryRecommendOffer,queryRecommendInterview,queryRecommendResumeButton,queryCompanyCnList,queryEnterpriseConsultant,queryRecommendCounselor,updateResumeSort,querySortById,fetchUpdateSearchResume,queryTeamPersonChangeSystemA,queryTeamPersonChangeSystemTs,queryPersonTalentData,queryResumeSerchData,queryCompanyList,resumeMenu,queryTeamData,queryPersonData,queryBranList,queryResumeList,addSortResumeName,fetchAddSearchResume,queryPositionsList,queryMarkList };

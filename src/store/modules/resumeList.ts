@@ -1212,6 +1212,33 @@ export const useResumeListStore = defineStore('app-Resume-List',{
       const res = await fetchApi.canelXianzhi(formData);
       return res;
     },
+    /**
+     * 查询顾问RecruitId
+     * @returns
+     */
+    async queryResumeRecruitIdByPhone(data) {
+      let formData = new FormData();
+      formData.append('phoneNum', data.phone);
+      const res = await fetchApi.queryResumeRecruitIdByPhone(formData);
+      return res;
+    },
+    /**
+     * 取消限制指定顾问RecruitId
+      * @param phoneNum 
+      * @param notLimitRemark 
+      * @param recruitId 
+      * @param SystemRecruitId 
+     * @returns
+     */
+    async canelLimit(data) {
+      let formData = new FormData();
+      formData.append('phoneNum', data.phone);
+      formData.append('notLimitRemark', data.notLimitRemark);
+      formData.append('recruitId', data.recruitId);
+      formData.append('SystemRecruitId', loginVueUser.loginId);
+      const res = await fetchApi.canelLimit(formData);
+      return res;
+    },
   },
 });
 

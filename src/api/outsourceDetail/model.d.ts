@@ -104,6 +104,7 @@ export interface OutsourcePersonItem {
   idPhotoZheng: string;
   allowance: string;
   haveZhao: string;
+  resignationPath: string;
 }
 
 //业绩分配详情

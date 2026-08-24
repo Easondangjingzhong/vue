@@ -262,10 +262,10 @@
             </span>
             <template #overlay>
               <a-menu>
-                <a-menu-item v-if="(record.assignStatus == '待分配' || record.assignStatus == '拒绝') && (loginVueUser.loginType == 'A' || loginVueUser.loginId == '485')" >
+                <a-menu-item v-if="(record.assignStatus == '待分配' || record.assignStatus == '拒绝') && (loginVueUser.loginType == 'A' || loginVueUser.loginId == '485' || loginVueUser.loginId == '504')" >
                  <a href="javascript:;" @click="handleAllocation(record)">分配</a>
                 </a-menu-item>
-                 <a-menu-item v-if="record.assignStatus == '待分配' && (loginVueUser.loginType == 'A' || loginVueUser.loginId == '485')" >
+                 <a-menu-item v-if="record.assignStatus == '待分配' && (loginVueUser.loginType == 'A' || loginVueUser.loginId == '485' || loginVueUser.loginId == '504')" >
                  <a href="javascript:;" @click="handleRefuseAssign(record)">拒绝</a>
                 </a-menu-item>
                 <a-menu-item v-if="record.assignStatus == '已分配' && (loginVueUser.loginType == 'A' || loginVueUser.loginId == record.assignRecruitId)" >

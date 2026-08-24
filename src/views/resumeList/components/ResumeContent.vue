@@ -384,6 +384,9 @@
             </span>
             <template #overlay>
               <a-menu>
+                 <a-menu-item v-if="record.projectFlag == '在保'">
+                 <a href="javascript:;" @click="canelLimit(record)">解除指定</a>
+                </a-menu-item>
                 <a-menu-item v-if="record.projectFlag == '在保'">
                  <a href="javascript:;" @click="canelXianzhi(record)">取消限制</a>
                 </a-menu-item>
@@ -509,6 +512,40 @@
             <a-button size="small" style="margin: 0 8px" @click="clearAddNewBlack">取消</a-button>
           </a-col>
         </a-row>
+    </a-modal>
+    </template>
+  <template>
+    <a-modal
+      v-model:open="openCanelLimit"
+      title="解除指定"
+      @ok="saveCanelLimit"
+      @cancel="clearCanelLimit"
+      :width="450"
+    >
+      <a-form :label-col="{ span: 5 }" :wrapper-col="{ span: 18 }">
+        <a-row>
+          <a-col :span="24" style="margin-bottom: 10px; padding-left: 44px;">
+            <span style="padding-right: 4px;">候选人: </span> {{ canelLimitItem.record?.userName }}
+            <span style="margin-left: 10px;">手机号: </span> {{ canelLimitItem.phone }}
+          </a-col>
+        </a-row>
+        <a-form-item label="顾问" required>
+          <a-select
+            v-model:value="canelLimitItem.recruitId"
+            :options="recruitIdOptions"
+            placeholder="请选择顾问"
+            :showSearch="true"
+            optionFilterProp="label"
+          />
+        </a-form-item>
+        <a-form-item label="备注" required>
+          <a-textarea
+            v-model:value="canelLimitItem.notLimitRemark"
+            placeholder="请输入备注"
+            :rows="3"
+          />
+        </a-form-item>
+      </a-form>
     </a-modal>
   </template>
 </template>
@@ -975,6 +1012,74 @@ optionsRecruitId.value = teamPersonChangeArr.value.map(item => ({value: item.tea
       }
     });
  }
+
+  const openCanelLimit = ref(false);
+  const canelLimitItem = ref({
+    record: null as any,
+    phone: '',
+    recruitId: null as string | null,
+    notLimitRemark: '',
+  });
+  const recruitIdOptions = ref<{ value: string; label: string }[]>([]);
+
+  const canelLimit = async (record: any) => {
+    canelLimitItem.value.record = record;
+    canelLimitItem.value.phone = record.phone;
+    canelLimitItem.value.recruitId = null;
+    canelLimitItem.value.notLimitRemark = '';
+    
+    try {
+      const res: any = await resumeListStore.queryResumeRecruitIdByPhone({ phone: record.phone });
+      if (res && res.code == 1) {
+        recruitIdOptions.value = (res.info || []).map((item: any) => ({
+          value: item.recruitId,
+          label: item.realNameEn,
+        }));
+        openCanelLimit.value = true;
+      } else {
+        message.error(res?.msg || '查询顾问失败');
+      }
+    } catch (error) {
+      message.error('查询顾问失败');
+    }
+  };
+
+  const clearCanelLimit = () => {
+    openCanelLimit.value = false;
+    canelLimitItem.value = { record: null, phone: '', recruitId: null, notLimitRemark: '' };
+    recruitIdOptions.value = [];
+  };
+
+  const saveCanelLimit = async () => {
+    if (!canelLimitItem.value.recruitId) {
+      message.warning('请选择顾问');
+      return;
+    }
+    if (!canelLimitItem.value.notLimitRemark?.trim()) {
+      message.warning('请输入备注');
+      return;
+    }
+    
+    const params = {
+      phone: canelLimitItem.value.phone,
+      recruitId: canelLimitItem.value.recruitId,
+      notLimitRemark: canelLimitItem.value.notLimitRemark,
+    };
+    
+    try {
+      const res: any = await resumeListStore.canelLimit(params);
+      if (res && res.code == 1) {
+        message.success('解除指定成功');
+        clearCanelLimit();
+        onFinish(2);
+      } else {
+        message.error(res?.msg || '解除指定失败');
+      }
+    } catch (error) {
+      message.error('解除指定失败');
+    }
+  };
+
  const canelXianzhi = (record: any) => {
     let remarkValue = '';
     Modal.confirm({

@@ -98,7 +98,16 @@ enum URL {
   query_outsource_qingkuan_invoice_fen = '/candidateRecommend/resume-vue-update-out-MonthQingkuan-Invoice-Fen.action',
   query_outsource_qingkuan_company_tax = '/candidateRecommend/resume-vue-querry-company-tax.action',
   add_outsource_qingkuan_shebao_weicha = '/candidateRecommend/resume-vue-insert-offerOutsourcepWuyiCha.action',
+  add_resignatio_path = '/candidateRecommend/resume-vue-add-resignation-path.action',
 }
+/**
+ * 新增离职证明路径
+ * @param id 
+ * @param file 
+ * @returns 
+ */
+const addResignatioPath = async (data: any) =>
+  post<any>({ url: URL.add_resignatio_path, data});
 /**
  * 新增51社保尾差
  * @param yearAndMonth
@@ -841,6 +850,7 @@ const queryOutsourceMonthSalaryOffer = async (data: any) =>
   post<any>({ url: URL.query_outsource_month_salary_offer, data });
 
 export default {
+  addResignatioPath,
   queryOutsourceQingKuanInvoiceFen,
   addOutsourceQingKuanShebaoaoWeiCha,
   queryOutsourceQingKuanCompanyTax,

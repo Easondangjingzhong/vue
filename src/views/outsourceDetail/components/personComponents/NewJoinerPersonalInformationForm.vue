@@ -528,6 +528,45 @@
         </a-col>
       </a-row>
      </div>
+     <div v-if="offerInformationForm.offerType == '劳务聘用通知书' && jobTypeOffer=='1'">
+      <a-row :gutter="24">
+        <a-col :span="12">
+          <a-form-item label="开始时间" :label-col="labelCol" :rules="[{ required: true, message: '请选择开始时间' }]">
+            <a-date-picker
+                v-model:value="offerInformationForm.startTime"
+                @change="handleStartTimeChange"
+                value-format="YYYY-MM-DD"
+                placeholder="请选择开始时间"
+              />
+          </a-form-item>
+        </a-col>
+        <a-col :span="12">
+          <a-form-item label="结束时间" :label-col="labelCol" :rules="[{ required: true, message: '请选择结束时间' }]">
+            <a-date-picker
+                v-model:value="offerInformationForm.endTime"
+                value-format="YYYY-MM-DD"
+                placeholder="请选择结束时间"
+              />
+          </a-form-item>
+        </a-col>
+      </a-row>
+      <a-row :gutter="24">
+        <a-col :span="12">
+          <a-form-item label="劳务报酬" :label-col="labelCol" :rules="[{ required: true, message: '请输入劳务报酬' }]">
+            <a-input-number v-model:value="offerInformationForm.basicSalary" name="basicSalary" placeholder="请输入劳务报酬" style="width: 100%;"/>
+          </a-form-item>
+        </a-col>
+        <a-col :span="12">
+          <a-form-item label="签署截止" :label-col="labelCol" :rules="[{ required: true, message: '请选择签署截止' }]">
+            <a-date-picker
+                v-model:value="offerInformationForm.signingDeadline"
+                value-format="YYYY-MM-DD"
+                placeholder="请选择签署截止"
+              />
+          </a-form-item>
+        </a-col>
+      </a-row>
+     </div>
      <div v-if="offerInformationForm.offerType == '兼职合同' && jobTypeOffer=='1'">
       <a-row :gutter="24">
         <a-col :span="8">
@@ -943,7 +982,7 @@
         </a-row>
         <a-row :gutter="24">
           <a-col :span="24" class="offerOne">
-            <span class='offerSpanRight'>9.</span>劳动合同及其他协
+            <span class='offerSpanRight'>9.</span>劳动合同及其他协议
           </a-col>
         </a-row>
         <a-row :gutter="24">
@@ -1294,6 +1333,238 @@
           </a-col>
         </a-row>
          <a-row :gutter="24">
+          <a-col :span="24" class="offerContent">
+            <div>姓名：{{ displayName }}</div>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent offerContentMarginBottom">
+            <div>日期：{{ dayjs().format('YYYY-MM-DD') }}</div>
+          </a-col>
+        </a-row>
+      </div>
+      <div v-if="offerInformationForm.offerType == '劳务聘用通知书'">
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerHeader offerContentMargin">
+            <img src="/u-talent-logo.png" alt="U-TALENT" style="height: 30px;" />
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerOne">
+            机密文件
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent">
+            【{{ displayName }}】（有效证件号码：【{{ newJoinerPersonalInformationForm.idCard }}】）
+          </a-col>
+        </a-row>
+        <a-row :gutter="24" style="margin-top: 15px;">
+          <a-col :span="24" class="offerContent offerTitle">
+            劳务聘用通知书
+          </a-col>
+        </a-row>
+        <a-row :gutter="24" style="margin-top: 15px;">
+          <a-col :span="24" class="offerContent">
+            {{offerInformationForm.offerSignCompany}}（下称“公司”）现就劳务合作事宜，按以下条件聘用您提供劳务服务：
+          </a-col>
+        </a-row>
+        <a-row :gutter="24" style="margin-top: 15px;">
+          <a-col :span="24" class="offerOne">
+            <span class='offerSpanRight'>1.</span>劳务服务期限
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent">
+            <div class='offerSpanLeft'>劳务合作期限自【{{ startY }}】年【{{ startM }}】月【{{ startD }}】日（劳务起始日）起至【{{ endY }}】年【{{ endM }}】月【{{ endD }}】日止。劳务期限届满后，双方可协商是否续签《劳务服务协议》。</div>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent">
+            <div class='offerSpanLeft'>双方仅为平等民事劳务合作关系，不属于《劳动法》规制的劳动关系，不适用劳动合同相关法律规定。</div>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerOne">
+            <span class='offerSpanRight'>2.</span>劳务服务时段
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent">
+            <span class='offerSpanLeft'>根据公司项目排班及轮值安排提供劳务服务；双方不执行法定标准工时、综合工时制度，不受加班费、带薪年休假等劳动法规约束，服务时段、额外服务报酬由双方另行协商确定。</span>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerOne">
+            <span class='offerSpanRight'>3.</span>岗位与服务内容
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent">
+            <span class='offerSpanRightPoint'>3.1</span>您提供劳务的岗位为【{{ newJoinerPersonalInformationForm.position }}】。
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent">
+            <span class='offerSpanRightPoint'>3.2</span>您需完成公司合理安排、与本岗位匹配的全部劳务工作内容。
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent">
+            <span class='offerSpanRightPoint'>3.3</span>岗位及服务内容可经双方书面协商后调整。
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerOne">
+            <span class='offerSpanRight'>4.</span>服务地点
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent">
+            <span class='offerSpanLeft'>您的劳务服务地点为【{{ newJoinerPersonalInformationForm.city }}】。</span>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerOne">
+            <span class='offerSpanRight'>5.</span>劳务报酬
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent">
+            <span class='offerSpanLeft'>每月税前劳务报酬：【{{ offerInformationForm.basicSalary }}】人民币；合作期间劳务报酬标准固定，无试用期薪资区分。</span>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent">
+            <span class='offerSpanLeft'>公司将依法代扣代缴劳务报酬对应的个人所得税，税款直接从当月劳务报酬中扣除，由公司统一向税务部门申报缴纳。</span>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerOne">
+            <span class='offerSpanRight'>6.</span>保险保障
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent">
+            <span class='offerSpanLeft'>您已办理退休手续、享受养老待遇，公司无法为您缴纳社会保险、住房公积金。</span>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent">
+            <span class='offerSpanLeft'>为规避服务期间人身意外风险，公司统一为您投保商业人身意外伤害保险；若服务期间发生人身损伤，全部赔付流程、赔偿标准按商业保险条款执行，不适用工伤认定及工伤赔偿规则。</span>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerOne">
+            <span class='offerSpanRight'>7.</span>保密条款
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent">
+            <div class='offerSpanLeft'>您有义务对自身劳务报酬、公司经营、客户、项目等保密信息严格保密；未经公司书面同意，不得以任何形式向公司内部、外部第三方泄露相关保密内容。</div>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerOne">
+            <span class='offerSpanRight'>8.</span>劳务协议及其他约定文件
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent">
+            <div class='offerSpanLeft'>您入场提供劳务当日，需在公司指定时间签署《劳务服务协议》及配套约定文件。劳务协议签署生效后，本劳务聘用通知书自动失效，双方全部权利义务以盖章版劳务协议为准。</div>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent">
+            <span class='offerSpanLeft'>若您确认接受本次劳务聘用并签署劳务协议，双方劳务合作关系自【{{ startY }}】年【{{ startM }}】月【{{ startD }}】日起正式成立。</span>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerOne">
+            <span class='offerSpanRight'>9.</span>电子签署约定
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent">
+            <div class='offerSpanLeft'><span class='offerSpanLeftCenter'>9.1</span>您同意采用电子签名方式签署《劳务服务协议》及配套文件，认可电子签名具备完整法律效力，自愿受签署内容约束。</div>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent">
+            <div class='offerSpanLeft'><span class='offerSpanLeftCenter'>9.2</span>您同意按公司指引，通过指定电子签约平台完成劳务协议、配套文件的签署，平台会通过预留手机号、邮箱推送签署指引、完整文本查看及下载路径，您承诺按流程完成签署。</div>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent">
+            <div class='offerSpanLeft'><span class='offerSpanLeftCenter'>9.3</span>您同意公司合法收集、存储、使用、传输与电子签署相关的个人信息，仅用于本次劳务合作签约及档案留存用途。</div>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerOne">
+            <span class='offerSpanRightPointOne'>10.</span>通知书失效情形
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent">
+            <div class='offerSpanLeft'>出现下列任一情形，本劳务聘用通知书自动失效：</div>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent">
+            <div class='offerSpanLeft'>a.您无法提供真实有效的退休、养老待遇领取证明；</div>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent">
+            <div class='offerSpanLeft'>b.您同时与第三方存在冲突劳务合作，影响本次服务开展；</div>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent">
+            <div class='offerSpanLeft'>c.您应聘提交的身份、退休、从业相关资料虚假、残缺、与事实不符；</div>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent">
+            <div class='offerSpanLeft'>d.您存在其他不诚信行为，不符合本次劳务合作录用条件。</div>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent offerContentMargin">
+            <div>如您接受本次劳务聘用，请于【{{ signingY }}】年【{{ signingM }}】月【{{ signingD }}】日前完成签署确认。签署本通知书即代表您完整阅读、清楚知晓并全部同意以上所有劳务合作条款；若截止日期前未签署，本通知书自动失效。</div>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent">
+            <div data-type="请联系公司人力资源部">如有任何疑问，请联系公司人力资源部</div>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent">
+            <div>联系人：Mona Xu</div>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent">
+            <div>联系电话：+86 13132239531</div>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent offerContentMarginBottom">
+            <div>电子邮箱：mona.xu@utalent.cn</div>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="24" class="offerContent">
+            <div data-type="劳务人员确认签字">劳务人员确认签字：</div>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="8" class="offerContent">
+            <div class="offerContentBorderBottom">&nbsp;</div>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
           <a-col :span="24" class="offerContent">
             <div>姓名：{{ displayName }}</div>
           </a-col>
@@ -1949,6 +2220,7 @@ const offerTypeOptions = [
   { value: '全职实习合同', label: '全职实习合同' },
   { value: '兼职合同', label: '兼职合同' },
   { value: '全职劳动合同', label: '全职劳动合同' },
+  { value: '劳务聘用通知书', label: '劳务聘用通知书' },
 ];
 const displayName = computed(() => {
   const cn = (newJoinerPersonalInformationFormTemp.value?.userNameCn || '').trim();
@@ -2098,12 +2370,14 @@ const generatePDFText = async() => {
 
       doc.setFontSize(18);
       doc.setFont('SimHei', 'bold');
-      doc.text('录用函', pageWidth / 2, currentY + 6, { align: 'center' });
+      doc.text(type === '劳务聘用通知书' ? '劳务聘用通知书' : '录用函', pageWidth / 2, currentY + 6, { align: 'center' });
       currentY += 15;
 
       doc.setFontSize(10);
       doc.setFont('SimHei', 'normal');
-      const intro = offerInformationForm.value.offerSignCompany+'（下称"公司"）非常乐意按以下条件和条款聘用您：';
+      const intro = type === '劳务聘用通知书'
+        ? offerInformationForm.value.offerSignCompany+'（下称“公司”）现就劳务合作事宜，按以下条件聘用您提供劳务服务：'
+        : offerInformationForm.value.offerSignCompany+'（下称"公司"）非常乐意按以下条件和条款聘用您：';
       doc.text(intro, margin, currentY + 4);
       currentY += 10;
 
@@ -2232,6 +2506,49 @@ const generatePDFText = async() => {
           drawParagraph('e.您无法提供办理录用、社会保险等所需要的证明材料的；', true);
           drawParagraph('f.您存在其他不符合公司录用条件或不诚信行为的。', true);
 
+      } else if (type === '劳务聘用通知书') {
+          drawSectionTitle('1.', '劳务服务期限');
+          drawParagraph(`劳务合作期限自【${startY.value}】年【${startM.value}】月【${startD.value}】日（劳务起始日）起至【${endY.value}】年【${endM.value}】月【${endD.value}】日止。劳务期限届满后，双方可协商是否续签《劳务服务协议》。`, true);
+          drawParagraph('双方仅为平等民事劳务合作关系，不属于《劳动法》规制的劳动关系，不适用劳动合同相关法律规定。', true);
+
+          drawSectionTitle('2.', '劳务服务时段');
+          drawParagraph('根据公司项目排班及轮值安排提供劳务服务；双方不执行法定标准工时、综合工时制度，不受加班费、带薪年休假等劳动法规约束，服务时段、额外服务报酬由双方另行协商确定。', true);
+
+          drawSectionTitle('3.', '岗位与服务内容');
+          drawParagraph(`3.1 您提供劳务的岗位为【${newJoinerPersonalInformationForm.value.position}】。`, true);
+          drawParagraph('3.2 您需完成公司合理安排、与本岗位匹配的全部劳务工作内容。', true);
+          drawParagraph('3.3 岗位及服务内容可经双方书面协商后调整。', true);
+
+          drawSectionTitle('4.', '服务地点');
+          drawParagraph(`您的劳务服务地点为【${newJoinerPersonalInformationForm.value.city}】。`, true);
+
+          drawSectionTitle('5.', '劳务报酬');
+          drawParagraph(`每月税前劳务报酬：【${offerInformationForm.value.basicSalary}】人民币；合作期间劳务报酬标准固定，无试用期薪资区分。`, true);
+          drawParagraph('公司将依法代扣代缴劳务报酬对应的个人所得税，税款直接从当月劳务报酬中扣除，由公司统一向税务部门申报缴纳。', true);
+
+          drawSectionTitle('6.', '保险保障');
+          drawParagraph('您已办理退休手续、享受养老待遇，公司无法为您缴纳社会保险、住房公积金。', true);
+          drawParagraph('为规避服务期间人身意外风险，公司统一为您投保商业人身意外伤害保险；若服务期间发生人身损伤，全部赔付流程、赔偿标准按商业保险条款执行，不适用工伤认定及工伤赔偿规则。', true);
+
+          drawSectionTitle('7.', '保密条款');
+          drawParagraph('您有义务对自身劳务报酬、公司经营、客户、项目等保密信息严格保密；未经公司书面同意，不得以任何形式向公司内部、外部第三方泄露相关保密内容。', true);
+
+          drawSectionTitle('8.', '劳务协议及其他约定文件');
+          drawParagraph('您入场提供劳务当日，需在公司指定时间签署《劳务服务协议》及配套约定文件。劳务协议签署生效后，本劳务聘用通知书自动失效，双方全部权利义务以盖章版劳务协议为准。', true);
+          drawParagraph(`若您确认接受本次劳务聘用并签署劳务协议，双方劳务合作关系自【${startY.value}】年【${startM.value}】月【${startD.value}】日起正式成立。`, true);
+
+          drawSectionTitle('9.', '电子签署约定');
+          drawParagraph('9.1 您同意采用电子签名方式签署《劳务服务协议》及配套文件，认可电子签名具备完整法律效力，自愿受签署内容约束。', true);
+          drawParagraph('9.2 您同意按公司指引，通过指定电子签约平台完成劳务协议、配套文件的签署，平台会通过预留手机号、邮箱推送签署指引、完整文本查看及下载路径，您承诺按流程完成签署。', true);
+          drawParagraph('9.3 您同意公司合法收集、存储、使用、传输与电子签署相关的个人信息，仅用于本次劳务合作签约及档案留存用途。', true);
+
+          drawSectionTitle('10.', '通知书失效情形');
+          drawParagraph('出现下列任一情形，本劳务聘用通知书自动失效：', true);
+          drawParagraph('a.您无法提供真实有效的退休、养老待遇领取证明；', true);
+          drawParagraph('b.您同时与第三方存在冲突劳务合作，影响本次服务开展；', true);
+          drawParagraph('c.您应聘提交的身份、退休、从业相关资料虚假、残缺、与事实不符；', true);
+          drawParagraph('d.您存在其他不诚信行为，不符合本次劳务合作录用条件。', true);
+
       } else if (type === '兼职合同') {
           drawSectionTitle('1.', '非全日制用工合同期限');
           drawParagraph(`非全日制用工合同期限自【${startY.value}】年【${startM.value}】月【${startD.value}】日（"非全日制用工合同起始日"）起。`, true);
@@ -2278,16 +2595,29 @@ const generatePDFText = async() => {
       }
       
       currentY += 10;
-      drawParagraph(`如接受聘用，请于【${signingY.value}】年【${signingM.value}】月【${signingD.value}】日前签署。签署本录用函即代表您已仔细阅读、了解、确认和同意以上各项条款及条件并接受聘用；在此日期前未签署本录用函，本录用函自动失效。`);
-      
-      currentY += 5;
-      drawParagraph('如有任何疑问，请致电本公司人力资源部');
-      drawParagraph('联系人：Mona Xu');
-      drawParagraph('联系电话：+86 13132239531');
-      drawParagraph('电子邮箱：mona.xu@utalent.cn');
-      
-      currentY += 10;
-      doc.text('员工签名：', margin, currentY + 4);
+      if (type === '劳务聘用通知书') {
+          drawParagraph(`如您接受本次劳务聘用，请于【${signingY.value}】年【${signingM.value}】月【${signingD.value}】日前完成签署确认。签署本通知书即代表您完整阅读、清楚知晓并全部同意以上所有劳务合作条款；若截止日期前未签署，本通知书自动失效。`);
+
+          currentY += 5;
+          drawParagraph('如有任何疑问，请联系公司人力资源部');
+          drawParagraph('联系人：Mona Xu');
+          drawParagraph('联系电话：+86 13132239531');
+          drawParagraph('电子邮箱：mona.xu@utalent.cn');
+
+          currentY += 10;
+          doc.text('劳务人员确认签字：', margin, currentY + 4);
+      } else {
+          drawParagraph(`如接受聘用，请于【${signingY.value}】年【${signingM.value}】月【${signingD.value}】日前签署。签署本录用函即代表您已仔细阅读、了解、确认和同意以上各项条款及条件并接受聘用；在此日期前未签署本录用函，本录用函自动失效。`);
+
+          currentY += 5;
+          drawParagraph('如有任何疑问，请致电本公司人力资源部');
+          drawParagraph('联系人：Mona Xu');
+          drawParagraph('联系电话：+86 13132239531');
+          drawParagraph('电子邮箱：mona.xu@utalent.cn');
+
+          currentY += 10;
+          doc.text('员工签名：', margin, currentY + 4);
+      }
       currentY += 10;
       doc.line(margin, currentY, margin + 60, currentY); // Underline
       
@@ -2574,6 +2904,19 @@ const generatePDFText = async() => {
   }
 }
 const generatePDF = async () => {
+    // const blob = await generatePDFText();
+    // if (blob) {
+    //   const filename = `新员工个人信息登记表_${newJoinerPersonalInformationForm.value.userNameCn || ''}.pdf`;
+    //   const downloadUrl = URL.createObjectURL(blob);
+    //   const link = document.createElement('a');
+    //   link.href = downloadUrl;
+    //   link.download = filename;
+    //   document.body.appendChild(link);
+    //   link.click();
+    //   document.body.removeChild(link);
+    //   URL.revokeObjectURL(downloadUrl);
+    // }
+    // return;
   console.log(newJoinerPersonalInformationForm.value);
   isShow.value = false;
   isloading.value = true;

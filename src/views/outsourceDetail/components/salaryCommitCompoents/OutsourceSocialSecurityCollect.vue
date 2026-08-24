@@ -30,7 +30,7 @@
           <!-- <a-tag v-if="column.key === 'checkFlag' && record.checkFlag === '1'" color="red">未核</a-tag> -->
           <a-tag v-if="column.key === 'checkFlag' && record.checkFlag === '2'" color="green">已核</a-tag>
           <a-tag v-if="column.key === 'bankPurchaseStatus' && record.bankPurchaseStatus === '1'" color="orange">采购</a-tag>
-          <a v-if="column.key === 'personNum'" @click="handleClick(record.yearAndMonth,record.companyName)"> {{ record.personNum }} </a>
+          <a v-if="column.key === 'personNum'" @click="handleClick(record.yearAndMonthJiao,record.companyName)"> {{ record.personNum }} </a>
           <template v-if="column.key === 'action' && record.checkFlag === '2' && (record.companyName === '51社保' || record.companyName === '江苏今元')">
           <a-dropdown>
             <span class="ant-dropdown-link" style="cursor: pointer;" @click.prevent>
@@ -91,7 +91,7 @@ const handleClick = (yearAndMonth,companyName) => {
 const columnWidths: Record<string, number> = {
   index: 110,
   companyName: 110,
-  yearAndMonth: 110,
+  yearAndMonthJiao: 110,
   shebaoCompany: 110,
   yijinCompany: 110,
   shebaoPerson: 110,
@@ -118,7 +118,7 @@ const withLeftAlign = (cols: any[], leftAlignKeys: Set<string>) =>
   cols.map((col) => (leftAlignKeys.has(col.dataIndex) ? { ...col, align: 'left' } : col));
 
 const commonLeftAlignKeys = new Set([
-  'yearAndMonth',
+  'yearAndMonthJiao',
   'shebaoCompany',
   'yijinCompany',
   'shebaoPerson',
@@ -143,8 +143,8 @@ const columns = withLeftAlign(
   },
   {
     title: '周期',
-    dataIndex: 'yearAndMonth',
-    key: 'yearAndMonth',
+    dataIndex: 'yearAndMonthJiao',
+    key: 'yearAndMonthJiao',
   },
    {
     title: '单位社保',
@@ -234,8 +234,8 @@ const innerColumns = withLeftAlign(
   },
   {
     title: '周期',
-    dataIndex: 'yearAndMonth',
-    key: 'yearAndMonth',
+    dataIndex: 'yearAndMonthJiao',
+    key: 'yearAndMonthJiao',
   },
    {
     title: '单位社保',

@@ -55,9 +55,10 @@
       </a-descriptions-item>
       <a-descriptions-item label="实际离职">{{ outsourcePersonDetail.realLeaveTime  ? outsourcePersonDetail.realLeaveTime : "-" }}</a-descriptions-item>
       <a-descriptions-item label="离职证明">
-        <a-tag v-if="outsourcePersonDetail.proofFlag == '等待发起'" color="red">等待发起</a-tag>
-        <a-tag v-else-if="outsourcePersonDetail.proofFlag == '已经发起'" color="orange">已经发起</a-tag>
-        <a-tag v-else-if="outsourcePersonDetail.proofFlag == '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(outsourcePersonDetail.leavePath,3)">签署完成</a-tag>
+        <!-- <a-tag v-if="outsourcePersonDetail.proofFlag == '等待发起'" color="red">等待发起</a-tag>
+        <a-tag v-else-if="outsourcePersonDetail.proofFlag == '已经发起'" color="orange">已经发起</a-tag> -->
+        <a-tag v-if="outsourcePersonDetail.resignationPath" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(outsourcePersonDetail.resignationPath,3)">查看</a-tag>
+        <a-tag v-if="outsourcePersonDetail.resignationPath" style="cursor: pointer;" color="green" @click="handleFileYulanInfoDownload(outsourcePersonDetail.resignationPath)">下载</a-tag>
         <span v-else>-</span>
       </a-descriptions-item>
     </a-descriptions>
@@ -298,6 +299,21 @@ watch(() => outsourcePersonDetail.value.id, () => {
 outsourceDetailStore.queryOutsourcePersonByPhone(outsourcePersonDetail.value.phoneNumber);
 const handleFileYulanInfo = (originalPathBlobPath,type) => {
   outsourceDetailStore.handleFileYulanInfo(originalPathBlobPath,type);
+}
+
+const handleFileYulanInfoDownload = (url: string) => {
+  if (!url) {
+    message.warning('下载链接为空');
+    return;
+  }
+  const link = document.createElement('a');
+  link.href = url;
+  const fileName = url.substring(url.lastIndexOf('/') + 1) || '离职证明';
+  link.download = fileName;
+  link.target = '_blank';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 </script>
 

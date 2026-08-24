@@ -253,7 +253,7 @@
         </a-button>
         <a-button
         style="margin-left: 4px;"
-          v-if="!isNR38 && showResumeAdd && resumeData.limitFlag == '限制禁推' && (resumeData.recommendLimit == '推荐' || resumeData.zhuCeFlag == '注册顾问' || !props.showResumeRightOutFlag) && resumeData.isBlack != '1' && (resumeData.checkFlag == '最新'|| resumeData.checkFlag == '已激活') && resumeProgressDetailScore >= 90 && (resumeData.resumeStatus != '外包保护期中' || !limitFlagRecommend)"
+          v-if="!isNR38 && showResumeAdd && resumeData.limitFlag == '限制禁推' && (resumeData.recommendLimit == '推荐' || resumeData.zhuCeFlag == '注册顾问' || !props.showResumeRightOutFlag) && resumeData.isBlack != '1' && (resumeData.checkFlag == '最新'|| resumeData.checkFlag == '已激活') && resumeProgressDetailScore >= 90 && (resumeData.resumeStatus != '外包保护期中' || !limitFlagRecommend) && !resumeData.notLimit"
           type="primary"
           danger
           size="middle"
@@ -261,14 +261,14 @@
         >推荐</a-button>
          <a-button
         style="margin-left: 4px;"
-          v-if="!isNR38 && showResumeAdd && (resumeData.recommendLimit == '推荐' || resumeData.zhuCeFlag == '注册顾问') && resumeData.isBlack == '1' && (resumeData.checkFlag == '最新'|| resumeData.checkFlag == '已激活') && resumeProgressDetailScore >= 90 && (resumeData.resumeStatus != '外包保护期中' || !limitFlagRecommend)"
+          v-if="!isNR38 && showResumeAdd && (resumeData.recommendLimit == '推荐' || resumeData.zhuCeFlag == '注册顾问') && resumeData.isBlack == '1' && (resumeData.checkFlag == '最新'|| resumeData.checkFlag == '已激活') && resumeProgressDetailScore >= 90 && (resumeData.resumeStatus != '外包保护期中' || !limitFlagRecommend) && !resumeData.notLimit"
           size="middle"
           :disabled="true"
           title="此候选人已经存在公司黑名单中，禁止推荐"
         >推荐</a-button>
         <a-button
         style="margin-left: 4px;"
-          v-if="!isNR38 && showResumeAdd && (resumeData.recommendLimit == '推荐' || resumeData.zhuCeFlag == '注册顾问') && (resumeData.checkFlag == '最新'|| resumeData.checkFlag == '已激活') && resumeProgressDetailScore < 90"
+          v-if="!isNR38 && showResumeAdd && (resumeData.recommendLimit == '推荐' || resumeData.zhuCeFlag == '注册顾问') && (resumeData.checkFlag == '最新'|| resumeData.checkFlag == '已激活') && resumeProgressDetailScore < 90 && !resumeData.notLimit"
           type="primary"
           size="middle"
           :disabled="true"
@@ -278,10 +278,19 @@
         </a-button>
         <a-button
         style="margin-left: 4px;"
-          v-if="!isNR38 && showResumeAdd && resumeData.recommendLimit == '限制分单' && resumeData.isBlack != '1' && resumeData.checkFlag == '最新' && resumeData.checkFlag == '最新' && resumeProgressDetailScore >= 90"
+          v-if="!isNR38 && showResumeAdd && resumeData.recommendLimit == '限制分单' && resumeData.isBlack != '1' && resumeData.checkFlag == '最新' && resumeProgressDetailScore >= 90 && !resumeData.notLimit"
           type="primary"
           danger
           title="在保推荐分单"
+          size="middle"
+          @click="handleRecommendCandidatePosition"
+        >推荐</a-button>
+         <a-button
+        style="margin-left: 4px;"
+          v-if="!isNR38 && showResumeAdd && (resumeData.recommendLimit == '限制禁推') && resumeData.notLimit == '1' && resumeData.isBlack != '1' && resumeData.checkFlag == '最新' && resumeProgressDetailScore >= 90 "
+          type="primary"
+          danger
+          title="在保公司调查中"
           size="middle"
           @click="handleRecommendCandidatePosition"
         >推荐</a-button>
@@ -304,7 +313,7 @@
         </a-button>
         <a-button
         style="margin-left: 4px;"
-          v-if="!isNR38 && showResumeAdd && resumeData.recommendLimit == '限制推荐' && resumeData.checkFlag != '待核'"
+          v-if="!isNR38 && showResumeAdd && resumeData.recommendLimit == '限制推荐' && resumeData.checkFlag != '待核' && !resumeData.notLimit"
           size="middle"
           :disabled="limitFlagRecommend"
           title="OFFER推荐禁止"
@@ -313,7 +322,7 @@
         </a-button>
         <a-button
         style="margin-left: 4px;"
-          v-if="((!isNR38 && showResumeAdd && resumeData.recommendLimit == '限制禁推' && resumeData.checkFlag != '待核') && props.showResumeRightOutFlag)"
+          v-if="((!isNR38 && showResumeAdd && resumeData.recommendLimit == '限制禁推' && resumeData.checkFlag != '待核') && props.showResumeRightOutFlag  && !resumeData.notLimit)"
           size="middle"
           :disabled="limitFlagRecommend"
           title="在保推荐禁止"

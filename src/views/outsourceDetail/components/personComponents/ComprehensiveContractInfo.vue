@@ -43,7 +43,7 @@
                   <a href="javascript:;" @click="handleEditClick(record)">合同修改</a>
                 </a-menu-item>
                 <a-menu-item v-if="record.sign !== '2'">
-                  <a href="javascript:;" @click="handleLeaveApplyClick(record)">离职申请</a>
+                  <a href="javascript:;" @click="handleLeaveResignation(record)">离职证明</a>
                 </a-menu-item>
               </a-menu>
             </template>
@@ -51,15 +51,34 @@
      </template>
   </template>
   </a-table>
+    <a-modal
+      v-model:visible="isUploadModalVisible"
+      title="上传离职证明"
+      @ok="handleUploadConfirm"
+      @cancel="handleUploadCancel"
+    >
+      <a-upload
+        v-model:file-list="uploadFileList"
+        :before-upload="beforeUpload"
+        :max-count="1"
+      >
+        <a-button>
+          <UploadOutlined />
+          选择文件
+        </a-button>
+      </a-upload>
+    </a-modal>
   </a-col>
 </a-row>
 
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import _ from 'lodash';
-import { MenuUnfoldOutlined } from '@ant-design/icons-vue';
+import { MenuUnfoldOutlined, UploadOutlined } from '@ant-design/icons-vue';
+import { message } from 'ant-design-vue';
 import type { TableColumnsType } from 'ant-design-vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
 import { OutsourcePersonItem,PersonContractItem } from '/@/api/outsourceDetail/model';
@@ -195,6 +214,50 @@ const handleLeaveApplyClick = (record) => {
   const recordtemp = {...record,id:record.value.personId}
   outsourceDetailStore.handleContractInfomationForm(recordtemp as OutsourcePersonItem);
 }
+
+const isUploadModalVisible = ref(false);
+const uploadFileList = ref<any[]>([]);
+const currentRecordId = ref<string>('');
+
+const handleLeaveResignation = (record: any) => {
+  currentRecordId.value = record.personId;
+  uploadFileList.value = [];
+  isUploadModalVisible.value = true;
+}
+
+const beforeUpload = (file: any) => {
+  uploadFileList.value = [file];
+  return false;
+};
+
+const handleUploadConfirm = async () => {
+  if (uploadFileList.value.length === 0) {
+    message.warning('请先选择文件');
+    return;
+  }
+
+  const file = uploadFileList.value[0];
+  const data = {
+    id: currentRecordId.value,
+    file: file.originFileObj || file
+  };
+
+  const res = await outsourceDetailStore.addResignatioPath(data);
+  if (res && res.code === 1) {
+    message.success('离职证明上传成功');
+    isUploadModalVisible.value = false;
+    uploadFileList.value = [];
+    outsourcePersonDetail.value.resignationPath = res.info;
+  } else {
+    message.error(res?.msg || '离职证明上传失败');
+  }
+};
+
+const handleUploadCancel = () => {
+  isUploadModalVisible.value = false;
+  uploadFileList.value = [];
+};
+
 const handleFileYulanInfo = (originalPathBlobPath,type) => {
     outsourceDetailStore.handleFileYulanInfo(originalPathBlobPath,type);
   }
