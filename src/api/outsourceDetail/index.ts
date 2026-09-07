@@ -59,6 +59,7 @@ enum URL {
   query_outsource_person_byPersonId = '/candidateRecommend/resume-vue-select-out-person-byPersonId.action',
   query_outsource_salary_by_personId = '/candidateRecommend/resume-vue-select-out-Salary-byperson.action',
   query_outsource_shebao_by_personId = '/candidateRecommend/resume-vue-select-out-SheBao-person-jinxinMonth.action',
+  update_outsource_shebao_bucha_money = '/candidateRecommend/resume-vue-select-out-SheBao-person-jinxinMonth-bucha.action',
   query_outsource_gongshi_by_companyName = '/candidateRecommend/resume-vue-query-out-gongshi-CompanyName.action',
   query_outsource_team_msg = '/employee-group/resume-vue-query-team-msg.action',
   query_outsource_checkNum = '/candidateRecommend/resume-vue-query-offer-outSoure-checkNum.action',
@@ -467,6 +468,13 @@ const queryOutsourceSalaryByPersonId = async (data: any) =>
  */
 const queryOutsourceShebaoByPersonId = async (data: any) =>
   post<any>({ url: URL.query_outsource_shebao_by_personId, data });
+/**
+ * 更新外包人员社保补差
+ * @param data id buchaMoney
+ * @returns
+ */
+const updateOutsourceSheBaoBuchaMoney = async (data: any) =>
+  post<any>({ url: URL.update_outsource_shebao_bucha_money, data });
 /**
  * 更新外包店铺简称
  * @param data yearAndMonth companyName
@@ -893,6 +901,7 @@ export default {
   queryOutsourcePersonByPersonId,
   queryOutsourceSalaryByPersonId,
   queryOutsourceShebaoByPersonId,
+  updateOutsourceSheBaoBuchaMoney,
   outsourcePersonMarketName,
   outsourcePersonMoney,
   updateOutsourceQingKuanOrderNum,

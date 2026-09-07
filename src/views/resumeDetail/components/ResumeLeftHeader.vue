@@ -27,9 +27,9 @@
         <span class="resume_span_name">{{ item.realNameEn }}</span>
         <span class="resume_span_name">{{ item.teamName }}</span>
         <span class="resume_span_two">{{ item.source }}</span>
-        <span class="resume_span_name"  v-if="!item.resumeId && item.resumeIdEn" :title="`英文: ${item.registTime}`">{{ item.registTime }}</span>
-        <span class="resume_span_name"  v-if="item.resumeId && !item.resumeIdEn" :title="`中文: ${item.registTime}`">{{ item.registTime }}</span>
-        <span class="resume_span_name"  v-if="item.resumeId && item.resumeIdEn" :title="`中文: ${item.registTime}&#13;英文: ${item.registTimeOther}`">{{ item.registTime }}</span>
+        <span class="resume_span_name"  v-if="!item.resumeId && item.resumeIdEn" :title="`英文: ${item.registTimeTemp}`">{{ item.registTime }}</span>
+        <span class="resume_span_name"  v-if="item.resumeId && !item.resumeIdEn" :title="`中文: ${item.registTimeTemp}`">{{ item.registTime }}</span>
+        <span class="resume_span_name"  v-if="item.resumeId && item.resumeIdEn" :title="`中文: ${item.registTimeTemp}&#13;英文: ${item.registTimeOtherTemp}`">{{ item.registTime }}</span>
         <span class="resume_span">
           <a-tag v-if="!item.resumeId" style="cursor: not-allowed">中文</a-tag>
           <a-tag
@@ -419,7 +419,7 @@
   import { LinkOutlined, CloseOutlined } from '@ant-design/icons-vue';
   import { storeToRefs } from 'pinia';
   import { message, Modal } from 'ant-design-vue';
-  import { formatToDate } from '/@/utils/dateUtil';
+  import { formatToDate,formatToDateTime } from '/@/utils/dateUtil';
   import { useResumeDetailStore } from '/@/store/modules/resumeDetail';
   import OrginalPath from '/@/components/OrginalPath/index.vue';
   import MappingJiaGou from './MappingJiaGou.vue';
@@ -475,7 +475,9 @@
       teamName: item.teamName || '',
       source: item.source || '',
       registTime: item.registTime ? formatToDate(item.registTime) : '',
+      registTimeTemp: item.registTime ? formatToDateTime(item.registTime) : '',
       registTimeOther: item.registTimeOther ? formatToDate(item.registTimeOther) : '',
+      registTimeOtherTemp: item.registTimeOther ? formatToDate(item.registTimeOther) : '',
       addConsultantId: item.addConsultantId,
     }));
   });

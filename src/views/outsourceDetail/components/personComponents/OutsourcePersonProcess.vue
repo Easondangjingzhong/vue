@@ -78,7 +78,7 @@
     
     <template v-if="column.key === 'heTong'">
       <a-tag
-        v-if="!record.contractPeriod && record.currentStatus !== '1' && record.socialFlag !== null && record.contractCompany === '等待发起'"
+        v-if="!record.contractPeriod && record.currentStatus !== '1' && record.contractCompany === '等待发起'"
         color="orange"
         style="cursor: pointer;"
         @click="handleAddPersonContractDetail(record)"
@@ -86,7 +86,7 @@
         合同签署
       </a-tag>
       <a-tag
-        v-if="record.contractPeriod && record.currentStatus !== '1' && record.socialFlag !== null && record.contractCompany === '等待发起'"
+        v-if="record.contractPeriod && record.currentStatus !== '1' && record.contractCompany === '等待发起'"
         :color="Number(record.contractEndTime) >= Date.now() ? 'orange' : 'red'"
         style="cursor: pointer;"
         @click="handleContractInfomationForm(record)"
@@ -99,7 +99,7 @@
     </template>
     
     <template v-if="column.key === 'liShen'">
-      <a-tag v-if="!record.proofFlag && record.currentStatus !== '1' && record.socialFlag !== null" color="orange" style="cursor: pointer;" @click="handleLeaveInfomationForm(record)">离申签署</a-tag>
+      <a-tag v-if="!record.proofFlag && record.currentStatus !== '1'" color="orange" style="cursor: pointer;" @click="handleLeaveInfomationForm(record)">离申签署</a-tag>
       <a-tag v-else-if="record.proofFlag === '等待签署'" color="red">离申签署</a-tag>
       <a-tag v-else-if="record.proofFlag === '签署完成'" style="cursor: pointer;" color="green" @click="handleFileYulanInfo(record.leavePath,3)">离申签署</a-tag>
       <a-tag v-else color="default" style="cursor: not-allowed;">离申签署</a-tag>

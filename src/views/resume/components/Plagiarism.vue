@@ -73,15 +73,216 @@
       </a-form-item>
     </a-form> -->
     </a-card>
-    <a-card v-if="plagiarusnRseult != 0 && plagiarusnRseult == 99" class="resume_card">
+    <a-card v-if="plagiarusnRseult != 0 && plagiarusnRseult != 1" class="resume_card">
       <h3 class="resume_title_h3">查重结果</h3>
       <a-divider class="resume_divider" dashed />
-      <a-result class="resume_result" status="warning" :title="`此人才简历与您“我的简历”库中简历重复度为100%，您不能重复上传哦！`"></a-result>
-      <!-- <a-result class="resume_result" status="warning" :title="`此人才的简历与系统中简历重复度在${ resultPpercentage }，您不能继续上传哦！`"></a-result>
-       <template #extra>
+      <!-- <a-result class="resume_result" status="warning" :title="`此人才简历与您“我的简历”库中简历重复度为100%，您不能重复上传哦！`"></a-result> -->
+      <a-result class="resume_result" status="warning" :title="`此人才的简历与系统中简历重复度在${ resultPpercentage }，您不能继续上传哦！`">
+        <template v-if="loginVueUser.loginType == 'A'" #extra>
           <a-button type="primary" @click="handleUploadBtn" style="background-color: orange;border-color: orange;">完善简历</a-button>
-        </template> -->
-      <a-table size="small" :dataSource="plagiarusnInfo.info" :columns="columnsPlagiarusnRseult" />
+        </template>
+      </a-result>
+      <a-table size="small" :dataSource="plagiarusnInfo.info" :columns="columnsPlagiarusnRseult">
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.key === 'userName'">
+            <a
+              href="javascript:;"
+              @click.prevent="handleToResumeDetailsCurrent(record)"
+            >
+              {{ record.userName }}
+            </a>
+          </template>
+          <template v-if="column.key === 'realNameEn'">
+                    <span :title="record.registTimeStr">{{ record.realNameEn || '公共库' }}</span>
+                  </template>
+                  <template v-if="column.key === 'registTimeStr'">
+                    <span :title="record.registTimeStr">{{ record.registTimeStr }}</span>
+                  </template>
+                  <template v-if="column.key === 'lastUpdateTimeStr'">
+                    <a-tag v-if='!record.callLastTime' color="red">7日未联</a-tag>
+                    <a-tag v-if='record.callLastTime && calculateDateDiff(record.callLastTime) > 7' color="red">7日未联</a-tag>
+                    <a-tag v-if='record.callLastTime && calculateDateDiff(record.callLastTime) <= 7' color="green">7日已联</a-tag>
+                    <a-tag v-if='record.notConnectFlag == 1' color="red" :title="record.notConnectTime">未接</a-tag>
+                  </template>
+                  <template v-if="column.key === 'projectFlag'">
+                     <a-tag
+                      class="tagspan"
+                      v-if="record.zaiZhi == '2'"
+                      color="red"
+                      >离职</a-tag
+                    >
+                    <a-tag
+                      class="tagspan"
+                      v-if="record.zaiZhi == '1'"
+                      color="green"
+                      >在职</a-tag
+                    >
+                    <a-tag
+                      class="tagspan"
+                      v-if="showResumeRightOutFlag && !record.recruitId && record.projectFlag == '待保'"
+                      color="red"
+                      >过保</a-tag
+                    >
+                    <a-tag
+                      class="tagspan tagspanGreen"
+                      :title="record.limitRemarkDetail"
+                      v-if="showResumeRightOutFlag && !record.recruitId && record.projectFlag == '在保'"
+                      color="green"
+                      >{{ record.projectFlag }}</a-tag
+                    >
+                    <a-tag
+                      class="tagspan"
+                      v-if="showResumeRightOutFlag && !record.recruitId && record.projectFlag == '不保'"
+                      color="red"
+                      >过保</a-tag
+                    >
+                    <a-tag
+                      class="tagspan"
+                      v-if="showResumeRightOutFlag && !record.recruitId && record.projectFlag == '过保'"
+                      color="red"
+                      >{{ record.projectFlag }}</a-tag
+                    >
+                    <!-- <a-tag class="tagspan" v-if="showResumeRightOutFlag && !record.recruitId" color="orange">公共</a-tag> -->
+                    <a-tag
+                      class="tagspan"
+                      v-if="showResumeRightOutFlag && !record.recruitId && record.twoYearFlag == '两年'"
+                      color="green"
+                      >两年</a-tag
+                    >
+                    <a-tag
+                      class="tagspan tagspanWhite"
+                      :title="record.checkedTime"
+                      v-if="record.recruitId && record.checkFlag == '待核'"
+                      color="#d8d8d8"
+                      >{{ record.checkFlag }}</a-tag
+                    >
+                    <a-tag
+                      class="tagspan"
+                      v-if="showResumeRightOutFlag && record.recruitId && record.checkFlag == '待激活' && record.resumeStatus != '外包保护期中'"
+                      color="#d8d8d8"
+                      >激活</a-tag
+                    >
+                    <!-- <a-tag class="tagspan" v-if="record.recruitId && record.checkFlag == '已激活'" color="green">激活</a-tag> -->
+                    <a-tag
+                      class="tagspan tagspanGreen"
+                      :title="record.newTime"
+                      v-if="
+                        record.recruitId &&
+                        record.checkFlag &&
+                        record.checkFlag != '待核' &&
+                        record.checkFlag != '待激活' &&
+                        record.checkFlag != '已激活' &&
+                        record.checkFlag != '过期'
+                      "
+                      color="green"
+                      >{{ record.checkFlag }}</a-tag
+                    >
+                    <a-tag
+                      class="tagspan tagspanOrange"
+                      :title="record.newTime"
+                      v-if="
+                        record.recruitId &&
+                        record.checkFlag &&
+                        record.checkFlag == '过期'
+                      "
+                      color="orange"
+                      >{{ record.checkFlag }}</a-tag
+                    >
+                    <a-tag
+                      class="tagspan tagspanWhite"
+                      :title="record.checkedTime"
+                      v-if="showResumeRightOutFlag && record.checkFlag == '待核' && record.fristFlag"
+                      color="#d8d8d8"
+                      >{{ record.fristFlag }}</a-tag
+                    >
+                    <a-tag
+                      class="tagspan tagspanGreen"
+                      :title="record.checkedTime"
+                      v-if="showResumeRightOutFlag && record.checkFlag != '待核' && record.fristFlag"
+                      color="green"
+                      >{{ record.fristFlag }}</a-tag
+                    >
+                    <a-tag
+                      class="tagspan"
+                      v-if="record.teamId == '160401' && record.checkFlag == '待核' && record.fristFlag == '首增'"
+                      color="#d8d8d8"
+                      >{{ record.fristFlag }}</a-tag
+                    >
+                    <a-tag
+                      class="tagspan"
+                      v-if="record.teamId == '160401' && record.checkFlag != '待核' && record.fristFlag == '首增'"
+                      color="green"
+                      >{{ record.fristFlag }}</a-tag
+                    >
+                    <!-- <a-tag class="tagspan" v-if="showResumeRightOutFlag && record.recruitId && record.onlyFlag" color="green">{{
+                      record.onlyFlag
+                    }}</a-tag> -->
+                    <!-- <a-tag
+                      class="tagspan tagspanGreen"
+                      :title="record.commonFlagTime"
+                      v-if="showResumeRightOutFlag && record.recruitId && record.commonFlag"
+                      color="green"
+                      >{{ record.commonFlag }}</a-tag
+                    > -->
+                    <!-- <a-tag class="tagspan" v-if="showResumeRightOutFlag && record.recruitId && record.gognGongFlag" color="orange">{{
+                      record.gognGongFlag
+                    }}</a-tag> -->
+          
+                    <!-- <a-tag class="tagspan" v-if="record.recruitId && record.limitFlag == '保护'" color="green">{{ record.limitFlag }}</a-tag> -->
+                   
+                    <a-tag
+                      class="tagspan tagspanOrange"
+                      :title="record.limitRemarkDetail"
+                      v-if="showResumeRightOutFlag && (record.limitFlag == '限制禁推' || record.limitFlag == '限制分单') && record.resumeStatus != '外包保护期中'"
+                      color="orange"
+                      >限制</a-tag
+                    >
+                    <a-tag
+                      class="tagspan tagspanOrange"
+                      :title="record.limitRemarkDetail ? record.limitRemarkDetail : 'OFFER推荐禁止'"
+                      v-if="showResumeRightOutFlag && record.limitFlag == '限制' && record.resumeStatus != '外包保护期中'"
+                      color="orange"
+                      >限制</a-tag
+                    >
+                    <a-tag
+                      class="tagspan tagspanOrange"
+                      :title="record.limitRemarkDetail"
+                      v-if="showResumeRightOutFlag && record.limitFlag == '激活' && record.resumeStatus != '外包保护期中'"
+                      color="orange"
+                      >激活</a-tag
+                    >
+                    <a-tag
+                      class="tagspan tagspanOrange"
+                      :title="record.offerTime"
+                      v-if="record.limitFlag == 'OFFER' && record.resumeStatus != '保证期中'"
+                      color="orange"
+                      >OFFER</a-tag
+                    >
+                    <a-tag
+                      class="tagspan tagspanOrange"
+                      :title="record.entryTime"
+                      v-if="record.limitFlag == 'OFFER' && record.resumeStatus == '保证期中'"
+                      color="orange"
+                      >保证期</a-tag
+                    >
+                    <a-tag
+                      class="tagspan tagspanOrange"
+                      title="外包保护期中"
+                      v-if="record.resumeStatus == '外包保护期中'"
+                      color="orange"
+                      >保证期</a-tag>
+                    <a-tag
+                      class="tagspan tagspanOrange"
+                      v-if="record.isBlack == '1'"
+                      color="red"
+                      :title="loginVueUser.loginType == 'A' ? (record.blackRemark ? record.blackRemark : '此候选人已经存在公司黑名单中，禁止推荐') : '此候选人已经存在公司黑名单中，禁止推荐'"
+                      >黑名单</a-tag>
+                  </template>
+                  <template v-if="column.key === 'repeat'">
+                    {{ resultPpercentage }}
+                  </template>
+        </template>
+      </a-table>
     </a-card>
     <a-card v-if="plagiarusnInfoFlag && showResumeRightOutFlag" class="resume_card">
       <h3 class="resume_title_h3">警告信息</h3>
@@ -100,11 +301,15 @@
 
 <script lang="ts" setup>
 import { usePlagiarusnStoreWithOut } from '/@/store/modules/plagiarusn';
+  import { useResumeListStoreWithOut } from '/@/store/modules/resumeList';
+  import { handleToResumeDetails } from '/@/router/index';
+  import dayjs, { Dayjs } from 'dayjs';
   import { storeToRefs } from 'pinia';
   const plagiarusnStore = usePlagiarusnStoreWithOut();
+  const resumeListStore = useResumeListStoreWithOut();
   const {plagiarusnRseult, plagiarusnInfoFlag, plagiarusnInfo} = storeToRefs(plagiarusnStore);
   const showResumeRightOutFlag = ref(false);
-  const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginOutFlag: '' } = JSON.parse(
+  const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginOutFlag: ''; loginType: '' } = JSON.parse(
   localStorage.getItem('loginVueUser'),
 );
  if (loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4') {
@@ -115,7 +320,7 @@ import { usePlagiarusnStoreWithOut } from '/@/store/modules/plagiarusn';
     if (plagiarusnRseult.value == 2 || plagiarusnRseult.value == 4 || plagiarusnRseult.value == 8) {
       resultPpercentage.value = "100%";
     }
-    if ( plagiarusnRseult.value == 6 || plagiarusnRseult.value == 9 || plagiarusnRseult.value == 11) {
+    if (plagiarusnRseult.value == 3 || plagiarusnRseult.value == 6 || plagiarusnRseult.value == 9 || plagiarusnRseult.value == 11) {
       resultPpercentage.value = "90%";
     }
     if (plagiarusnRseult.value == 5 || plagiarusnRseult.value == 7) {
@@ -130,10 +335,23 @@ import { usePlagiarusnStoreWithOut } from '/@/store/modules/plagiarusn';
     plagiarusnStore.plagiarusnRseultShow(0);
     plagiarusnStore.plagiarusnInfoFlagShow(false);
   };
-
+  const handleToResumeDetailsCurrent = (record) => {
+    if (!record?.id || !record?.addConsultantId) {
+      return;
+    }
+    handleToResumeDetails(record.id, record.addConsultantId);
+  };
+ const calculateDateDiff = (callLastTime) => {
+  if (callLastTime) {
+    const diffDays = dayjs().diff(dayjs(callLastTime), 'day', true);
+    const rounded = Math.round(diffDays * 100) / 100;
+    return rounded;
+  }
+  return 0;
+ }
   const columnsPlagiarusnRseult = [
     {
-      title: '序号',
+      title: '编号',
       dataIndex: 'index',
       key: 'index',
       width: 60,
@@ -142,6 +360,26 @@ import { usePlagiarusnStoreWithOut } from '/@/store/modules/plagiarusn';
       title: '姓名',
       dataIndex: 'userName',
       key: 'userName',
+    },
+    {
+      title: '性别',
+      dataIndex: 'gender',
+      key: 'gender',
+    },
+     {
+      title: '年龄',
+      dataIndex: 'birthYear',
+      key: 'birthYear',
+    },
+     {
+      title: '城市',
+      dataIndex: 'currentCity',
+      key: 'currentCity',
+    },
+    {
+      title: '当前职位',
+      dataIndex: 'position',
+      key: 'position',
     },
     {
       title: '手机',
@@ -154,29 +392,29 @@ import { usePlagiarusnStoreWithOut } from '/@/store/modules/plagiarusn';
       key: 'email',
     },
     {
-      title: '年龄',
-      dataIndex: 'birthYear',
-      key: 'birthYear',
-    },
-    {
-      title: '性别',
-      dataIndex: 'gender',
-      key: 'gender',
-    },
-    {
-      title: '城市',
-      dataIndex: 'currentCity',
-      key: 'currentCity',
-    },
-    {
-      title: '当职',
-      dataIndex: 'position',
-      key: 'position',
-    },
-    {
       title: '顾问',
       dataIndex: 'realNameEn',
       key: 'realNameEn',
+    },
+    {
+      title: '新增日期',
+      dataIndex: 'registTimeStr',
+      key: 'registTimeStr',
+    },
+    {
+      title: '联络状态',
+      dataIndex: 'lastUpdateTimeStr',
+      key: 'lastUpdateTimeStr',
+    },
+    {
+      title: '标签',
+      dataIndex: 'projectFlag',
+      key: 'projectFlag',
+    },
+    {
+      title: '重复度',
+      dataIndex: 'repeat',
+      key: 'repeat',
     },
   ];
   

@@ -392,15 +392,40 @@
   onBeforeMount(() => {
     handleHuji();
   });
-  if (props.personInfoData.currentCity) {
-    let tempCity = '';
-    province.value.forEach((item) => {
-      //@ts-ignore
-      if (item.cityName && props.personInfoData.currentCity.includes(item.cityName)) {
-        //@ts-ignore
-        tempCity = item.provinceName + '-' + item.cityName;
+  const normalizeCityValue = (value = '') => value.replace(/\s/g, '');
+  const sortCityMatches = (list = []) => {
+    return [...list].sort((a, b) => {
+      const aSpecific = a?.cityName && a.cityName !== a.provinceName ? 1 : 0;
+      const bSpecific = b?.cityName && b.cityName !== b.provinceName ? 1 : 0;
+      if (aSpecific !== bSpecific) {
+        return bSpecific - aSpecific;
       }
+      return (b?.cityName || '').length - (a?.cityName || '').length;
     });
+  };
+  if (props.personInfoData.currentCity) {
+    const currentCityValue = normalizeCityValue(props.personInfoData.currentCity);
+    let tempCity = '';
+    const exactMatched = province.value.find((item) => {
+      const optionValue = normalizeCityValue(
+        item.provinceName + (item.cityName ? '-' + item.cityName : ''),
+      );
+      return optionValue === currentCityValue;
+    });
+    if (exactMatched) {
+      tempCity = exactMatched.provinceName + (exactMatched.cityName ? '-' + exactMatched.cityName : '');
+    } else {
+      const cityPart = currentCityValue.includes('-')
+        ? currentCityValue.split('-')[currentCityValue.split('-').length - 1]
+        : currentCityValue;
+      const matchedList = sortCityMatches(
+        province.value.filter((item) => item.cityName && normalizeCityValue(item.cityName) === cityPart),
+      );
+      if (matchedList.length > 0) {
+        tempCity =
+          matchedList[0].provinceName + (matchedList[0].cityName ? '-' + matchedList[0].cityName : '');
+      }
+    }
     if (tempCity) {
       props.personInfoData.currentCity = tempCity;
     }

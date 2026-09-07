@@ -557,12 +557,13 @@
     PlusSquareOutlined,
     MinusSquareOutlined,
     MenuUnfoldOutlined,
+    QuestionCircleOutlined,
   } from '@ant-design/icons-vue';
   import type { FormInstance } from 'ant-design-vue';
   import { storeToRefs } from 'pinia';
   import dayjs, { Dayjs } from 'dayjs';
   import { formatToDateMinute } from '/@/utils/dateUtil';
-  import { message, Modal, Input } from 'ant-design-vue';
+  import { message, Modal, Input, Tooltip } from 'ant-design-vue';
   import { createVNode } from 'vue';
   import { SearchResumeList } from '/@/api/resumeList/model';
   import SearchContent from './resumeContent/SearchContent.vue';
@@ -763,7 +764,25 @@
       width: 70,
     },
     {
-      title: '新增日期',
+      title: () =>
+        createVNode('span', { style: 'display: inline-flex; align-items: center; gap: 4px;' }, [
+          createVNode('span', {}, '新增日期'),
+          createVNode(
+            Tooltip,
+            {},
+            {
+              title: () =>
+                createVNode('div', { style: 'white-space: pre-line;' }, [
+                  createVNode('div', {}, '1、新增日期倒序；'),
+                  createVNode('div', {}, '2、激活简历按照激活日期倒序；'),
+                ]),
+              default: () =>
+                createVNode(QuestionCircleOutlined, {
+                  style: 'color: #999; cursor: pointer; font-size: 12px;',
+                }),
+            },
+          ),
+        ]),
       dataIndex: 'registTimeStr',
       key: 'registTimeStr',
       ellipsis: true,

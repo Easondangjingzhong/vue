@@ -63,7 +63,7 @@
   >
     <a-form layout="vertical">
       <a-form-item label="年月">
-        <a-input v-model:value="shebaoWeiChaForm.yearAndMonth" disabled />
+        <a-input v-model:value="shebaoWeiChaForm.yearAndMonthJiao" disabled />
       </a-form-item>
       <a-form-item label="公司">
         <a-input v-model:value="shebaoWeiChaForm.companyName" disabled />
@@ -313,8 +313,8 @@ const innerColumns = withLeftAlign(
 const loading = ref(false);
 const shebaoWeiChaModalOpen = ref(false);
 const shebaoWeiChaSubmitting = ref(false);
-const shebaoWeiChaForm = ref<{ yearAndMonth: string; companyName: string; chaMoney: string }>({
-  yearAndMonth: '',
+const shebaoWeiChaForm = ref<{ yearAndMonthJiao: string; companyName: string; chaMoney: string }>({
+  yearAndMonthJiao: '',
   companyName: '',
   chaMoney: '',
 });
@@ -340,7 +340,7 @@ const handleAddOutsourceSheBaoPurchaseCollect = async (record: any) => {
 
 const handleAddOutsourceSheBaoShebaoaoWeiCha = (record: any) => {
   shebaoWeiChaForm.value = {
-    yearAndMonth: record?.yearAndMonth || '',
+    yearAndMonthJiao: record?.yearAndMonthJiao || '',
     companyName: record?.companyName || '',
     chaMoney: '',
   };
@@ -350,11 +350,11 @@ const handleAddOutsourceSheBaoShebaoaoWeiCha = (record: any) => {
 const handleCloseShebaoWeiCha = () => {
   shebaoWeiChaModalOpen.value = false;
   shebaoWeiChaSubmitting.value = false;
-  shebaoWeiChaForm.value = { yearAndMonth: '', companyName: '', chaMoney: '' };
+  shebaoWeiChaForm.value = { yearAndMonthJiao: '', companyName: '', chaMoney: '' };
 };
 
 const handleSubmitShebaoWeiCha = async () => {
-  if (!shebaoWeiChaForm.value.yearAndMonth) {
+  if (!shebaoWeiChaForm.value.yearAndMonthJiao) {
     message.error('缺少yearAndMonth');
     return;
   }
@@ -368,14 +368,14 @@ const handleSubmitShebaoWeiCha = async () => {
   }
   shebaoWeiChaSubmitting.value = true;
   const res = await outsourceDetailStore.addOutsourceQingKuanShebaoaoWeiCha(
-    shebaoWeiChaForm.value.yearAndMonth,
+    shebaoWeiChaForm.value.yearAndMonthJiao,
     shebaoWeiChaForm.value.companyName,
     shebaoWeiChaForm.value.chaMoney,
   );
   shebaoWeiChaSubmitting.value = false;
   if (res && res.code === 1) {
     message.success('操作成功');
-    outsourceDetailStore.queryOutsourceShebaoCollect('', shebaoWeiChaForm.value.yearAndMonth);
+    outsourceDetailStore.queryOutsourceShebaoCollect('', shebaoWeiChaForm.value.yearAndMonthJiao);
     handleCloseShebaoWeiCha();
   } else {
     message.error(res?.msg || '操作失败');

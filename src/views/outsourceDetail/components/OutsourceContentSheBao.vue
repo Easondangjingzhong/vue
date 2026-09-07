@@ -140,7 +140,7 @@
      <a-tag v-if="column.key === 'shebaoCompany' && record.shebaoCompany === '北京我推'" color="cyan">北京我推</a-tag>
      <a-tag v-if="column.key === 'shebaoCompany' && record.shebaoCompany === '苏州锐特'" color="purple">苏州锐特</a-tag>
      <a-tag v-if="column.key === 'shebaoCompany' && record.shebaoCompany === '天津博瑞'" color="green">天津博瑞</a-tag>
-     <a-tag v-if="column.key === 'shebaoCompany' && record.shebaoCompany === '南京分公司'" color="yellow">南京分公司</a-tag>
+     <a-tag v-if="column.key === 'shebaoCompany' && record.shebaoCompany === '南京博瑞'" color="yellow">南京博瑞</a-tag>
 
       <a-tag v-if="column.key === 'shebaoStandard' && record.shebaoStandard === '1'" color="green">最低基数</a-tag>
       <a-tag v-if="column.key === 'shebaoStandard' && record.shebaoStandard === '2'" color="orange">基本工资</a-tag>
@@ -171,6 +171,9 @@
                 </a-menu-item>
                  <a-menu-item>
                   <a href="javascript:;" @click="handleUpdateOutsourceSheBaoJiao(record)">社保操作</a>
+                </a-menu-item>
+                <a-menu-item>
+                  <a href="javascript:;" @click="handleUpdateOutsourceSheBaoBuchaMoney(record)">社保补差</a>
                 </a-menu-item>
               </a-menu>
             </template>
@@ -205,12 +208,14 @@
 </template>
 
 <script setup lang="ts">
+import { h, reactive } from 'vue';
 import { storeToRefs } from 'pinia';
 import type { TableColumnsType } from 'ant-design-vue';
 import { MenuUnfoldOutlined } from '@ant-design/icons-vue';
+import dayjs from 'dayjs';
 import { currentDate } from '/@/utils/dateUtil';
 import { formatToDate } from '/@/utils/dateUtil';
-import { message } from 'ant-design-vue';
+import { message, Modal } from 'ant-design-vue';
 import OutsourceSocialSecurityInfo from '/@/views/outsourceDetail/components/personComponents/OutsourceSocialSecurityInfo.vue';
 import OutsourceSocialSecurityJiao from '/@/views/outsourceDetail/components/personComponents/OutsourceSocialSecurityJiao.vue';
 import { useOutsourceDetailStoreWithOut } from '/@/store/modules/outsourceDetail';
@@ -336,6 +341,454 @@ const handleUpdateOutsourceSheBaoJiao = (record) => {
   //   }
   // });
   outsourceSocialSecurityJiaoFlag.value = true;
+}
+const toMoneyNumber = (value: string | number | undefined) => {
+  const num = Number(value || 0);
+  return Number.isFinite(num) ? num : 0;
+}
+const formatMoney = (value: string | number | undefined) => toMoneyNumber(value).toFixed(2);
+const calcMonthSheBaoTotal = (record?: Partial<OutsourceSheBaoItem>) => {
+  if (!record) {
+    return 0;
+  }
+  const serviceMoney = record.serviceMoney !== '公式' ? toMoneyNumber(record.serviceMoney) : 0;
+  return Number(
+    (toMoneyNumber(record.companyTotal) + toMoneyNumber(record.personTotal) + serviceMoney).toFixed(2),
+  );
+}
+const toMonthDate = (value?: string) => {
+  if (!value) {
+    return null;
+  }
+  const normalizedValue = value.toString().trim().replace(/\.\d+$/, '').slice(0, 10);
+  const dateValue = dayjs(normalizedValue);
+  return dateValue.isValid() ? dateValue.startOf('month') : null;
+}
+const calcBuchaMonthCount = (startTime?: string, issueTime?: string) => {
+  const startMonth = toMonthDate(startTime);
+  const issueMonth = toMonthDate(issueTime);
+  if (!startMonth || !issueMonth) {
+    return 0;
+  }
+  const diffMonth = issueMonth.diff(startMonth, 'month');
+  return diffMonth > 0 ? diffMonth : 0;
+}
+const calcServiceFeeDiff = (companyDiff: number, personDiff: number) =>
+  Number(((companyDiff + personDiff) * 0.0677).toFixed(2));
+const calcFinalBuchaMoney = (monthCount: number, monthBuchaMoney: number, serviceFeeMoney: number) =>
+  Number((monthCount * (monthBuchaMoney + serviceFeeMoney)).toFixed(2));
+const renderBuchaInfoRow = (label: string, value: string) =>
+  h(
+    'div',
+    {
+      style: `
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 13px;
+      `,
+    },
+    [
+      h(
+        'span',
+        {
+          style: `
+            color: #8c8c8c;
+            margin-right: 12px;
+          `,
+        },
+        label,
+      ),
+      h(
+        'span',
+        {
+          style: `
+            color: #262626;
+            font-weight: 500;
+          `,
+        },
+        value,
+      ),
+    ],
+  );
+const renderBuchaInfoInputRow = (
+  label: string,
+  value: string | number,
+  onInput: (e: Event) => void,
+) =>
+  h(
+    'div',
+    {
+      style: `
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 13px;
+        gap: 12px;
+      `,
+    },
+    [
+      h(
+        'span',
+        {
+          style: `
+            color: #8c8c8c;
+            flex: 0 0 auto;
+          `,
+        },
+        label,
+      ),
+      h('input', {
+        value,
+        type: 'number',
+        min: 0,
+        step: '0.01',
+        style: `
+          width: 100px;
+          height: 30px;
+          border: 1px solid #d9d9d9;
+          border-radius: 6px;
+          padding: 0 10px;
+          font-size: 14px;
+          font-weight: 500;
+          color: #262626;
+          outline: none;
+          box-sizing: border-box;
+          text-align: right;
+          background: #fff;
+        `,
+        onInput,
+      }),
+    ],
+  );
+const handleUpdateOutsourceSheBaoBuchaMoney = async (record: OutsourceSheBaoItem) => {
+  if (!record?.id || !record?.personId || !record?.yearAndMonth) {
+    message.error('当前社保记录信息不完整');
+    return;
+  }
+  if (!record.city) {
+    message.error('当前人员缺少城市信息');
+    return;
+  }
+  const sheBaoInfoRes = await outsourceDetailStore.queryOutsourceShebaoInfo(record.city);
+  const sheBaoInfo = sheBaoInfoRes?.code == 1 && sheBaoInfoRes?.info?.list?.length > 0 ? sheBaoInfoRes.info.list[0] : null;
+  if (!sheBaoInfo) {
+    message.error('未查询到当前城市的社保基数信息');
+    return;
+  }
+  const buchaMonthCount = calcBuchaMonthCount(sheBaoInfo.startTime, sheBaoInfo.issueTime);
+  const prevMonth = dayjs(`${record.yearAndMonth}-01`).subtract(1, 'month').format('YYYY-MM');
+  const prevMonthRes = await outsourceDetailStore.queryOutsourceSheBaoByPersonMonth(
+    record.personId.toString(),
+    prevMonth,
+  );
+  const prevMonthRecord =
+    prevMonthRes?.code == 1 && Array.isArray(prevMonthRes.info) && prevMonthRes.info.length > 0
+      ? prevMonthRes.info[0]
+      : ({} as OutsourceSheBaoItem);
+  const companyDiffMoney = Number(
+    (toMoneyNumber(record.companyTotal) - toMoneyNumber(prevMonthRecord.companyTotal)).toFixed(2),
+  );
+  const personDiffMoney = Number(
+    (toMoneyNumber(record.personTotal) - toMoneyNumber(prevMonthRecord.personTotal)).toFixed(2),
+  );
+  const defaultMonthBuchaMoney = Number((companyDiffMoney + personDiffMoney).toFixed(2));
+  const defaultServiceDiffMoney = calcServiceFeeDiff(companyDiffMoney, personDiffMoney);
+  const modalState = reactive({
+    monthCount: buchaMonthCount,
+    companyDiffMoney,
+    personDiffMoney,
+    monthBuchaMoney: defaultMonthBuchaMoney,
+    serviceFeeMoney: defaultServiceDiffMoney,
+    finalBuchaMoney: calcFinalBuchaMoney(
+      buchaMonthCount,
+      defaultMonthBuchaMoney,
+      defaultServiceDiffMoney,
+    ),
+  });
+  const syncFromCompanyPerson = () => {
+    modalState.monthBuchaMoney = Number(
+      (toMoneyNumber(modalState.companyDiffMoney) + toMoneyNumber(modalState.personDiffMoney)).toFixed(2),
+    );
+    modalState.serviceFeeMoney = Number((toMoneyNumber(modalState.monthBuchaMoney) * 0.0677).toFixed(2));
+    modalState.finalBuchaMoney = calcFinalBuchaMoney(
+      toMoneyNumber(modalState.monthCount),
+      toMoneyNumber(modalState.monthBuchaMoney),
+      toMoneyNumber(modalState.serviceFeeMoney),
+    );
+  };
+  const syncBuchaAmounts = () => {
+    modalState.serviceFeeMoney = Number((toMoneyNumber(modalState.monthBuchaMoney) * 0.0677).toFixed(2));
+    modalState.finalBuchaMoney = calcFinalBuchaMoney(
+      toMoneyNumber(modalState.monthCount),
+      toMoneyNumber(modalState.monthBuchaMoney),
+      toMoneyNumber(modalState.serviceFeeMoney),
+    );
+  };
+  Modal.confirm({
+    title: '社保补差确认',
+    width: 500,
+    content: h({
+      setup() {
+        return () =>
+          h('div', { style: 'padding-top: 8px;' }, [
+            h(
+              'div',
+              {
+                style: `
+                  background: #fafafa;
+                  border: 1px solid #f0f0f0;
+                  border-radius: 8px;
+                  padding: 12px 14px;
+                  margin-bottom: 12px;
+                `,
+              },
+              [
+                h(
+                  'div',
+                  {
+                    style: `
+                      font-size: 12px;
+                      color: #8c8c8c;
+                      margin-bottom: 8px;
+                    `,
+                  },
+                  '基本信息',
+                ),
+                h(
+                  'div',
+                  {
+                    style: `
+                      display: grid;
+                      grid-template-columns: 1fr 1fr;
+                      gap: 0 16px;
+                    `,
+                  },
+                  [
+                    renderBuchaInfoRow(
+                      '姓名',
+                      `${record.userNameCn || '-'}${record.userNameEn ? `/${record.userNameEn}` : ''}`,
+                    ),
+                    renderBuchaInfoRow('当前周期', record.yearAndMonth || '-'),
+                    renderBuchaInfoInputRow(
+                      '单位补差金额',
+                      modalState.companyDiffMoney,
+                      (e: Event) => {
+                        const input = e.target as HTMLInputElement;
+                        modalState.companyDiffMoney = toMoneyNumber(input.value);
+                        syncFromCompanyPerson();
+                      },
+                    ),
+                    renderBuchaInfoInputRow(
+                      '个人补差金额',
+                      modalState.personDiffMoney,
+                      (e: Event) => {
+                        const input = e.target as HTMLInputElement;
+                        modalState.personDiffMoney = toMoneyNumber(input.value);
+                        syncFromCompanyPerson();
+                      },
+                    ),
+                  ],
+                ),
+                h(
+                  'div',
+                  {
+                    style: `
+                      margin-top: 8px;
+                      font-size: 12px;
+                      color: #bfbfbf;
+                    `,
+                  },
+                  `服务费补差金额：${formatMoney(modalState.serviceFeeMoney)}（补差金额 x 6.77%）`,
+                ),
+              ],
+            ),
+            h(
+              'div',
+              {
+                style: `
+                  display: grid;
+                  grid-template-columns: 1fr 1fr;
+                  gap: 12px;
+                  margin-bottom: 12px;
+                `,
+              },
+              [
+                h(
+                  'div',
+                  {
+                    style: `
+                      background: #fafafa;
+                      border: 1px solid #f0f0f0;
+                      border-radius: 8px;
+                      padding: 12px 14px;
+                    `,
+                  },
+                  [
+                    h(
+                      'div',
+                      {
+                        style: `
+                          font-size: 12px;
+                          color: #8c8c8c;
+                          margin-bottom: 8px;
+                        `,
+                      },
+                      '补差月数',
+                    ),
+                    h('input', {
+                      value: modalState.monthCount,
+                      type: 'number',
+                      min: 0,
+                      style: `
+                        width: 100%;
+                        height: 38px;
+                        border: 1px solid #d9d9d9;
+                        border-radius: 6px;
+                        padding: 0 12px;
+                        font-size: 20px;
+                        font-weight: 700;
+                        color: #262626;
+                        outline: none;
+                        box-sizing: border-box;
+                      `,
+                      onInput: (e: Event) => {
+                        const input = e.target as HTMLInputElement;
+                        modalState.monthCount = toMoneyNumber(input.value);
+                        syncBuchaAmounts();
+                      },
+                    }),
+                  ],
+                ),
+                h(
+                  'div',
+                  {
+                    style: `
+                      background: #fafafa;
+                      border: 1px solid #f0f0f0;
+                      border-radius: 8px;
+                      padding: 12px 14px;
+                    `,
+                  },
+                  [
+                    h(
+                      'div',
+                      {
+                        style: `
+                          font-size: 12px;
+                          color: #8c8c8c;
+                          margin-bottom: 8px;
+                        `,
+                      },
+                      '补差金额',
+                    ),
+                    h('input', {
+                      value: modalState.monthBuchaMoney,
+                      type: 'number',
+                      min: 0,
+                      step: '0.01',
+                      disabled: true,
+                      style: `
+                        width: 100%;
+                        height: 38px;
+                        border: 1px solid #d9d9d9;
+                        border-radius: 6px;
+                        padding: 0 12px;
+                        font-size: 20px;
+                        font-weight: 700;
+                        color: #262626;
+                        outline: none;
+                        box-sizing: border-box;
+                      `,
+                      onInput: (e: Event) => {
+                        const input = e.target as HTMLInputElement;
+                        modalState.monthBuchaMoney = toMoneyNumber(input.value);
+                        syncBuchaAmounts();
+                      },
+                    }),
+                  ],
+                ),
+              ],
+            ),
+            h(
+              'div',
+              {
+                style: `
+                  padding: 14px 16px;
+                  background: #fff2f0;
+                  border: 1px solid #ffccc7;
+                  border-radius: 8px;
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                `,
+              },
+              [
+                h(
+                  'div',
+                  [
+                    h(
+                      'div',
+                      {
+                        style: `
+                          font-size: 12px;
+                          color: #8c8c8c;
+                          margin-bottom: 4px;
+                        `,
+                      },
+                      '补差总额',
+                    ),
+                    h(
+                      'div',
+                      {
+                        style: `
+                          font-size: 12px;
+                          color: #bfbfbf;
+                        `,
+                      },
+                      `（${formatMoney(modalState.monthBuchaMoney)} + ${formatMoney(modalState.serviceFeeMoney)}）x ${modalState.monthCount} 月`,
+                    ),
+                  ],
+                ),
+                h(
+                  'span',
+                  {
+                    style: `
+                      font-size: 24px;
+                      font-weight: 700;
+                      color: #cf1322;
+                      line-height: 1.2;
+                    `,
+                  },
+                  formatMoney(modalState.finalBuchaMoney),
+                ),
+              ],
+            ),
+          ]);
+      },
+    }),
+    async onOk() {
+      const submitMonthCount = toMoneyNumber(modalState.monthCount);
+      const res = await outsourceDetailStore.updateOutsourceSheBaoBuchaMoney(
+        record.id?.toString(),
+        modalState.finalBuchaMoney,
+        Number((toMoneyNumber(modalState.companyDiffMoney) * submitMonthCount).toFixed(2)),
+        Number((toMoneyNumber(modalState.personDiffMoney) * submitMonthCount).toFixed(2)),
+        Number((toMoneyNumber(modalState.serviceFeeMoney) * submitMonthCount).toFixed(2)),
+      );
+      if (res?.code == 1) {
+        onSearch();
+        message.success('社保补差更新成功');
+        return;
+      }
+      message.error(res?.message || '社保补差更新失败');
+      throw new Error('update outsource shebao bucha money failed');
+    },
+  });
 }
 </script>
 

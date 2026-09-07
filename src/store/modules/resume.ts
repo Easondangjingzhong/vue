@@ -2,14 +2,14 @@ import { defineStore } from 'pinia';
 import { store } from '/@/store';
 import { isProxy } from 'vue';
 import { storeToRefs } from 'pinia';
-import {PlagiarusnItem} from '/@/api/plagiarusn/model';
+import { PlagiarusnItem } from '/@/api/plagiarusn/model';
 import fetchApi from '/@/api/resume';
-import fetchPlagiarusnApi from '/@/api/plagiarusn'
+import fetchPlagiarusnApi from '/@/api/plagiarusn';
 import { dateUtil } from '/@/utils/dateUtil';
-import {dataURLtoBlob} from '/@/utils/base64tofile'
+import { dataURLtoBlob } from '/@/utils/base64tofile';
 import { useCityStoreWithOut } from '/@/store/modules/city';
 import { normalizeText } from '/@/utils/normalizeText';
-import { marriageEnArr,degreeEnAndCnArr } from '/@/store/data/resume';
+import { marriageEnArr, degreeEnAndCnArr } from '/@/store/data/resume';
 import {
   Resume,
   Position,
@@ -21,20 +21,20 @@ import {
   ResumeFormState,
   BatchUploadItem,
 } from '/@/api/resume/model';
-import { shcoolType985,shcoolType211 } from '/@/utils/schoolType';
+import { shcoolType985, shcoolType211 } from '/@/utils/schoolType';
 interface ResumeState {
   resumeFormState: ResumeFormState; // 简历数据
   positionStore: Position[]; // 职位数据-店铺
-  positionOffice: Position[];//职位数据-office
-  endYearFlag: boolean;//是否有最近工作 true 有 false 无
-  resumeLanguageNationality: string;//国籍改变
-  resumeId: string;//简历ID
-  resumeTypeEnglish: string;//简历类型 1 英文 2或其他是中文
-  closeBtn: boolean;//上传完成提示 true 展开 false 关闭
-  updatePhotoFlag: Number;//简历照片状态 0 是无照片  1 是有照片  2 是有照片已修改 
-  batchUploadFlag: boolean;//批量上传弹窗
-  batchUploadFileList: [],//批量上传文件列表
-  batchUploadList: BatchUploadItem[],//批量上传数据列表
+  positionOffice: Position[]; //职位数据-office
+  endYearFlag: boolean; //是否有最近工作 true 有 false 无
+  resumeLanguageNationality: string; //国籍改变
+  resumeId: string; //简历ID
+  resumeTypeEnglish: string; //简历类型 1 英文 2或其他是中文
+  closeBtn: boolean; //上传完成提示 true 展开 false 关闭
+  updatePhotoFlag: Number; //简历照片状态 0 是无照片  1 是有照片  2 是有照片已修改
+  batchUploadFlag: boolean; //批量上传弹窗
+  batchUploadFileList: []; //批量上传文件列表
+  batchUploadList: BatchUploadItem[]; //批量上传数据列表
 }
 const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginOutFlag: '' } = JSON.parse(
   localStorage.getItem('loginVueUser') || '{}',
@@ -44,22 +44,149 @@ const { country, province } = storeToRefs(cityStore);
 const diffBirthday = (birthday, age, talentSource) => {
   if (talentSource != '复制') {
     if (birthday) {
-      return {birthYear: (birthday.indexOf(".") != -1 ? birthday.split('.')[0] : +birthday.split('-')[0]),
-        bornMonth: (birthday.indexOf(".") != -1 ? birthday.split('.')[1] : birthday.split('-')[1])
-      }
-    } {
+      return {
+        birthYear: birthday.indexOf('.') != -1 ? birthday.split('.')[0] : +birthday.split('-')[0],
+        bornMonth: birthday.indexOf('.') != -1 ? birthday.split('.')[1] : birthday.split('-')[1],
+      };
+    }
+    {
       if (age) {
         const yearNow = dateUtil().year();
-        return {birthYear: (yearNow - age),bornMonth: 1}
+        return { birthYear: yearNow - age, bornMonth: 1 };
       } else {
-        return {birthYear: 0,bornMonth:0}
+        return { birthYear: 0, bornMonth: 0 };
       }
     }
   }
-  
-}
+};
+const normalizeLocationName = (value = '') => {
+  return value
+    .replace(/\s/g, '')
+    .replace(/(特别行政区|壮族自治区|回族自治区|维吾尔自治区|自治区|省|市|地区|盟|州)$/g, '');
+};
+const isSpecificCityItem = (item) => {
+  const cityName = normalizeLocationName(item?.cityName || '');
+  const provinceName = normalizeLocationName(item?.provinceName || '');
+  return !!cityName && cityName !== provinceName;
+};
+const sortLocationMatches = (list = []) => {
+  return [...list].sort((a, b) => {
+    const aSpecific = isSpecificCityItem(a) ? 1 : 0;
+    const bSpecific = isSpecificCityItem(b) ? 1 : 0;
+    if (aSpecific !== bSpecific) {
+      return bSpecific - aSpecific;
+    }
+    const aCityNameLength = normalizeLocationName(a?.cityName || '').length;
+    const bCityNameLength = normalizeLocationName(b?.cityName || '').length;
+    if (aCityNameLength !== bCityNameLength) {
+      return bCityNameLength - aCityNameLength;
+    }
+    const aProvinceNameLength = normalizeLocationName(a?.provinceName || '').length;
+    const bProvinceNameLength = normalizeLocationName(b?.provinceName || '').length;
+    return bProvinceNameLength - aProvinceNameLength;
+  });
+};
+const findCityOptions = (address?: string, addressNorm?: string) => {
+  const candidates = [address ? address.replace(/\s/g, '') : ''];
+  if (addressNorm) {
+    const parts = addressNorm
+      .split('-')
+      .map((item) => item.trim())
+      .filter(Boolean);
+    if (parts.length > 1) {
+      candidates.push(parts[parts.length - 2]);
+    }
+    if (parts.length > 0) {
+      candidates.push(parts[parts.length - 1]);
+    }
+    if (parts.length > 2) {
+      candidates.push(parts[parts.length - 3]);
+    }
+  }
+  const normalizedCandidates = candidates
+    .filter(Boolean)
+    .map((item) => normalizeLocationName(item));
+  for (const candidate of normalizedCandidates) {
+    const matched = sortLocationMatches(
+      province.value.filter((item) => {
+        const cityName = item.cityName || '';
+        const normalizedCityName = normalizeLocationName(cityName);
+        return normalizedCityName === candidate;
+      }),
+    );
+    if (matched.length > 0) {
+      return matched;
+    }
+  }
+  const normalizedAddressText = normalizeLocationName(
+    `${address || ''}${addressNorm || ''}`.replace(/-/g, ''),
+  );
+  const fuzzyMatched = sortLocationMatches(
+    province.value.filter((item) => {
+      const cityName = item.cityName || '';
+      const normalizedCityName = normalizeLocationName(cityName);
+      return normalizedCityName && normalizedAddressText.includes(normalizedCityName);
+    }),
+  );
+  if (fuzzyMatched.length > 0) {
+    return [fuzzyMatched[0]];
+  }
+  return [];
+};
+const buildResumeLanguageAbility = (result: any) => {
+  const languageAbility0 = [];
+  const languageLevel = new Set<string>();
+  const langObjNames = Array.isArray(result?.lang_objs)
+    ? result.lang_objs.map((item) => item?.language_name).filter(Boolean)
+    : [];
+  const languageSourceText = [
+    result?.cont_language,
+    result?.english_level,
+    result?.languages,
+    ...langObjNames,
+  ]
+    .filter(Boolean)
+    .join(',');
+  const hasEnglish = languageSourceText.includes('英语');
+  if (
+    /CET[-\s]?6/i.test(languageSourceText) ||
+    /大学英语\s*(六级|6级)/.test(languageSourceText) ||
+    /英语\s*(六级|6级)/.test(languageSourceText)
+  ) {
+    languageLevel.add('CET-6');
+  }
+  if (
+    /CET[-\s]?4/i.test(languageSourceText) ||
+    /大学英语\s*(四级|4级)/.test(languageSourceText) ||
+    /英语\s*(四级|4级)/.test(languageSourceText)
+  ) {
+    languageLevel.add('CET-4');
+  }
+  if (/TEM[-\s]?4/i.test(languageSourceText) || /英语专业\s*(四级|4级)/.test(languageSourceText)) {
+    languageLevel.add('TEM-4');
+  }
+  if (/TEM[-\s]?8/i.test(languageSourceText) || /英语专业\s*(八级|8级)/.test(languageSourceText)) {
+    languageLevel.add('TEM-8');
+  }
+  if (hasEnglish || languageLevel.size > 0) {
+    let language = {};
+    //@ts-ignore
+    language.languageName = '英语';
+    //@ts-ignore
+    language.bujia = '';
+    //@ts-ignore
+    language.duxieLiuli = '';
+    //@ts-ignore
+    language.tinshuoLiuli = '';
+    //@ts-ignore
+    language.languageLevel = Array.from(languageLevel).join(',');
+    //@ts-ignore
+    languageAbility0.push(language);
+  }
+  return languageAbility0;
+};
 
-export const useResumeStore = defineStore('app-Resume',{
+export const useResumeStore = defineStore('app-Resume', {
   state: (): ResumeState => ({
     // info
     resumeFormState: {} as ResumeFormState,
@@ -67,14 +194,14 @@ export const useResumeStore = defineStore('app-Resume',{
     positionStore: [],
     positionOffice: [],
     endYearFlag: false,
-    resumeLanguageNationality: "",
-    resumeId: "",
-    resumeTypeEnglish: "2",
+    resumeLanguageNationality: '',
+    resumeId: '',
+    resumeTypeEnglish: '2',
     closeBtn: false,
     updatePhotoFlag: 0,
     batchUploadFlag: false,
-    batchUploadFileList: [],//批量上传文件列表
-    batchUploadList: [],//批量上传数据列表
+    batchUploadFileList: [], //批量上传文件列表
+    batchUploadList: [], //批量上传数据列表
   }),
   actions: {
     setInfo(resumeFormState: ResumeFormState) {
@@ -82,13 +209,13 @@ export const useResumeStore = defineStore('app-Resume',{
     },
     async fetchPosition(data) {
       let formData = new FormData();
-      formData.append("jobCategory",data);
+      formData.append('jobCategory', data);
       formData.append('SystemRecruitId', loginVueUser.loginId);
       const res = await fetchApi.fetchResumePosition(formData);
-      if (data == "店铺") {
+      if (data == '店铺') {
         this.positionStore = res.info;
       }
-      if (data == "OFFICE") {
+      if (data == 'OFFICE') {
         this.positionOffice = res.info;
       }
     },
@@ -134,14 +261,30 @@ export const useResumeStore = defineStore('app-Resume',{
         for (let i = 0; i < workExperienceList.length; i++) {
           let p = workExperienceList[i];
           work = { ...p };
-          work.startYear = (p.startYear ? (p.startYear.indexOf(".") != -1 ?  p.startYear.split('.')[0] : p.startYear.split('-')[0]): '');
-          work.startMonth = (p.startYear ? (p.startYear.indexOf(".") != -1 ?  p.startYear.split('.')[1] : p.startYear.split('-')[1]): '');
+          work.startYear = p.startYear
+            ? p.startYear.indexOf('.') != -1
+              ? p.startYear.split('.')[0]
+              : p.startYear.split('-')[0]
+            : '';
+          work.startMonth = p.startYear
+            ? p.startYear.indexOf('.') != -1
+              ? p.startYear.split('.')[1]
+              : p.startYear.split('-')[1]
+            : '';
           if (p.endYear == '-1' || p.endYear == '至今') {
             work.endYear = '-1';
             work.endMonth = '-1';
           } else {
-            work.endYear = (p.endYear ? (p.endYear.indexOf(".") != -1 ?  p.endYear.split('.')[0] : p.endYear.split('-')[0]): '');
-            work.endMonth = (p.endYear ? (p.endYear.indexOf(".") != -1 ?  p.endYear.split('.')[1] : p.endYear.split('-')[1]): '01');
+            work.endYear = p.endYear
+              ? p.endYear.indexOf('.') != -1
+                ? p.endYear.split('.')[0]
+                : p.endYear.split('-')[0]
+              : '';
+            work.endMonth = p.endYear
+              ? p.endYear.indexOf('.') != -1
+                ? p.endYear.split('.')[1]
+                : p.endYear.split('-')[1]
+              : '01';
           }
           if (p.positionsId) {
             if (isProxy(p.positionsId)) {
@@ -181,47 +324,76 @@ export const useResumeStore = defineStore('app-Resume',{
         for (let i = 0; i < educationInfoList.length; i++) {
           let p = educationInfoList[i];
           edu = { ...p };
-          edu.schoolType = p.schoolType.length > 0 ? p.schoolType.join(",") : "";
-          edu.startYear = (p.startYear ? (p.startYear.indexOf(".") != -1 ?  p.startYear.split('.')[0] : p.startYear.split('-')[0]): '');
-          edu.startMonth = (p.startYear ? (p.startYear.indexOf(".") != -1 ?  p.startYear.split('.')[1] : p.startYear.split('-')[1]): '06');
+          edu.schoolType = p.schoolType.length > 0 ? p.schoolType.join(',') : '';
+          edu.startYear = p.startYear
+            ? p.startYear.indexOf('.') != -1
+              ? p.startYear.split('.')[0]
+              : p.startYear.split('-')[0]
+            : '';
+          edu.startMonth = p.startYear
+            ? p.startYear.indexOf('.') != -1
+              ? p.startYear.split('.')[1]
+              : p.startYear.split('-')[1]
+            : '06';
           if (p.endYear == '-1' || p.endYear == '至今') {
-            edu.endYear =  '-1';
-            edu.endMonth =  '-1';
+            edu.endYear = '-1';
+            edu.endMonth = '-1';
           } else {
-            edu.endYear = (p.endYear ? (p.endYear.indexOf(".") != -1 ?  p.endYear.split('.')[0] : p.endYear.split('-')[0]): '');
-            edu.endMonth = (p.endYear ? (p.endYear.indexOf(".") != -1 ?  p.endYear.split('.')[1] : p.endYear.split('-')[1]): '09');
+            edu.endYear = p.endYear
+              ? p.endYear.indexOf('.') != -1
+                ? p.endYear.split('.')[0]
+                : p.endYear.split('-')[0]
+              : '';
+            edu.endMonth = p.endYear
+              ? p.endYear.indexOf('.') != -1
+                ? p.endYear.split('.')[1]
+                : p.endYear.split('-')[1]
+              : '09';
           }
-         
+
           eduData.push(edu);
         }
       }
-       // @ts-ignore
+      // @ts-ignore
       const resume: Resume = {
         resumeType: 'C',
         realNameEn: loginVueUser.loginName,
-        photoPath: personInfoData.photoPath && personInfoData.photoPath.includes("http://101.201.142.39") ? personInfoData.photoPath : "",
+        photoPath:
+          personInfoData.photoPath && personInfoData.photoPath.includes('http://101.201.142.39')
+            ? personInfoData.photoPath
+            : '',
         recruitId: loginVueUser.loginId,
         userName: personInfoData.userName,
         gender: personInfoData.gender,
         phoneNum: personInfoData.phone,
-        province: (personInfoData.huji.split("-").length > 1 ? personInfoData.huji.split("-")[1] : personInfoData.huji.split("-")[0]),
-        currentCity: (personInfoData.currentCity.split("-").length > 1 ? personInfoData.currentCity.split("-")[1] : personInfoData.currentCity.split("-")[0]),
+        province:
+          personInfoData.huji.split('-').length > 1
+            ? personInfoData.huji.split('-')[1]
+            : personInfoData.huji.split('-')[0],
+        currentCity:
+          personInfoData.currentCity.split('-').length > 1
+            ? personInfoData.currentCity.split('-')[1]
+            : personInfoData.currentCity.split('-')[0],
         positionStatus: personInfoData.positionStatus,
         marriageStatus: personInfoData.marriageStatus,
         positionName: personInfoData.positionName,
-        birthYear: personInfoData.birthYear || diffBirthday(personInfoData.birthday,personInfoData.age,talentSource)?.birthYear,
-        bornMonth: personInfoData.bornMonth || diffBirthday(personInfoData.birthday,personInfoData.age,talentSource)?.bornMonth,
+        birthYear:
+          personInfoData.birthYear ||
+          diffBirthday(personInfoData.birthday, personInfoData.age, talentSource)?.birthYear,
+        bornMonth:
+          personInfoData.bornMonth ||
+          diffBirthday(personInfoData.birthday, personInfoData.age, talentSource)?.bornMonth,
         bornDay: personInfoData.bornDay,
         height: personInfoData.height,
         weight: personInfoData.weight,
         email: personInfoData.email,
-        languageAbility: "",
+        languageAbility: '',
         resumeLanguageList: resumeLanguageList.languageAbility,
         selfEvaluation: selfEvaluationData.selfEvaluation,
         age: personInfoData.age,
         nationality: personInfoData.nationality,
         isEnglish: this.resumeTypeEnglish,
-         // @ts-ignore
+        // @ts-ignore
         talentSource: talentSource,
         // @ts-ignore
         workExpeList: workData,
@@ -229,10 +401,10 @@ export const useResumeStore = defineStore('app-Resume',{
         eduExpeList: eduData,
       };
       const res = await fetchApi.addResumeInfo(resume);
-      if (res && res != "上传失败") {
+      if (res && res != '上传失败') {
         this.resumeId = res;
-        this.fetchResumeFile(res,this.resumeFormState.resumeFile);
-        this.fetchResumePhote(res,this.resumeFormState.resumePhoto);
+        this.fetchResumeFile(res, this.resumeFormState.resumeFile);
+        this.fetchResumePhote(res, this.resumeFormState.resumePhoto);
         this.closeBtn = true;
         this.updatePhotoFlag = 0;
         let formData = new FormData();
@@ -249,14 +421,14 @@ export const useResumeStore = defineStore('app-Resume',{
      */
     updateResumePhoto(resumePhoto) {
       const blob = dataURLtoBlob(resumePhoto);
-      const files = new window.File([blob], 'avatar.png', {type: 'application/png'})
+      const files = new window.File([blob], 'avatar.png', { type: 'application/png' });
       this.resumeFormState.resumePhoto = files;
       this.updatePhotoFlag = 2;
     },
     /**
      * @description: 上传原始简历进行解析
      */
-    async queryResumeById(resumeId,addConsultantId) {
+    async queryResumeById(resumeId, addConsultantId) {
       this.resumeTypeEnglish = '1';
       // @ts-ignore
       let formData = new FormData();
@@ -278,48 +450,68 @@ export const useResumeStore = defineStore('app-Resume',{
           personInfoData.userName = result.userName;
           personInfoData.gender = result.gender;
           personInfoData.phone = result.phoneNum;
-          personInfoData.age = result.age ? result.age : "";
+          personInfoData.age = result.age ? result.age : '';
           let city = [];
           if (result.currentCity) {
-            city = province.value.filter(item => item.cityName == result.currentCity?.replace(/\s/g, ""));
+            city = province.value.filter(
+              (item) => item.cityName == result.currentCity?.replace(/\s/g, ''),
+            );
           }
-          personInfoData.city = city.length > 0 ? city[0].provinceNameEn + (city[0].cityNameEn ? '-' + city[0].cityNameEn : '') : '';
+          personInfoData.city =
+            city.length > 0
+              ? city[0].provinceNameEn + (city[0].cityNameEn ? '-' + city[0].cityNameEn : '')
+              : '';
           personInfoData.email = result.email;
           personInfoData.height = result.height;
           let province2 = [];
           if (result.province) {
-            province2 = province.value.filter(item => item.cityName == result.province);
+            province2 = province.value.filter((item) => item.cityName == result.province);
           }
-          personInfoData.huji = province2.length > 0 ? province2[0].provinceNameEn + (province2[0].cityNameEn ? '-' + province2[0].cityNameEn : '') : '';
+          personInfoData.huji =
+            province2.length > 0
+              ? province2[0].provinceNameEn +
+                (province2[0].cityNameEn ? '-' + province2[0].cityNameEn : '')
+              : '';
           personInfoData.weight = result.weight;
           personInfoData.birthYear = result.birthYear;
           personInfoData.bornMonth = result.bornMonth;
           personInfoData.bornDay = result.bornDay;
-          personInfoData.nationality = country.value.filter(item => item.country == result.nationality)[0]?.countryEn;
-          personInfoData.currentCity = city.length > 0 ? city[0].provinceNameEn + (city[0].cityNameEn ? '-' + city[0].cityNameEn : '') : '';
+          personInfoData.nationality = country.value.filter(
+            (item) => item.country == result.nationality,
+          )[0]?.countryEn;
+          personInfoData.currentCity =
+            city.length > 0
+              ? city[0].provinceNameEn + (city[0].cityNameEn ? '-' + city[0].cityNameEn : '')
+              : '';
           personInfoData.positionName = result.positionName;
           personInfoData.positionStatus = result.positionStatus;
-          personInfoData.marriageStatus = marriageEnArr.filter(item => item.cn == result.marriageStatus)[0]?.value;
+          personInfoData.marriageStatus = marriageEnArr.filter(
+            (item) => item.cn == result.marriageStatus,
+          )[0]?.value;
           const jobArr = result.workExpeList;
           if (jobArr?.length > 0) {
             jobArr.forEach((item) => {
               let workExperienceObj = {} as WorkExperience;
               workExperienceObj.companyName = item.companyName;
-              workExperienceObj.category = item.category == "店铺" ? "Store" : "OFFICE";
+              workExperienceObj.category = item.category == '店铺' ? 'Store' : 'OFFICE';
               if (item.endYear && item.endYear == '-1') {
                 this.endYearFlag = true;
                 workExperienceObj.endYear = item.endYear;
                 workExperienceObj.endMonth = item.endMonth;
               } else {
-                workExperienceObj.endYear = `${item.endYear}-${item.endMonth < 10 ? "0"+(+item.endMonth) : item.endMonth}`;
+                workExperienceObj.endYear = `${item.endYear}-${
+                  item.endMonth < 10 ? '0' + +item.endMonth : item.endMonth
+                }`;
                 workExperienceObj.endMonth = item.endMonth;
               }
               workExperienceObj.isNewtest = item.isNewtest?.toString();
               workExperienceObj.isRetreat = item.isRetreat?.toString();
-              workExperienceObj.workFloor = item.workFloor ? item.workFloor.replace("层","F") : "";
-              workExperienceObj.startYear = `${item.startYear}-${item.startMonth < 10 ? "0"+(+item.startMonth) : item.startMonth}`;
+              workExperienceObj.workFloor = item.workFloor ? item.workFloor.replace('层', 'F') : '';
+              workExperienceObj.startYear = `${item.startYear}-${
+                item.startMonth < 10 ? '0' + +item.startMonth : item.startMonth
+              }`;
               workExperienceObj.startMonth = item.startMonth;
-              
+
               workExperienceObj.positionName = item.positionName;
               workExperienceObj.positionsId = item.positionsId;
               workExperienceObj.reporter = item.reporter;
@@ -328,8 +520,8 @@ export const useResumeStore = defineStore('app-Resume',{
               workExperienceObj.salaryStructure = item.salaryStructure;
               workExperienceObj.personnelStructure = item.personnelStructure;
               workExperienceObj.workDuty = item.workDuty
-              ?.replaceAll(/<p>/g, '')
-              .replaceAll(/<(\/)?p>/g, '\n');
+                ?.replaceAll(/<p>/g, '')
+                .replaceAll(/<(\/)?p>/g, '\n');
               workExperienceObj.workCity = item.workCity?.toString();
               workExperienceObj.workBrand = item.workBrand;
               workExperienceObj.workMark = item.workMark?.toString();
@@ -345,22 +537,32 @@ export const useResumeStore = defineStore('app-Resume',{
               let schoolTypeTemp: String[] = [];
               if (item.edu_college) {
                 // @ts-ignore
-                let t985 = shcoolType985.filter((items) => items === item.schoolName.replace(/[\u200B-\u200F]+/g, ''));
+                let t985 = shcoolType985.filter(
+                  (items) => items === item.schoolName.replace(/[\u200B-\u200F]+/g, ''),
+                );
                 if (t985.length > 0) {
                   schoolTypeTemp.push('985');
                 }
                 // @ts-ignore
-                let t211 = shcoolType211.filter((items) => items === item.schoolName.replace(/[\u200B-\u200F]+/g, ''));
+                let t211 = shcoolType211.filter(
+                  (items) => items === item.schoolName.replace(/[\u200B-\u200F]+/g, ''),
+                );
                 if (t211.length > 0) {
                   schoolTypeTemp.push('211');
-                } 
+                }
               }
               educationInfoObj.schoolType = schoolTypeTemp;
               educationInfoObj.atSchool = item.atSchool;
               educationInfoObj.majorName = item.majorName;
-              educationInfoObj.degree = degreeEnAndCnArr.filter(subItem => subItem.cn == item.degree)[0]?.en;
-              educationInfoObj.startYear = `${item.startYear}-${item.startMonth < 10 ? "0"+(+item.startMonth) : item.startMonth}`;
-              educationInfoObj.endYear = `${item.endYear}-${item.endMonth < 10 ? "0"+(+item.endMonth) : item.endMonth}`;
+              educationInfoObj.degree = degreeEnAndCnArr.filter(
+                (subItem) => subItem.cn == item.degree,
+              )[0]?.en;
+              educationInfoObj.startYear = `${item.startYear}-${
+                item.startMonth < 10 ? '0' + +item.startMonth : item.startMonth
+              }`;
+              educationInfoObj.endYear = `${item.endYear}-${
+                item.endMonth < 10 ? '0' + +item.endMonth : item.endMonth
+              }`;
               educationInfoList.push(educationInfoObj);
             });
           }
@@ -370,8 +572,8 @@ export const useResumeStore = defineStore('app-Resume',{
           }
           if (result.selfEvaluation) {
             selfEvaluationData.selfEvaluation = result.selfEvaluation
-            ?.replaceAll(/<p>/g, '')
-            .replaceAll(/<(\/)?p>/g, '\n');
+              ?.replaceAll(/<p>/g, '')
+              .replaceAll(/<(\/)?p>/g, '\n');
           }
         }
         obj.personInfoData = personInfoData;
@@ -404,7 +606,7 @@ export const useResumeStore = defineStore('app-Resume',{
           if (result.avatar_data) {
             this.updatePhotoFlag = 1;
             const blob = dataURLtoBlob(result.avatar_data);
-            const files = new window.File([blob], 'avatar.png', {type: 'application/png'})
+            const files = new window.File([blob], 'avatar.png', { type: 'application/png' });
             //const file = blobToFile(blob, 'avatar.png');
             obj.resumePhoto = files;
           }
@@ -418,23 +620,30 @@ export const useResumeStore = defineStore('app-Resume',{
             : 'F';
           personInfoData.phone = result.phone;
           personInfoData.age = result.age ? result.age : result.age_inf;
-          let city1 = province.value.filter(item => item.cityName == result.city?.replace(/\s/g, ""));
-          personInfoData.city = city1.length > 0 ? city1[0].provinceName + (city1[0].cityName ? '-' + city1[0].cityName : '') : '';
+          let city1 = findCityOptions(result.city, result.city_norm);
+          personInfoData.city =
+            city1.length > 0
+              ? city1[0].provinceName + (city1[0].cityName ? '-' + city1[0].cityName : '')
+              : '';
           personInfoData.email = result.email;
-          personInfoData.height = (result.height ? result.height.replace("cm",""): "");
-          let city = [];
-          if (result.living_address) {
-            city = province.value.filter(item => item.cityName == result.living_address?.replace(/\s/g, ""));
+          personInfoData.height = result.height ? result.height.replace('cm', '') : '';
+          let city = findCityOptions(result.living_address, result.living_address_norm);
+          if (city.length == 0) {
+            city = findCityOptions(result.expect_jlocation, result.expect_jlocation_norm);
           }
-          let province2 = [];
-          if (result.hukou_address) {
-            province2 = province.value.filter(item => item.cityName == result.hukou_address?.replace(/\s/g, ""));
-          }
-          personInfoData.huji = province2.length > 0 ? province2[0].provinceName + (province2[0].cityName ? '-' + province2[0].cityName : '') : '';
-          personInfoData.weight = (result.weight ? result.weight.replace("kg",""): "");
+          let province2 = findCityOptions(result.hukou_address, result.hukou_address_norm);
+          personInfoData.huji =
+            province2.length > 0
+              ? province2[0].provinceName +
+                (province2[0].cityName ? '-' + province2[0].cityName : '')
+              : '';
+          personInfoData.weight = result.weight ? result.weight.replace('kg', '') : '';
           personInfoData.birthday = result.birthday;
-          personInfoData.nationality = result.nationality;
-          personInfoData.currentCity = city.length > 0 ? city[0].provinceName + (city[0].cityName ? '-' + city[0].cityName : '') : '';
+          personInfoData.nationality = result.nationality || '中国';
+          personInfoData.currentCity =
+            city.length > 0
+              ? city[0].provinceName + (city[0].cityName ? '-' + city[0].cityName : '')
+              : '';
           personInfoData.positionName = result.work_position;
           personInfoData.positionStatus = result.work_status;
           personInfoData.marriageStatus = result.marital_status;
@@ -450,11 +659,11 @@ export const useResumeStore = defineStore('app-Resume',{
               workExperienceObj.isNewtest = item.end_date == '至今' ? '1' : '0';
               workExperienceObj.isRetreat = '';
               workExperienceObj.workFloor = '';
-            
+
               workExperienceObj.startYear = item.start_date;
               workExperienceObj.endYear = item.end_date;
               workExperienceObj.positionName = item.job_position;
-              workExperienceObj.positionsId = "";
+              workExperienceObj.positionsId = '';
               workExperienceObj.reporter = item.job_report_to;
               workExperienceObj.department = item.job_dept;
               workExperienceObj.salaryStructure = '';
@@ -467,94 +676,75 @@ export const useResumeStore = defineStore('app-Resume',{
           if (educationArr.length > 0) {
             educationArr.forEach((item) => {
               let educationInfoObj = {} as educationInfoData;
+              const normalizedStartDate = item.start_date
+                ? item.start_date.replace(/\./g, '-')
+                : '';
+              const normalizedEndDate = item.end_date ? item.end_date.replace(/\./g, '-') : '';
               educationInfoObj.schoolName = normalizeText(item.edu_college);
               educationInfoObj.isRegular = item.edu_recruit == '统招' ? 'Y' : '';
               let schoolTypeTemp: String[] = [];
               if (item.edu_college) {
                 // @ts-ignore
-                let t985 = shcoolType985.filter((items) => items === item.edu_college.replace(/[\u200B-\u200F]+/g, ''));
+                let t985 = shcoolType985.filter(
+                  (items) => items === item.edu_college.replace(/[\u200B-\u200F]+/g, ''),
+                );
                 if (t985.length > 0) {
                   schoolTypeTemp.push('985');
                 }
                 // @ts-ignore
-                let t211 = shcoolType211.filter((items) => items === item.edu_college.replace(/[\u200B-\u200F]+/g, ''));
+                let t211 = shcoolType211.filter(
+                  (items) => items === item.edu_college.replace(/[\u200B-\u200F]+/g, ''),
+                );
                 if (t211.length > 0) {
                   schoolTypeTemp.push('211');
-                } 
+                }
               }
               educationInfoObj.schoolType = schoolTypeTemp;
-              if (item.end_date) {
+              if (normalizedEndDate) {
                 const yearNow = dateUtil().year();
-                const monthNow = dateUtil().month();
-                const [endYear, endMonth] = item.end_date.split('-');
-                if ((endYear -  yearNow > 0) || (endYear -  yearNow <= 0 && endMonth - monthNow > 0)) {
-                  educationInfoObj.atSchool = "1";
+                const monthNow = dateUtil().month() + 1;
+                const [endYear, endMonth] = normalizedEndDate.split('-');
+                const endYearNum = Number(endYear);
+                const endMonthNum = Number(endMonth || 6);
+                if (endYearNum > yearNow || (endYearNum === yearNow && endMonthNum > monthNow)) {
+                  educationInfoObj.atSchool = '1';
                 } else {
-                  educationInfoObj.atSchool = "";
+                  educationInfoObj.atSchool = '';
                 }
               }
               educationInfoObj.majorName = item.edu_major;
               educationInfoObj.degree = item.edu_degree;
-              if (item.start_date && (/^\d{4}$/.test(item.start_date))) {
-                  educationInfoObj.startYear = item.start_date + "-09"; 
-              } else if (item.start_date && (/^\d{7}$/.test(item.start_date))) {
-                  educationInfoObj.startYear = item.start_date;
+              if (normalizedStartDate && /^\d{4}$/.test(normalizedStartDate)) {
+                educationInfoObj.startYear = normalizedStartDate + '-09';
+              } else if (normalizedStartDate && /^\d{4}-\d{2}$/.test(normalizedStartDate)) {
+                educationInfoObj.startYear = normalizedStartDate;
               } else {
-                educationInfoObj.startYear = "";
+                educationInfoObj.startYear = '';
               }
-              if (item.end_date && (/^\d{4}$/.test(item.end_date))) {
-                  educationInfoObj.endYear = item.end_date + "-06"; 
-              } else if (item.end_date && (/^\d{7}$/.test(item.end_date))) {
-                  educationInfoObj.endYear = item.end_date;
+              if (normalizedEndDate && /^\d{4}$/.test(normalizedEndDate)) {
+                educationInfoObj.endYear = normalizedEndDate + '-06';
+              } else if (normalizedEndDate && /^\d{4}-\d{2}$/.test(normalizedEndDate)) {
+                educationInfoObj.endYear = normalizedEndDate;
               } else {
-                educationInfoObj.endYear = "";
+                educationInfoObj.endYear = '';
               }
               //educationInfoObj.startYear = (item.start_date && item.start_date.length == 4 ? item.start_date + "-09" : item.start_date);
               //educationInfoObj.endYear = (item.end_date && item.end_date.length == 4 ? item.end_date + "-06" : item.end_date);
               educationInfoList.push(educationInfoObj);
             });
           }
-          if (result.cont_language) {
-            //const language = ["CET-4","CET-6","TEM-4","TEM-8","英语", "6级", "4级", "四级", "六级"];
-            let languageAbility0 = [];
-            let languageLevel = [];
-            if (result.cont_language.includes("CET-6") || result.cont_language.includes("cet-6") || (result.cont_language.includes("英语") && result.cont_language.includes("6级"))) {
+          {
+            const languageAbility0 = buildResumeLanguageAbility(result);
+            if (languageAbility0.length > 0) {
               //@ts-ignore
-              languageLevel.push("CET-6");
+              resumeLanguageList.languageAbility = languageAbility0;
             }
-            if (result.cont_language.includes("CET-4") || result.cont_language.includes("cet-4") || (result.cont_language.includes("英语") && result.cont_language.includes("4级"))) {
-              //@ts-ignore
-              languageLevel.push("CET-4");
-            }
-            if (result.cont_language.includes("TEM-4") || result.cont_language.includes("tem-4")) {
-              //@ts-ignore
-              languageLevel.push("TEM-4");
-            }
-            if (result.cont_language.includes("TEM-8") || result.cont_language.includes("tem-8")) {
-              //@ts-ignore
-              languageLevel.push("TEM-8");
-            }
-            
-            if (languageLevel.length > 0) {
-              let language = {};
-                //@ts-ignore
-              language.languageName = '英语';
-                //@ts-ignore
-              language.bujia = "";
-                //@ts-ignore
-              language.duxieLiuli = "";
-                //@ts-ignore
-              language.tinshuoLiuli = "";
-                //@ts-ignore
-              language.languageLevel = languageLevel.join(",");
-              //@ts-ignore
-              languageAbility0.push(language);
-            }
-            //@ts-ignore
-            resumeLanguageList.languageAbility = languageAbility0;
           }
-          if (result.cont_my_desc) {
-            selfEvaluationData.selfEvaluation = normalizeText(result.cont_my_desc);
+          if (result.cont_my_desc || result.cont_job_skill) {
+            selfEvaluationData.selfEvaluation = [result.cont_my_desc, result.cont_job_skill]
+              .filter(Boolean)
+              .map((item) => normalizeText(item))
+              .join('\n');
           }
         }
         obj.personInfoData = personInfoData;
@@ -569,7 +759,7 @@ export const useResumeStore = defineStore('app-Resume',{
       }
       return res;
     },
-     /**
+    /**
      * @description: 上传原始简历进行解析
      */
     async startParseUpload(params: any) {
@@ -578,241 +768,239 @@ export const useResumeStore = defineStore('app-Resume',{
         formData.append('fname', params.fileName); // 注意：此处的fileName需要和后端接收参数的fileName保持一致，否则无法正常接收
         formData.append('file', params.file.originFileObj);
         const res = await fetchApi.info(formData);
-      if (res) {
-        const { result } = JSON.parse(res.info);
-        let obj = {} as ResumeFormState;
-        let personInfoData = {} as PersonInfo;
-        let workExperienceList: WorkExperience[] = [];
-        let educationInfoList = [];
-        let resumeLanguageList = {} as resumeLanguageList;
-        let selfEvaluationData = {} as selfEvaluationData;
-        if (result) {
-          personInfoData.photoPath = result.avatar_data;
-          if (result.avatar_data) {
-            this.updatePhotoFlag = 1;
-            const blob = dataURLtoBlob(result.avatar_data);
-            const files = new window.File([blob], 'avatar.png', {type: 'application/png'})
-            //const file = blobToFile(blob, 'avatar.png');
-            obj.resumePhoto = files;
-          }
-          personInfoData.userName = result.name;
-          personInfoData.gender = result.gender
-            ? result.gender == '男'
+        if (res) {
+          const { result } = JSON.parse(res.info);
+          let obj = {} as ResumeFormState;
+          let personInfoData = {} as PersonInfo;
+          let workExperienceList: WorkExperience[] = [];
+          let educationInfoList = [];
+          let resumeLanguageList = {} as resumeLanguageList;
+          let selfEvaluationData = {} as selfEvaluationData;
+          if (result) {
+            personInfoData.photoPath = result.avatar_data;
+            if (result.avatar_data) {
+              this.updatePhotoFlag = 1;
+              const blob = dataURLtoBlob(result.avatar_data);
+              const files = new window.File([blob], 'avatar.png', { type: 'application/png' });
+              //const file = blobToFile(blob, 'avatar.png');
+              obj.resumePhoto = files;
+            }
+            personInfoData.userName = result.name;
+            personInfoData.gender = result.gender
+              ? result.gender == '男'
+                ? 'M'
+                : 'F'
+              : result.gender_inf == '男'
               ? 'M'
-              : 'F'
-            : result.gender_inf == '男'
-            ? 'M'
-            : 'F';
-          personInfoData.phone = result.phone;
-          personInfoData.age = result.age ? result.age : result.age_inf;
-          let city1 = province.value.filter(item => item.cityName == result.city?.replace(/\s/g, ""));
-          personInfoData.city = city1.length > 0 ? city1[0].provinceName + (city1[0].cityName ? '-' + city1[0].cityName : '') : '';
-          personInfoData.email = result.email;
-          personInfoData.height = (result.height ? result.height.replace("cm",""): "");
-          let city = [];
-          if (result.living_address) {
-            city = province.value.filter(item => item.cityName == result.living_address?.replace(/\s/g, ""));
-          }
-          let province2 = [];
-          if (result.hukou_address) {
-            province2 = province.value.filter(item => item.cityName == result.hukou_address?.replace(/\s/g, ""));
-          }
-          personInfoData.huji = province2.length > 0 ? province2[0].provinceName + (province2[0].cityName ? '-' + province2[0].cityName : '') : '';
-          personInfoData.weight = (result.weight ? result.weight.replace("kg",""): "");
-          personInfoData.birthday = result.birthday;
-          personInfoData.nationality = result.nationality;
-          personInfoData.currentCity = city.length > 0 ? city[0].provinceName + (city[0].cityName ? '-' + city[0].cityName : '') : '';
-          personInfoData.positionName = result.work_position;
-          personInfoData.positionStatus = result.work_status;
-          personInfoData.marriageStatus = result.marital_status;
-          const jobArr = result.job_exp_objs;
-          if (jobArr.length > 0) {
-            jobArr.forEach((item) => {
-              let workExperienceObj = {} as WorkExperience;
-              workExperienceObj.companyName = item.job_cpy;
-              workExperienceObj.category = '';
-              if (!this.endYearFlag && item.end_date == '至今') {
-                this.endYearFlag = true;
-              }
-              workExperienceObj.isNewtest = item.end_date == '至今' ? '1' : '0';
-              workExperienceObj.isRetreat = '';
-              workExperienceObj.workFloor = '';
-            
-              workExperienceObj.startYear = item.start_date?.substring(0,4);
-              workExperienceObj.endYear = item.end_date?.substring(0,4);
-              workExperienceObj.positionName = item.job_position;
-              workExperienceObj.positionsId = "";
-              workExperienceObj.reporter = item.job_report_to;
-              workExperienceObj.department = item.job_dept;
-              workExperienceObj.salaryStructure = '';
-              workExperienceObj.personnelStructure = '';
-              workExperienceObj.workDuty = normalizeText(item.job_content);
-              workExperienceList.push(workExperienceObj);
-            });
-          }
-          const educationArr = result.education_objs;
-          if (educationArr.length > 0) {
-            educationArr.forEach((item) => {
-              let educationInfoObj = {} as educationInfoData;
-              educationInfoObj.schoolName = normalizeText(item.edu_college);
-              educationInfoObj.isRegular = item.edu_recruit == '统招' ? 'Y' : '';
-              let schoolTypeTemp: String[] = [];
-              if (item.edu_college) {
-                // @ts-ignore
-                let t985 = shcoolType985.filter((items) => items === item.edu_college.replace(/[\u200B-\u200F]+/g, ''));
-                if (t985.length > 0) {
-                  schoolTypeTemp.push('985');
+              : 'F';
+            personInfoData.phone = result.phone;
+            personInfoData.age = result.age ? result.age : result.age_inf;
+            let city1 = findCityOptions(result.city, result.city_norm);
+            personInfoData.city =
+              city1.length > 0
+                ? city1[0].provinceName + (city1[0].cityName ? '-' + city1[0].cityName : '')
+                : '';
+            personInfoData.email = result.email;
+            personInfoData.height = result.height ? result.height.replace('cm', '') : '';
+            let city = findCityOptions(result.living_address, result.living_address_norm);
+            if (city.length == 0) {
+              city = findCityOptions(result.expect_jlocation, result.expect_jlocation_norm);
+            }
+            let province2 = findCityOptions(result.hukou_address, result.hukou_address_norm);
+            personInfoData.huji =
+              province2.length > 0
+                ? province2[0].provinceName +
+                  (province2[0].cityName ? '-' + province2[0].cityName : '')
+                : '';
+            personInfoData.weight = result.weight ? result.weight.replace('kg', '') : '';
+            personInfoData.birthday = result.birthday;
+            personInfoData.nationality = result.nationality;
+            personInfoData.currentCity =
+              city.length > 0
+                ? city[0].provinceName + (city[0].cityName ? '-' + city[0].cityName : '')
+                : '';
+            personInfoData.positionName = result.work_position;
+            personInfoData.positionStatus = result.work_status;
+            personInfoData.marriageStatus = result.marital_status;
+            const jobArr = result.job_exp_objs;
+            if (jobArr.length > 0) {
+              jobArr.forEach((item) => {
+                let workExperienceObj = {} as WorkExperience;
+                workExperienceObj.companyName = item.job_cpy;
+                workExperienceObj.category = '';
+                if (!this.endYearFlag && item.end_date == '至今') {
+                  this.endYearFlag = true;
                 }
-                // @ts-ignore
-                let t211 = shcoolType211.filter((items) => items === item.edu_college.replace(/[\u200B-\u200F]+/g, ''));
-                if (t211.length > 0) {
-                  schoolTypeTemp.push('211');
-                } 
-              }
-              educationInfoObj.schoolType = schoolTypeTemp?.join(',');
-              if (item.end_date) {
-                const yearNow = dateUtil().year();
-                const monthNow = dateUtil().month();
-                const [endYear, endMonth] = item.end_date.split('-');
-                if ((endYear -  yearNow > 0) || (endYear -  yearNow <= 0 && endMonth - monthNow > 0)) {
-                  educationInfoObj.atSchool = "1";
+                workExperienceObj.isNewtest = item.end_date == '至今' ? '1' : '0';
+                workExperienceObj.isRetreat = '';
+                workExperienceObj.workFloor = '';
+
+                workExperienceObj.startYear = item.start_date?.substring(0, 4);
+                workExperienceObj.endYear = item.end_date?.substring(0, 4);
+                workExperienceObj.positionName = item.job_position;
+                workExperienceObj.positionsId = '';
+                workExperienceObj.reporter = item.job_report_to;
+                workExperienceObj.department = item.job_dept;
+                workExperienceObj.salaryStructure = '';
+                workExperienceObj.personnelStructure = '';
+                workExperienceObj.workDuty = normalizeText(item.job_content);
+                workExperienceList.push(workExperienceObj);
+              });
+            }
+            const educationArr = result.education_objs;
+            if (educationArr.length > 0) {
+              educationArr.forEach((item) => {
+                let educationInfoObj = {} as educationInfoData;
+                educationInfoObj.schoolName = normalizeText(item.edu_college);
+                educationInfoObj.isRegular = item.edu_recruit == '统招' ? 'Y' : '';
+                let schoolTypeTemp: String[] = [];
+                if (item.edu_college) {
+                  // @ts-ignore
+                  let t985 = shcoolType985.filter(
+                    (items) => items === item.edu_college.replace(/[\u200B-\u200F]+/g, ''),
+                  );
+                  if (t985.length > 0) {
+                    schoolTypeTemp.push('985');
+                  }
+                  // @ts-ignore
+                  let t211 = shcoolType211.filter(
+                    (items) => items === item.edu_college.replace(/[\u200B-\u200F]+/g, ''),
+                  );
+                  if (t211.length > 0) {
+                    schoolTypeTemp.push('211');
+                  }
+                }
+                educationInfoObj.schoolType = schoolTypeTemp?.join(',');
+                if (item.end_date) {
+                  const yearNow = dateUtil().year();
+                  const monthNow = dateUtil().month();
+                  const [endYear, endMonth] = item.end_date.split('-');
+                  if (
+                    endYear - yearNow > 0 ||
+                    (endYear - yearNow <= 0 && endMonth - monthNow > 0)
+                  ) {
+                    educationInfoObj.atSchool = '1';
+                  } else {
+                    educationInfoObj.atSchool = '';
+                  }
+                }
+                educationInfoObj.majorName = item.edu_major;
+                educationInfoObj.degree = item.edu_degree;
+                if (item.start_date && /^\d{4}$/.test(item.start_date)) {
+                  educationInfoObj.startYear = item.start_date;
+                } else if (item.start_date && /^\d{7}$/.test(item.start_date)) {
+                  educationInfoObj.startYear = item.start_date.substring(0, 4);
                 } else {
-                  educationInfoObj.atSchool = "";
+                  educationInfoObj.startYear = '';
                 }
+                if (item.end_date && /^\d{4}$/.test(item.end_date)) {
+                  educationInfoObj.endYear = item.end_date;
+                } else if (item.end_date && /^\d{7}$/.test(item.end_date)) {
+                  educationInfoObj.endYear = item.end_date.substring(0, 4);
+                } else {
+                  educationInfoObj.endYear = '';
+                }
+                //educationInfoObj.startYear = (item.start_date && item.start_date.length == 4 ? item.start_date + "-09" : item.start_date);
+                //educationInfoObj.endYear = (item.end_date && item.end_date.length == 4 ? item.end_date + "-06" : item.end_date);
+                educationInfoList.push(educationInfoObj);
+              });
+            }
+            {
+              const languageAbility0 = buildResumeLanguageAbility(result);
+              if (languageAbility0.length > 0) {
+                //@ts-ignore
+                resumeLanguageList.languageAbility = languageAbility0;
               }
-              educationInfoObj.majorName = item.edu_major;
-              educationInfoObj.degree = item.edu_degree;
-              if (item.start_date && (/^\d{4}$/.test(item.start_date))) {
-                  educationInfoObj.startYear = item.start_date; 
-              } else if (item.start_date && (/^\d{7}$/.test(item.start_date))) {
-                  educationInfoObj.startYear = item.start_date.substring(0,4);
-              } else {
-                educationInfoObj.startYear = "";
-              }
-              if (item.end_date && (/^\d{4}$/.test(item.end_date))) {
-                  educationInfoObj.endYear = item.end_date; 
-              } else if (item.end_date && (/^\d{7}$/.test(item.end_date))) {
-                  educationInfoObj.endYear = item.end_date.substring(0,4);
-              } else {
-                educationInfoObj.endYear = "";
-              }
-              //educationInfoObj.startYear = (item.start_date && item.start_date.length == 4 ? item.start_date + "-09" : item.start_date);
-              //educationInfoObj.endYear = (item.end_date && item.end_date.length == 4 ? item.end_date + "-06" : item.end_date);
-              educationInfoList.push(educationInfoObj);
-            });
+            }
+            if (result.cont_my_desc) {
+              selfEvaluationData.selfEvaluation = normalizeText(result.cont_my_desc);
+            }
           }
-          if (result.cont_language) {
-            //const language = ["CET-4","CET-6","TEM-4","TEM-8","英语", "6级", "4级", "四级", "六级"];
-            let languageAbility0 = [];
-            let languageLevel = [];
-            if (result.cont_language.includes("CET-6") || result.cont_language.includes("cet-6") || (result.cont_language.includes("英语") && result.cont_language.includes("6级"))) {
-              //@ts-ignore
-              languageLevel.push("CET-6");
+          obj.personInfoData = personInfoData;
+          obj.workExperienceList = workExperienceList;
+          obj.educationInfoList = educationInfoList;
+          obj.resumeLanguageList = resumeLanguageList;
+          obj.selfEvaluationData = selfEvaluationData;
+          obj.talentSource = this.resumeFormState.talentSource;
+          const plagiarusnForm = {} as PlagiarusnItem;
+          plagiarusnForm.userNameCn = personInfoData.userName || '';
+          plagiarusnForm.userNameEn = '';
+          plagiarusnForm.phoneNum = personInfoData.phone || '';
+          plagiarusnForm.email = personInfoData.email || '';
+          plagiarusnForm.gender = '';
+          plagiarusnForm.birthYear = '';
+          plagiarusnForm.currentCity = '';
+          plagiarusnForm.recruitId = loginVueUser.loginId;
+          plagiarusnForm.realNameEn = loginVueUser.loginName;
+          plagiarusnForm.companyNames = '';
+          plagiarusnForm.schoolNames = '';
+          plagiarusnForm.majorNames = '';
+          plagiarusnForm.isEnglish = '';
+          const resultDetail = await fetchPlagiarusnApi.info(plagiarusnForm);
+          if (resultDetail?.code != 1 && resultDetail?.info?.length > 0) {
+            return '简历重复';
+          } else {
+            // @ts-ignore
+            const resume: Resume = {
+              resumeType: 'C',
+              realNameEn: loginVueUser.loginName,
+              photoPath:
+                personInfoData.photoPath &&
+                personInfoData.photoPath.includes('http://101.201.142.39')
+                  ? personInfoData.photoPath
+                  : '',
+              recruitId: loginVueUser.loginId,
+              userName: personInfoData.userName,
+              gender: personInfoData.gender,
+              phoneNum: personInfoData.phone,
+              province:
+                personInfoData.huji.split('-').length > 1
+                  ? personInfoData.huji.split('-')[1]
+                  : personInfoData.huji.split('-')[0],
+              currentCity:
+                personInfoData.currentCity.split('-').length > 1
+                  ? personInfoData.currentCity.split('-')[1]
+                  : personInfoData.currentCity.split('-')[0],
+              positionStatus: personInfoData.positionStatus,
+              marriageStatus: personInfoData.marriageStatus,
+              positionName: personInfoData.positionName,
+              birthYear:
+                personInfoData.birthYear ||
+                diffBirthday(personInfoData.birthday, personInfoData.age, obj.talentSource)
+                  ?.birthYear,
+              bornMonth:
+                personInfoData.bornMonth ||
+                diffBirthday(personInfoData.birthday, personInfoData.age, obj.talentSource)
+                  ?.bornMonth,
+              bornDay: personInfoData.bornDay,
+              height: personInfoData.height,
+              weight: personInfoData.weight,
+              email: personInfoData.email,
+              languageAbility: '',
+              resumeLanguageList: resumeLanguageList.languageAbility,
+              selfEvaluation: selfEvaluationData.selfEvaluation,
+              age: personInfoData.age,
+              nationality: personInfoData.nationality,
+              isEnglish: this.resumeTypeEnglish,
+              // @ts-ignore
+              talentSource: obj.talentSource,
+              // @ts-ignore
+              workExpeList: workExperienceList,
+              // @ts-ignore
+              eduExpeList: educationInfoList,
+            };
+            const resd = await fetchApi.addResumeInfo(resume);
+            if (resd && resd != '上传失败') {
+              this.fetchResumeFile(resd, params.file.originFileObj);
+              this.fetchResumePhote(resd, obj.resumePhoto);
+              return '上传成功';
             }
-            if (result.cont_language.includes("CET-4") || result.cont_language.includes("cet-4") || (result.cont_language.includes("英语") && result.cont_language.includes("4级"))) {
-              //@ts-ignore
-              languageLevel.push("CET-4");
-            }
-            if (result.cont_language.includes("TEM-4") || result.cont_language.includes("tem-4")) {
-              //@ts-ignore
-              languageLevel.push("TEM-4");
-            }
-            if (result.cont_language.includes("TEM-8") || result.cont_language.includes("tem-8")) {
-              //@ts-ignore
-              languageLevel.push("TEM-8");
-            }
-            
-            if (languageLevel.length > 0) {
-              let language = {};
-                //@ts-ignore
-              language.languageName = '英语';
-                //@ts-ignore
-              language.bujia = "";
-                //@ts-ignore
-              language.duxieLiuli = "";
-                //@ts-ignore
-              language.tinshuoLiuli = "";
-                //@ts-ignore
-              language.languageLevel = languageLevel.join(",");
-              //@ts-ignore
-              languageAbility0.push(language);
-            }
-            //@ts-ignore
-            resumeLanguageList.languageAbility = languageAbility0;
-          }
-          if (result.cont_my_desc) {
-            selfEvaluationData.selfEvaluation = normalizeText(result.cont_my_desc);
           }
         }
-        obj.personInfoData = personInfoData;
-        obj.workExperienceList = workExperienceList;
-        obj.educationInfoList = educationInfoList;
-        obj.resumeLanguageList = resumeLanguageList;
-        obj.selfEvaluationData = selfEvaluationData;
-        obj.talentSource = this.resumeFormState.talentSource;
-        const plagiarusnForm = {} as PlagiarusnItem;
-        plagiarusnForm.userNameCn = (personInfoData.userName || "");
-        plagiarusnForm.userNameEn = "";
-        plagiarusnForm.phoneNum = (personInfoData.phone || "");
-        plagiarusnForm.email = (personInfoData.email || "");
-        plagiarusnForm.gender = "";
-        plagiarusnForm.birthYear = "";
-        plagiarusnForm.currentCity = "";
-        plagiarusnForm.recruitId = (loginVueUser.loginId);
-        plagiarusnForm.realNameEn = (loginVueUser.loginName);
-        plagiarusnForm.companyNames = "";
-        plagiarusnForm.schoolNames = "";
-        plagiarusnForm.majorNames = "";
-        plagiarusnForm.isEnglish = "";
-        const resultDetail = await fetchPlagiarusnApi.info(plagiarusnForm);
-        if (resultDetail?.code != 1 && resultDetail?.info?.length > 0) {
-            return "简历重复";
-        } else {
-           // @ts-ignore
-      const resume: Resume = {
-        resumeType: 'C',
-        realNameEn: loginVueUser.loginName,
-        photoPath: personInfoData.photoPath && personInfoData.photoPath.includes("http://101.201.142.39") ? personInfoData.photoPath : "",
-        recruitId: loginVueUser.loginId,
-        userName: personInfoData.userName,
-        gender: personInfoData.gender,
-        phoneNum: personInfoData.phone,
-        province: (personInfoData.huji.split("-").length > 1 ? personInfoData.huji.split("-")[1] : personInfoData.huji.split("-")[0]),
-        currentCity: (personInfoData.currentCity.split("-").length > 1 ? personInfoData.currentCity.split("-")[1] : personInfoData.currentCity.split("-")[0]),
-        positionStatus: personInfoData.positionStatus,
-        marriageStatus: personInfoData.marriageStatus,
-        positionName: personInfoData.positionName,
-        birthYear: personInfoData.birthYear || diffBirthday(personInfoData.birthday,personInfoData.age, obj.talentSource)?.birthYear,
-        bornMonth: personInfoData.bornMonth || diffBirthday(personInfoData.birthday,personInfoData.age, obj.talentSource)?.bornMonth,
-        bornDay: personInfoData.bornDay,
-        height: personInfoData.height,
-        weight: personInfoData.weight,
-        email: personInfoData.email,
-        languageAbility: "",
-        resumeLanguageList: resumeLanguageList.languageAbility,
-        selfEvaluation: selfEvaluationData.selfEvaluation,
-        age: personInfoData.age,
-        nationality: personInfoData.nationality,
-        isEnglish: this.resumeTypeEnglish,
-         // @ts-ignore
-        talentSource: obj.talentSource,
-        // @ts-ignore
-        workExpeList: workExperienceList,
-        // @ts-ignore
-        eduExpeList: educationInfoList,
-      };
-      const resd = await fetchApi.addResumeInfo(resume);
-      if (resd && resd != "上传失败") {
-        this.fetchResumeFile(resd,params.file.originFileObj);
-        this.fetchResumePhote(resd,obj.resumePhoto);
-        return "上传成功";
-      }
-        }
-      } 
-        return "上传失败";
+        return '上传失败';
       } catch (error) {
         console.log(error);
-        return "上传失败";
+        return '上传失败';
       }
     },
     /**
@@ -823,7 +1011,7 @@ export const useResumeStore = defineStore('app-Resume',{
         companyName: '',
         category: '',
         isNewtest: '',
-        isRetreat: "",
+        isRetreat: '',
         workFloor: '',
         startYear: '',
         startMonth: '',
@@ -852,7 +1040,7 @@ export const useResumeStore = defineStore('app-Resume',{
      * 修改工作经历指定索引元素
      * @param params 指定索引
      */
-    updateWorkExperienceDetailsByIndexNum(indexNum,positionName,positionsId,endYearFlag) {
+    updateWorkExperienceDetailsByIndexNum(indexNum, positionName, positionsId, endYearFlag) {
       this.resumeFormState.workExperienceList[indexNum].positionName = positionName;
       this.resumeFormState.workExperienceList[indexNum].positionsId = positionsId;
       if (endYearFlag) {
@@ -863,7 +1051,7 @@ export const useResumeStore = defineStore('app-Resume',{
      * 修改最近工作状态
      * @param flag true 已有最近工作 false 无最近工作
      */
-    updateEndYearFlag(flag){
+    updateEndYearFlag(flag) {
       this.endYearFlag = flag;
     },
     /**

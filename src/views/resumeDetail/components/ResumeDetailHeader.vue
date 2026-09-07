@@ -366,7 +366,8 @@
   </div>
 </template>
 <script setup lang="ts">
-  import { message } from 'ant-design-vue';
+  import { Modal, message } from 'ant-design-vue';
+  import { h } from 'vue';
   import { storeToRefs } from 'pinia';
   import type { SelectProps } from 'ant-design-vue';
   import OrginalPath from '/@/components/OrginalPath/index.vue';
@@ -674,9 +675,55 @@
     })
   }
   const openResumeChecked = ref(false);
+  const validateWorkExperienceStandardPosition = () => {
+    const invalidWorkExperienceList =
+      props.resumeData?.workExpeList?.filter((item) => {
+        const positionsId = item?.positionsId;
+        return (
+          positionsId === '' ||
+          positionsId === null ||
+          positionsId === undefined ||
+          positionsId === 'null' ||
+          positionsId === 'undefined'
+        );
+      }) || [];
+    if (invalidWorkExperienceList.length === 0) {
+      return true;
+    }
+    const workExperienceLines = invalidWorkExperienceList.map((item, index) => {
+      const prefix = String.fromCharCode(9312 + index);
+      const companyName = item?.companyName || '未填写公司';
+      const positionName = item?.positionName || '未填写岗位';
+      return `${prefix} 工作经历 ：【${companyName} - ${positionName}】`;
+    });
+    const content = [
+      '以下工作经历未绑定系统标准职位，请选择对应标准化职位：',
+      ...workExperienceLines,
+    ].join('\n');
+    const longestLineLength = workExperienceLines.reduce(
+      (max, line) => Math.max(max, line.length),
+      '以下工作经历未绑定系统标准职位，请选择对应标准化职位：'.length,
+    );
+    const modalWidth = Math.min(Math.max(longestLineLength * 14, 620), 980);
+    Modal.warning({
+      title: '校验不通过',
+      width: modalWidth,
+      content: h(
+        'div',
+        {
+          style: 'white-space: pre-line; line-height: 1.8;',
+        },
+        content,
+      ),
+    });
+    return false;
+  };
   const handleAddChecked = () => {
     if (resumeProgressDetailScore.value < 90) {
       message.error('简历完整度需要大于90');
+      return;
+    }
+    if (!validateWorkExperienceStandardPosition()) {
       return;
     }
     openResumeChecked.value = true;
@@ -700,6 +747,9 @@
       message.error('简历完整度需要大于90');
       return;
     }
+    if (!validateWorkExperienceStandardPosition()) {
+      return;
+    }
     openResumeCheckedTwoYear.value = true;
   }
   
@@ -719,6 +769,9 @@
   const handleAddCheckedTongbu = () => {
     if (resumeProgressDetailScore.value < 90) {
       message.error('简历完整度需要大于90');
+      return;
+    }
+    if (!validateWorkExperienceStandardPosition()) {
       return;
     }
     openResumeCheckedTongbu.value = true;

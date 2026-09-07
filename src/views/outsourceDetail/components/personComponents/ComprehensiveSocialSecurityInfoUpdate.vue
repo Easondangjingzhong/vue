@@ -346,7 +346,8 @@ const labelCol = ref({
 const iconLoading = ref(false);
 
 // 存储从API获取的计算数据
-const contractRates = ref<any>(null);
+const contractRates = ref<any[]>([]);
+const emptySignOptions = [{ label: '', value: '' }];
 
 // 计算属性 - 个人养老金额
 const yanglaoRateDisplay = computed(() => {
@@ -453,9 +454,9 @@ const yijinPersonDisplay = computed(() => {
     return rateCalc(rate);  
 });
 const yijinPerson = computed(() => {
-  if (outsourceSocialSecurityForm.value?.shebaoCity == '北京' && outsourceSocialSecurityForm.value?.yijinStandard == '1') {
-    return 0;
-  }
+  // if (outsourceSocialSecurityForm.value?.shebaoCity == '北京' && outsourceSocialSecurityForm.value?.yijinStandard == '1') {
+  //   return 0;
+  // }
   if (outsourceSocialSecurityForm.value?.shebaoCity == '苏州') {
     return parseFloat(parseFloat(((Number((Number((outsourceSocialSecurityForm.value?.yijinJishu || 0) * (outsourceSocialSecurityForm.value?.yijinRate || 0))*100).toFixed(0))/100).toString())).toFixed(2));
   }
@@ -506,6 +507,192 @@ const companyTotal = computed(() => {
   return parseFloat((Number((Number(yanglaoCompany.value + shiyeCompany.value + yiliaoCompany.value + dabingCompany.value + yijinCompany.value + shengyuCompany.value + gongshangCompany.value)*100).toFixed(0))/100).toFixed(2));
 });
 
+const toNumber = (value) => {
+  const num = Number(value);
+  return Number.isFinite(num) ? num : 0;
+};
+
+const hasValue = (value) => value !== '' && value !== null && value !== undefined;
+
+const getCompanyValue = (companyLabel) => {
+  return companyJiaoOption.find((item) => item.label === companyLabel)?.value || '';
+};
+
+const getCompanyLabel = (companyValue) => {
+  return companyJiaoOption.find((item) => item.value === companyValue)?.label || '';
+};
+
+const getSalaryBase = () => {
+  return toNumber(getOutsourceSalaryDetailList.value?.[0]?.dixin || 0);
+};
+
+const buildSignOptions = (rates) => {
+  const signMap = new Map();
+  rates.forEach((item) => {
+    const sign = item?.shebaoSign || '';
+    if (!signMap.has(sign)) {
+      signMap.set(sign, { label: sign, value: sign });
+    }
+  });
+  return Array.from(signMap.values());
+};
+
+const getCompanyRates = (companyLabel = outsourceSocialSecurityForm.value.shebaoCompany) => {
+  const companyValue = getCompanyValue(companyLabel);
+  if (!companyValue) {
+    return [];
+  }
+  return contractRates.value.filter((item) => item.companyJiao === companyValue);
+};
+
+const syncCalculatedAmounts = () => {
+  outsourceSocialSecurityForm.value.yanglaoPerson = yanglaoPerson.value;
+  outsourceSocialSecurityForm.value.yanglaoCompany = yanglaoCompany.value;
+  outsourceSocialSecurityForm.value.shiyePerson = shiyePerson.value;
+  outsourceSocialSecurityForm.value.shiyeCompany = shiyeCompany.value;
+  outsourceSocialSecurityForm.value.yiliaoPerson = yiliaoPerson.value;
+  outsourceSocialSecurityForm.value.yiliaoCompany = yiliaoCompany.value;
+  outsourceSocialSecurityForm.value.dabingPerson = dabingPerson.value;
+  outsourceSocialSecurityForm.value.dabingCompany = dabingCompany.value;
+  outsourceSocialSecurityForm.value.yijinPerson = yijinPerson.value;
+  outsourceSocialSecurityForm.value.yijinCompany = yijinCompany.value;
+  outsourceSocialSecurityForm.value.gongshangCompany = gongshangCompany.value;
+  outsourceSocialSecurityForm.value.shengyuCompany = shengyuCompany.value;
+  outsourceSocialSecurityForm.value.personTotal = personTotal.value;
+  outsourceSocialSecurityForm.value.companyTotal = companyTotal.value;
+};
+
+const syncShebaoBasesByActual = () => {
+  const shebaoBase = toNumber(outsourceSocialSecurityForm.value.shebaoShijiJishu);
+  outsourceSocialSecurityForm.value.yanglaoJishu = shebaoBase;
+  outsourceSocialSecurityForm.value.shiyeJishu = shebaoBase;
+  outsourceSocialSecurityForm.value.yiliaoJishu = shebaoBase;
+  outsourceSocialSecurityForm.value.yanglaoCompanyJishu = shebaoBase;
+  outsourceSocialSecurityForm.value.shiyeCompanyJishu = shebaoBase;
+  outsourceSocialSecurityForm.value.yiliaoCompanyJishu = shebaoBase;
+  outsourceSocialSecurityForm.value.gongshangJishu = shebaoBase;
+  outsourceSocialSecurityForm.value.shengyuJishu = shebaoBase;
+  outsourceSocialSecurityForm.value.dabingJishu =
+    toNumber(outsourceSocialSecurityForm.value.dabingRate) < 1
+      ? shebaoBase
+      : toNumber(outsourceSocialSecurityForm.value.dabingRate);
+  outsourceSocialSecurityForm.value.dabingCompanyJishu =
+    toNumber(outsourceSocialSecurityForm.value.dabingCompanyRate) < 1
+      ? shebaoBase
+      : toNumber(outsourceSocialSecurityForm.value.dabingCompanyRate);
+};
+
+const syncYijinBasesByActual = () => {
+  const yijinBase = toNumber(outsourceSocialSecurityForm.value.yijinShijiJishu);
+  outsourceSocialSecurityForm.value.yijinJishu = yijinBase;
+  outsourceSocialSecurityForm.value.yijinCompanyJishu = yijinBase;
+};
+
+const resolveActualBase = (standard, lowestBase, currentBase, preserveCurrent = false) => {
+  if (preserveCurrent && hasValue(currentBase)) {
+    return toNumber(currentBase);
+  }
+  if (standard === '2') {
+    return Math.max(getSalaryBase(), toNumber(lowestBase));
+  }
+  if (standard === '3') {
+    return hasValue(currentBase) ? toNumber(currentBase) : toNumber(lowestBase);
+  }
+  return toNumber(lowestBase);
+};
+
+const applyContractRate = (rate, options = { preserveShebaoActual: false, preserveYijinActual: false }) => {
+  if (!rate) {
+    syncCalculatedAmounts();
+    return;
+  }
+
+  outsourceSocialSecurityForm.value.serviceMoney = rate.handingFee;
+  outsourceSocialSecurityForm.value.shebaoZuidiJishu = toNumber(rate.shebaoBase);
+  outsourceSocialSecurityForm.value.yijinZuidiJishu = toNumber(rate.yijinBase);
+
+  outsourceSocialSecurityForm.value.yanglaoRate = toNumber(rate.personYanglaoRate);
+  outsourceSocialSecurityForm.value.yanglaoCompanyRate = toNumber(rate.companyYanglaoRate);
+  outsourceSocialSecurityForm.value.shiyeRate = toNumber(rate.personShiyeRate);
+  outsourceSocialSecurityForm.value.shiyeCompanyRate = toNumber(rate.companyShiyeRate);
+  outsourceSocialSecurityForm.value.yiliaoRate = toNumber(rate.personYiliaoRate);
+  outsourceSocialSecurityForm.value.yiliaoCompanyRate = toNumber(rate.companyYiliaoRate);
+  outsourceSocialSecurityForm.value.dabingRate = toNumber(rate.personDabingRate);
+  outsourceSocialSecurityForm.value.dabingCompanyRate = toNumber(rate.companyDabingRate);
+  outsourceSocialSecurityForm.value.yijinRate = toNumber(rate.personYijinRate);
+  outsourceSocialSecurityForm.value.yijinCompanyRate = toNumber(rate.companyYijinRate);
+  outsourceSocialSecurityForm.value.gongshangCompanyRate = toNumber(rate.companyGongshangRate);
+  outsourceSocialSecurityForm.value.shengyuCompanyRate = toNumber(rate.companyShengyuRate);
+
+  outsourceSocialSecurityForm.value.shebaoShijiJishu = resolveActualBase(
+    outsourceSocialSecurityForm.value.shebaoStandard,
+    outsourceSocialSecurityForm.value.shebaoZuidiJishu,
+    outsourceSocialSecurityForm.value.shebaoShijiJishu,
+    options.preserveShebaoActual,
+  );
+  outsourceSocialSecurityForm.value.yijinShijiJishu = resolveActualBase(
+    outsourceSocialSecurityForm.value.yijinStandard,
+    outsourceSocialSecurityForm.value.yijinZuidiJishu,
+    outsourceSocialSecurityForm.value.yijinShijiJishu,
+    options.preserveYijinActual,
+  );
+
+  syncShebaoBasesByActual();
+  syncYijinBasesByActual();
+  syncCalculatedAmounts();
+};
+
+const refreshCalculationBySelection = (
+  options = { preserveShebaoActual: false, preserveYijinActual: false, keepCurrentSign: true },
+) => {
+  const allRates = Array.isArray(contractRates.value) ? contractRates.value : [];
+  if (!allRates.length) {
+    shebaoSignOption.value = emptySignOptions;
+    syncCalculatedAmounts();
+    return;
+  }
+
+  let companyRates = getCompanyRates();
+  if (!companyRates.length) {
+    const fallbackRate = allRates[0];
+    outsourceSocialSecurityForm.value.shebaoCompany = getCompanyLabel(fallbackRate.companyJiao);
+    outsourceSocialSecurityForm.value.yijinJiaoCompany = outsourceSocialSecurityForm.value.shebaoCompany;
+    companyRates = getCompanyRates();
+  }
+
+  const signOptions = buildSignOptions(companyRates);
+  shebaoSignOption.value = signOptions.length > 0 ? signOptions : emptySignOptions;
+  if (
+    !options.keepCurrentSign ||
+    !signOptions.some((item) => item.value === outsourceSocialSecurityForm.value.shebaoSign)
+  ) {
+    outsourceSocialSecurityForm.value.shebaoSign = signOptions[0]?.value || '';
+  }
+
+  const rate =
+    companyRates.find((item) => item.shebaoSign === outsourceSocialSecurityForm.value.shebaoSign) ||
+    companyRates[0];
+  if (rate && !outsourceSocialSecurityForm.value.shebaoSign) {
+    outsourceSocialSecurityForm.value.shebaoSign = rate.shebaoSign || '';
+  }
+  outsourceSocialSecurityForm.value.yijinJiaoCompany = outsourceSocialSecurityForm.value.shebaoCompany;
+  applyContractRate(rate, options);
+};
+
+const loadContractRatesAndRefresh = async (
+  options = { preserveShebaoActual: false, preserveYijinActual: false, keepCurrentSign: true },
+) => {
+  const res = await outsourceDetailStore.queryOutsourceShebaoContractRates();
+  if (res?.code == 1 && Array.isArray(res.info) && res.info.length > 0) {
+    contractRates.value = res.info;
+    refreshCalculationBySelection(options);
+    return;
+  }
+  contractRates.value = [];
+  shebaoSignOption.value = emptySignOptions;
+  syncCalculatedAmounts();
+};
+
 // 选项数据...（保持不变）
 const currentStatusOption = ref([
   { label: '无需缴纳', value: '1' },
@@ -529,45 +716,28 @@ const shangbaoStatusOption = ref([
 const shebaoSignOption = ref([
   { label: '', value: '' },
 ])
-watch(outsourceSocialSecurityFlag,() =>{
-  outsourceDetailStore.queryOutsourceShebaoContractRates().then(res => {
-    if (res.code == 1 && res.info.length > 0) {
-        contractRates.value = res.info;
-        shebaoSignOption.value = res.info.map(item => ({ label: item.shebaoSign, value: item.shebaoSign }));
-      }
-  })
+watch(outsourceSocialSecurityFlag, (open) => {
+  if (!open) {
+    return;
+  }
+  if (outsourceSocialSecurityForm.value.shebaoStatus == '1') {
+    syncCalculatedAmounts();
+    return;
+  }
+  loadContractRatesAndRefresh({
+    preserveShebaoActual: true,
+    preserveYijinActual: true,
+    keepCurrentSign: true,
+  });
 })
 const handleChangeShebaoStatus = () => {
   outsourceSocialSecurityForm.value.yijinStatus = outsourceSocialSecurityForm.value.shebaoStatus;
   outsourceSocialSecurityForm.value.yijinStandard = outsourceSocialSecurityForm.value.shebaoStandard;
   if ((outsourceSocialSecurityForm.value.shebaoStatus == '2' || outsourceSocialSecurityForm.value.shebaoStatus == '3')) {
-    outsourceDetailStore.queryOutsourceShebaoContractRates().then(res => {
-      if (res.code == 1 && res.info.length > 0) {
-        // 只存储原始数据，不直接计算
-        contractRates.value = res.info;
-        shebaoSignOption.value = res.info.map(item => ({ label: item.shebaoSign, value: item.shebaoSign }));
-        const p = res.info[0];
-        outsourceSocialSecurityForm.value.shebaoCompany = companyJiaoOption.find(item => item.value === p.companyJiao)?.label || '';
-        outsourceSocialSecurityForm.value.yijinJiaoCompany = companyJiaoOption.find(item => item.value === p.companyJiao)?.label || '';
-        //handleChangeShebaoCalc(p);
-        handleChangeShebaoSign();
-        //缴纳标准是2基本工资
-  if (outsourceSocialSecurityForm.value.shebaoStandard == '2' && (getOutsourceSalaryDetailList.value.length > 0 || outsourceSocialSecurityForm.value.shebaoShijiJishu)) {
-    let jishu = getOutsourceSalaryDetailList.value[0].dixin || 0;
-    let shebaoBase = jishu;
-    if (Number(p.shebaoBase || 0) - Number(jishu) > 0) {
-      shebaoBase = p.shebaoBase;
-    }
-    let yijinBase = jishu;
-    if (Number(p.yijinBase || 0) - Number(jishu) > 0) {
-      yijinBase = p.yijinBase;
-    }
-    outsourceSocialSecurityForm.value.shebaoShijiJishu = Number(shebaoBase);
-    outsourceSocialSecurityForm.value.yijinShijiJishu = Number(yijinBase);
-    handleChangeShebaoShijiJishu();
-    handleChangeYijinShijiJishu();
-  } 
-      }
+    loadContractRatesAndRefresh({
+      preserveShebaoActual: false,
+      preserveYijinActual: false,
+      keepCurrentSign: true,
     });
   }
   //缴纳状态是1不缴
@@ -578,129 +748,40 @@ const handleChangeShebaoStatus = () => {
 }
 
 const handleChangeShebaoCalc = (p) => {
-  outsourceSocialSecurityForm.value.serviceMoney = p.handingFee;
-       // 设置基础数据
-        outsourceSocialSecurityForm.value.shebaoZuidiJishu = p.shebaoBase;
-        outsourceSocialSecurityForm.value.shebaoShijiJishu = p.shebaoBase;
-        outsourceSocialSecurityForm.value.yijinZuidiJishu = p.yijinBase;
-        outsourceSocialSecurityForm.value.yijinShijiJishu = p.yijinBase;
-
-        // 设置基数和比例
-        outsourceSocialSecurityForm.value.yanglaoJishu = p.personYanglaoBase;
-        outsourceSocialSecurityForm.value.yanglaoRate = p.personYanglaoRate;
-        outsourceSocialSecurityForm.value.yanglaoCompanyJishu = p.companyYanglaoBase;
-        outsourceSocialSecurityForm.value.yanglaoCompanyRate = p.companyYanglaoRate;
-        
-        outsourceSocialSecurityForm.value.shiyeJishu = p.personShiyeBase;
-        outsourceSocialSecurityForm.value.shiyeRate = p.personShiyeRate;
-        outsourceSocialSecurityForm.value.shiyeCompanyJishu = p.companyShiyeBase;
-        outsourceSocialSecurityForm.value.shiyeCompanyRate = p.companyShiyeRate;
-        
-        outsourceSocialSecurityForm.value.yiliaoJishu = p.personYiliaoBase;
-        outsourceSocialSecurityForm.value.yiliaoRate = p.personYiliaoRate;
-        outsourceSocialSecurityForm.value.yiliaoCompanyJishu = p.companyYiliaoBase;
-        outsourceSocialSecurityForm.value.yiliaoCompanyRate = p.companyYiliaoRate;
-        if (p.personDabingRate - 1 < 0) {
-          outsourceSocialSecurityForm.value.dabingJishu = p.personDabingBase;
-          outsourceSocialSecurityForm.value.dabingRate = p.personDabingRate;
-        } else {
-          outsourceSocialSecurityForm.value.dabingJishu = p.personDabingRate;
-          outsourceSocialSecurityForm.value.dabingRate = p.personDabingRate;
-        }
-        if (p.companyDabingRate - 1 < 0) {
-          outsourceSocialSecurityForm.value.dabingCompanyJishu = p.companyDabingBase;
-          outsourceSocialSecurityForm.value.dabingCompanyRate = p.companyDabingRate;
-        } else {
-          outsourceSocialSecurityForm.value.dabingCompanyJishu = p.companyDabingRate;
-          outsourceSocialSecurityForm.value.dabingCompanyRate = p.companyDabingRate;
-        }
-        
-        outsourceSocialSecurityForm.value.yijinJishu = p.personYijinBase;
-        outsourceSocialSecurityForm.value.yijinRate = p.personYijinRate;
-        outsourceSocialSecurityForm.value.yijinCompanyJishu = p.companyYijinBase;
-        outsourceSocialSecurityForm.value.yijinCompanyRate = p.companyYijinRate;
-        
-        outsourceSocialSecurityForm.value.gongshangJishu = p.companyGongshangBase;
-        outsourceSocialSecurityForm.value.gongshangCompanyRate = p.companyGongshangRate;
-        outsourceSocialSecurityForm.value.shengyuJishu = p.companyShengyuBase;
-        outsourceSocialSecurityForm.value.shengyuCompanyRate = p.companyShengyuRate;
-
-        // 通过计算属性设置金额
-        outsourceSocialSecurityForm.value.yanglaoPerson = yanglaoPerson.value;
-        outsourceSocialSecurityForm.value.yanglaoCompany = yanglaoCompany.value;
-        outsourceSocialSecurityForm.value.shiyePerson = shiyePerson.value;
-        outsourceSocialSecurityForm.value.shiyeCompany = shiyeCompany.value;
-        outsourceSocialSecurityForm.value.yiliaoPerson = yiliaoPerson.value;
-        outsourceSocialSecurityForm.value.yiliaoCompany = yiliaoCompany.value;
-        outsourceSocialSecurityForm.value.dabingPerson = dabingPerson.value;
-        outsourceSocialSecurityForm.value.dabingCompany = dabingCompany.value;
-        outsourceSocialSecurityForm.value.yijinPerson = yijinPerson.value;
-        outsourceSocialSecurityForm.value.yijinCompany = yijinCompany.value;
-        outsourceSocialSecurityForm.value.gongshangCompany = gongshangCompany.value;
-        outsourceSocialSecurityForm.value.shengyuCompany = shengyuCompany.value;
-        outsourceSocialSecurityForm.value.personTotal = personTotal.value;
-        outsourceSocialSecurityForm.value.companyTotal = companyTotal.value;
+  applyContractRate(p, {
+    preserveShebaoActual: false,
+    preserveYijinActual: false,
+  });
 }
 const handleChangeShebaoShijiJishu = () => {
-  outsourceSocialSecurityForm.value.yanglaoJishu = outsourceSocialSecurityForm.value.shebaoShijiJishu;
-  outsourceSocialSecurityForm.value.shiyeJishu = outsourceSocialSecurityForm.value.shebaoShijiJishu;
-  outsourceSocialSecurityForm.value.yiliaoJishu = outsourceSocialSecurityForm.value.shebaoShijiJishu;
-  outsourceSocialSecurityForm.value.dabingJishu = outsourceSocialSecurityForm.value.shebaoShijiJishu;
-  //outsourceSocialSecurityForm.value.yijinJishu = outsourceSocialSecurityForm.value.shebaoShijiJishu;
-  outsourceSocialSecurityForm.value.yanglaoCompanyJishu = outsourceSocialSecurityForm.value.shebaoShijiJishu;
-  outsourceSocialSecurityForm.value.shiyeCompanyJishu = outsourceSocialSecurityForm.value.shebaoShijiJishu;
-  outsourceSocialSecurityForm.value.yiliaoCompanyJishu = outsourceSocialSecurityForm.value.shebaoShijiJishu;
-  outsourceSocialSecurityForm.value.dabingCompanyJishu = outsourceSocialSecurityForm.value.shebaoShijiJishu;
-  outsourceSocialSecurityForm.value.gongshangJishu = outsourceSocialSecurityForm.value.shebaoShijiJishu;
-  outsourceSocialSecurityForm.value.shengyuJishu = outsourceSocialSecurityForm.value.shebaoShijiJishu;
-
-  outsourceSocialSecurityForm.value.yanglaoPerson = yanglaoPerson.value;
-  outsourceSocialSecurityForm.value.yanglaoCompany = yanglaoCompany.value;
-  outsourceSocialSecurityForm.value.shiyePerson = shiyePerson.value;
-  outsourceSocialSecurityForm.value.shiyeCompany = shiyeCompany.value;
-  outsourceSocialSecurityForm.value.yiliaoPerson = yiliaoPerson.value;
-  outsourceSocialSecurityForm.value.yiliaoCompany = yiliaoCompany.value;
-  outsourceSocialSecurityForm.value.dabingPerson = dabingPerson.value;
-  outsourceSocialSecurityForm.value.dabingCompany = dabingCompany.value;
-  //outsourceSocialSecurityForm.value.yijinPerson = yijinPerson.value;
-  //outsourceSocialSecurityForm.value.yijinCompany = yijinCompany.value;
-  outsourceSocialSecurityForm.value.gongshangCompany = gongshangCompany.value;
-  outsourceSocialSecurityForm.value.shengyuCompany = shengyuCompany.value;
-  outsourceSocialSecurityForm.value.personTotal = personTotal.value;
-  outsourceSocialSecurityForm.value.companyTotal = companyTotal.value;
+  syncShebaoBasesByActual();
+  syncCalculatedAmounts();
 }
 const handleChangeShebaoSign = () => {
-  const p = contractRates.value.find(item => item.shebaoSign === outsourceSocialSecurityForm.value.shebaoSign && item.companyJiao === companyJiaoOption.find(item => item.label === outsourceSocialSecurityForm.value.shebaoCompany)?.value);
-  if (p) {
-    handleChangeShebaoCalc(p);
-  }
+  refreshCalculationBySelection({
+    preserveShebaoActual: true,
+    preserveYijinActual: true,
+    keepCurrentSign: true,
+  });
 }
 const handleChangeYijinStandard = () => {
-   if (outsourceSocialSecurityForm.value.yijinStandard  == '2' && (getOutsourceSalaryDetailList.value.length > 0 || outsourceSocialSecurityForm.value.yijinShijiJishu)) {
-    let jishu = getOutsourceSalaryDetailList.value[0].dixin || 0;
-    outsourceSocialSecurityForm.value.yijinShijiJishu = Number(jishu);
-    handleChangeYijinShijiJishu();
-  } else {
-    outsourceSocialSecurityForm.value.yijinShijiJishu = outsourceSocialSecurityForm.value.yijinZuidiJishu;
-    handleChangeYijinShijiJishu();
-  }
+  refreshCalculationBySelection({
+    preserveShebaoActual: true,
+    preserveYijinActual: false,
+    keepCurrentSign: true,
+  });
 }
 const handleChangeYijinShijiJishu = () => {
-  outsourceSocialSecurityForm.value.yijinJishu = outsourceSocialSecurityForm.value.yijinShijiJishu;
-  outsourceSocialSecurityForm.value.yijinCompanyJishu = outsourceSocialSecurityForm.value.yijinShijiJishu;
-  outsourceSocialSecurityForm.value.yijinPerson = yijinPerson.value;
-  outsourceSocialSecurityForm.value.yijinCompany = yijinCompany.value;
-
-  outsourceSocialSecurityForm.value.personTotal = personTotal.value;
-  outsourceSocialSecurityForm.value.companyTotal = companyTotal.value;
+  syncYijinBasesByActual();
+  syncCalculatedAmounts();
 }
 const handleCompanyNameOption = () => {
   outsourceSocialSecurityForm.value.yijinJiaoCompany = outsourceSocialSecurityForm.value.shebaoCompany;
-  const p = contractRates.value.find(item => item.companyJiao === companyJiaoOption.find(item => item.label === outsourceSocialSecurityForm.value.shebaoCompany)?.value);
-  shebaoSignOption.value = [{ label: p.shebaoSign, value: p.shebaoSign }];
-  if (p) {
-    handleChangeShebaoCalc(p);
-  }
+  refreshCalculationBySelection({
+    preserveShebaoActual: true,
+    preserveYijinActual: true,
+    keepCurrentSign: true,
+  });
 }
 
 const handleSubmit = () => {

@@ -68,7 +68,7 @@
         />
       </a-form-item>
     </a-col>
-    <a-col :span="resumeTypeEnglish == '1' ? 7 : spanTitle">
+    <a-col v-if="showAtSchool" :span="resumeTypeEnglish == '1' ? 7 : spanTitle">
       <a-form-item
         name="atSchool"
         :label="themeLanguage?.atSchool?.label"
@@ -164,6 +164,16 @@
     },
   });
   const spanTitle = 4;
+  const hideAtSchoolDegrees = [
+    '初中',
+    '高中',
+    '职高',
+    '中专',
+    'Junior middle school',
+    'Senior high school',
+    'Special School',
+  ];
+  const showAtSchool = computed(() => !hideAtSchoolDegrees.includes(props.educationInfoData.degree));
   const degreeOptions = ref<SelectProps['options']>(
     degreeEnAndCnArr.map((item) => ({
       label: item.cn,

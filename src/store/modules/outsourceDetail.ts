@@ -258,6 +258,8 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         companyTotalSelf: parseFloat(
           ((item?.companyTotal || 0) - (item.yijinCompany || 0)).toFixed(2),
         ),
+        canbaoMoney: parseFloat(item.canbaoMoney || "0").toFixed(2),
+        buchaMoney: (item.buchaMoney || 0).toFixed(2),
         personTotalSelf: parseFloat(
           ((item?.personTotal || 0) - (item.yijinPerson || 0)).toFixed(2),
         ),
@@ -267,6 +269,7 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           (
             parseFloat((item?.companyTotal || 0).toFixed(2)) +
             parseFloat((item?.personTotal || 0).toFixed(2)) +
+            parseFloat((item.buchaMoney || 0).toFixed(2)) +
             parseFloat(item.serviceMoney != '公式' ? item.serviceMoney?.toString() || '0' : '0')
           ).toString(),
         ).toFixed(2),
@@ -679,7 +682,8 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
           Number(item.companyShebaoKe || 0) + Number(item.companyYijinKe || 0);
         const canBaoMoneyValue = Number(item.canBaoKe || 0);
         const shangbaoValue = Number(item.keShangbao || 0);
-        const personCostValue = Number(item.monthTax || 0) + sheBaoMoneyValue + canBaoMoneyValue + shangbaoValue;
+        const personCostValue =
+          Number(item.monthTax || 0) + sheBaoMoneyValue + canBaoMoneyValue + shangbaoValue;
         const parseRateFromManageGongShi = (val: unknown) => {
           if (typeof val === 'number') {
             if (!Number.isFinite(val)) {
@@ -1624,6 +1628,17 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
         return null;
       }
     },
+    async queryOutsourceSheBaoByPersonMonth(personId?: string, jinXinMonth?: string) {
+      try {
+        const formData = new FormData();
+        formData.append('personId', personId || '');
+        formData.append('jinxinMonth', jinXinMonth || '');
+        const res = await fetchApi.queryOutsourceShebaoByPersonId(formData);
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
     /**
      * 新增外包人员薪资
      */
@@ -1845,6 +1860,25 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
       const res = await fetchApi.queryOutsourceShebaoInfo(formData);
       if (res) {
         this.outsourceSocialSecuritInfoList = res.info.list as OutsourceShebaoInfoItem[];
+      }
+      return res;
+    },
+    async updateOutsourceSheBaoBuchaMoney(
+      id?: string,
+      buchaMoney?: string | number,
+      buchaMoneyCompany?: string | number,
+      buchaMoneyPerson?: string | number,
+      buchaMoneyShouxu?: string | number,
+    ) {
+      const formData = new FormData();
+      formData.append('id', id || '');
+      formData.append('buchaMoney', (buchaMoney || 0).toString());
+      formData.append('buchaMoneyCompany', (buchaMoneyCompany || 0).toString());
+      formData.append('buchaMoneyPerson', (buchaMoneyPerson || 0).toString());
+      formData.append('buchaMoneyShouxu', (buchaMoneyShouxu || 0).toString());
+      const res = await fetchApi.updateOutsourceSheBaoBuchaMoney(formData);
+      if (res?.code == 1) {
+        this.queryOutsourceSheBao();
       }
       return res;
     },
@@ -3382,9 +3416,9 @@ export const useOutsourceDetailStore = defineStore('app-OutsourceDetailStore', {
     },
     /**
      * 新增离职证明路径
-     * @param id 
-     * @param file 
-     * @returns 
+     * @param id
+     * @param file
+     * @returns
      */
     async addResignatioPath(data: any) {
       try {
