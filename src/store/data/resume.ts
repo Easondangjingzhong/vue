@@ -259,7 +259,7 @@ export const degreeEnAndCnArr = [
   {en: 'Master', cn: '硕士'},
   {en: 'Bachelor', cn: '本科'},
   {en: 'Junior College', cn: '大专'},
-  {en: 'Special School', cn: '职高'},
+  {en: 'Secondary Specialized School', cn: '职高'},
   {en: 'Senior high school', cn: '中专'},
   {en: 'Junior middle school', cn: '初中'},
 ];
@@ -269,7 +269,7 @@ export const degreeEnArr = [
   'Master',
   'Bachelor',
   'Junior College',
-  'Special School',
+  'Secondary Specialized School',
   'Senior high school',
   'Junior middle school',
 ];

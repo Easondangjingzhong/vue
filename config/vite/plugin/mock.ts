@@ -6,7 +6,9 @@ import { viteMockServe } from 'vite-plugin-mock';
 
 export function configMockPlugin(isBuild: boolean) {
   return viteMockServe({
-    ignore: /^\_/,
+    // vite-plugin-mock only applies RegExp ignores to basenames,
+    // so use a function to exclude the entire dist subtree reliably.
+    ignore: (filePath) => !(/^_/.test(filePath) || filePath.includes('dist/')),
     mockPath: 'mock',
     localEnabled: !isBuild,
     prodEnabled: isBuild, // 为了演示，线上开启 mock，实际开发请关闭，会影响打包体积

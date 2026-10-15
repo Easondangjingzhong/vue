@@ -6,6 +6,7 @@ enum URL {
   resume_persondetail = '/candidate/rusume-vue-query-persondetail-num.action',
   resume_branList = '/companyBrand/rusume-vue-query-brand-all.action',
   resume_list = '/candidate/rusume-vue-query-resume.action',
+  resume_list_b = '/candidate/rusume-vue-query-resumeB.action',
   resume_sort_name = '/candidate/rusume-vue-insert-sort-name.action',
   query_sort_by_id = '/candidate/rusume-vue-query-sort-byId.action',
   update_sort_by_id = '/candidate/rusume-vue-update-sort-name.action',
@@ -34,196 +35,217 @@ enum URL {
 }
 /**
  * 取消限制指定顾问RecruitId
- * @param phoneNum 
- * @param notLimitRemark 
- * @param recruitId 
- * @param SystemRecruitId 
- * @returns 
+ * @param phoneNum
+ * @param notLimitRemark
+ * @param recruitId
+ * @param SystemRecruitId
+ * @returns
  */
-const canelLimit = (formData: any) =>
-  post<any>({ url: URL.canel_limit, data: formData});
+const canelLimit = (formData: any) => post<any>({ url: URL.canel_limit, data: formData });
 /**
  * 查询顾问RecruitId
- * @param phoneNum 
- * @returns 
+ * @param phoneNum
+ * @returns
  */
 const queryResumeRecruitIdByPhone = (formData: any) =>
-  post<any>({ url: URL.query_resume_recruitId_byPhone, data: formData});
+  post<any>({ url: URL.query_resume_recruitId_byPhone, data: formData });
 /**
  * 取消限制
- * @param  phoneNum 
- * @param  SystemRecruitId 
- * @returns 
+ * @param  phoneNum
+ * @param  SystemRecruitId
+ * @returns
  */
-const canelXianzhi = (formData: any) =>
-  post<any>({ url: URL.canel_xianzhi, data: formData});
-const addNewBlack = (formData: any) =>
-  post<any>({ url: URL.add_new_black, data: formData});
+const canelXianzhi = (formData: any) => post<any>({ url: URL.canel_xianzhi, data: formData });
+const addNewBlack = (formData: any) => post<any>({ url: URL.add_new_black, data: formData });
 
 const queryResumeListPositions = (formData: any) =>
-  post<any>({ url: URL.resume_positionsList_details, data: formData});
+  post<any>({ url: URL.resume_positionsList_details, data: formData });
 /**
  * 查询顾问权限
- * @returns 
+ * @returns
  */
 const queryQueryResumeNewDetails = (formData: any) =>
-  post<any>({ url: URL.query_resumeNew_details, data: formData});
+  post<any>({ url: URL.query_resumeNew_details, data: formData });
 /**
  * 查询顾问权限
- * @returns 
+ * @returns
  */
 const querySystemFunction = (formData: any) =>
-  post<any>({ url: URL.query_system_function, data: formData});
+  post<any>({ url: URL.query_system_function, data: formData });
 /**
  * 查询顾问OFFER记录
- * @returns 
+ * @returns
  */
 const queryRecommendOffer = (formData: any) =>
-  post<any>({ url: URL.query_recommend_resume_offer, data: formData});
+  post<any>({ url: URL.query_recommend_resume_offer, data: formData });
 /**
  * 查询顾问面试记录
- * @returns 
+ * @returns
  */
 const queryRecommendInterview = (formData: any) =>
-  post<any>({ url: URL.query_recommend_resume_interview, data: formData});
+  post<any>({ url: URL.query_recommend_resume_interview, data: formData });
 /**
  * 查询顾问推荐记录
- * @returns 
+ * @returns
  */
 const queryRecommendResumeButton = (formData: any) =>
-  post<any>({ url: URL.query_recommend_resume_record, data: formData});
+  post<any>({ url: URL.query_recommend_resume_record, data: formData });
 /**
  * 查询所有签署公司简称
- * @returns 
+ * @returns
  */
-const queryCompanyCnList = () =>
-  post<any>({ url: URL.resume_companyList_cn});
+const queryCompanyCnList = () => post<any>({ url: URL.resume_companyList_cn });
 /**
  * 查询企业顾问
- * @param formData 
- * @returns 
+ * @param formData
+ * @returns
  */
 const queryEnterpriseConsultant = (formData: any) =>
   post<any>({ url: URL.query_enterprise_consultant, data: formData });
 /**
  * 查询推荐顾问
- * @returns 
+ * @returns
  */
-const queryRecommendCounselor = async (data:any) =>
+const queryRecommendCounselor = async (data: any) =>
   post<any>({ url: URL.query_recommend_counselor, data });
 /**
  * 人才分类查询
- * @returns 
+ * @returns
  */
-const updateResumeSort = async (data:any) =>
-  post<any>({ url: URL.update_sort_by_id, data });
+const updateResumeSort = async (data: any) => post<any>({ url: URL.update_sort_by_id, data });
 /**
  * 人才分类查询
- * @returns 
+ * @returns
  */
-const querySortById = async (data:any) =>
-  post<any>({ url: URL.query_sort_by_id, data });
+const querySortById = async (data: any) => post<any>({ url: URL.query_sort_by_id, data });
 /**
  * 切换我的人才查询人才管理员 查询团队和人
- * @returns 
+ * @returns
  */
 const queryTeamPersonChangeSystemA = async () =>
-  post<any>({ url: URL.resume_teamPersonChangeSystemA});
+  post<any>({ url: URL.resume_teamPersonChangeSystemA });
 /**
  * 切换我的人才查询人才团队Leader 查询团队和人
- * @returns 
+ * @returns
  */
-const queryTeamPersonChangeSystemTs = async (data:any) =>
-  post<any>({ url: URL.resume_teamPersonChangeSystemTs,data});
+const queryTeamPersonChangeSystemTs = async (data: any) =>
+  post<any>({ url: URL.resume_teamPersonChangeSystemTs, data });
 /**
  * 查询左侧主菜单
  * @param data recruitId
- * @returns 
+ * @returns
  */
-const resumeMenu = async (data:any) =>
-  post<any>({ url: URL.resume_menu, data });
+const resumeMenu = async (data: any) => post<any>({ url: URL.resume_menu, data });
 /**
  * 根据recruitId和teamId查询团队的简历数
  * @param data recruitId teamId
- * @returns 
+ * @returns
  */
-const queryTeamData = async (data:any) =>
-  post<any>({ url: URL.resume_teamdetail, data });
+const queryTeamData = async (data: any) => post<any>({ url: URL.resume_teamdetail, data });
 /**
  * 根据recruitId和teamId查询团队中每个人的简历数
  * @param data  recruitId teamId
- * @returns 
+ * @returns
  */
-const queryPersonData = async (data:any) =>
-  post<any>({ url: URL.resume_persondetail, data });
+const queryPersonData = async (data: any) => post<any>({ url: URL.resume_persondetail, data });
 /**
  * 根据品牌类型参数查询
  * @param data 品牌的类型参数
- * @returns 
+ * @returns
  */
-const queryBranList = async (data:any) =>
-  post<any>({ url: URL.resume_branList, data });
+const queryBranList = async (data: any) => post<any>({ url: URL.resume_branList, data });
 /**
  * 根据搜索条件查询简历
  * @param data 搜索条件参数
- * @returns 
+ * @returns
  */
-const queryResumeList = async (data:any) =>
-  post<any>({ url: URL.resume_list, data });
+const queryResumeList = async (data: any) => post<any>({ url: URL.resume_list, data });
+/**
+ * 根据搜索条件查询渠道简历
+ * @param data 搜索条件参数
+ * @returns
+ */
+const queryResumeListB = async (data: any) => post<any>({ url: URL.resume_list_b, data });
 /**
  * 添加人才分类功能
  * @param data 搜索条件参数
- * @returns 
+ * @returns
  */
-const addSortResumeName = async (data:any) =>
-  post<any>({ url: URL.resume_sort_name, data });
+const addSortResumeName = async (data: any) => post<any>({ url: URL.resume_sort_name, data });
 /**
  * 修改一键搜索功能
  * @param data 搜索条件参数
- * @returns 
+ * @returns
  */
-const fetchUpdateSearchResume = async (data:any) =>
+const fetchUpdateSearchResume = async (data: any) =>
   post<any>({ url: URL.update_resume_serch_name, data });
 /**
  * 添加一键搜索功能
  * @param data 搜索条件参数
- * @returns 
+ * @returns
  */
-const fetchAddSearchResume = async (data:any) =>
-  post<any>({ url: URL.resume_serch_name, data });
+const fetchAddSearchResume = async (data: any) => post<any>({ url: URL.resume_serch_name, data });
 /**
  * 根据职位数据类型参数查询
  * @param data industry 行业,jobCategory2 职类,management2 职级
- * @returns 
+ * @returns
  */
-const queryPositionsList = async (data:any) =>
-  post<any>({ url: URL.resume_positionsList, data });
+const queryPositionsList = async (data: any) => post<any>({ url: URL.resume_positionsList, data });
 /**
  * 根据城市商场数据类型参数查询
  * @param data city城市,marketName商场名称搜索,curPage当前页参数
- * @returns 
+ * @returns
  */
-const queryMarkList = async (data:any) =>
-  post<any>({ url: URL.resume_markList, data });
+const queryMarkList = async (data: any) => post<any>({ url: URL.resume_markList, data });
 /**
  * 根据公司数据类型参数查询
  * @param data industry行业,companyName公司
- * @returns 
+ * @returns
  */
-const queryCompanyList = async (data:any) =>
-  post<any>({ url: URL.resume_companyList, data });
+const queryCompanyList = async (data: any) => post<any>({ url: URL.resume_companyList, data });
 /**
  * 根据id查询一键搜索列表
  * @param data id 一键搜索保存的id
- * @returns 
+ * @returns
  */
-const queryResumeSerchData = async (data:any) =>
-  post<any>({ url: URL.resume_serchData, data });
+const queryResumeSerchData = async (data: any) => post<any>({ url: URL.resume_serchData, data });
 /**
  * 团队L我的人才模块 团队 互切个人(数量查询接口)
  * @param data recruitId,viewType T 部门视角 （非Leader 此参数不生效 T也不影响） V 团队L视角  S个人视角
- * @returns 
+ * @returns
  */
-const queryPersonTalentData = async (data:any) =>
+const queryPersonTalentData = async (data: any) =>
   post<any>({ url: URL.resume_personTalentData, data });
-export default { canelLimit,queryResumeRecruitIdByPhone,canelXianzhi,addNewBlack,queryResumeListPositions,queryQueryResumeNewDetails,querySystemFunction,queryRecommendOffer,queryRecommendInterview,queryRecommendResumeButton,queryCompanyCnList,queryEnterpriseConsultant,queryRecommendCounselor,updateResumeSort,querySortById,fetchUpdateSearchResume,queryTeamPersonChangeSystemA,queryTeamPersonChangeSystemTs,queryPersonTalentData,queryResumeSerchData,queryCompanyList,resumeMenu,queryTeamData,queryPersonData,queryBranList,queryResumeList,addSortResumeName,fetchAddSearchResume,queryPositionsList,queryMarkList };
+export default {
+  canelLimit,
+  queryResumeRecruitIdByPhone,
+  canelXianzhi,
+  addNewBlack,
+  queryResumeListPositions,
+  queryQueryResumeNewDetails,
+  querySystemFunction,
+  queryRecommendOffer,
+  queryRecommendInterview,
+  queryRecommendResumeButton,
+  queryCompanyCnList,
+  queryEnterpriseConsultant,
+  queryRecommendCounselor,
+  updateResumeSort,
+  querySortById,
+  fetchUpdateSearchResume,
+  queryTeamPersonChangeSystemA,
+  queryTeamPersonChangeSystemTs,
+  queryPersonTalentData,
+  queryResumeSerchData,
+  queryCompanyList,
+  resumeMenu,
+  queryTeamData,
+  queryPersonData,
+  queryBranList,
+  queryResumeList,
+  queryResumeListB,
+  addSortResumeName,
+  fetchAddSearchResume,
+  queryPositionsList,
+  queryMarkList,
+};

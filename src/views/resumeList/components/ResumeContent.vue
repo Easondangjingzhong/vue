@@ -218,7 +218,7 @@
           >
           <a-tag
             class="tagspan"
-            v-if="showResumeRightOutFlag && !record.recruitId && record.projectFlag == '待保'"
+            v-if="showResumeRightOutFlag && !channelResumeFlag && !record.recruitId && record.projectFlag == '待保'"
             color="red"
             >过保</a-tag
           >
@@ -586,6 +586,7 @@
     serchResumeUpdateData,
     tableLoading,
     teamPersonChangeArr,
+    channelResumeFlag,
   } = storeToRefs(resumeListStore);
   const showResumeRightOutFlag= ref(false);
   const optionsNp = ref([

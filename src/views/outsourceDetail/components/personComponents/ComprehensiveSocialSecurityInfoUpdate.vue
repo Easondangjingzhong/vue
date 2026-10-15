@@ -347,6 +347,7 @@ const iconLoading = ref(false);
 
 // 存储从API获取的计算数据
 const contractRates = ref<any[]>([]);
+const currentContractRate = ref<any | null>(null);
 const emptySignOptions = [{ label: '', value: '' }];
 
 // 计算属性 - 个人养老金额
@@ -526,6 +527,19 @@ const getSalaryBase = () => {
   return toNumber(getOutsourceSalaryDetailList.value?.[0]?.dixin || 0);
 };
 
+const resolveInsuranceBase = (standard, contractBase, actualBase) => {
+  const normalizedContractBase = toNumber(contractBase);
+  if (standard === '2') {
+    return Math.max(getSalaryBase(), normalizedContractBase);
+  }
+  if (standard === '3') {
+    return hasValue(actualBase)
+      ? Math.max(toNumber(actualBase), normalizedContractBase)
+      : normalizedContractBase;
+  }
+  return normalizedContractBase;
+};
+
 const buildSignOptions = (rates) => {
   const signMap = new Map();
   rates.forEach((item) => {
@@ -562,24 +576,62 @@ const syncCalculatedAmounts = () => {
   outsourceSocialSecurityForm.value.companyTotal = companyTotal.value;
 };
 
-const syncShebaoBasesByActual = () => {
-  const shebaoBase = toNumber(outsourceSocialSecurityForm.value.shebaoShijiJishu);
-  outsourceSocialSecurityForm.value.yanglaoJishu = shebaoBase;
-  outsourceSocialSecurityForm.value.shiyeJishu = shebaoBase;
-  outsourceSocialSecurityForm.value.yiliaoJishu = shebaoBase;
-  outsourceSocialSecurityForm.value.yanglaoCompanyJishu = shebaoBase;
-  outsourceSocialSecurityForm.value.shiyeCompanyJishu = shebaoBase;
-  outsourceSocialSecurityForm.value.yiliaoCompanyJishu = shebaoBase;
-  outsourceSocialSecurityForm.value.gongshangJishu = shebaoBase;
-  outsourceSocialSecurityForm.value.shengyuJishu = shebaoBase;
-  outsourceSocialSecurityForm.value.dabingJishu =
-    toNumber(outsourceSocialSecurityForm.value.dabingRate) < 1
-      ? shebaoBase
-      : toNumber(outsourceSocialSecurityForm.value.dabingRate);
-  outsourceSocialSecurityForm.value.dabingCompanyJishu =
-    toNumber(outsourceSocialSecurityForm.value.dabingCompanyRate) < 1
-      ? shebaoBase
-      : toNumber(outsourceSocialSecurityForm.value.dabingCompanyRate);
+const syncShebaoBasesByActual = (rate = currentContractRate.value) => {
+  if (!rate) {
+    return;
+  }
+  const standard = outsourceSocialSecurityForm.value.shebaoStandard;
+  const actualBase = outsourceSocialSecurityForm.value.shebaoShijiJishu;
+  outsourceSocialSecurityForm.value.yanglaoJishu = resolveInsuranceBase(
+    standard,
+    rate.personYanglaoBase,
+    actualBase,
+  );
+  outsourceSocialSecurityForm.value.yanglaoCompanyJishu = resolveInsuranceBase(
+    standard,
+    rate.personYanglaoBase,
+    actualBase,
+  );
+  outsourceSocialSecurityForm.value.shiyeJishu = resolveInsuranceBase(
+    standard,
+    rate.personShiyeBase,
+    actualBase,
+  );
+  outsourceSocialSecurityForm.value.shiyeCompanyJishu = resolveInsuranceBase(
+    standard,
+    rate.personShiyeBase,
+    actualBase,
+  );
+  outsourceSocialSecurityForm.value.yiliaoJishu = resolveInsuranceBase(
+    standard,
+    rate.personYiliaoBase,
+    actualBase,
+  );
+  outsourceSocialSecurityForm.value.yiliaoCompanyJishu = resolveInsuranceBase(
+    standard,
+    rate.personYiliaoBase,
+    actualBase,
+  );
+  outsourceSocialSecurityForm.value.gongshangJishu = resolveInsuranceBase(
+    standard,
+    rate.companyGongshangBase,
+    actualBase,
+  );
+  outsourceSocialSecurityForm.value.shengyuJishu = resolveInsuranceBase(
+    standard,
+    rate.companyShengyuBase,
+    actualBase,
+  );
+  outsourceSocialSecurityForm.value.dabingJishu = resolveInsuranceBase(
+    standard,
+    rate.companyDabingBase,
+    actualBase,
+  );
+  outsourceSocialSecurityForm.value.dabingCompanyJishu = resolveInsuranceBase(
+    standard,
+    rate.companyDabingBase,
+    actualBase,
+  );
 };
 
 const syncYijinBasesByActual = () => {
@@ -603,9 +655,11 @@ const resolveActualBase = (standard, lowestBase, currentBase, preserveCurrent = 
 
 const applyContractRate = (rate, options = { preserveShebaoActual: false, preserveYijinActual: false }) => {
   if (!rate) {
+    currentContractRate.value = null;
     syncCalculatedAmounts();
     return;
   }
+  currentContractRate.value = rate;
 
   outsourceSocialSecurityForm.value.serviceMoney = rate.handingFee;
   outsourceSocialSecurityForm.value.shebaoZuidiJishu = toNumber(rate.shebaoBase);
@@ -647,6 +701,7 @@ const refreshCalculationBySelection = (
 ) => {
   const allRates = Array.isArray(contractRates.value) ? contractRates.value : [];
   if (!allRates.length) {
+    currentContractRate.value = null;
     shebaoSignOption.value = emptySignOptions;
     syncCalculatedAmounts();
     return;
@@ -754,7 +809,7 @@ const handleChangeShebaoCalc = (p) => {
   });
 }
 const handleChangeShebaoShijiJishu = () => {
-  syncShebaoBasesByActual();
+  syncShebaoBasesByActual(currentContractRate.value);
   syncCalculatedAmounts();
 }
 const handleChangeShebaoSign = () => {

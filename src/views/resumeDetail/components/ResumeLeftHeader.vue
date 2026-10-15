@@ -26,12 +26,27 @@
         <span class="resume_span_one">{{ item.index }}</span>
         <span class="resume_span_name">{{ item.realNameEn }}</span>
         <span class="resume_span_name">{{ item.teamName }}</span>
-        <span class="resume_span_two">{{ item.source }}</span>
+        <span class="resume_span_two">{{ item.source === '邮箱' ? (item.emailResumeSource || item.source) : item.source }}</span>
         <span class="resume_span_name"  v-if="!item.resumeId && item.resumeIdEn" :title="`英文: ${item.registTimeTemp}`">{{ item.registTime }}</span>
         <span class="resume_span_name"  v-if="item.resumeId && !item.resumeIdEn" :title="`中文: ${item.registTimeTemp}`">{{ item.registTime }}</span>
         <span class="resume_span_name"  v-if="item.resumeId && item.resumeIdEn" :title="`中文: ${item.registTimeTemp}&#13;英文: ${item.registTimeOtherTemp}`">{{ item.registTime }}</span>
         <span class="resume_span">
-          <a-tag v-if="!item.resumeId" style="cursor: not-allowed">中文</a-tag>
+          <!-- <a-tag
+            v-if="!item.resumeId && item.resumeIdEn && item.addConsultantId != '28'"
+            style="cursor: pointer"
+            @click="handleChangeResumeToAddChinese(item.resumeIdEn, item.addConsultantId)"
+            >中文</a-tag
+          > -->
+          <a-tag
+            v-if="!item.resumeId && item.resumeIdEn && item.addConsultantId != '28'"
+            style="cursor: pointer"
+            >中文</a-tag
+          >
+          <a-tag
+            v-if="!item.resumeId && item.resumeIdEn && item.addConsultantId == '28'"
+            style="cursor: not-allowed"
+            >中文</a-tag
+          >
           <a-tag
             v-if="item.resumeId && resumeTypeEnglish == '1'"
             style="cursor: pointer"
@@ -457,6 +472,7 @@
       resumeIdEn: '',
       orginalPath: '',
       teamName: '',
+      emailResumeSource: '',
       source: '',
       registTime: '',
       addConsultantId: '',
@@ -473,6 +489,7 @@
       resumeIdEn: item.resumeIdEn,
       orginalPath: item.orginalPath,
       teamName: item.teamName || '',
+      emailResumeSource: item.emailResumeSource || '',
       source: item.source || '',
       registTime: item.registTime ? formatToDate(item.registTime) : '',
       registTimeTemp: item.registTime ? formatToDateTime(item.registTime) : '',
@@ -869,6 +886,24 @@ const mappingJiaGouId = ref("")
     });
   };
   const router = useRouter();
+  //跳转到中文简历添加页面根据英文简历ID
+  const handleChangeResumeToAddChinese = (resumeIdEn, addConsultantId) => {
+    Modal.confirm({
+      title: '中文简历',
+      content: '您是想要新增此候选人中文简历吗？系统支持“手动填写”或“中文简历上传”2种方式新增哦，请确认是否继续？',
+      okText: '继续新增',
+      onOk() {
+        const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: '' } =
+          JSON.parse(localStorage.getItem('loginVueUser'));
+        let query = { ...loginVueUser, addChinese: '1', resumeId: resumeIdEn || '', addConsultantId };
+        const href = router.resolve({
+          path: '/resume',
+          query: query,
+        });
+        window.open(href.href, '_blank');
+      },
+    });
+  };
   //跳转到英文简历添加页面根据中文简历ID
   const handleChangeResumeToAddEnglish = (resumeId, addConsultantId) => {
     Modal.confirm({

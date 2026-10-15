@@ -195,6 +195,11 @@
           </div>
           </div>
           <div class="salaryDiv">
+             <div>
+           <a-form-item name="buchaMoneyPerson" label="社保补差" :rules="[{ required: false, message: '请输入社保补差' }]">
+              <a-input v-model:value="outsourceMonthSalaryForm.buchaMoneyPerson" disabled/>
+            </a-form-item>
+          </div>
             <div>
            <a-form-item name="yearTax" label="年度工资" :rules="[{ required: false, message: '请输入年度工资' }]">
               <a-input v-model:value="outsourceMonthSalaryForm.yearTax" disabled/>
@@ -215,6 +220,9 @@
               <a-input v-model:value="outsourceMonthSalaryForm.monthGeshui" disabled/>
             </a-form-item>
           </div>
+          
+        </div>
+        <div class="salaryDiv">
           <div>
            <a-form-item name="shouxuMoney" label="手续费" :rules="[{ required: false, message: '请输入手续费' }]">
               <a-select v-model:value="outsourceMonthSalaryForm.shouxuMoney" placeholder="请输入手续费">
@@ -225,8 +233,6 @@
               </a-select>
             </a-form-item>
           </div>
-        </div>
-        <div class="salaryDiv">
           <div>
             <a-form-item name="gongziCha" label="工资差额" :rules="[{ required: false, message: '请输入实发工资' }]">
                 <a-input v-model:value="outsourceMonthSalaryForm.gongziCha"/>
@@ -237,7 +243,6 @@
                 <a-input v-model:value="outsourceMonthSalaryForm.salaryAfterTax"  disabled/>
               </a-form-item>
           </div>
-          <div>&nbsp;</div>
           <div>&nbsp;</div>
           <div style="text-align: right;" v-if="outsourceMonthSalaryForm.signSalary !== '1'">
              <a-button type="primary" :loading="iconLoading" html-type="submit">
@@ -542,7 +547,7 @@ watch(yearTax, () => {
 })
 //实发工资
 const salaryAfterTax = computed(() => {
-  return (parseFloat(outsourceMonthSalaryForm.value.monthTax || '0') - parseFloat(outsourceMonthSalaryForm.value.monthShebao || '0') - parseFloat(outsourceMonthSalaryForm.value.yijin || '0') - parseFloat(outsourceMonthSalaryForm.value.monthGeshui || '0') - parseFloat(outsourceMonthSalaryForm.value.shouxuMoney || '0') + parseFloat(outsourceMonthSalaryForm.value.gongziCha || '0')).toFixed(2).toString();
+  return (parseFloat(outsourceMonthSalaryForm.value.monthTax || '0') - parseFloat(outsourceMonthSalaryForm.value.monthShebao || '0') - parseFloat(outsourceMonthSalaryForm.value.yijin || '0') - parseFloat(outsourceMonthSalaryForm.value.monthGeshui || '0') - parseFloat(outsourceMonthSalaryForm.value.shouxuMoney || '0') + parseFloat(outsourceMonthSalaryForm.value.gongziCha || '0') - parseFloat(outsourceMonthSalaryForm.value.buchaMoneyPerson || '0')).toFixed(2).toString();
 });
 watch(salaryAfterTax, () => {
   outsourceMonthSalaryForm.value.salaryAfterTax = salaryAfterTax.value;

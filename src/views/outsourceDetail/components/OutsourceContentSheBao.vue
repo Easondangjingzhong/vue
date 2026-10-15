@@ -503,6 +503,7 @@ const handleUpdateOutsourceSheBaoBuchaMoney = async (record: OutsourceSheBaoItem
     companyDiffMoney,
     personDiffMoney,
     monthBuchaMoney: defaultMonthBuchaMoney,
+    includeServiceFee: true,
     serviceFeeMoney: defaultServiceDiffMoney,
     finalBuchaMoney: calcFinalBuchaMoney(
       buchaMonthCount,
@@ -510,6 +511,8 @@ const handleUpdateOutsourceSheBaoBuchaMoney = async (record: OutsourceSheBaoItem
       defaultServiceDiffMoney,
     ),
   });
+  const getAppliedServiceFeeMoney = () =>
+    modalState.includeServiceFee ? toMoneyNumber(modalState.serviceFeeMoney) : 0;
   const syncFromCompanyPerson = () => {
     modalState.monthBuchaMoney = Number(
       (toMoneyNumber(modalState.companyDiffMoney) + toMoneyNumber(modalState.personDiffMoney)).toFixed(2),
@@ -518,7 +521,7 @@ const handleUpdateOutsourceSheBaoBuchaMoney = async (record: OutsourceSheBaoItem
     modalState.finalBuchaMoney = calcFinalBuchaMoney(
       toMoneyNumber(modalState.monthCount),
       toMoneyNumber(modalState.monthBuchaMoney),
-      toMoneyNumber(modalState.serviceFeeMoney),
+      getAppliedServiceFeeMoney(),
     );
   };
   const syncBuchaAmounts = () => {
@@ -526,7 +529,7 @@ const handleUpdateOutsourceSheBaoBuchaMoney = async (record: OutsourceSheBaoItem
     modalState.finalBuchaMoney = calcFinalBuchaMoney(
       toMoneyNumber(modalState.monthCount),
       toMoneyNumber(modalState.monthBuchaMoney),
-      toMoneyNumber(modalState.serviceFeeMoney),
+      getAppliedServiceFeeMoney(),
     );
   };
   Modal.confirm({
@@ -599,11 +602,42 @@ const handleUpdateOutsourceSheBaoBuchaMoney = async (record: OutsourceSheBaoItem
                   {
                     style: `
                       margin-top: 8px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: space-between;
+                      gap: 12px;
                       font-size: 12px;
                       color: #bfbfbf;
                     `,
                   },
-                  `服务费补差金额：${formatMoney(modalState.serviceFeeMoney)}（补差金额 x 6.77%）`,
+                  [
+                    `服务费补差金额：${formatMoney(modalState.serviceFeeMoney)}（补差金额 x 6.77%）`,
+                    h(
+                      'label',
+                      {
+                        style: `
+                          display: inline-flex;
+                          align-items: center;
+                          gap: 6px;
+                          color: #595959;
+                          cursor: pointer;
+                          flex: 0 0 auto;
+                        `,
+                      },
+                      [
+                        '计入服务费补差金额',
+                        h('input', {
+                          type: 'checkbox',
+                          checked: modalState.includeServiceFee,
+                          onChange: (e: Event) => {
+                            const input = e.target as HTMLInputElement;
+                            modalState.includeServiceFee = input.checked;
+                            syncBuchaAmounts();
+                          },
+                        }),
+                      ],
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -750,7 +784,9 @@ const handleUpdateOutsourceSheBaoBuchaMoney = async (record: OutsourceSheBaoItem
                           color: #bfbfbf;
                         `,
                       },
-                      `（${formatMoney(modalState.monthBuchaMoney)} + ${formatMoney(modalState.serviceFeeMoney)}）x ${modalState.monthCount} 月`,
+                      modalState.includeServiceFee
+                        ? `（${formatMoney(modalState.monthBuchaMoney)} + ${formatMoney(modalState.serviceFeeMoney)}）x ${modalState.monthCount} 月`
+                        : `（${formatMoney(modalState.monthBuchaMoney)}）x ${modalState.monthCount} 月`,
                     ),
                   ],
                 ),
@@ -778,7 +814,7 @@ const handleUpdateOutsourceSheBaoBuchaMoney = async (record: OutsourceSheBaoItem
         modalState.finalBuchaMoney,
         Number((toMoneyNumber(modalState.companyDiffMoney) * submitMonthCount).toFixed(2)),
         Number((toMoneyNumber(modalState.personDiffMoney) * submitMonthCount).toFixed(2)),
-        Number((toMoneyNumber(modalState.serviceFeeMoney) * submitMonthCount).toFixed(2)),
+        Number((getAppliedServiceFeeMoney() * submitMonthCount).toFixed(2)),
       );
       if (res?.code == 1) {
         onSearch();

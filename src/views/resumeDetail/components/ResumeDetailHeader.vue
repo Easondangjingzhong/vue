@@ -152,8 +152,8 @@
       <a-tag color="#4bb632" :title="resumeProgressDetailTitle" class="resume_tag"
         >{{ resumeProgressDetailScore }}%</a-tag
       >
-      <a-tag class="resume_tag_source" v-if="resumeData.talentSource" color="#00bcd4" title="来源">{{ resumeData.talentSource }}</a-tag>
-      <a-tag class="resume_tag_source" style="cursor: pointer;" v-if="resumeData.orginalPath" color="#00bcd4" title="原始简历" @click="handleResumeOrginalPath(resumeData.orginalPath)">原简</a-tag>
+      <a-tag class="resume_tag_source" v-if="resumeData.talentSource" color="#00bcd4" title="来源">{{ resumeData.talentSource === '邮箱' ? (resumeData.emailResumeSource || resumeData.talentSource) : resumeData.talentSource }}</a-tag>
+      <a-tag class="resume_tag_source" style="cursor: pointer;" v-if="resumeData.orginalPath" color="#00bcd4" title="原始简历" @click="handleResumeOrginalPath(resumeData.orginalPath)">原始简历</a-tag>
       <a-tag v-if="props.showResumeRightOutFlag" color="#ccc" class="resume_tag_phone"
         ><PhoneFilled :style="{ fontSize: '8px' }" :rotate="90" />
         <a-popover placement="topLeft" trigger="click" @openChange="handlePhoneOpenChange">
@@ -543,19 +543,30 @@
   if (gradeLabel.value) {
     industryLabelDetail.value += `-${gradeLabel.value}`;
   }
-  const handleRecommendCandidatePosition = () => {
+  const validateEnglishLanguageAbility = () => {
     if (!props.resumeData.resumeLanguageList || props.resumeData.resumeLanguageList.length == 0) {
       message.error("请先添加语言能力");
-      return;
+      return false;
     }
     let temp = true;
     props.resumeData.resumeLanguageList.forEach(item => {
-      if (item.languageName == "英语") {
+      if (
+        item.languageName == "英语" &&
+        [item.bujia, item.duxieLiuli, item.tinshuoLiuli].some(
+          (value) => value !== null && value !== undefined && `${value}`.trim() !== '',
+        )
+      ) {
         temp = false;
       }
     });
     if (temp) {
-      message.error("语言能力英语为必填");
+      message.error("语言能力中英语的英语不佳、读写流利、听说流利至少填写一项");
+      return false;
+    }
+    return true;
+  };
+  const handleRecommendCandidatePosition = () => {
+    if (!validateEnglishLanguageAbility()) {
       return;
     }
     if (
@@ -723,6 +734,9 @@
       message.error('简历完整度需要大于90');
       return;
     }
+    if (!validateEnglishLanguageAbility()) {
+      return;
+    }
     if (!validateWorkExperienceStandardPosition()) {
       return;
     }
@@ -747,6 +761,9 @@
       message.error('简历完整度需要大于90');
       return;
     }
+    if (!validateEnglishLanguageAbility()) {
+      return;
+    }
     if (!validateWorkExperienceStandardPosition()) {
       return;
     }
@@ -769,6 +786,9 @@
   const handleAddCheckedTongbu = () => {
     if (resumeProgressDetailScore.value < 90) {
       message.error('简历完整度需要大于90');
+      return;
+    }
+    if (!validateEnglishLanguageAbility()) {
       return;
     }
     if (!validateWorkExperienceStandardPosition()) {
@@ -825,23 +845,27 @@
   }
   const screenWidth = Math.round(window.screen.width * window.devicePixelRatio);
   const handleTemplateTypeeManage = () => {
+    if (!templatTypeeManage.value) {
+      message.error('请选择模板');
+      return;
+    }
     const systemUserTemp = systemUsereManage.value ? "1" : "2";
     location.href = `http://localhost:8080/WTSM/DownloadResumeServlet?resumeId=${resumeId.value}&resumeType=C&systemUser=${systemUserTemp}&template=${templatTypeeManage.value}&resumeName=1&realEnName=&screenWidth=${screenWidth}`
     handleCloseResumeUploadeManage();
   }
   //根据登录人的ID判断是否是NR38不能推荐
-  const isNR38 = ref(false);
-  // const queryNrPositionId = () => {
-  //   resumeDetailStore.queryNrPositionId().then(res => {
-  //     if(res.code === 1){
-  //       const resd = res.info[0];
-  //       if (!resd || (resd.currentPositionId != 38 && resd.currentPositionId != 'NR/寻访员')) {
-  //         isNR38.value = false;
-  //       }
-  //     }
-  //   })
-  // }
-  //queryNrPositionId();
+  const isNR38 = ref(true);
+  const queryNrPositionId = () => {
+    resumeDetailStore.queryNrPositionId().then(res => {
+      if(res.code === 1){
+        const resd = res.info[0];
+        if (!resd || (resd.currentPositionId != 38 && resd.currentPositionId != 'NR/寻访员')) {
+          isNR38.value = false;
+        }
+      }
+    })
+  }
+  queryNrPositionId();
   const limitFlagRecommend = ref(true);
   const queryLimitFlagRecommend = () =>{
     if ((props.resumeData.limitFlag == 'OFFER' && props.resumeData.resumeStatus != '保证期中') ||

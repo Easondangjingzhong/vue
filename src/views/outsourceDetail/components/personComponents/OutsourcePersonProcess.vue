@@ -106,8 +106,22 @@
     </template>
     
     <template v-if="column.key === 'sheBao'">
-      <a-tag v-if="record.currentStatus !== '1' && record.socialFlag === null" color="orange" style="cursor: pointer;" @click="handleComprehensiveSocialSecurityUpdate(record)">社保信息</a-tag>
-      <a-tag v-else-if="record.socialFlag !== null" color="green" style="cursor: pointer;" @click="handleOutsourcePersonDetail(record)">社保信息</a-tag>
+      <a-tag
+        v-if="record.currentStatus !== '1' && record.contractCompany === '签署完成' && record.socialFlag === null"
+        color="orange"
+        style="cursor: pointer;"
+        @click="handleComprehensiveSocialSecurityUpdate(record)"
+      >
+        社保信息
+      </a-tag>
+      <a-tag
+        v-else-if="record.contractCompany === '签署完成' && record.socialFlag !== null"
+        color="green"
+        style="cursor: pointer;"
+        @click="handleOutsourcePersonDetail(record)"
+      >
+        社保信息
+      </a-tag>
       <a-tag v-else color="default" style="cursor: not-allowed;">社保信息</a-tag>
     </template>
     
@@ -275,14 +289,13 @@ const columns: TableColumnsType<any> = [
     width: 28,
     ellipsis: true,
   },
-  {
+   {
     title: '',
     dataIndex: 'ruZhi',
     key: 'ruZhi',
     width: 25,
     ellipsis: true,
   },
-  
    {
     title: '',
     dataIndex: 'heTong',
@@ -304,6 +317,7 @@ const columns: TableColumnsType<any> = [
     width: 25,
     ellipsis: true,
   },
+ 
    {
     title: '',
     dataIndex: 'xuQian',

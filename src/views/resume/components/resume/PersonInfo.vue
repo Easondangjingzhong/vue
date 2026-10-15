@@ -286,11 +286,11 @@
   };
   const fileList = ref([]);
   const cropperModal = ref<any>();
-  const photoPath = ref(props.personInfoData.photoPath);
-  const photoPathTemp = ref(props.personInfoData.photoPath);
+  const photoPath = ref(props.personInfoData?.photoPath || '');
+  const photoPathTemp = ref(props.personInfoData?.photoPath || '');
   const handleChangephoto = () => {
     const target = Object.assign({}, coverOptions, {
-      img: photoPathTemp,
+      img: photoPathTemp.value,
     });
     cropperModal.value.edit(target);
   };
@@ -338,7 +338,7 @@
   const optionsCity = ref<SelectProps['options']>([]);
   //判断国籍
   const handleHuji = () => {
-    if (props.personInfoData.huji) {
+    if (props.personInfoData?.huji) {
       const huji = props.personInfoData.huji.includes('-')
         ? props.personInfoData.huji.split('-')[1]
         : props.personInfoData.huji;
@@ -403,7 +403,7 @@
       return (b?.cityName || '').length - (a?.cityName || '').length;
     });
   };
-  if (props.personInfoData.currentCity) {
+  if (props.personInfoData?.currentCity) {
     const currentCityValue = normalizeCityValue(props.personInfoData.currentCity);
     let tempCity = '';
     const exactMatched = province.value.find((item) => {

@@ -583,6 +583,9 @@ export interface OutsourceMonthSalaryItem {
   kouxinBingjiaHours?: string; //扣薪病假工时
   otherDaixinHours?: string; //其他带薪工时
   utHours?: string; //UT工时
+  buchaMoneyPerson?: string; //社保补差个人
+  buchaMoneyCompany?: string; //社保补差公司
+  buchaMoneyShouxu?: string; //社保补差手续费
 }
 //用工成本
 export interface CostItem {
@@ -697,6 +700,7 @@ export interface ComprehensiveCostItem {
   sign?: string; //业绩核对标识 null 未核 1 已核
   jishuiBufa?: string; //计税不发
   companyGeshui?: string; //公司个税
+  buchaMoneyCompany?: string; //社保补差公司
 }
 /**
  * 外包福利

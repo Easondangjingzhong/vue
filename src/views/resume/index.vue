@@ -22,7 +22,7 @@
   import { storeToRefs } from 'pinia';
   import '/@/styles/resume.less';
   const resumeStore = useResumeStoreWithOut();
-  const { resumeFormState,resumeId,closeBtn} = storeToRefs(resumeStore);
+  const { resumeFormState,resumeTypeEnglish,closeBtn} = storeToRefs(resumeStore);
   const plagiarusnStore = usePlagiarusnStoreWithOut();
   const { resumeInfoFlag } = storeToRefs(plagiarusnStore);
   const cityStore = useCityStoreWithOut();
@@ -48,7 +48,21 @@
     //window.open(`http://work.wotui.com:8889/WTSM/system/consultant-query-resume.html?resumeId=${resumeId.value}&resumeType=C`);
   }
   const route = useRoute();
+  if (route.query?.addChinese == '1') {
+    resumeTypeEnglish.value = '2';
+    setTimeout(() =>{
+      resumeStore.queryResumeById(route.query?.resumeId,route.query?.addConsultantId).then(res => {
+      if (res.code == 1) {
+        plagiarusnStore.resumeInfoShow(true);
+        plagiarusnStore.plagiarusnRseultShow(0);
+        plagiarusnStore.plagiarusnInfoFlagShow(false);
+        resumeInfoFlag.value = true
+      }
+    });
+    },1000)
+  }
   if (route.query?.addEnglish == '1') {
+    resumeTypeEnglish.value = '1';
     setTimeout(() =>{
       resumeStore.queryResumeById(route.query?.resumeId,route.query?.addConsultantId).then(res => {
       if (res.code == 1) {

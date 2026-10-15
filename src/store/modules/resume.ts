@@ -429,7 +429,7 @@ export const useResumeStore = defineStore('app-Resume', {
      * @description: 上传原始简历进行解析
      */
     async queryResumeById(resumeId, addConsultantId) {
-      this.resumeTypeEnglish = '1';
+      //this.resumeTypeEnglish = '1';
       // @ts-ignore
       let formData = new FormData();
       formData.append('resumeId', resumeId); // resumeId

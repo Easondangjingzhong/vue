@@ -70,37 +70,25 @@
     }
   })
   const selfWholeFlagTemp = ref(false);
-  if (!props.resumeData.selfEvaluation) {
+  const hasSelfEvaluationContent = (value: string | undefined) => {
+    if (!value) {
+      return false;
+    }
+    const plainText = value.replace(/<[^>]+>/g, '').replace(/&nbsp;/gi, ' ').trim();
+    return !!plainText;
+  };
+  const syncSelfWholeFlag = (value: string | undefined) => {
+    const isMissing = !hasSelfEvaluationContent(value);
     if (!resumeDetailStore.resumeSnapshotPreviewMode) {
       resumeDetailStore.$patch({
-        selfWholeFlag: true
+        selfWholeFlag: isMissing
       })
     }
-    selfWholeFlagTemp.value = true;
-  } else {
-    if (!resumeDetailStore.resumeSnapshotPreviewMode) {
-      resumeDetailStore.$patch({
-        selfWholeFlag: false
-      })
-    }
-    selfWholeFlagTemp.value = false;
-  }
-  watch(() => props.resumeData,(newProps) => {
-    if (!newProps.selfEvaluation) {
-    if (!resumeDetailStore.resumeSnapshotPreviewMode) {
-      resumeDetailStore.$patch({
-        selfWholeFlag: true
-      })
-    }
-    selfWholeFlagTemp.value = true;
-  } else {
-    if (!resumeDetailStore.resumeSnapshotPreviewMode) {
-      resumeDetailStore.$patch({
-        selfWholeFlag: false
-      })
-    }
-    selfWholeFlagTemp.value = false;
-  }
+    selfWholeFlagTemp.value = isMissing;
+  };
+  syncSelfWholeFlag(props.resumeData.selfEvaluation);
+  watch(() => props.resumeData.selfEvaluation, (newValue) => {
+    syncSelfWholeFlag(newValue);
   })
   const formState = ref({
     selfEvaluation: '',

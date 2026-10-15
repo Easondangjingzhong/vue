@@ -401,7 +401,7 @@ watch(getOutsourceFormulaList, (newVal) => {
     outsourceAttendForm.value.quanqinHours = newVal[0].totalWorkHours;
     outsourceAttendForm.value.isYugu = newVal[0].hoursType === '预估工时' ? '是' : '否';
     if (outsourceAttendForm.value.isYugu == '是') {
-      outsourceAttendForm.value.lastMonthYuHours = outsourceAttendForm.value.lastMonthYuHours || newVal[0].totalWorkHours;
+      outsourceAttendForm.value.lastMonthYuHours = ((outsourceAttendForm.value.lastMonthYuHours || outsourceAttendForm.value.lastMonthYuHours == "0" )? outsourceAttendForm.value.lastMonthYuHours  : newVal[0].totalWorkHours);
       outsourceAttendForm.value.currentMonthYuHours = outsourceAttendForm.value.currentMonthYuHours || newVal[0].totalWorkHours;
     }
     //根据公司公式设置账单月 业绩月 发薪月

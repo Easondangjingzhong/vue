@@ -99,10 +99,9 @@
             :label-col="{ span: 2 }"
             :wrapper-col="{ span: 22 }"
             style="line-height: 3;"
-            @change="onChangeLanguageAbility"
             :rules="[{ required: false, message: '请输入语言能力' }]"
           >
-            <a-checkbox-group v-model:value="languageAbility0">
+            <a-checkbox-group v-model:value="languageAbility0" @change="onChangeEnglishAbility">
               <a-checkbox value="1">{{ themeLanguage?.English?.language1 }}</a-checkbox>
               <a-checkbox value="2">{{ themeLanguage?.English?.language2 }}</a-checkbox>
               <a-checkbox value="CET-4">CET-4</a-checkbox>
@@ -361,13 +360,20 @@ import { storeToRefs } from 'pinia';
   let scoreIELTS = ref(null);
   let scoreTOEFL = ref(null);
   let languages = [];
-  const languageAbility0 = ref(langArr.length > 0 ? langArr : []);
+  const sanitizeEnglishAbility = (values = []) => {
+    if (values.includes('3')) {
+      return values.filter((item) => item != '1' && item != '2');
+    }
+    return values;
+  };
+  const languageAbility0 = ref(langArr.length > 0 ? sanitizeEnglishAbility(langArr) : []);
   const languageAbility1 = ref(langArr1.length > 0 ? langArr1 : []);
   const languageAbility2 = ref(langArr2.length > 0 ? langArr2 : []);
   const languageAbility3 = ref(langArr3.length > 0 ? langArr3 : []);
   const languageAbility4 = ref(langArr4.length > 0 ? langArr4 : []);
   const languageAbility5 = ref(langArr5.length > 0 ? langArr5 : []);
   const languageAbility6 = ref(langArr6.length > 0 ? langArr6 : []);
+  const previousEnglishAbility = ref([...(languageAbility0.value || [])]);
   const handleLanguages = () => {
   langArr = [];
   langArr1 = [];
@@ -380,6 +386,7 @@ import { storeToRefs } from 'pinia';
   scoreTOEFL = ref(null);
   languages = [];
   languageAbility0.value = [];
+  previousEnglishAbility.value = [];
   languageAbility1.value = [];
   languageAbility2.value = [];
   languageAbility3.value = [];
@@ -473,7 +480,8 @@ import { storeToRefs } from 'pinia';
         if (element.bujia) {
           langArr.push(element.bujia);
         }
-        languageAbility0.value = langArr;
+        languageAbility0.value = sanitizeEnglishAbility(langArr);
+        previousEnglishAbility.value = [...languageAbility0.value];
       } else {
         if (element.languageName == '法语') {
           if (element.languageLevel) {
@@ -591,6 +599,32 @@ import { storeToRefs } from 'pinia';
   }
   let visibleIELTS = ref(false);
   let visibleTOEFL = ref(false);
+  const onChangeEnglishAbility = (checkedValues) => {
+    const nextValues = sanitizeEnglishAbility([...(checkedValues || [])]);
+    const changedValue =
+      [...new Set([...(previousEnglishAbility.value || []), ...nextValues])].find(
+        (item) =>
+          previousEnglishAbility.value.includes(item) !== nextValues.includes(item),
+      ) || '';
+    languageAbility0.value = nextValues;
+    previousEnglishAbility.value = [...nextValues];
+    if (!nextValues.includes('IELTS')) {
+      visibleIELTS.value = false;
+    } else if (changedValue == 'IELTS') {
+      visibleIELTS.value = true;
+    }
+    if (!nextValues.includes('TOEFL')) {
+      visibleTOEFL.value = false;
+    } else if (changedValue == 'TOEFL') {
+      visibleTOEFL.value = true;
+    }
+    onChangeLanguageAbility({
+      target: {
+        type: 'checkbox',
+        value: changedValue || 'english-group',
+      },
+    });
+  };
 
   const onChangeLanguageAbility = (e) => {
     let languageAbility = [];
@@ -620,65 +654,61 @@ import { storeToRefs } from 'pinia';
       // @ts-ignore
       if (languageAbility00.includes('3')) {
         language.bujia = '3';
-        // @ts-ignore
-        languageAbility0.value = ['3'];
-        language.languageLevel = '';
-        language.tinshuoLiuli = '';
-        language.duxieLiuli = '';
       } else {
         language.bujia = '';
-        let languageLevel = '';
-        let IELTSLevel = '';
-        let TOEFLLevel = '';
-        if (e.target.type == 'checkbox') {
-          if (e.target.value == 'IELTS' && languageAbility00.includes('IELTS')) {
-            visibleIELTS.value = true;
-          } else {
-            visibleIELTS.value = false;
-          }
+      }
+      let languageLevel = '';
+      let IELTSLevel = '';
+      let TOEFLLevel = '';
+      const eventTarget = e?.target || {};
+      if (eventTarget.type == 'checkbox') {
+        if (eventTarget.value == 'IELTS' && languageAbility00.includes('IELTS')) {
+          visibleIELTS.value = true;
+        } else {
+          visibleIELTS.value = false;
         }
-        if (scoreIELTS.value && languageAbility00.includes('IELTS')) {
-          IELTSLevel = 'IELTS_' + scoreIELTS.value;
+      }
+      if (scoreIELTS.value && languageAbility00.includes('IELTS')) {
+        IELTSLevel = 'IELTS_' + scoreIELTS.value;
+      }
+      if (eventTarget.type == 'checkbox') {
+        if (eventTarget.value == 'TOEFL' && languageAbility00.includes('TOEFL')) {
+          visibleTOEFL.value = true;
+        } else {
+          visibleTOEFL.value = false;
         }
-        if (e.target.type == 'checkbox') {
-          if (e.target.value == 'TOEFL' && languageAbility00.includes('TOEFL')) {
-            visibleTOEFL.value = true;
-          } else {
-            visibleTOEFL.value = false;
-          }
+      }
+      if (scoreTOEFL.value && languageAbility00.includes('TOEFL')) {
+        TOEFLLevel = 'TOEFL_' + scoreTOEFL.value;
+      }
+      languageLevel = languageAbility00
+        .filter(
+          (item) =>
+            item != '1' && item != '2' && item != '3' && item != 'IELTS' && item != 'TOEFL',
+        )
+        .join(',');
+      if (languageLevel) {
+        if (IELTSLevel) {
+          languageLevel = languageLevel + ',' + IELTSLevel;
         }
-        if (scoreTOEFL.value && languageAbility00.includes('TOEFL')) {
-          TOEFLLevel = 'TOEFL_' + scoreTOEFL.value;
+        if (TOEFLLevel) {
+          languageLevel = languageLevel + ',' + TOEFLLevel;
         }
-        languageLevel = languageAbility00
-          .filter(
-            (item) =>
-              item != '1' && item != '2' && item != '3' && item != 'IELTS' && item != 'TOEFL',
-          )
-          .join(',');
+      } else {
+        if (IELTSLevel) {
+          languageLevel = IELTSLevel;
+        }
         if (languageLevel) {
-          if (IELTSLevel) {
-            languageLevel = languageLevel + ',' + IELTSLevel;
-          }
           if (TOEFLLevel) {
             languageLevel = languageLevel + ',' + TOEFLLevel;
           }
         } else {
-          if (IELTSLevel) {
-            languageLevel = IELTSLevel;
-          }
-          if (languageLevel) {
-            if (TOEFLLevel) {
-              languageLevel = languageLevel + ',' + TOEFLLevel;
-            }
-          } else {
-            if (TOEFLLevel) {
-              languageLevel = TOEFLLevel;
-            }
+          if (TOEFLLevel) {
+            languageLevel = TOEFLLevel;
           }
         }
-        language.languageLevel = languageLevel;
       }
+      language.languageLevel = languageLevel;
       if (
         language.bujia ||
         language.duxieLiuli ||

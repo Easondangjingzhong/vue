@@ -2,6 +2,7 @@ import { post } from '/@/utils/http';
 
 enum URL {
   resume_format = '/candidate/query-resumeSDK.action',
+  //resume_format = 'resume-parse/parse-upload-file.action',
   resume_add = '/resume/create-resume-by-consultant-vue.action',
   resume_file = '/resume/upload-resume-vue-orginalResume.action',
   resume_photo = '/resume/upload-resume-head-vue.action',

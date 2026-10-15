@@ -80,13 +80,19 @@
   resumeList.fetchInfo();
   const { resumeMenu,teamPersonChangeArr,sortResumeUpdateData,sortResumeUpdate,formState } = storeToRefs(resumeList);
   const loginVueUser: {loginName: "", loginId: "", loginTocken: "",loginType: "",loginOutFlag: ''} = JSON.parse(localStorage.getItem("loginVueUser"));
+  const RESUME_RECORD_MENU_KEY = 'resume_record_link';
+  const RESUME_RECORD_URL = 'http://work.wotui.com:8889/WTSM//channelAuth/query-channel-dashboard.html';
+  const RESUME_RECORD_WINDOW_NAME = 'resume_record_dashboard_window';
+  let resumeRecordWindowRef: Window | null = null;
   const state = reactive({
     selectedKeys: ['2'],
     openKeys: ['01','51','6','7'],
   });
+  const lastSelectedKeys = ref([...state.selectedKeys]);
   if ((loginVueUser.loginOutFlag == '1' || loginVueUser.loginOutFlag == '3' || loginVueUser.loginOutFlag == '4') ) {
     state.selectedKeys = ['5'];
     state.openKeys = ['01','51'];
+    lastSelectedKeys.value = [...state.selectedKeys];
   }
   let items = ref([{}]);
   const optionsLoginNameTeam = ref<SelectProps['options']>([]);
@@ -103,6 +109,18 @@
   const handleResumeSvgClick = (e) => {
     e.stopPropagation();
     openSortResume.value = true;
+  }
+  const openResumeRecordWindow = () => {
+    if (resumeRecordWindowRef && !resumeRecordWindowRef.closed) {
+      resumeRecordWindowRef.focus();
+      return;
+    }
+    resumeRecordWindowRef = window.open(RESUME_RECORD_URL, RESUME_RECORD_WINDOW_NAME);
+    resumeRecordWindowRef?.focus();
+  }
+  const handleResumeRecordClick = (e) => {
+    e.stopPropagation();
+    openResumeRecordWindow();
   }
   
   const resumeMenuChange = () => {
@@ -245,6 +263,7 @@
               (subItem.key == "teamData" ? h('span', { class: 'resume-menu-title-content-team',onClick: (e) => {
                   e.stopPropagation();
                   state.selectedKeys = [subItem.key]
+                  lastSelectedKeys.value = [...state.selectedKeys];
                   console.log(state.selectedKeys)
                   resumeList.fetchTeamData('teamLevel1_9999',"1");
                 }, }, subItem.title) : h('span', { class: 'resume-menu-title-content' }, subItem.title)),
@@ -258,6 +277,7 @@
                 (subItem.key == "teamData" ? h('span', { class: 'resume-menu-title-content-team',onClick: (e) => {
                   e.stopPropagation();
                   state.selectedKeys = [tempItem.key]
+                  lastSelectedKeys.value = [...state.selectedKeys];
                   resumeList.fetchTeamData(tempItem.key,"1");
                 }, }, tempItem.title) : h('span', { class: 'resume-menu-title-content' }, tempItem.title)),
                   h('span', { class: 'resume-menu-title-content-num' }, tempItem.label),
@@ -279,6 +299,22 @@
           });
         }
       });
+      if (loginVueUser.loginType == 'A') {
+        //@ts-ignore
+        resumeMenuTemp.push({
+          key: RESUME_RECORD_MENU_KEY,
+          label: h(
+            'div',
+            {
+              class: 'resume-menu-title-one',
+              onClick: handleResumeRecordClick,
+            },
+            '渠道记录',
+          ),
+          title: '渠道记录',
+          type: 'item',
+        });
+      }
       items.value = resumeMenuTemp;
   }
   watch(
@@ -339,6 +375,13 @@
   //修改人才分类结束
   // 展开/收起状态
   const handleSelect = (key: object) => {
+    //@ts-ignore
+    if (key.key == RESUME_RECORD_MENU_KEY) {
+      openResumeRecordWindow();
+      state.selectedKeys = [...lastSelectedKeys.value];
+      resumeMenuChange();
+      return;
+    }
     if (!(key.key == '1' || key.key == '2')) {
         resumeList.$patch({
           isTwoYearFlagStatus: false,
@@ -354,6 +397,7 @@
       }
    //@ts-ignore
     state.selectedKeys = [key.key];
+    lastSelectedKeys.value = [...state.selectedKeys];
     console.log(state.selectedKeys)
     //@ts-ignore
     resumeList.fetchTeamData(key.key);
@@ -391,6 +435,7 @@
     resumeList.resumeLoginNameChange(teamSelectPerson.value[0]+"-"+realNameEn,viewType).then(() => {
       message.success('操作成功');
       state.selectedKeys = ["5"]
+      lastSelectedKeys.value = [...state.selectedKeys];
       resumeList.fetchTeamData("5");
       handleResumeLoginNameClose();
     });

@@ -1222,6 +1222,7 @@ export const useResumeDetailStore = defineStore('app-Resume', {
      */
     async addCandidateRecommendRepeat(data) {
       const formData = new FormData();
+      this.mappingId = data.cId;
       formData.append('resumeId', this.resumeId);
       formData.append('cId', data.cId);
       formData.append('rid', data.rid);

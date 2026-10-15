@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { store } from '/@/store';
 import fetchApi from '/@/api/resumeList';
-import { formatToDateMinute,formatToDate } from '/@/utils/dateUtil';
+import { formatToDateMinute, formatToDate } from '/@/utils/dateUtil';
 import { SearchResumeList, Item } from '/@/api/resumeList/model';
 import { stringifyToFormData } from '/@/utils/formatDataUntils';
 interface PaginationItem {
@@ -33,6 +33,7 @@ interface ResumeListState {
   sortResumeUpdateData: {}; //人才分类修改状态
   tableLoading: boolean; //简历查询状态
   searchResumeType: string; //搜索查询内容 1 我的推荐  2 我的面试  3 我的OFFER
+  channelResumeFlag: boolean; //是否渠道简历查询
   searchWorkExp: string; //搜索查询内容 1 展示工作经历  2 不展示工作经历
   recommendCounselorArr: []; //查询推荐顾问
   enterpriseConsultantArr: []; //查询企业顾问
@@ -42,7 +43,7 @@ interface ResumeListState {
 const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginOutFlag: '' } = JSON.parse(
   localStorage.getItem('loginVueUser') || '{}',
 );
-export const useResumeListStore = defineStore('app-Resume-List',{
+export const useResumeListStore = defineStore('app-Resume-List', {
   state: (): ResumeListState => ({
     //用户菜单
     resumeMenu: [],
@@ -67,6 +68,7 @@ export const useResumeListStore = defineStore('app-Resume-List',{
     expandedRowKeys: [''],
     systemType: '',
     searchResumeType: '',
+    channelResumeFlag: false,
     searchWorkExp: '1',
     loginNameChangeRecruitId: '',
     loginNameChangeRecruitName: '',
@@ -96,7 +98,12 @@ export const useResumeListStore = defineStore('app-Resume-List',{
       let itemsTemp = [];
       let myDataChildren = [];
       this.systemType = info.systemType;
-      if (info.allResumeName && (loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4') ) {
+      if (
+        info.allResumeName &&
+        loginVueUser.loginOutFlag != '1' &&
+        loginVueUser.loginOutFlag != '3' &&
+        loginVueUser.loginOutFlag != '4'
+      ) {
         let item = {} as Item;
         item.key = '1';
         item.label = `${info.allResumeNameJingShu}/${info.allResumeNameQuanShu}`;
@@ -105,7 +112,12 @@ export const useResumeListStore = defineStore('app-Resume-List',{
         //@ts-ignore
         myDataChildren.push(item);
       }
-      if (info.gongResumeName && (loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4') ) {
+      if (
+        info.gongResumeName &&
+        loginVueUser.loginOutFlag != '1' &&
+        loginVueUser.loginOutFlag != '3' &&
+        loginVueUser.loginOutFlag != '4'
+      ) {
         let item = {} as Item;
         item.key = '2';
         item.label = info.gongResumeShu;
@@ -114,7 +126,26 @@ export const useResumeListStore = defineStore('app-Resume-List',{
         //@ts-ignore
         myDataChildren.push(item);
       }
-      if (info.gangAoResumeName && (loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4') ) {
+      if (
+        loginVueUser.loginOutFlag != '1' &&
+        loginVueUser.loginOutFlag != '3' &&
+        loginVueUser.loginOutFlag != '4'
+      ) {
+        let item = {} as Item;
+        item.key = '2b';
+        //@ts-ignore
+        item.label = info.qudaoResumeShu || '534';
+        item.title = '渠道简历';
+        item.level = 2;
+        //@ts-ignore
+        myDataChildren.push(item);
+      }
+      if (
+        info.gangAoResumeName &&
+        loginVueUser.loginOutFlag != '1' &&
+        loginVueUser.loginOutFlag != '3' &&
+        loginVueUser.loginOutFlag != '4'
+      ) {
         let item = {} as Item;
         item.key = '3';
         item.label = info.gangAoResumeShu;
@@ -123,7 +154,7 @@ export const useResumeListStore = defineStore('app-Resume-List',{
         //@ts-ignore
         myDataChildren.push(item);
       }
-    
+
       let teamDataChildren = [];
       let teamDataNum = 0;
       if (info.teamList && info.teamList.length > 0) {
@@ -138,7 +169,12 @@ export const useResumeListStore = defineStore('app-Resume-List',{
           teamDataChildren.push(teamItem);
         });
       }
-      if (info.teamList && info.teamList.length > 0 && (loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4')) {
+      if (
+        info.teamList &&
+        info.teamList.length > 0 &&
+        loginVueUser.loginOutFlag != '3' &&
+        loginVueUser.loginOutFlag != '4'
+      ) {
         let item = {} as Item;
         item.key = 'teamData';
         item.label = teamDataNum + '';
@@ -148,7 +184,12 @@ export const useResumeListStore = defineStore('app-Resume-List',{
         //@ts-ignore
         myDataChildren.push(item);
       }
-       if (info.blackResume && (loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4') ) {
+      if (
+        info.blackResume &&
+        loginVueUser.loginOutFlag != '1' &&
+        loginVueUser.loginOutFlag != '3' &&
+        loginVueUser.loginOutFlag != '4'
+      ) {
         let item = {} as Item;
         item.key = '4';
         item.label = info.blackShu || 0;
@@ -157,16 +198,21 @@ export const useResumeListStore = defineStore('app-Resume-List',{
         //@ts-ignore
         myDataChildren.push(item);
       }
-      if (info.teamList && info.teamList.length > 0 && (loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4')) {
-      //@ts-ignore
-      itemsTemp.push({
-        type: 'divider',
-        title: '人才数据',
-        label: '',
-        key: '01',
-        level: 1,
-        children: myDataChildren,
-      });
+      if (
+        info.teamList &&
+        info.teamList.length > 0 &&
+        loginVueUser.loginOutFlag != '3' &&
+        loginVueUser.loginOutFlag != '4'
+      ) {
+        //@ts-ignore
+        itemsTemp.push({
+          type: 'divider',
+          title: '人才数据',
+          label: '',
+          key: '01',
+          level: 1,
+          children: myDataChildren,
+        });
       }
       //@ts-ignore
       itemsTemp.push({ type: 'divider' });
@@ -181,13 +227,23 @@ export const useResumeListStore = defineStore('app-Resume-List',{
         //@ts-ignore
         itemsTemp.push({ type: 'divider' });
       }
-      if (info.sortResumeName && (loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4') ) {
+      if (
+        info.sortResumeName &&
+        loginVueUser.loginOutFlag != '1' &&
+        loginVueUser.loginOutFlag != '3' &&
+        loginVueUser.loginOutFlag != '4'
+      ) {
         //@ts-ignore
         itemsTemp.push({ title: '人才分类', label: '', key: '6', level: 1 });
         //@ts-ignore
         itemsTemp.push({ type: 'divider' });
       }
-      if (info.serchResumeName && (loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4') ) {
+      if (
+        info.serchResumeName &&
+        loginVueUser.loginOutFlag != '1' &&
+        loginVueUser.loginOutFlag != '3' &&
+        loginVueUser.loginOutFlag != '4'
+      ) {
         let serchResumeListChildren = [];
         if (info.serchResumeList && info.serchResumeList.length > 0) {
           this.serchResumeListNum = info.serchResumeList.length;
@@ -224,32 +280,36 @@ export const useResumeListStore = defineStore('app-Resume-List',{
       if (res) {
         // save token
         this.setInfo(res.info);
-        if ((loginVueUser.loginOutFlag == '1' || loginVueUser.loginOutFlag == '3' || loginVueUser.loginOutFlag == '4') ) {
+        if (
+          loginVueUser.loginOutFlag == '1' ||
+          loginVueUser.loginOutFlag == '3' ||
+          loginVueUser.loginOutFlag == '4'
+        ) {
           this.fetchTeamData('5');
           this.resumeMenu.forEach((item) => {
-          if (item.key === '01') {
-            item.children?.forEach((temp) => {
-              if (temp.key == 'teamData') {
-                temp.children?.forEach((subItem) => {
-                  this.fetchTeamData(subItem.key,"3");
-                });
-              }
-            });
-          }
-        });
+            if (item.key === '01') {
+              item.children?.forEach((temp) => {
+                if (temp.key == 'teamData') {
+                  temp.children?.forEach((subItem) => {
+                    this.fetchTeamData(subItem.key, '3');
+                  });
+                }
+              });
+            }
+          });
         } else {
           this.fetchTeamData('51');
-           this.resumeMenu.forEach((item) => {
-          if (item.key === '01') {
-            item.children?.forEach((temp) => {
-              if (temp.key == 'teamData') {
-                temp.children?.forEach((subItem) => {
-                  this.fetchTeamData(subItem.key);
-                });
-              }
-            });
-          }
-        });
+          this.resumeMenu.forEach((item) => {
+            if (item.key === '01') {
+              item.children?.forEach((temp) => {
+                if (temp.key == 'teamData') {
+                  temp.children?.forEach((subItem) => {
+                    this.fetchTeamData(subItem.key);
+                  });
+                }
+              });
+            }
+          });
         }
         this.queryTeamPersonChange();
       }
@@ -408,6 +468,7 @@ export const useResumeListStore = defineStore('app-Resume-List',{
      */
     async fetchTeamData(param: string, type = '') {
       console.log(param);
+      this.channelResumeFlag = param == '2b';
       if (param == '52') {
         this.searchResumeType = '1';
       } else if (param == '53') {
@@ -421,12 +482,12 @@ export const useResumeListStore = defineStore('app-Resume-List',{
       this.pagination = { ...this.pagination, current: 1 };
       if (type != '3') {
         this.formState = {
-        ...this.formState,
-        sortId: '',
-        leftType: '',
-        recruitId: loginVueUser.loginId,
-        leftRecruitId: '',
-        leftTeamId: '',
+          ...this.formState,
+          sortId: '',
+          leftType: '',
+          recruitId: loginVueUser.loginId,
+          leftRecruitId: '',
+          leftTeamId: '',
         };
       }
       if (param.includes('teamLevel1')) {
@@ -595,8 +656,13 @@ export const useResumeListStore = defineStore('app-Resume-List',{
         //@ts-ignore
         this.queryResumeList(this.formState);
       }
+      if (param == '2b') {
+        this.formState = { ...this.formState, leftType: '2' };
+        //@ts-ignore
+        this.queryResumeList(this.formState);
+      }
       if (param == '4') {
-        this.formState = { ...this.formState, leftType: '9',isBlack: '1' };
+        this.formState = { ...this.formState, leftType: '9', isBlack: '1' };
         //@ts-ignore
         this.queryResumeList(this.formState);
       }
@@ -604,20 +670,28 @@ export const useResumeListStore = defineStore('app-Resume-List',{
         this.formState = {
           ...this.formState,
           leftType: param,
-          recruitId: this.loginNameChangeRecruitId ? this.loginNameChangeRecruitId : loginVueUser.loginId,
-          leftRecruitId: this.loginNameChangeRecruitId ? this.loginNameChangeRecruitId : loginVueUser.loginId,
+          recruitId: this.loginNameChangeRecruitId
+            ? this.loginNameChangeRecruitId
+            : loginVueUser.loginId,
+          leftRecruitId: this.loginNameChangeRecruitId
+            ? this.loginNameChangeRecruitId
+            : loginVueUser.loginId,
         };
-         //@ts-ignore
+        //@ts-ignore
         this.queryResumeList(this.formState);
-        if ((loginVueUser.loginOutFlag == '1' || loginVueUser.loginOutFlag == '3' || loginVueUser.loginOutFlag == '4')  && this.resumeLoginNameChangeFlag) {
-            let formData = new FormData();
-            formData.append('recruitId', loginVueUser.loginId);
-            //formData.append('viewType', this.systemType);
-            formData.append('viewType', 'S');
-            const res = await fetchApi.queryPersonTalentData(formData);
-            this.queryMyPersonData(res, '51');
+        if (
+          (loginVueUser.loginOutFlag == '1' ||
+            loginVueUser.loginOutFlag == '3' ||
+            loginVueUser.loginOutFlag == '4') &&
+          this.resumeLoginNameChangeFlag
+        ) {
+          let formData = new FormData();
+          formData.append('recruitId', loginVueUser.loginId);
+          //formData.append('viewType', this.systemType);
+          formData.append('viewType', 'S');
+          const res = await fetchApi.queryPersonTalentData(formData);
+          this.queryMyPersonData(res, '51');
         }
-       
       }
       if (param == '51') {
         let formData = new FormData();
@@ -703,7 +777,12 @@ export const useResumeListStore = defineStore('app-Resume-List',{
           //@ts-ignore
           mytalentResumeNameChildren.push(item);
         }
-        if (info.interviewResumeName && (loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4') ) {
+        if (
+          info.interviewResumeName &&
+          loginVueUser.loginOutFlag != '1' &&
+          loginVueUser.loginOutFlag != '3' &&
+          loginVueUser.loginOutFlag != '4'
+        ) {
           let item = {} as Item;
           item.key = '53';
           item.label = info.interviewResumeShu;
@@ -712,7 +791,12 @@ export const useResumeListStore = defineStore('app-Resume-List',{
           //@ts-ignore
           mytalentResumeNameChildren.push(item);
         }
-        if (info.offerResumeName && (loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4') ) {
+        if (
+          info.offerResumeName &&
+          loginVueUser.loginOutFlag != '1' &&
+          loginVueUser.loginOutFlag != '3' &&
+          loginVueUser.loginOutFlag != '4'
+        ) {
           let item = {} as Item;
           item.key = '54';
           item.label = `${info.offerLiuchengResumeShu}/${info.offerEndResumeShu}`;
@@ -722,7 +806,14 @@ export const useResumeListStore = defineStore('app-Resume-List',{
           mytalentResumeNameChildren.push(item);
         }
         let myPersonSortResume = [];
-        if (info.sortResumeName && info.sortResumeList && info.sortResumeList.length > 0 && (loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4') ) {
+        if (
+          info.sortResumeName &&
+          info.sortResumeList &&
+          info.sortResumeList.length > 0 &&
+          loginVueUser.loginOutFlag != '1' &&
+          loginVueUser.loginOutFlag != '3' &&
+          loginVueUser.loginOutFlag != '4'
+        ) {
           info.sortResumeList.forEach((item) => {
             let subItem = {} as Item;
             subItem.key = `sortResume-${item.sortId}`;
@@ -741,7 +832,12 @@ export const useResumeListStore = defineStore('app-Resume-List',{
               ? this.loginNameChangeRecruitName
               : item.label;
           }
-          if (item.key == '6' && (loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4') ) {
+          if (
+            item.key == '6' &&
+            loginVueUser.loginOutFlag != '1' &&
+            loginVueUser.loginOutFlag != '3' &&
+            loginVueUser.loginOutFlag != '4'
+          ) {
             item.children = myPersonSortResume;
           }
         });
@@ -777,21 +873,21 @@ export const useResumeListStore = defineStore('app-Resume-List',{
         this.positionsList = res.info.postList;
       }
     },
-     handleSearchResumeType(searchResumeType) {
+    handleSearchResumeType(searchResumeType) {
       this.searchResumeType = searchResumeType;
     },
-     /**
-         * 查询职位排除门店销售和门店支持
-         */
-        async queryResumeListPositions(jobCategory='店铺') {
-          let formData = new FormData();
-          formData.append('industry', '');
-          formData.append('jobCategory2', '');
-          formData.append('management2', '');
-          formData.append('jobCategory', jobCategory);
-          const res = await fetchApi.queryResumeListPositions(formData);
-          return res;
-        },
+    /**
+     * 查询职位排除门店销售和门店支持
+     */
+    async queryResumeListPositions(jobCategory = '店铺') {
+      let formData = new FormData();
+      formData.append('industry', '');
+      formData.append('jobCategory2', '');
+      formData.append('management2', '');
+      formData.append('jobCategory', jobCategory);
+      const res = await fetchApi.queryResumeListPositions(formData);
+      return res;
+    },
     /**
      * 根据城市商场数据类型参数查询
      * @param param 城市商场
@@ -855,7 +951,10 @@ export const useResumeListStore = defineStore('app-Resume-List',{
         pageSize: this.pagination.pageSize || 15,
       };
       this.tableLoading = true;
-      const res = await fetchApi.queryResumeList(this.paramSearchResumeListToformData(param));
+      const requestData = this.paramSearchResumeListToformData(param);
+      const res = this.channelResumeFlag
+        ? await fetchApi.queryResumeListB(requestData)
+        : await fetchApi.queryResumeList(requestData);
       if (res.info) {
         this.tableLoading = false;
         let info = res.info;
@@ -874,12 +973,16 @@ export const useResumeListStore = defineStore('app-Resume-List',{
           tempItem.gender = item.gender == 'F' ? '女' : '男';
           tempItem.age = item.age;
           tempItem.currentCity = item.currentCity;
-          tempItem.positionName = item.positionName?.replace(/^\s+|\s+$/g, '').replace(/^\/+|\/+$/g, '');
+          tempItem.positionName = item.positionName
+            ?.replace(/^\s+|\s+$/g, '')
+            .replace(/^\/+|\/+$/g, '');
           tempItem.customerServiceName = item.customerServiceName || '公共库';
           tempItem.registTimeStr = formatToDateMinute(item.registTimeStr);
           tempItem.registTimeDetails = formatToDate(item.registTimeStr);
-          tempItem.lastUpdateTimeStr = item.lastContactTime ? formatToDateMinute(item.lastContactTime) : "";
-          tempItem.lastUpdateTime = item.lastContactTime ? formatToDate(item.lastContactTime) : "";
+          tempItem.lastUpdateTimeStr = item.lastContactTime
+            ? formatToDateMinute(item.lastContactTime)
+            : '';
+          tempItem.lastUpdateTime = item.lastContactTime ? formatToDate(item.lastContactTime) : '';
           tempItem.checkFlag = item.checkFlag || ''; //待核 最新 过期
           tempItem.fristFlag = item.fristFlag || ''; //首增
           tempItem.commonFlag = item.commonFlag || ''; //私有
@@ -889,7 +992,13 @@ export const useResumeListStore = defineStore('app-Resume-List',{
           tempItem.teamId = item.teamId;
           tempItem.options = item.options;
           tempItem.recruitId = item.recruitId;
-          tempItem.leftType = param.leftType ||  ((loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4')  ? '2' : '5'); //参数
+          tempItem.leftType =
+            param.leftType ||
+            (loginVueUser.loginOutFlag != '1' &&
+            loginVueUser.loginOutFlag != '3' &&
+            loginVueUser.loginOutFlag != '4'
+              ? '2'
+              : '5'); //参数
           tempItem.isBlack = item.isBlack; //黑名单 1是 其他 否
           tempItem.blackRemark = item.blackRemark; //黑名单 1是 其他 否
           tempItem.projectFlag = item.projectFlag;
@@ -941,7 +1050,9 @@ export const useResumeListStore = defineStore('app-Resume-List',{
           tempItem.works = item.works;
           tempItem.callLastTime = item.callLastTime;
           tempItem.notConnectFlag = item.notConnectFlag;
-          tempItem.notConnectTime = item.notConnectTime ? `未接时间${formatToDateMinute(item.notConnectTime)}`: "";
+          tempItem.notConnectTime = item.notConnectTime
+            ? `未接时间${formatToDateMinute(item.notConnectTime)}`
+            : '';
           tempList.push(tempItem);
           this.expandedRowKeys.push(item.id);
         });
@@ -1017,8 +1128,23 @@ export const useResumeListStore = defineStore('app-Resume-List',{
       formData.append('maxAge', param.maxAge || '');
       formData.append('leftTeamId', param.leftTeamId || '');
       formData.append('leftRecruitId', param.leftRecruitId || '');
-      formData.append('leftType', param.leftType || ((loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4') ? '2' : '5'));
-      formData.append('isWai', ((loginVueUser.loginOutFlag != '1' && loginVueUser.loginOutFlag != '3' && loginVueUser.loginOutFlag != '4') ? '' : '1'));
+      formData.append(
+        'leftType',
+        param.leftType ||
+          (loginVueUser.loginOutFlag != '1' &&
+          loginVueUser.loginOutFlag != '3' &&
+          loginVueUser.loginOutFlag != '4'
+            ? '2'
+            : '5'),
+      );
+      formData.append(
+        'isWai',
+        loginVueUser.loginOutFlag != '1' &&
+          loginVueUser.loginOutFlag != '3' &&
+          loginVueUser.loginOutFlag != '4'
+          ? ''
+          : '1',
+      );
       formData.append('isWorkExp', this.searchWorkExp);
       formData.append('sortId', param.sortId || '');
       formData.append('viewType', param.viewType || 'T');
@@ -1132,8 +1258,9 @@ export const useResumeListStore = defineStore('app-Resume-List',{
       params = {
         ...params,
         SystemRecruitId: this.loginNameChangeRecruitId || loginVueUser.loginId,
-        recommendRecruitId:
-          params.recommendRecruitId ? params.recommendRecruitId.join(",") : this.loginNameChangeRecruitId || loginVueUser.loginId,
+        recommendRecruitId: params.recommendRecruitId
+          ? params.recommendRecruitId.join(',')
+          : this.loginNameChangeRecruitId || loginVueUser.loginId,
         pageNumber: params.pageNumber || '1',
       };
       let temp = stringifyToFormData(params);
@@ -1188,7 +1315,7 @@ export const useResumeListStore = defineStore('app-Resume-List',{
       const res = await fetchApi.queryQueryResumeNewDetails(formData);
       return res;
     },
-     /**
+    /**
      * 根据手机号加入黑名单
      * @returns
      */
@@ -1196,7 +1323,7 @@ export const useResumeListStore = defineStore('app-Resume-List',{
       let formData = new FormData();
       formData.append('phoneNum', data.phone);
       formData.append('isBlack', data.isBlcak);
-      formData.append('blackRemark', data.blackRemark || "");
+      formData.append('blackRemark', data.blackRemark || '');
       const res = await fetchApi.addNewBlack(formData);
       return res;
     },
@@ -1224,10 +1351,10 @@ export const useResumeListStore = defineStore('app-Resume-List',{
     },
     /**
      * 取消限制指定顾问RecruitId
-      * @param phoneNum 
-      * @param notLimitRemark 
-      * @param recruitId 
-      * @param SystemRecruitId 
+     * @param phoneNum
+     * @param notLimitRemark
+     * @param recruitId
+     * @param SystemRecruitId
      * @returns
      */
     async canelLimit(data) {

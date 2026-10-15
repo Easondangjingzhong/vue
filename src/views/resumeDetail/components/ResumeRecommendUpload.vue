@@ -497,7 +497,7 @@
       简历准确无误，直接推荐
     </a-button>
     <a-button
-      v-if="(resumeShowBtnFlag || resumeShowBtnUpdateFlag) && props.repeatFlag == 2"
+      v-if="(resumeShowBtnFlag || resumeShowBtnUpdateFlag) && (props.repeatFlag == 2 || props.repeatFlag == 20)"
       ghost
       class="btn-open-bottom"
       size="large"
@@ -517,7 +517,7 @@
       简历准确无误，发起申诉
     </a-button>
     <a-button
-      v-if="(resumeShowBtnFlag || resumeShowBtnUpdateFlag) && !repeatRecommendFlag"
+      v-if="(resumeShowBtnFlag || resumeShowBtnUpdateFlag) && !repeatRecommendFlag && props.repeatFlag !== 20"
       ghost
       class="btn-open-bottom"
       size="large"

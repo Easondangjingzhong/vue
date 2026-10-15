@@ -2054,7 +2054,42 @@ const newJoinerPersonalInformationForm = ref({
 } as NewJoinerPersonalInformationFormWithPhoto);
 const headPhotoDataUrl = ref<string>('');
 const generatedPdfFile = ref<File | null>(null);
+let headPhotoLoadToken = 0;
+const syncHeadPhotoDataUrl = async (src?: string) => {
+  const currentToken = ++headPhotoLoadToken;
+  if (!src) {
+    headPhotoDataUrl.value = '';
+    return '';
+  }
+  if (src.startsWith('data:') || src.startsWith('/')) {
+    if (currentToken === headPhotoLoadToken && newJoinerPersonalInformationForm.value.headPhoto === src) {
+      headPhotoDataUrl.value = src;
+    }
+    return src;
+  }
+  try {
+    const resp = await fetch(src, { mode: 'cors' });
+    const blob = await resp.blob();
+    const r = new FileReader();
+    const dataUrl = await new Promise<string>((resolve) => {
+      r.onloadend = () => resolve(r.result as string);
+      r.readAsDataURL(blob);
+    });
+    if (currentToken === headPhotoLoadToken && newJoinerPersonalInformationForm.value.headPhoto === src) {
+      headPhotoDataUrl.value = dataUrl;
+    }
+    return dataUrl;
+  } catch (e) {
+    if (currentToken === headPhotoLoadToken && newJoinerPersonalInformationForm.value.headPhoto === src) {
+      headPhotoDataUrl.value = '';
+    }
+    console.warn('Failed to load image', e);
+    return '';
+  }
+};
 watch(newJoinerPersonalInformationFormTemp, (newVal) => {
+  headPhotoLoadToken += 1;
+  headPhotoDataUrl.value = '';
   outsourceDetailStore.queryOutsourceSalaryByPersonId(newVal.id?.toString()).then(() => {
     if (newVal) {
     newJoinerPersonalInformationForm.value.id = newVal.id;
@@ -2100,6 +2135,7 @@ watch(newJoinerPersonalInformationFormTemp, (newVal) => {
     newJoinerPersonalInformationForm.value.idPhotoZheng = newVal.idPhotoZheng;
     newJoinerPersonalInformationForm.value.idPhotoFan = newVal.idPhotoFan;
     (newJoinerPersonalInformationForm.value as any).headPhoto = (newVal as any).headPhoto || '';
+    syncHeadPhotoDataUrl((newVal as any).headPhoto || '');
     newJoinerPersonalInformationForm.value.documentAddress = newVal.documentAddress;
     newJoinerPersonalInformationForm.value.livingAddress = newVal.livingAddress;
     newJoinerPersonalInformationForm.value.offerOutsourceWorks = newVal.offerOutsourceWorks;
@@ -2286,23 +2322,8 @@ const generatePDFText = async() => {
     const fontData = btoa(parts.join(''));
 
     // 2. Prepare Image
-    if (newJoinerPersonalInformationForm.value.headPhoto && !headPhotoDataUrl.value) {
-       const src = newJoinerPersonalInformationForm.value.headPhoto;
-       if (src.startsWith('data:') || src.startsWith('/')) {
-          headPhotoDataUrl.value = src; // Local or data URI
-       } else {
-          try {
-             const resp = await fetch(src, { mode: 'cors' });
-             const blob = await resp.blob();
-             const r = new FileReader();
-             headPhotoDataUrl.value = await new Promise<string>((resolve) => {
-                r.onloadend = () => resolve(r.result as string);
-                r.readAsDataURL(blob);
-             });
-          } catch (e) {
-             console.warn('Failed to load image', e);
-          }
-       }
+    if (newJoinerPersonalInformationForm.value.headPhoto) {
+       await syncHeadPhotoDataUrl(newJoinerPersonalInformationForm.value.headPhoto);
     }
 
     // 3. Create PDF

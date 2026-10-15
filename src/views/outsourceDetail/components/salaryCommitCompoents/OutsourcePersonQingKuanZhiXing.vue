@@ -277,7 +277,7 @@
         <a-row :gutter="24">
           <a-col :span="12">
       <a-form-item label="销方">
-        <a-input v-model:value="invoiceFenForm.invoiceCompany" disabled placeholder="请输入销方" />
+        <a-select v-model:value="invoiceFenForm.invoiceCompany" placeholder="请选择销方" :options="invoiceCompanyOptions" />
       </a-form-item>
         </a-col>
         <a-col :span="12">
@@ -424,6 +424,11 @@ const handleDownload = (excelPath?: string) => {
     : excelPath;
   window.open(src, '_blank');
 };
+const invoiceCompanyOptions = ref([
+  { value: '北京博瑞', label: '北京博瑞' },
+  { value: '天津博瑞', label: '天津博瑞' },
+]);
+
 const invoiceTypeOptions = ref([
   { value: '专票', label: '专票' },
   { value: '普票', label: '普票' },

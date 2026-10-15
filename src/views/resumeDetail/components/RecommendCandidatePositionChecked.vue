@@ -201,8 +201,8 @@
               </a-col>
             </a-row>
           </div>
-          <div class="resume_row_div" v-if="repeatFlag == 2">
-            <a-row :gutter="24" class="resume_row" v-if="repeatFlag == 2" style="margin-top: 10px">
+          <div class="resume_row_div" v-if="repeatFlag == 2 || repeatFlag == 20">
+            <a-row :gutter="24" class="resume_row" v-if="repeatFlag == 2 || repeatFlag == 20" style="margin-top: 10px">
               <a-col :span="24" class="resume_col">
                 <h4 class="resume_h4">
                   推荐查重:
@@ -279,7 +279,7 @@
                 </a-table>
               </a-col>
             </a-row>
-            <a-row :gutter="24" class="resume_row" style='overflow-y: auto;height: 295px;overflow-x: hidden;margin-top: 10px' v-if="repeatFlag == 2">
+            <a-row :gutter="24" class="resume_row" style='overflow-y: auto;height: 295px;overflow-x: hidden;margin-top: 10px' v-if="repeatFlag == 2 || repeatFlag == 20">
               <a-col :span="24">
                 <h4 class="resume_h4"> 申诉理由 </h4>
               </a-col>
@@ -660,6 +660,7 @@ const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: ''
   const conflictRemarkShow = ref('');
   const templateType = ref('');
   const screenWidth = Math.round(window.screen.width * window.devicePixelRatio);
+  const recommendPersonTemp20 = ref({});
   watch(
     () => recommendPerson.value,
     () => {
@@ -678,6 +679,18 @@ const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: ''
       resumeDetailStore.queryCandidatePositionRequest(recommendPerson.value?.id).then((res) => {
         if (res.code == 1) {
           if (res.info) {
+            recommendPersonTemp20.value = {
+              id: res.info?.id,
+              brand: res.info?.brand,
+              bId: res.info?.bId,
+              mId: res.info?.mId,
+              city: res.info?.city,
+              workPlace: res.info?.workPlace,
+              jobTitle: res.info?.jobTitle,
+              positionsId: res.info?.positionsId,
+              counselor: res.info?.counselor,
+              companyName: res.info?.companyName,
+              recruitId: res.info?.recruitId,}
             template.value = res.info.template == '0' ? '优态' : '我推';
             isExcelTemp.value = res.info.isExcel;
             excelPathTemp.value = res.info.excelPath;
@@ -1023,11 +1036,17 @@ const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: ''
     }
     let appealRemark = '';
     let appealType = '重复推荐';
-    if (repeatFlag.value != 22) {
+    if (repeatFlag.value != 22 && repeatFlag.value != 20) {
       appealRemark =
         recommendConfirmReason.value == '5'
           ? recommendConfirmReasonOther.value
           : recommendConfirmReasonObjDetailsTemp.value[recommendConfirmReason.value];
+    } else if (repeatFlag.value == 20) {
+      appealRemark =
+        recommendConfirmReason.value == '5'
+          ? recommendConfirmReasonOther.value
+          : recommendConfirmReasonObjDetailsTemp.value[recommendConfirmReason.value];
+      appealType = '重复申诉';
     } else {
       appealRemark = conflictRemarkShow.value;
       appealType = '客户限制';
@@ -1058,6 +1077,22 @@ const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: ''
       file: isVideo.value ? videoFile.value[0] : '',
       file2: (isExcelTemp.value == '1') ? excelFile.value[0] : '',
     };
+    if (repeatFlag.value == 20) {
+        formData = {
+          ...formData,
+          id: recommendPersonTemp20.value?.id,
+      brand: recommendPersonTemp20.value?.brand,
+      bId: recommendPersonTemp20.value?.bId,
+      mId: recommendPersonTemp20.value?.mId,
+      city: recommendPersonTemp20.value?.city,
+      workPlace: recommendPersonTemp20.value?.workPlace,
+      jobTitle: recommendPersonTemp20.value?.jobTitle,
+      positionsId: recommendPersonTemp20.value?.positionsId,
+      counselor: recommendPersonTemp20.value?.counselor,
+      companyName: recommendPersonTemp20.value?.companyName,
+      recruitId: recommendPersonTemp20.value?.recruitId,
+        }
+    }
     isloading.value = true;
     spinning.value = true;
     resumeDetailStore.addCandidateRecommendAppeal(formData).then((res) => {
@@ -1389,6 +1424,21 @@ const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginType: ''
         message.error("已经被其他顾问推荐");
         isloading.value = false;
         spinning.value = false;
+
+         repeatFlag.value = 20;
+          conflictId.value = res.info.conflictId;
+          dataSourceRecommend.value = [
+            {
+              city: res.info.city,
+              brand: res.info.brand,
+              position: res.info.position,
+              recommendCounselor: res.info.recommendCounselor,
+              recommendTime: formatToDateMinute(res.info.recommendTime),
+              counselor: res.info?.counselor || '',
+              recommendStatus: res.info?.recommendStatus || '',
+              endTime: res.info.endTime ? formatToDateMinute(res.info.endTime) : '',
+            },
+          ];
       } else {
         message.error(res.info);
         isloading.value = false;

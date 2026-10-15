@@ -24,7 +24,7 @@ export const companyJiaoOption = [
     value: '6',
   },  
    {
-    label: '南京分公司',
+    label: '南京博瑞',
     value: '7',
   },  
 ]
@@ -54,8 +54,8 @@ export const shebaoCompanyOption = [
     value: '天津博瑞',
   },
   {
-    label: '南京分公司',
-    value: '南京分公司',
+    label: '南京博瑞',
+    value: '南京博瑞',
   },
 ]
 export const cycleFormulaOption = [
