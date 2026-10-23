@@ -32,6 +32,7 @@ enum URL {
   canel_xianzhi = '/candidate/resume-vue-canel-xianzhi.action',
   query_resume_recruitId_byPhone = '/candidate/resume-vue-query-resume-recruitId-byPhone.action',
   canel_limit = '/candidate/resume-vue-canel-limit.action',
+  query_channel_auth_msg = '/candidate/resume-vue-query-channelAuth-msg.action',
 }
 /**
  * 取消限制指定顾问RecruitId
@@ -57,6 +58,13 @@ const queryResumeRecruitIdByPhone = (formData: any) =>
  */
 const canelXianzhi = (formData: any) => post<any>({ url: URL.canel_xianzhi, data: formData });
 const addNewBlack = (formData: any) => post<any>({ url: URL.add_new_black, data: formData });
+/**
+ * 查询渠道权限信息
+ * @param SystemRecruitId 系统招聘人id
+ * @returns
+ */
+const queryChannelAuthMsg = (formData: any) =>
+  post<any>({ url: URL.query_channel_auth_msg, data: formData });
 
 const queryResumeListPositions = (formData: any) =>
   post<any>({ url: URL.resume_positionsList_details, data: formData });
@@ -221,6 +229,7 @@ export default {
   queryResumeRecruitIdByPhone,
   canelXianzhi,
   addNewBlack,
+  queryChannelAuthMsg,
   queryResumeListPositions,
   queryQueryResumeNewDetails,
   querySystemFunction,

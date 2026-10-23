@@ -464,7 +464,9 @@
             :label="themeLanguage?.marketName?.label"
             name="marketName"
             style="padding-left: 21px"
-            :rules="[{ required: true, message: themeLanguage?.marketName?.message }]"
+            :rules="[
+              { required: formState.companyType != '海外', message: themeLanguage?.marketName?.message },
+            ]"
           >
             <a-select
               optionFilterProp="label"
@@ -554,7 +556,10 @@
             name="workFloor"
             style="padding-left: 21px"
             :rules="[
-              { required: formState.isRetreat != '1', message: themeLanguage?.workFloor?.message },
+              {
+                required: formState.isRetreat != '1' && formState.companyType != '海外',
+                message: themeLanguage?.workFloor?.message,
+              },
             ]"
           >
             <a-select
@@ -798,14 +803,17 @@
       !props.resumeData.category ||
       !props.resumeData.companyName ||
       (props.resumeData.category == '店铺' &&
-        (!props.resumeData.marketName ||
+        ((props.resumeData.companyType != '海外' && !props.resumeData.marketName) ||
           !(props.resumeData.isRetreat == 0 || props.resumeData.isRetreat == 1))) ||
       !(props.resumeData.isNewtest == 0 || props.resumeData.isNewtest == 1) ||
       !props.resumeData.positionName ||
       !props.resumeData.workDuty ||
       !props.resumeData.cityName ||
       ((props.resumeData.category == '店铺' || props.indexNum < 1) &&
-        ((!props.resumeData.workFloor && props.resumeData.isRetreat == 0 ) || !props.resumeData.brandName)) ||
+        ((props.resumeData.companyType != '海外' &&
+          !props.resumeData.workFloor &&
+          props.resumeData.isRetreat == 0) ||
+          !props.resumeData.brandName)) ||
       props.resumeData.brandName == 'OFFICE'
     ) {
      workWholeFlagTemp.value = true;
@@ -823,14 +831,14 @@
         !newProps.category ||
         !newProps.companyName ||
         (newProps.category == '店铺' &&
-          (!newProps.marketName  ||
+          ((newProps.companyType != '海外' && !newProps.marketName) ||
             !(newProps.isRetreat == 0 || newProps.isRetreat == 1))) ||
         !(newProps.isNewtest == 0 || newProps.isNewtest == 1) ||
         !newProps.positionName ||
         !newProps.workDuty ||
         !newProps.cityName ||
         ((newProps.category == '店铺' || props.indexNum < 1) && (!newProps.brandName ||
-            (newProps.isRetreat == 0 && !newProps.workFloor))) ||
+            (newProps.companyType != '海外' && newProps.isRetreat == 0 && !newProps.workFloor))) ||
         newProps.brandName == 'OFFICE'
       ) {
         workWholeFlagTemp.value = true;
@@ -1379,7 +1387,10 @@
             formState.workFloor = res.info[0].floor;
           }
         } else {
-          if (formState.isNewtest == '1' || formState.isRetreat != '1') {
+          if (
+            formState.companyType != '海外' &&
+            (formState.isNewtest == '1' || formState.isRetreat != '1')
+          ) {
             formState.workFloor = '';
             message.error('该商场无此品牌数据，商场信息中添加该品牌楼层信息！');
           } else {

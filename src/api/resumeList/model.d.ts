@@ -59,6 +59,7 @@ export interface SearchResumeList {
   jobStatus: string; // 职状 1在职 2离职
   majorName: string; // 专业名称
   isRepeat: string; // 标签 1 首增  2 激活保护中   3全部激活
+  isKafang: string; // 渠道简历 是否筛选已开放 1 已开放 空或其他 全部简历
 }
 
 export interface Item {

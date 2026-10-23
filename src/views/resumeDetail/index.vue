@@ -166,14 +166,14 @@ const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginOutFlag:
           !item.category ||
           !item.companyName ||
           (item.category == '店铺' &&
-            (!item.marketName  ||
+            ((item.companyType != '海外' && !item.marketName) ||
               !(item.isRetreat == 0 || item.isRetreat == 1))) ||
           !(item.isNewtest == 0 || item.isNewtest == 1) ||
           !item.positionName ||
           !item.workDuty ||
           !item.cityName ||
           ((item.category == '店铺' || index < 1)&& (!item.brandName||
-              (item.isRetreat == 0 && !item.workFloor)))
+              (item.companyType != '海外' && item.isRetreat == 0 && !item.workFloor)))
           || (item.brandName == 'OFFICE')
         ) {
           wtemp = true;

@@ -78,7 +78,8 @@
   import { SearchResumeList } from '/@/api/resumeList/model';
   const resumeList = useResumeListStoreWithOut();
   resumeList.fetchInfo();
-  const { resumeMenu,teamPersonChangeArr,sortResumeUpdateData,sortResumeUpdate,formState } = storeToRefs(resumeList);
+  resumeList.queryChannelAuthMsg();
+  const { resumeMenu,teamPersonChangeArr,sortResumeUpdateData,sortResumeUpdate,formState,channelAuthFlag } = storeToRefs(resumeList);
   const loginVueUser: {loginName: "", loginId: "", loginTocken: "",loginType: "",loginOutFlag: ''} = JSON.parse(localStorage.getItem("loginVueUser"));
   const RESUME_RECORD_MENU_KEY = 'resume_record_link';
   const RESUME_RECORD_URL = 'http://work.wotui.com:8889/WTSM//channelAuth/query-channel-dashboard.html';
@@ -299,7 +300,7 @@
           });
         }
       });
-      if (loginVueUser.loginType == 'A') {
+      if (loginVueUser.loginType == 'A' || channelAuthFlag.value) {
         //@ts-ignore
         resumeMenuTemp.push({
           key: RESUME_RECORD_MENU_KEY,
@@ -324,6 +325,9 @@
     },
     { deep: true, immediate: true },
   );
+  watch(channelAuthFlag, () => {
+    resumeMenuChange();
+  });
   const openSortResume = ref<boolean>(false);
   const confirmLoading = ref<boolean>(false);
   const sortName = ref<string>('');

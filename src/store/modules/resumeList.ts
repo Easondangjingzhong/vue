@@ -39,6 +39,7 @@ interface ResumeListState {
   enterpriseConsultantArr: []; //查询企业顾问
   violationFlag: boolean; //违规上报modal展示 true 展示 false 隐藏
   resumeLoginNameChangeFlag: boolean; //切换后我的人才modal展示 true 展示 false 隐藏
+  channelAuthFlag: boolean; //是否有渠道记录查看权限
 }
 const loginVueUser: { loginName: ''; loginId: ''; loginTocken: ''; loginOutFlag: '' } = JSON.parse(
   localStorage.getItem('loginVueUser') || '{}',
@@ -88,6 +89,7 @@ export const useResumeListStore = defineStore('app-Resume-List', {
       total: 0,
     } as PaginationItem,
     resumeLoginNameChangeFlag: true,
+    channelAuthFlag: false,
   }),
   actions: {
     /**
@@ -313,6 +315,15 @@ export const useResumeListStore = defineStore('app-Resume-List', {
         }
         this.queryTeamPersonChange();
       }
+    },
+    /**
+     * 查询渠道权限信息 有数据则展示渠道记录菜单
+     */
+    async queryChannelAuthMsg() {
+      let formData = new FormData();
+      formData.append('SystemRecruitId', loginVueUser.loginId);
+      const res = await fetchApi.queryChannelAuthMsg(formData);
+      this.channelAuthFlag = res?.code == 1 && Array.isArray(res.info) && res.info.length > 0;
     },
     /**
      * 根据id查询一键搜索内容
@@ -1160,6 +1171,10 @@ export const useResumeListStore = defineStore('app-Resume-List', {
       formData.append('isBlack', param.isBlack || '');
       formData.append('jobStatus', param.jobStatus || '');
       formData.append('isRepeat', param.isRepeat || '');
+      if (this.channelResumeFlag) {
+        // 渠道简历专用：1 只查已开放，空或其他 查全部简历
+        formData.append('isKafang', param.isKafang || '');
+      }
       return formData;
     },
     /**

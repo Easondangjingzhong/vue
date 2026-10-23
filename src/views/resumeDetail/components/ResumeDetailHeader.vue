@@ -71,7 +71,7 @@
          <a-tag
           color="orange"
           class="resume_tag_checked_top"
-          v-if="props.showResumeRightOutFlag &&resumeData.limitFlag == '限制'"
+          v-if="props.showResumeRightOutFlag && resumeData.limitFlag == '限制' && resumeData.phoneNum != '13588871708'"
           :title="resumeData.offerTime ? `${formatToDateMinute(resumeData.offerTime)}  OFFER推荐禁止 ${zaibaoPerson}` : limitRemarkDetail"
           >限制</a-tag
         >

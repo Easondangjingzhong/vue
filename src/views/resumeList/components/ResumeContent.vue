@@ -136,7 +136,7 @@
           >新增人才</a-button
         >
         <a-switch
-          v-if="formState.leftType != '4'"
+          v-if="!channelResumeFlag && formState.leftType != '4'"
           style="margin-bottom: 3px; margin-left: 4px"
           @click="handleChangeTwoYearFlag"
           v-model:checked="isTwoYearFlag"
@@ -144,7 +144,7 @@
           un-checked-children="两年"
         />
         <a-switch
-          v-if="formState.leftType == '4'"
+          v-if="!channelResumeFlag && formState.leftType == '4'"
           style="margin-bottom: 3px; margin-left: 4px"
           @click="handleChangeCommonOtherFlag"
           :title="isCommonOtherFlag ? '全部：可查看所在大团队开放的全部简历' : '排除：排除顾问本人简历，查看所在大团队其他开放简历'"
@@ -153,7 +153,18 @@
           un-checked-children="排除"
         />
       </div>
-      <div>
+      <div v-if="channelResumeFlag && loginVueUser.loginType == 'A'">
+        <a-radio-group
+          v-model:value="isKafangFlag"
+          button-style="solid"
+          size="small"
+          @change="handleChangeKafangFlag"
+        >
+          <a-radio-button :value="true">已开放</a-radio-button>
+          <a-radio-button :value="false">全部简历</a-radio-button>
+        </a-radio-group>
+      </div>
+      <div v-if="!channelResumeFlag">
         <a-cascader
           v-model:value="selectedRecruitIdValue"
           :options="optionsRecruitId"
@@ -339,7 +350,7 @@
           <a-tag
             class="tagspan tagspanOrange"
             :title="record.limitRemarkDetail ? record.limitRemarkDetail : 'OFFER推荐禁止'"
-            v-if="showResumeRightOutFlag && record.limitFlag == '限制' && record.resumeStatus != '外包保护期中'"
+            v-if="showResumeRightOutFlag && record.limitFlag == '限制' && record.resumeStatus != '外包保护期中' && record.phone != '13588871708'"
             color="orange"
             >限制</a-tag
           >
@@ -690,6 +701,21 @@
     } else {
       formState.value = { ...formState.value, notSelf: '1' };
     }
+    onFinish(2);
+  };
+  // 渠道简历（登录类型 A）已开放/全部简历切换，默认全部简历
+  const isKafangFlag = ref<boolean>(false);
+  watch(
+    () => channelResumeFlag.value,
+    (val) => {
+      if (val) {
+        isKafangFlag.value = false;
+        formState.value = { ...formState.value, isKafang: '' };
+      }
+    },
+  );
+  const handleChangeKafangFlag = () => {
+    formState.value = { ...formState.value, isKafang: isKafangFlag.value ? '1' : '' };
     onFinish(2);
   };
   const resumeDetailsArr = ref<String[]>([]);

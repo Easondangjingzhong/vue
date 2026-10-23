@@ -423,9 +423,9 @@ const dabingPerson = computed(() => {
   if ((outsourceSocialSecurityForm.value?.dabingRate || 0) - 1 < 0) {
     return parseFloat(parseFloat(((Number((Number((outsourceSocialSecurityForm.value?.dabingJishu || 0) * (outsourceSocialSecurityForm.value?.dabingRate || 0))*100).toFixed(0))/100).toString())).toFixed(2));
   }
-  if (outsourceSocialSecurityForm.value.yijinStandard == '1') {
-    return parseFloat(((outsourceSocialSecurityForm.value?.dabingJishu || 0)).toFixed(2));
-  }
+  // if (outsourceSocialSecurityForm.value.yijinStandard == '1') {
+  //   return parseFloat(((outsourceSocialSecurityForm.value?.dabingJishu || 0)).toFixed(2));
+  // }
   return parseFloat(((outsourceSocialSecurityForm.value?.dabingRate || 0)).toFixed(2));
 });
 

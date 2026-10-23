@@ -54,11 +54,16 @@ export const usePlagiarusnStore = defineStore('app-plagiarusn', {
      * @description: 简历查重接口
      */
     async fetchInfo(params: PlagiarusnItem) {
+      // 公司名称只有逗号（如 ",,,"）时传递空值
+      const requestParams = { ...params };
+      if (requestParams.companyNames && !requestParams.companyNames.replace(/,/g, '').trim()) {
+        requestParams.companyNames = '';
+      }
       let res = null;
       if (loginVueUser?.loginOutFlag == "1") {
-        res = await fetchApi.infoWai(params);
+        res = await fetchApi.infoWai(requestParams);
       } else {
-        res = await fetchApi.info(params);
+        res = await fetchApi.info(requestParams);
       }
       if (res) {
         const { code, info } = res;
